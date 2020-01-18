@@ -1,0 +1,14 @@
+builders:
+  injectableCollectorBuiler:
+    import: "package:injectable_generator/builder.dart"
+    builder_factories: ["injectableBuilder"]
+    build_extensions: { ".json": [".injecatble.json"] }
+    auto_apply: dependents
+    runs_before: ["injecterBuilder"]
+    build_to: cache
+  injecterBuilder:
+    import: "package:injectable_generator/builder.dart"
+    builder_factories: ["injectableAppBuilder"]
+    build_extensions: { ".dart": [".app.dart"] }
+    auto_apply: dependents
+    build_to: source

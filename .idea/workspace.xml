@@ -1,0 +1,658 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="c39d1896-e89b-4357-bf16-f488eab3c4e5" name="Default Changelist" comment="update README file" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DefaultGradleProjectSettings">
+    <option name="isMigrated" value="true" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="Nexus_5_API_19" />
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/example/lib/main.dart">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="84">
+              <caret line="7" column="24" selection-start-line="7" selection-start-column="24" selection-end-line="7" selection-end-column="24" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Dart File" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>generatedExtension</find>
+      <find>buildExtensions</find>
+      <find>missi</find>
+      <find>toString</find>
+      <find>_stringBuffer.tost</find>
+      <find>$lib$</find>
+      <find>generate(</find>
+      <find>const</find>
+      <find>_has</find>
+      <find>_unk</find>
+      <find>_m</find>
+      <find>??</find>
+      <find>main</find>
+      <find>getN</find>
+      <find>t</find>
+      <find>type</find>
+      <find>generatedIm</find>
+      <find>import</find>
+      <find>return</find>
+      <find>caseNam</find>
+      <find>c</find>
+      <find>Material</find>
+      <find>Cuper</find>
+      <find>name</find>
+      <find>cust</find>
+      <find>.</find>
+      <find>case</find>
+      <find>fulls</find>
+      <find>boxed</find>
+      <find>&quot;</find>
+    </findStrings>
+    <replaceStrings>
+      <replace />
+    </replaceStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$</dir>
+    </dirStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="UPDATE_TYPE" value="MERGE" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/example/lib/screens/thrid_page.dart" />
+        <option value="$PROJECT_DIR$/auto_route/lib/auto_route_annotation.dart" />
+        <option value="$PROJECT_DIR$/example/lib/screens/nested_router.dart" />
+        <option value="$PROJECT_DIR$/auto_route/lib/transitions_builders.dart" />
+        <option value="$PROJECT_DIR$/example/lib/screens/home.dart" />
+        <option value="$PROJECT_DIR$/auto_route/lib/navigation_keys_container.dart" />
+        <option value="$PROJECT_DIR$/auto_route/lib/router_utils.dart" />
+        <option value="$PROJECT_DIR$/example/lib/screens/second_page.dart" />
+        <option value="$PROJECT_DIR$/example/lib/screens/nested_router.gr.dart" />
+        <option value="$PROJECT_DIR$/example/lib/screens/nested/nested_router.gr.dart" />
+        <option value="$PROJECT_DIR$/example/lib/screens/thrid_screen.dart" />
+        <option value="$PROJECT_DIR$/auto_route_generator/.gitignore" />
+        <option value="$PROJECT_DIR$/example/lib/screens/third_screen.dart" />
+        <option value="$PROJECT_DIR$/example/lib/router.gr.dart" />
+        <option value="$PROJECT_DIR$/auto_route/lib/route_wrapper.dart" />
+        <option value="$PROJECT_DIR$/example/lib/model.dart" />
+        <option value="$PROJECT_DIR$/example/lib/screens/second_screen.dart" />
+        <option value="$PROJECT_DIR$/auto_route_generator/lib/auto_route_generator.dart" />
+        <option value="$PROJECT_DIR$/auto_route_generator/lib/src/custom_transtion_builder.dart" />
+        <option value="$PROJECT_DIR$/auto_route_generator/lib/builder.dart" />
+        <option value="$PROJECT_DIR$/auto_route/pubspec.yaml" />
+        <option value="$PROJECT_DIR$/auto_route/CHANGELOG.md" />
+        <option value="$PROJECT_DIR$/example/lib/screens/nested/nested_router.dart" />
+        <option value="$PROJECT_DIR$/example/lib/screens/login_screen.dart" />
+        <option value="$PROJECT_DIR$/auto_route/README.md" />
+        <option value="$PROJECT_DIR$/auto_route_generator/README.md" />
+        <option value="$PROJECT_DIR$/auto_route/lib/auto_route_wrapper.dart" />
+        <option value="$PROJECT_DIR$/auto_route/lib/auto_route_annotations.dart" />
+        <option value="$PROJECT_DIR$/example/lib/screens/home_screen.dart" />
+        <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/auto_route_generator/lib/src/route_parameter.dart" />
+        <option value="$PROJECT_DIR$/auto_route_generator/lib/utils.dart" />
+        <option value="$PROJECT_DIR$/auto_route_generator/lib/src/route_config.dart" />
+        <option value="$PROJECT_DIR$/auto_route_generator/lib/src/router_config_visitor.dart" />
+        <option value="$PROJECT_DIR$/auto_route_generator/lib/router_class_generator.dart" />
+        <option value="$PROJECT_DIR$/auto_route_generator/pubspec.yaml" />
+        <option value="$PROJECT_DIR$/example/lib/router.dart" />
+        <option value="$PROJECT_DIR$/auto_route_generator/CHANGELOG.md" />
+        <option value="$PROJECT_DIR$/future_mock/pubspec.yaml" />
+        <option value="$PROJECT_DIR$/future_mock_generator/lib/src/router_config_visitor.dart" />
+        <option value="$PROJECT_DIR$/future_mock_generator/lib/src/route_parameter.dart" />
+        <option value="$PROJECT_DIR$/future_mock_generator/lib/router_class_generator.dart" />
+        <option value="$PROJECT_DIR$/future_mock_generator/lib/route_config_visitor.dart" />
+        <option value="$PROJECT_DIR$/future_mock_generator/pubspec.yaml" />
+        <option value="$PROJECT_DIR$/future_mock/lib/auto_route_annotations.dart" />
+        <option value="$PROJECT_DIR$/example/pubspec.yaml" />
+        <option value="$PROJECT_DIR$/future_mock_generator/build.yaml" />
+        <option value="$PROJECT_DIR$/example/lib/service.gr.dart" />
+        <option value="$PROJECT_DIR$/example/lib/service.dart" />
+        <option value="$PROJECT_DIR$/future_mock_generator/lib/auto_route_generator.dart" />
+        <option value="$PROJECT_DIR$/example/lib/main.dart" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectConfigurationFiles">
+    <option name="files">
+      <list>
+        <option value="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" fullScreen="true">
+    <option name="y" value="23" />
+    <option name="width" value="1278" />
+    <option name="height" value="972" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="PackagesPane" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
+              <item name="injectable" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
+              <item name="injectable" type="462c0819:PsiDirectoryNode" />
+              <item name="example" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
+              <item name="injectable" type="462c0819:PsiDirectoryNode" />
+              <item name="example" type="462c0819:PsiDirectoryNode" />
+              <item name="lib" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope">
+        <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
+          <expand>
+            <path>
+              <item name="route_generator_library" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="~/AndroidStudioProjects/route_generator_library" type="442cc68d:ScopeViewTreeModel$RootNode" />
+            </path>
+            <path>
+              <item name="route_generator_library" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="~/AndroidStudioProjects/route_generator_library" type="442cc68d:ScopeViewTreeModel$RootNode" />
+              <item name="example" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+            </path>
+            <path>
+              <item name="route_generator_library" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="~/AndroidStudioProjects/route_generator_library" type="442cc68d:ScopeViewTreeModel$RootNode" />
+              <item name="example" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+              <item name=".dart_tool" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+            </path>
+            <path>
+              <item name="route_generator_library" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="~/AndroidStudioProjects/route_generator_library" type="442cc68d:ScopeViewTreeModel$RootNode" />
+              <item name="example" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+              <item name="lib" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+            </path>
+            <path>
+              <item name="route_generator_library" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="~/AndroidStudioProjects/route_generator_library" type="442cc68d:ScopeViewTreeModel$RootNode" />
+              <item name="route_annotation_processor" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+            </path>
+            <path>
+              <item name="route_generator_library" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="~/AndroidStudioProjects/route_generator_library" type="442cc68d:ScopeViewTreeModel$RootNode" />
+              <item name="route_annotation_processor" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+              <item name="lib" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+            </path>
+            <path>
+              <item name="route_generator_library" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="~/AndroidStudioProjects/route_generator_library" type="442cc68d:ScopeViewTreeModel$RootNode" />
+              <item name="route_gen" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+            </path>
+            <path>
+              <item name="route_generator_library" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="~/AndroidStudioProjects/route_generator_library" type="442cc68d:ScopeViewTreeModel$RootNode" />
+              <item name="route_gen" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+              <item name="lib" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="CatdeaLogs" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
+    <property name="dart.analysis.tool.window.force.activate" value="false" />
+    <property name="io.flutter.reload.alreadyRun" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
+    <property name="show.migrate.to.gradle.popup" value="false" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/example/lib/screens/nested" />
+      <recent name="$PROJECT_DIR$/auto_route_generator/lib/src" />
+      <recent name="$PROJECT_DIR$/auto_route_generator/lib" />
+      <recent name="$PROJECT_DIR$/auto_route_generator/lib/src/route_config_builder" />
+      <recent name="$PROJECT_DIR$/auto_route/lib" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/auto_route_generator" />
+      <recent name="$PROJECT_DIR$/example/lib/screens" />
+      <recent name="$PROJECT_DIR$/auto_route_generator/lib/src" />
+      <recent name="$PROJECT_DIR$/example/lib" />
+      <recent name="$PROJECT_DIR$/auto_route/lib" />
+    </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="cd example &amp;&amp; " />
+      <command value="cd example &amp;&amp; flutter packages pub run build_runner build" />
+      <command value="flutter packages pub run build_runner build" />
+    </option>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="Unnamed" type="FlutterRunConfigurationType" factoryName="Flutter" singleton="false" nameIsGenerated="true">
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c39d1896-e89b-4357-bf16-f488eab3c4e5" name="Default Changelist" comment="" />
+      <created>1567332057570</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1567332057570</updated>
+    </task>
+    <task id="LOCAL-00001" summary="first commit">
+      <created>1573398073438</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1573398073438</updated>
+    </task>
+    <task id="LOCAL-00002" summary="wip">
+      <created>1573733580924</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1573733580924</updated>
+    </task>
+    <task id="LOCAL-00003" summary="publish auto_route:0.1.0 on pub.dev">
+      <created>1575659631198</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1575659631198</updated>
+    </task>
+    <task id="LOCAL-00004" summary="format code&#10;publish auto_route:0.1.1 on pub.dev">
+      <created>1575662459550</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1575662459550</updated>
+    </task>
+    <task id="LOCAL-00005" summary="* add Route Wrapper&#10;* add initial flag as a property in all route types&#10;* change prefix const route names with class name.&#10;* add fullscreenDialog property to @CustomRoute()">
+      <created>1578328212408</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1578328212408</updated>
+    </task>
+    <task id="LOCAL-00006" summary="update README file">
+      <created>1578328370610</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1578328370610</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
+    <servers />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
+    <layout>
+      <window_info id="Captures" order="0" weight="0.25" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.27045178" />
+      <window_info id="Structure" order="2" side_tool="true" />
+      <window_info id="Image Layers" order="3" />
+      <window_info id="Designer" order="4" />
+      <window_info id="Resources Explorer" order="5" />
+      <window_info id="Capture Tool" order="6" />
+      <window_info id="Favorites" order="7" side_tool="true" />
+      <window_info anchor="bottom" id="Dart Analysis" order="0" weight="0.32857144" />
+      <window_info anchor="bottom" id="Run" order="1" weight="0.54183674" />
+      <window_info anchor="bottom" id="TODO" order="2" weight="0.32857144" />
+      <window_info anchor="bottom" id="Debug" order="3" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="4" sideWeight="0.4993895" visible="true" weight="0.37959182" />
+      <window_info anchor="bottom" id="Event Log" order="5" sideWeight="0.50061053" side_tool="true" weight="0.31530613" />
+      <window_info anchor="bottom" id="Flutter Performance" order="6" side_tool="true" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32857144" />
+      <window_info anchor="bottom" id="Messages" order="8" weight="0.3265306" />
+      <window_info anchor="bottom" id="Find" order="9" weight="0.327551" />
+      <window_info anchor="right" id="Capture Analysis" order="0" />
+      <window_info anchor="right" id="Theme Preview" order="1" />
+      <window_info anchor="right" id="Flutter Inspector" order="2" />
+      <window_info anchor="right" id="Flutter Outline" order="3" />
+      <window_info anchor="right" id="Palette&#9;" order="4" />
+    </layout>
+    <layout-to-restore>
+      <window_info id="Captures" order="0" weight="0.25" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.21184371" />
+      <window_info id="Structure" order="2" side_tool="true" />
+      <window_info id="Image Layers" order="3" />
+      <window_info id="Designer" order="4" />
+      <window_info id="Resources Explorer" order="5" />
+      <window_info id="Capture Tool" order="6" />
+      <window_info id="Favorites" order="7" side_tool="true" />
+      <window_info anchor="bottom" id="Dart Analysis" order="0" weight="0.32936507" />
+      <window_info anchor="bottom" id="Run" order="1" weight="0.45714286" />
+      <window_info anchor="bottom" id="TODO" order="2" weight="0.32857144" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.50306123" />
+      <window_info anchor="bottom" id="Terminal" order="4" sideWeight="0.4993895" visible="true" weight="0.33877552" />
+      <window_info anchor="bottom" id="Event Log" order="5" sideWeight="0.50061053" side_tool="true" weight="0.47142857" />
+      <window_info anchor="bottom" id="Flutter Performance" order="6" side_tool="true" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Messages" order="8" weight="0.17755102" />
+      <window_info anchor="bottom" id="Find" order="9" weight="0.32857144" />
+      <window_info anchor="right" id="Capture Analysis" order="0" />
+      <window_info anchor="right" id="Theme Preview" order="1" />
+      <window_info anchor="right" id="Flutter Inspector" order="2" />
+      <window_info anchor="right" id="Flutter Outline" order="3" />
+      <window_info anchor="right" id="Palette&#9;" order="4" />
+    </layout-to-restore>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="first commit" />
+    <MESSAGE value="wip" />
+    <MESSAGE value="publish auto_route:0.1.0 on pub.dev" />
+    <MESSAGE value="format code&#10;publish auto_route:0.1.1 on pub.dev" />
+    <MESSAGE value=" change to using a single config file instead of annotating the actual widget class due to performance issues.&#10;add @MaterialRoute(), @CupertinoRoute() and @CustomRoute() annotations&#10;remove @AutoRoute() annotation and add @AutoRouter()&#10;handle required parameters.&#10;add navigating with a global navigator key [without context].&#10;support nested navigators." />
+    <MESSAGE value="* add Route Wrapper&#10;* add initial flag as a property in all route types&#10;* change prefix const route names with class name.&#10;* add fullscreenDialog property to @CustomRoute()" />
+    <MESSAGE value="update README file" />
+    <option name="LAST_COMMIT_MESSAGE" value="update README file" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/analyzer-0.38.2/lib/dart/element/element.dart</url>
+          <line>1261</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/example/lib/model.dart" />
+    <entry file="file://$PROJECT_DIR$/example/lib/screens/nested/nested_router.gr.dart" />
+    <entry file="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/analyzer-0.38.5/lib/dart/element/element.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="327">
+          <caret line="732" column="7" selection-start-line="732" selection-start-column="7" selection-end-line="732" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/source_gen-0.9.4+6/lib/src/generator_for_annotation.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="821">
+          <caret line="68" column="9" selection-start-line="68" selection-start-column="2" selection-end-line="68" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/analyzer-0.38.5/lib/dart/element/visitor.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1778">
+          <caret line="424" column="3" selection-start-line="424" selection-start-column="2" selection-end-line="424" selection-end-column="3" />
+          <folding>
+            <element signature="e#14405#14501#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/analyzer-0.38.5/lib/src/dart/element/element.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="5623" column="11" lean-forward="true" selection-start-line="5623" selection-start-column="11" selection-end-line="5623" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/future_mock_generator/lib/utils.dart" />
+    <entry file="file://$PROJECT_DIR$/future_mock/lib/transitions_builders.dart" />
+    <entry file="file://$PROJECT_DIR$/future_mock_generator/example/README.md" />
+    <entry file="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/provider-3.2.0/lib/src/delegate_widget.dart" />
+    <entry file="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/provider-3.2.0/lib/src/provider.dart" />
+    <entry file="file://$PROJECT_DIR$/future_mock/CHANGELOG.md" />
+    <entry file="file://$PROJECT_DIR$/example/lib/screens/nested/nested_router.dart" />
+    <entry file="file://$PROJECT_DIR$/future_mock/lib/navigation_keys_container.dart" />
+    <entry file="file://$PROJECT_DIR$/example/lib/screens/home_screen.dart" />
+    <entry file="file://$PROJECT_DIR$/future_mock/example/README.md" />
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="813">
+          <caret line="295" column="3" selection-start-line="295" selection-start-column="3" selection-end-line="295" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/future_mock/README.md" />
+    <entry file="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/analyzer-0.39.3/lib/dart/element/element.dart" />
+    <entry file="file://$PROJECT_DIR$/example/lib/screens/second_screen.dart" />
+    <entry file="file://$USER_HOME$/dev-tools/flutter/bin/cache/pkg/sky_engine/lib/core/object.dart" />
+    <entry file="file://$PROJECT_DIR$/future_mock_generator/lib/src/route_config.dart" />
+    <entry file="file://$PROJECT_DIR$/example/lib/router.gr.dart" />
+    <entry file="file://$PROJECT_DIR$/example/lib/router.dart" />
+    <entry file="file://$PROJECT_DIR$/future_mock_generator/CHANGELOG.md" />
+    <entry file="file://$PROJECT_DIR$/future_mock_generator/README.md" />
+    <entry file="file://$PROJECT_DIR$/example/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="112">
+          <caret line="4" column="18" selection-start-line="4" selection-start-column="18" selection-end-line="4" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/example/lib/screens/login_screen.dart" />
+    <entry file="file://$PROJECT_DIR$/future_mock_generator/lib/src/custom_transtion_builder.dart" />
+    <entry file="file://$PROJECT_DIR$/future_mock/pubspec.yaml" />
+    <entry file="file://$PROJECT_DIR$/future_mock_generator/lib/router_class_generator.dart" />
+    <entry file="file://$PROJECT_DIR$/future_mock_generator/lib/route_config_visitor.dart" />
+    <entry file="file://$PROJECT_DIR$/future_mock/lib/router_utils.dart" />
+    <entry file="file://$PROJECT_DIR$/future_mock/lib/auto_route_wrapper.dart" />
+    <entry file="file://$PROJECT_DIR$/example/pubspec.yaml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="280">
+          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/future_mock_generator/lib/src/router_config_visitor.dart" />
+    <entry file="file://$PROJECT_DIR$/future_mock_generator/lib/builder.dart" />
+    <entry file="file://$PROJECT_DIR$/future_mock_generator/pubspec.yaml" />
+    <entry file="file://$PROJECT_DIR$/example/.dart_tool/build/entrypoint/build.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="224">
+          <caret line="15" column="29" selection-start-line="15" selection-start-column="11" selection-end-line="15" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/future_mock_generator/build.yaml" />
+    <entry file="file://$USER_HOME$/dev/sdk/flutter/bin/cache/pkg/sky_engine/lib/core/comparable.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="98">
+          <caret line="68" column="43" selection-start-line="68" selection-start-column="43" selection-end-line="68" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/dev/sdk/flutter/bin/cache/pkg/sky_engine/lib/core/string.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="194">
+          <caret line="99" column="38" lean-forward="true" selection-start-line="99" selection-start-column="38" selection-end-line="99" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/future_mock_generator/lib/auto_route_generator.dart" />
+    <entry file="file://$PROJECT_DIR$/example/lib/service.gr.dart" />
+    <entry file="file://$PROJECT_DIR$/future_mock/lib/future_mock_annotations.dart" />
+    <entry file="file://$PROJECT_DIR$/example/lib/service.dart" />
+    <entry file="file://$PROJECT_DIR$/future_mock_generator/lib/src/route_parameter.dart" />
+    <entry file="file://$USER_HOME$/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/analyzer-0.39.2+1/lib/dart/element/element.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="899">
+          <caret line="513" column="14" selection-start-line="513" selection-start-column="14" selection-end-line="513" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/analyzer-0.39.2+1/lib/src/generated/source.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="9996">
+          <caret line="372" column="11" selection-start-line="372" selection-start-column="11" selection-end-line="372" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/analyzer-0.39.2+1/lib/dart/element/type.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="560">
+          <caret line="42" column="51" selection-start-line="42" selection-start-column="51" selection-end-line="42" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/example/lib/main.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="84">
+          <caret line="7" column="24" selection-start-line="7" selection-start-column="24" selection-end-line="7" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>Android API 21 Platform</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>auto_route_generator</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+                <option value="0.6" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>Dart Packages</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>
