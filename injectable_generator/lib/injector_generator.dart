@@ -10,13 +10,13 @@ import 'package:source_gen/source_gen.dart';
 
 import 'injectable_generator.dart';
 
-class InjectableAppGenerator extends GeneratorForAnnotation<Injecater> {
+class InjectorGenerator extends GeneratorForAnnotation<Injector> {
   @override
   generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) {
-    print('Generating');
-    final injectorFiles = Glob("**.injecatble.json");
+    final injectorFiles = Glob("**.injectable.json");
     final List<DependencyHolder> classes = List();
-    injectorFiles.listSync().forEach((f) {
+    final generatedFilesRoot = '.dart_tool/build/generated/${buildStep.inputId.package}/lib';
+    injectorFiles.listSync(root: generatedFilesRoot).forEach((f) {
       final json = jsonDecode(File(f.path).readAsStringSync());
 
       classes.add(DependencyHolder.fromJson(json));
@@ -36,8 +36,7 @@ class InjectableAppGenerator extends GeneratorForAnnotation<Injecater> {
     buffer.writeln("import 'package:get_it/get_it.dart';");
     buffer.writeln("final GetIt getIt = GetIt.instance;");
 
-    buffer.writeln("class $injectorName {");
-    buffer.writeln("static void initialize(){");
+    buffer.writeln("void \$initialize(){");
 
     classes.forEach((dep) {
       final constBuffer = StringBuffer();
@@ -49,7 +48,7 @@ class InjectableAppGenerator extends GeneratorForAnnotation<Injecater> {
     });
 
     buffer.writeln("}");
-    buffer.writeln("}");
+
     return buffer.toString();
   }
 }

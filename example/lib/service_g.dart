@@ -1,6 +1,6 @@
 import 'package:injectable/injectable_annotations.dart';
 
-@Injectable()
-class ServiceA {
-  String value = 'ServiceA';
+@Inject.factory()
+class ServiceD {
+  double id;
 }
