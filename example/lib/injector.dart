@@ -1,6 +1,10 @@
 import 'package:injectable/injectable_annotations.dart';
 
-@Injecater()
-class $Injector {
-  $initialize() {}
+import 'injector.gi.dart';
+
+@injectorConfig
+@Injectable.factory(STring)
+void configure() {
+  getIt.registerFactory(func);
+  $configure();
 }

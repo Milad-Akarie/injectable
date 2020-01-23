@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'injector.app.dart';
-
 void main() {
-  Injector.initialize();
   runApp(MyApp());
 }
 

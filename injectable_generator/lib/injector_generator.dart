@@ -1,54 +1,52 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:glob/glob.dart';
 import 'package:injectable/injectable_annotations.dart';
+import 'package:injectable_generator/injector_config_generator.dart';
 import 'package:source_gen/source_gen.dart';
 
-import 'injectable_generator.dart';
+import 'src/dependency_holder.dart';
 
-class InjectorGenerator extends GeneratorForAnnotation<Injector> {
+TypeChecker get injectTypechecker => TypeChecker.fromRuntime(Injectable);
+
+class InjectorGenerator extends GeneratorForAnnotation<InjectorConfig> {
   @override
-  generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) {
+  dynamic generateForAnnotatedElement(
+      Element element, ConstantReader annotation, BuildStep buildStep) async {
+    print('\n ------------- Generating injector ----------- \n');
+
     final injectorFiles = Glob("**.injectable.json");
-    final List<DependencyHolder> classes = List();
-    final generatedFilesRoot = '.dart_tool/build/generated/${buildStep.inputId.package}/lib';
-    injectorFiles.listSync(root: generatedFilesRoot).forEach((f) {
-      final json = jsonDecode(File(f.path).readAsStringSync());
+    final List<DependencyHolder> types = List();
 
-      classes.add(DependencyHolder.fromJson(json));
-    });
+    final FunctionElement methodElement = element;
 
-    return generateClass(classes, element.name.replaceFirst("\$", ""));
-  }
+    injectTypechecker
+        .annotationsOfExact(methodElement)
+        .where((a) => a.getField('_type') != null)
+        .map((a) => AnnotatedElement(
+            ConstantReader(a), a.getField('_type').toTypeValue().element))
+        .forEach(
+      (a) {
+        types.add(DependencyHolder.fromElement(a.element, a.annotation));
+      },
+    );
 
-  FutureOr<String> generateClass(List<DependencyHolder> classes, String injectorName) async {
-    final buffer = StringBuffer();
+    List<Map> jsonData = [];
+    await for (final id in buildStep.findAssets(injectorFiles)) {
+      final json = jsonDecode(await buildStep.readAsString(id));
+      jsonData.addAll([...json]);
+    }
 
-    final imports = classes.fold<Set<String>>({}, (a, b) => a..addAll(b.imports));
-    imports.forEach((import) {
-      buffer.writeln("import $import;");
-    });
+    jsonData.forEach((json) => types.add(DependencyHolder.fromJson(json)));
 
-    buffer.writeln("import 'package:get_it/get_it.dart';");
-    buffer.writeln("final GetIt getIt = GetIt.instance;");
+    // for (var i = 0; i < 100; i++) {
+    //   final content =
+    //       "import 'package:injectable/injectable_annotations.dart';@Factory() class Serivce$i {}";
+    //   await File('lib/service$i.dart').writeAsString(content);
+    // }
 
-    buffer.writeln("void \$initialize(){");
-
-    classes.forEach((dep) {
-      final constBuffer = StringBuffer();
-      dep.dependencies.forEach((claName) {
-        constBuffer.write("getIt<$claName>(),");
-      });
-
-      buffer.writeln("getIt.registerFactory(() => ${dep.className}(${constBuffer.toString()}));");
-    });
-
-    buffer.writeln("}");
-
-    return buffer.toString();
+    return InjectorConfigGenerator(types, element.name).generate();
   }
 }

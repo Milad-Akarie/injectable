@@ -1,6 +1,6 @@
 import 'package:injectable/injectable_annotations.dart';
 
-@Injectable()
+@Factory()
 class ServiceD {
-  double zzssjz;
+  ServiceD();
 }

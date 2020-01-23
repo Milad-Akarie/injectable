@@ -1,14 +1,20 @@
 builders:
-  injectableCollectorBuiler:
+  injectable_builder:
     import: "package:injectable_generator/builder.dart"
     builder_factories: ["injectableBuilder"]
-    build_extensions: { ".json": [".injecatble.json"] }
+    build_extensions: { ".json": [".injectable.json"] }
     auto_apply: dependents
-    runs_before: ["injecterBuilder"]
+    # runs_before: [":injector_builder"]
+    applies_builders: [":injector_file_remover"]
     build_to: cache
-  injecterBuilder:
+  injector_builder:
     import: "package:injectable_generator/builder.dart"
-    builder_factories: ["injectableAppBuilder"]
-    build_extensions: { ".dart": [".app.dart"] }
+    builder_factories: ["injectorBuilder"]
+    build_extensions: { ".dart": [".gi.dart"] }
     auto_apply: dependents
     build_to: source
+# post_process_builders:
+#   injector_file_remover:
+#     import: "package:injectable_generator/builder.dart"
+#     builder_factory: "injectorFileRemover"
+#     input_extensions: [".gi.dart"]
