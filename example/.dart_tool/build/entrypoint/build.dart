@@ -14,10 +14,9 @@ final _builders = <_i1.BuilderApplication>[
       hideOutput: false, appliesBuilders: ['source_gen:part_cleanup']),
   _i1.apply('injectable_generator:injectable_builder', [_i3.injectableBuilder],
       _i1.toDependentsOf('injectable_generator'),
-      hideOutput: true,
-      appliesBuilders: ['injectable_generator:injector_file_remover']),
-  _i1.apply('injectable_generator:injector_builder', [_i3.injectorBuilder],
-      _i1.toDependentsOf('injectable_generator'),
+      hideOutput: true),
+  _i1.apply('injectable_generator:injector_builder',
+      [_i3.injectableConfigBuilder], _i1.toDependentsOf('injectable_generator'),
       hideOutput: false),
   _i1.applyPostProcess('source_gen:part_cleanup', _i2.partCleanup,
       defaultGenerateFor: const _i4.InputSet())

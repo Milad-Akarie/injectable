@@ -1,8 +1,8 @@
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 
+import 'injectable_config_generator.dart';
 import 'injectable_generator.dart';
-import 'injector_generator.dart';
 
 Builder injectableBuilder(BuilderOptions options) {
   return LibraryBuilder(
@@ -11,13 +11,9 @@ Builder injectableBuilder(BuilderOptions options) {
   );
 }
 
-Builder injectorBuilder(BuilderOptions options) {
+Builder injectableConfigBuilder(BuilderOptions options) {
   return LibraryBuilder(
-    InjectorGenerator(),
-    generatedExtension: '.gi.dart',
+    InjectableConfigGenerator(),
+    generatedExtension: '.iconfig.dart',
   );
-}
-
-PostProcessBuilder injectorFileRemover(BuilderOptions options) {
-  return FileDeletingBuilder(['.gi.dart']);
 }

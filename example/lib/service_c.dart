@@ -1,9 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable_annotations.dart';
 
-@Factory()
-class SerivceC {
-  SerivceC();
+import 'injector.dart';
 
-  SerivceC.fromJson(@InstanceName('sdf') SerivceC serivcess);
-}
+// @injectable
+class SerivceC {}

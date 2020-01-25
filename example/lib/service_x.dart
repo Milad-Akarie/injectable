@@ -1,4 +1,4 @@
 import 'package:injectable/injectable_annotations.dart';
 
-@Singleton()
+// @Singleton()
 class ServiceX {}

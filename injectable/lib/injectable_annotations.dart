@@ -1,75 +1,52 @@
-abstract class InjectableTypes {
-  static const none = -1;
-  static const factory = 0;
-  static const singleton = 1;
-  static const lazySingleton = 2;
+class InjectableConfig {
+  const InjectableConfig._();
 }
 
-class Inject {
-  final Type type;
-  final int _injectableType;
-
-  // const Inject(this.type);
-
-  const Inject.singleton(this.type)
-      : _injectableType = InjectableTypes.singleton;
-  const Inject.lazySingleton(this.type)
-      : _injectableType = InjectableTypes.lazySingleton;
-  const Inject.factory(this.type) : _injectableType = InjectableTypes.factory;
-}
+const injectableInit = const InjectableConfig._();
 
 class Injectable {
-  final int _injectableType;
+  // Passed to instanceName argument in
+  // getIt register function
   final String instanceName;
+
+  // The type to bind your implementation to,
+  // typically an abstract class which is implemented by the
+  // annotated class.
   final Type bindTo;
-  final Type _type;
+
+  const Injectable({this.instanceName, this.bindTo});
+}
+
+const injectable = const Injectable();
+
+/// Classes annotated with @Singleton
+/// will generate registerSingleton  or
+/// registerLazySingleton if [_lazy] is true
+class Singleton {
   final bool signalsReady;
-
-  const Injectable._(this._injectableType, [this.instanceName, this.bindTo])
-      : _type = null,
-        signalsReady = null;
-
-  const Injectable.factory(this._type, {this.bindTo, this.instanceName})
-      : _injectableType = InjectableTypes.factory,
-        signalsReady = null;
-
-  const Injectable.singleton(this._type,
-      {this.bindTo, this.instanceName, this.signalsReady})
-      : _injectableType = InjectableTypes.singleton;
-
-  const Injectable.lazySingleton(this._type,
-      {this.bindTo, this.instanceName, this.signalsReady})
-      : _injectableType = InjectableTypes.lazySingleton;
+  final bool _lazy;
+  const Singleton({this.signalsReady}) : _lazy = false;
+  const Singleton.lazy({this.signalsReady}) : _lazy = true;
 }
 
-const injectable = const Injectable._(InjectableTypes.none);
+const singleton = const Singleton();
+const lazySingleton = const Singleton.lazy();
 
-class Factory extends Injectable {
-  final Map<Type, String> resolovers;
-
-  const Factory({String instanceName, Type bindTo, this.resolovers})
-      : super._(InjectableTypes.factory, instanceName, bindTo);
+// Used to annotate a constructor dependency
+// that's registered with an instance names;
+class InstanceName {
+  // the name in which an instance is registered
+  final String name;
+  const InstanceName(this.name) : assert(name != null);
 }
 
-class Singleton extends Injectable {
-  final bool signalsReady;
+class Environment {
+  final String name;
+  const Environment(this.name);
 
-  const Singleton({String instanceName, this.signalsReady, Type bindto})
-      : super._(
-          InjectableTypes.singleton,
-          instanceName,
-          bindto,
-        );
-  const Singleton.lazy({String instanceName, this.signalsReady, Type bindTo})
-      : super._(
-          InjectableTypes.lazySingleton,
-          instanceName,
-          bindTo,
-        );
+  static const development = 'development';
+  static const production = 'production';
 }
 
-class InjectorConfig {
-  const InjectorConfig();
-}
-
-const injectorConfig = const InjectorConfig();
+const development = const Environment(Environment.development);
+const production = const Environment(Environment.production);

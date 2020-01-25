@@ -1,6 +1,5 @@
 import 'package:injectable/injectable_annotations.dart';
 
-@Singleton.lazy()
+// @singleton
 class SerivceCC {
-  final x = 'sdfdf';
 }

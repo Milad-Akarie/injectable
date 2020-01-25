@@ -1,1 +1,1 @@
-[{"className":"AbstractClassImpl","abstractClassName":"AbstractClass","type":0,"imports":["'package:example/service_b.dart'"],"dependencies":[],"instanceName":null,"signalsReady":null}]
+[{"type":"ServiceImpl1","bindTo":"Service","injectableType":0,"imports":["package:example/service_b.dart"],"dependencies":[],"instanceName":null,"signalsReady":null,"environment":null}]

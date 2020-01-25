@@ -1,10 +1,12 @@
+import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable_annotations.dart';
 
-import 'injector.gi.dart';
+import 'injector.iconfig.dart';
 
-@injectorConfig
-@Injectable.factory(STring)
-void configure() {
-  getIt.registerFactory(func);
-  $configure();
-}
+GetIt getIt = GetIt.instance;
+
+@injectIt
+void configure() => initGetIt(
+      getIt,
+      environment: Environment.development,
+    );
