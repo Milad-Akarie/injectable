@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:injectable_generator/src/dependency_config.dart';
 import 'package:injectable_generator/utils.dart';
 
+import 'dependency_config.dart';
 import 'injectable_types.dart';
 
 class ConfigCodeGenerator {

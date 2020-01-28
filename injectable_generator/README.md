@@ -1,4 +1,8 @@
-# injectable
+# injectable_generator
+
+A generator for [injectable](https://pub.dev/packages/injectable) library.
+
+## injectable
 
 Injectable is a convenient code generator for [get_it](https://pub.dev/packages/get_it). Inspired by Angular DI, Guice DI and inject.dart.
 

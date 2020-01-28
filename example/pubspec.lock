@@ -241,7 +241,7 @@ packages:
       path: "../injectable"
       relative: true
     source: path
-    version: "0.2.1"
+    version: "0.1.0"
   injectable_generator:
     dependency: "direct dev"
     description:

@@ -1,16 +1,14 @@
-import 'package:example/service_b.dart';
 import 'package:flutter/material.dart';
-import 'package:injectable/injectable_annotations.dart';
 
 import 'injector.dart';
 
 void main() {
   configure();
-  runApp(MyApp(null));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  MyApp(Service service);
+  MyApp();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

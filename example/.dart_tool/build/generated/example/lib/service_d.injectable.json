@@ -1,1 +1,0 @@
-[{"type":"Service","bindTo":"ServiceA","injectableType":0,"imports":["package:example/service_d.dart"],"dependencies":[],"instanceName":null,"signalsReady":null,"environment":"dev"},{"type":"Service","bindTo":"ServiceB","injectableType":0,"imports":["package:example/service_d.dart"],"dependencies":[],"instanceName":null,"signalsReady":null,"environment":"prod"}]

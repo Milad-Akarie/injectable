@@ -1,13 +1,21 @@
+# Example
+
 ```dart
 
-class HomeScreen extends StatelessWidget{}
+import 'package:injectable/injectable_annotations.dart';
 
-class LoginScreen extends StatelessWidget {}
+@Bind.toNamedtype(ServiceImpl1)
+@Bind.toNamedtype(ServiceImpl2)
+abstract class Service {}
 
-@autoRouter
-class $Router{
-@initial
- HomeScreen homeScreenRoute;
- LoginScreen loginScreenRoute;
+class ServiceImpl1 extends Service {}
+
+class ServiceImpl2 implements Service {
+
+}
+
+@injectable
+class MyRepository {
+  MyRepository(@Named.from(ServiceImpl1) Service service);
 }
 ```

@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:glob/glob.dart';
-import 'package:injectable/injectable_annotations.dart';
-import 'package:injectable_generator/src/dependency_config.dart';
+import 'package:injectable/injectable.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'config_code_generator.dart';
+import 'dependency_config.dart';
 import 'utils.dart';
 
 class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {

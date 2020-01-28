@@ -3,11 +3,12 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
-import 'package:injectable/injectable_annotations.dart';
-import 'package:injectable_generator/src/dependency_config.dart';
-import 'package:injectable_generator/src/dependency_resolver.dart';
+import 'package:injectable/injectable.dart';
 import 'package:injectable_generator/utils.dart';
 import 'package:source_gen/source_gen.dart';
+
+import 'dependency_config.dart';
+import 'dependency_resolver.dart';
 
 const TypeChecker bindChecker = const TypeChecker.fromRuntime(Bind);
 const TypeChecker typeChecker = const TypeChecker.fromRuntime(Injectable);

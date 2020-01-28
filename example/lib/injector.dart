@@ -1,4 +1,4 @@
-import 'package:injectable/injectable_annotations.dart';
+import 'package:injectable/injectable.dart';
 
 import 'injector.iconfig.dart';
 
