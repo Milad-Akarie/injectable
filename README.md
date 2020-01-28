@@ -32,15 +32,15 @@ dev_dependencies:
 
 ---
 
-1. Create a new dart file and define a top-level function (lets call it configure) then annotate it with @injectableInit.
-2. Call the **Generated** function \$initGetIt() inside your confiugre function.
+1- Create a new dart file and define a top-level function (lets call it configure) then annotate it with @injectableInit.
+2- Call the **Generated** func \$initGetIt() inside your confiugre func.
 
 ```dart
 @injectableInit
 void configure() => $initGetIt();
 ```
 
-3. Call configure() in your main func before running the App
+3- Call configure() in your main func before running the App
 
 ```daret
 void main() {
