@@ -15,7 +15,7 @@ final _builders = <_i1.BuilderApplication>[
   _i1.apply('injectable_generator:injectable_builder', [_i3.injectableBuilder],
       _i1.toDependentsOf('injectable_generator'),
       hideOutput: true),
-  _i1.apply('injectable_generator:injector_builder',
+  _i1.apply('injectable_generator:injectable_config_builder',
       [_i3.injectableConfigBuilder], _i1.toDependentsOf('injectable_generator'),
       hideOutput: false),
   _i1.applyPostProcess('source_gen:part_cleanup', _i2.partCleanup,

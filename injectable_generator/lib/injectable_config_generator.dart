@@ -10,8 +10,7 @@ import 'package:source_gen/source_gen.dart';
 import 'config_code_generator.dart';
 import 'utils.dart';
 
-class InjectableConfigGenerator
-    extends GeneratorForAnnotation<InjectableConfig> {
+class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   final injectableConfigFiles = Glob("**.injectable.json");
 
   @override
@@ -32,7 +31,7 @@ class InjectableConfigGenerator
 
   void _reportMissingDependencies(List<DependencyConfig> deps) {
     final messages = [];
-    final registeredDeps = deps.map((dep) => dep.bindTo).toSet();
+    final registeredDeps = deps.map((dep) => dep.type).toSet();
     deps.forEach((dep) {
       dep.dependencies.forEach((idep) {
         if (!registeredDeps.contains(idep.type)) {

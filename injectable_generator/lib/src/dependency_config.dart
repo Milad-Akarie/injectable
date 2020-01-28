@@ -1,5 +1,6 @@
 // holds extracted data from annotation & element
 // to be used later when generating the register function
+
 class DependencyConfig {
   String type;
   List<String> imports = [];
@@ -23,6 +24,7 @@ class DependencyConfig {
         dependencies.add(InjectedDependency.fromJson(v));
       });
     }
+
     injectableType = json['injectableType'];
     environment = json['environment'];
   }
@@ -48,17 +50,20 @@ class InjectedDependency {
   String type;
   String name;
   String import;
+  String paramName;
 
-  InjectedDependency({this.type, this.name, this.import});
+  InjectedDependency({this.type, this.name, this.import, this.paramName});
   InjectedDependency.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     type = json['type'];
     import = json['import'];
+    paramName = json['paramName'];
   }
 
   Map<String, dynamic> toJson() => {
-        "name": name,
         "type": type,
         "import": import,
+        if (name != null) "name": name,
+        if (paramName != null) "paramName": paramName,
       };
 }

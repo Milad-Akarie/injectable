@@ -1,16 +1,14 @@
 import 'package:injectable/injectable_annotations.dart';
 
-@singleton
+@Bind.toType(ServiceA, env: 'dev')
+@Bind.toType(ServiceB, env: 'prod')
 @injectable
-class ServiceD {
-  ServiceD(ServiceDD serviceDD);
-}
+abstract class Service {}
 
-@production
-@injectable
-class ServiceDD {
-  ServiceDD(ServiceDDD serviceDxDD);
-}
+// @injectable
+class ServiceA extends Service {}
 
-@injectable
-class ServiceDDD {}
+class ServiceB extends Service {}
+
+// @injectable
+// class ServiceDDD {}

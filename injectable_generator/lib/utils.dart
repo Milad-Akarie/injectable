@@ -31,6 +31,12 @@ void throwBoxed(String message) {
   throw ("\n${pre.padRight(71, '-')}\n$message\n${''.padRight(72, '-')} \n");
 }
 
+void throwBoxedIf(bool condition, String message) {
+  if (condition) {
+    throwBoxed(message);
+  }
+}
+
 void printBoxed(String message) {
   final pre = 'Injectable Generator ';
   print("${pre.padRight(71, '-')}\n\n$message\n${''.padRight(72, '-')} \n");

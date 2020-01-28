@@ -1,24 +1,16 @@
 import 'package:injectable/injectable_annotations.dart';
 
-abstract class Service {}
+// @Bind.toNamedtype(ServiceImpl1, env: 'prod')
+// @Bind.toNamedtype(ServiceImpl1)
+// abstract class Service {}
 
-@Injectable(bindTo: Service)
-class ServiceImpl1 implements Service {
-  ServiceImpl1();
-}
+// class ServiceImpl1 extends Service {}
 
-@development
-// @Injectable(bindTo: Service)
-class ServiceImpl2 implements Service {
-  ServiceImpl2();
-}
+// class ServiceImpl2 implements Service {
+//   ServiceImpl2();
+// }
 
-@production
-// @injectable
-class MyRepository {
-  MyRepository(
-      // @InstanceName('impl1') Serviceimpl,
-      // ServiceImpl1 impl1,
-      // ServiceImpl2 impl2,
-      );
-}
+// // @injectable
+// class MyRepository {
+//   MyRepository(@Named.from(ServiceImpl1) Service service);
+// }

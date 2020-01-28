@@ -100,7 +100,7 @@ packages:
     source: hosted
     version: "1.0.2"
   code_builder:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: code_builder
       url: "https://pub.dartlang.org"

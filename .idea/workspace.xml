@@ -2,50 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c39d1896-e89b-4357-bf16-f488eab3c4e5" name="Default Changelist" comment="update README file">
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/milad.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/milad.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/.dart_tool/build/098d3ee73e6cc294616d3a2e2c3c81ad/error_cache/example/0/lib/service_c.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/.dart_tool/build/098d3ee73e6cc294616d3a2e2c3c81ad/error_cache/example/1/lib/service_c.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/.dart_tool/build/098d3ee73e6cc294616d3a2e2c3c81ad/asset_graph.json" beforeDir="false" afterPath="$PROJECT_DIR$/example/.dart_tool/build/098d3ee73e6cc294616d3a2e2c3c81ad/asset_graph.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/.dart_tool/build/entrypoint/.packageLocations" beforeDir="false" afterPath="$PROJECT_DIR$/example/.dart_tool/build/entrypoint/.packageLocations" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/.dart_tool/build/entrypoint/build.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/.dart_tool/build/entrypoint/build.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/.dart_tool/build/entrypoint/build.dart.snapshot" beforeDir="false" afterPath="$PROJECT_DIR$/example/.dart_tool/build/entrypoint/build.dart.snapshot" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/.dart_tool/build/generated/example/lib/service_b.injectable.json" beforeDir="false" afterPath="$PROJECT_DIR$/example/.dart_tool/build/generated/example/lib/service_b.injectable.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/.dart_tool/build/generated/example/lib/service_c.injectable.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/.dart_tool/build/generated/example/lib/service_cc.injectable.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/.dart_tool/build/generated/example/lib/service_d.injectable.json" beforeDir="false" afterPath="$PROJECT_DIR$/example/.dart_tool/build/generated/example/lib/service_d.injectable.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/.dart_tool/build/generated/example/lib/service_x.injectable.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/.dart_tool/build/generated/example/lib/service_y.injectable.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/example/.dart_tool/build_resolvers/sdk.sum.deps" beforeDir="false" afterPath="$PROJECT_DIR$/example/.dart_tool/build_resolvers/sdk.sum.deps" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/.dart_tool/package_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/example/.dart_tool/package_config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/example/.packages" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/android/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/local.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Flutter/Generated.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Flutter/Generated.xcconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Flutter/flutter_export_environment.sh" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Flutter/flutter_export_environment.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/lib/injector.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/injector.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/injector.gi.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/lib/injector.iconfig.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/injector.iconfig.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/lib/service_b.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/service_b.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/service_c.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/service_c.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/service_c.gi.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/service_cc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/service_cc.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/service_d.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/service_d.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/service_x.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/service_x.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/service_y.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/service_y.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/injectable/lib/injectable_annotations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/injectable/lib/injectable_annotations.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/injectable_generator/.dart_tool/package_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/injectable_generator/.dart_tool/package_config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/injectable_generator/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/injectable_generator/.packages" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/injectable_generator/build.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/injectable_generator/build.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/injectable_generator/lib/builder.dart" beforeDir="false" afterPath="$PROJECT_DIR$/injectable_generator/lib/builder.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/injectable_generator/lib/injectable_generator.dart" beforeDir="false" afterPath="$PROJECT_DIR$/injectable_generator/lib/injectable_generator.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/injectable_generator/lib/injector_config_generator.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/injectable_generator/lib/injector_generator.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/injectable_generator/lib/route_config_visitor.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/injectable_generator/lib/src/dependency_holder.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/injectable_generator/lib/src/route_parameter.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/injectable_generator/lib/src/router_config_visitor.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/injectable_generator/lib/utils.dart" beforeDir="false" afterPath="$PROJECT_DIR$/injectable_generator/lib/utils.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/injectable_generator/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/injectable_generator/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/injectable_generator/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/injectable_generator/pubspec.yaml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -56,17 +27,14 @@
   <component name="DefaultGradleProjectSettings">
     <option name="isMigrated" value="true" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="Nexus_5_API_19" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="Nexus_4_API_19" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/example/lib/main.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="84">
+            <state relative-caret-position="26">
               <caret line="3" selection-start-line="3" selection-end-line="3" />
-              <folding>
-                <element signature="e#0#40#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -74,20 +42,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/example/lib/injector.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="224">
-              <caret line="8" column="22" selection-start-line="8" selection-start-column="22" selection-end-line="8" selection-end-column="22" />
-              <folding>
-                <element signature="e#0#36#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="286">
+              <caret line="11" column="6" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/example/lib/service_b.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="364">
-              <caret line="13" column="1" lean-forward="true" selection-start-line="13" selection-start-column="1" selection-end-line="13" selection-end-column="1" />
+            <state relative-caret-position="624">
+              <caret line="24" selection-start-line="24" selection-end-line="24" />
             </state>
           </provider>
         </entry>
@@ -95,8 +60,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/example/lib/service_c.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="56">
-              <caret line="4" selection-start-line="4" selection-end-line="4" />
+            <state relative-caret-position="78">
+              <caret line="3" selection-start-line="3" selection-end-line="3" />
             </state>
           </provider>
         </entry>
@@ -104,43 +69,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/example/lib/service_cc.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="112">
+            <state relative-caret-position="104">
               <caret line="4" selection-start-line="4" selection-end-line="4" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/example/lib/service_d.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="28">
-              <caret line="1" selection-start-line="1" selection-end-line="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/example/lib/service_x.dart">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="112">
-              <caret line="4" selection-start-line="4" selection-end-line="4" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/example/lib/service_y.dart">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/injectable_generator/lib/builder.dart">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="280">
-              <caret line="10" column="4" selection-start-line="10" selection-start-column="4" selection-end-line="10" selection-end-column="4" />
-              <folding>
-                <element signature="e#0#34#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="312">
+              <caret line="12" column="1" lean-forward="true" selection-start-line="12" selection-start-column="1" selection-end-line="12" selection-end-column="1" />
             </state>
           </provider>
         </entry>
@@ -281,50 +220,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
-              <item name="injectable" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
-              <item name="injectable" type="462c0819:PsiDirectoryNode" />
-              <item name="example" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
-              <item name="injectable" type="462c0819:PsiDirectoryNode" />
-              <item name="example" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
-              <item name="injectable" type="462c0819:PsiDirectoryNode" />
-              <item name="injectable" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
-              <item name="injectable" type="462c0819:PsiDirectoryNode" />
-              <item name="injectable" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
-              <item name="injectable" type="462c0819:PsiDirectoryNode" />
-              <item name="injectable_generator" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
-              <item name="injectable" type="462c0819:PsiDirectoryNode" />
-              <item name="injectable_generator" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
       <pane id="Scope">
         <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
           <expand>
@@ -375,8 +270,52 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="CatdeaLogs" />
+      <pane id="PackagesPane" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
+              <item name="injectable" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
+              <item name="injectable" type="462c0819:PsiDirectoryNode" />
+              <item name="example" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
+              <item name="injectable" type="462c0819:PsiDirectoryNode" />
+              <item name="example" type="462c0819:PsiDirectoryNode" />
+              <item name="lib" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
+              <item name="injectable" type="462c0819:PsiDirectoryNode" />
+              <item name="injectable" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
+              <item name="injectable" type="462c0819:PsiDirectoryNode" />
+              <item name="injectable" type="462c0819:PsiDirectoryNode" />
+              <item name="lib" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
+              <item name="injectable" type="462c0819:PsiDirectoryNode" />
+              <item name="injectable_generator" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="injectable" type="b2602c69:ProjectViewProjectNode" />
+              <item name="injectable" type="462c0819:PsiDirectoryNode" />
+              <item name="injectable_generator" type="462c0819:PsiDirectoryNode" />
+              <item name="lib" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -497,11 +436,11 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
+    <frame x="0" y="0" width="1920" height="1080" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" weight="0.25" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.2735043" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.27635783" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Image Layers" order="3" />
       <window_info id="Designer" order="4" />
@@ -512,7 +451,7 @@
       <window_info anchor="bottom" id="Run" order="1" weight="0.3622449" />
       <window_info anchor="bottom" id="TODO" order="2" weight="0.32857144" />
       <window_info anchor="bottom" id="Debug" order="3" />
-      <window_info anchor="bottom" id="Terminal" order="4" sideWeight="0.4993895" weight="0.37959182" />
+      <window_info anchor="bottom" id="Terminal" order="4" sideWeight="0.4993895" weight="0.37896827" />
       <window_info anchor="bottom" id="Event Log" order="5" sideWeight="0.50061053" side_tool="true" weight="0.31530613" />
       <window_info anchor="bottom" id="Flutter Performance" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32857144" />
@@ -665,13 +604,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/example/lib/injector.gi.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
-          <caret line="10" selection-start-line="10" selection-end-line="10" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/example/lib/injector.gi.dart" />
     <entry file="file://$PROJECT_DIR$/injectable/lib/injectable_annotations.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-165">
@@ -699,74 +632,58 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/injectable_generator/lib/builder.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="10" column="4" selection-start-line="10" selection-start-column="4" selection-end-line="10" selection-end-column="4" />
-          <folding>
-            <element signature="e#0#34#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/example/lib/service_cc.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="112">
-          <caret line="4" selection-start-line="4" selection-end-line="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/example/lib/service_d.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="28">
-          <caret line="1" selection-start-line="1" selection-end-line="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/example/lib/service_x.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="112">
-          <caret line="4" selection-start-line="4" selection-end-line="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/example/lib/service_y.dart">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/example/lib/service_x.dart" />
+    <entry file="file://$PROJECT_DIR$/example/lib/service_y.dart" />
+    <entry file="file://$PROJECT_DIR$/example/lib/injector.iconfig" />
     <entry file="file://$PROJECT_DIR$/example/lib/main.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="84">
+        <state relative-caret-position="26">
           <caret line="3" selection-start-line="3" selection-end-line="3" />
-          <folding>
-            <element signature="e#0#40#0" expanded="true" />
-          </folding>
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/example/lib/injector.iconfig">
-      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/example/lib/injector.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="224">
-          <caret line="8" column="22" selection-start-line="8" selection-start-column="22" selection-end-line="8" selection-end-column="22" />
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="286">
+          <caret line="11" column="6" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/example/lib/service_c.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="56">
+        <state relative-caret-position="78">
+          <caret line="3" selection-start-line="3" selection-end-line="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/example/lib/service_cc.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="104">
           <caret line="4" selection-start-line="4" selection-end-line="4" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/example/lib/service_b.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="364">
-          <caret line="13" column="1" lean-forward="true" selection-start-line="13" selection-start-column="1" selection-end-line="13" selection-end-column="1" />
+        <state relative-caret-position="624">
+          <caret line="24" selection-start-line="24" selection-end-line="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/injectable_generator/lib/builder.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="104">
+          <caret line="13" column="4" selection-start-line="13" selection-start-column="4" selection-end-line="13" selection-end-column="4" />
+          <folding>
+            <element signature="e#373#480#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/example/lib/service_d.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="312">
+          <caret line="12" column="1" lean-forward="true" selection-start-line="12" selection-start-column="1" selection-end-line="12" selection-end-column="1" />
         </state>
       </provider>
     </entry>

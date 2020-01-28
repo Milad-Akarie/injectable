@@ -6,7 +6,7 @@ import 'injectable_generator.dart';
 
 Builder injectableBuilder(BuilderOptions options) {
   return LibraryBuilder(
-    InjectableGenerator(),
+    InjectableGenerator(options.config),
     generatedExtension: '.injectable.json',
   );
 }

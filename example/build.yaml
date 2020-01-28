@@ -1,0 +1,12 @@
+targets:
+  $default:
+    builders:
+      injectable_generator:injectable_builder:
+        options:
+          auto_register: true
+          # auto register any class with a name matches the given pattern
+          class_name_pattern:
+            "Service$|Repository$|Bloc$"
+            # auto register any class inside a file with a
+            # name matches the given pattern
+          file_name_pattern: "_service$|_repository$|_bloc$"

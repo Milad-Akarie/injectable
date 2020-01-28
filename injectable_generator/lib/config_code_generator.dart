@@ -23,9 +23,10 @@ class ConfigCodeGenerator {
     imports.add("package:get_it/get_it.dart");
     // generate all imports
     imports.forEach((import) => _writeln("import '$import';"));
+    _writeln("final getIt = GetIt.instance;");
 
     // generate configuration function declaration
-    _writeln("void initGetIt(GetIt getIt,{String environment}) {");
+    _writeln("void \$initGetIt({String environment}) {");
 
     // generate common registering
     _generateDeps(deps.where((dep) => dep.environment == null).toList());
@@ -33,14 +34,13 @@ class ConfigCodeGenerator {
     _writeln("");
 
     final environmentMap = <String, List<DependencyConfig>>{};
-
     deps
         .map((dep) => dep.environment)
         .toSet()
         .where((env) => env != null)
         .forEach((env) {
       _writeln("if(environment == '$env'){");
-      _writeln('_register${capitalize(env)}Dependencies(getIt);');
+      _writeln('_register${capitalize(env)}Dependencies();');
       environmentMap[env] =
           deps.where((dep) => dep.environment == env).toList();
       _writeln('}');
@@ -50,7 +50,7 @@ class ConfigCodeGenerator {
 
     // generate environment registering
     environmentMap.forEach((env, deps) {
-      _write("void _register${capitalize(env)}Dependencies(GetIt getIt){");
+      _write("void _register${capitalize(env)}Dependencies(){");
       _generateDeps(deps);
       _writeln("}");
     });
@@ -58,6 +58,9 @@ class ConfigCodeGenerator {
   }
 
   void _generateDeps(List<DependencyConfig> deps) {
+    if (deps.isEmpty) {
+      return;
+    }
     _write('getIt');
     deps.forEach((dep) {
       final constBuffer = StringBuffer();
@@ -73,12 +76,13 @@ class ConfigCodeGenerator {
           type = '';
           instanceName = "'${injectedDep.name}'";
         }
-        constBuffer.write("getIt$type($instanceName)$comma");
+        final paramName =
+            (injectedDep.paramName != null) ? '${injectedDep.paramName}:' : '';
+        constBuffer.write("${paramName}getIt$type($instanceName)$comma");
       });
 
-      final typeArg = dep.bindTo != null ? '<${dep.bindTo}>' : '';
-
-      final construct = '${dep.type}(${constBuffer.toString()}';
+      final typeArg = '<${dep.type}>';
+      final construct = '${dep.bindTo}(${constBuffer.toString()}';
 
       if (dep.injectableType == InjectableType.factory) {
         _writeln("..registerFactory$typeArg(()=> $construct)");

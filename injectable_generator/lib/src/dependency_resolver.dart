@@ -6,26 +6,49 @@ import 'package:source_gen/source_gen.dart';
 import '../injectable_types.dart';
 import 'dependency_config.dart';
 
-const TypeChecker instanceNameChecker = TypeChecker.fromRuntime(InstanceName);
-const TypeChecker singletonChecker = TypeChecker.fromRuntime(Singleton);
-const TypeChecker envrimentChcker = TypeChecker.fromRuntime(Environment);
+const TypeChecker instanceNameChecker = const TypeChecker.fromRuntime(Named);
+const TypeChecker singletonChecker = const TypeChecker.fromRuntime(Singleton);
+const TypeChecker envrimentChecker = const TypeChecker.fromRuntime(Environment);
+const TypeChecker bindChecker = const TypeChecker.fromRuntime(Bind);
 
 // extracts route configs from class fields
 class DependencyResolver {
-  final ConstantReader annotation;
   final ClassElement element;
+  final ConstantReader bindConst;
 
-  DependencyResolver(this.element, this.annotation);
+  DependencyResolver(this.element, [this.bindConst]);
 
   DependencyConfig resolve() {
     final dep = DependencyConfig();
-    dep.instanceName = annotation.peek('instanceName')?.stringValue;
+    var inlineEnv;
+    dep.type = element.name;
+    dep.bindTo = element.name;
+    ConstructorElement constructor = element.unnamedConstructor;
 
-    final abstractType = annotation.peek('bindTo')?.typeValue;
-    dep.environment = envrimentChcker
-        .firstAnnotationOfExact(element, throwOnUnresolved: false)
-        ?.getField('name')
-        ?.toStringValue();
+    if (bindConst != null) {
+      final concreateType = bindConst.peek('type')?.typeValue;
+      final isNamed = bindConst.read('_isNamed').boolValue;
+      final name = bindConst.peek('name')?.stringValue;
+      inlineEnv = bindConst.peek('env')?.stringValue;
+
+      if (concreateType != null) {
+        dep.type = element.name;
+        dep.bindTo = concreateType.name;
+        constructor =
+            (concreateType.element as ClassElement).unnamedConstructor;
+        if (isNamed) {
+          dep.instanceName = name ?? concreateType.name;
+        }
+      } else {
+        dep.instanceName = name;
+      }
+    }
+
+    dep.environment = inlineEnv ??
+        envrimentChecker
+            .firstAnnotationOfExact(element, throwOnUnresolved: false)
+            ?.getField('name')
+            ?.toStringValue();
 
     final singletonAnnotation =
         singletonChecker.firstAnnotationOf(element, throwOnUnresolved: false);
@@ -42,29 +65,26 @@ class DependencyResolver {
       dep.injectableType = InjectableType.factory;
     }
 
-    if (abstractType != null) {
-      dep.bindTo = abstractType.name;
-      dep.imports.add(getImport(abstractType.element));
-    } else {
-      dep.bindTo = element.name;
-    }
-
-    dep.type = element.name;
     dep.imports.add(getImport(element));
-    final constructor = element.unnamedConstructor;
+
     if (constructor != null) {
       constructor.parameters.forEach((param) {
-        final instanceName = instanceNameChecker
-            .firstAnnotationOf(param, throwOnUnresolved: false)
-            ?.getField('name')
-            ?.toStringValue();
+        final namedAnnotation = instanceNameChecker.firstAnnotationOf(param,
+            throwOnUnresolved: false);
+
+        final instanceName =
+            namedAnnotation?.getField('type')?.toTypeValue()?.name ??
+                namedAnnotation?.getField('name')?.toStringValue();
+
         dep.dependencies.add(InjectedDependency(
           type: param.type.element.name,
           name: instanceName,
+          paramName: param.isPositional ? null : param.name,
           import: getImport(param.type.element),
         ));
       });
     }
+
     return dep;
   }
 }

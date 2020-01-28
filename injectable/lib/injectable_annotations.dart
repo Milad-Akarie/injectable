@@ -1,23 +1,14 @@
-class InjectableConfig {
-  const InjectableConfig._();
+class InjectableInit {
+  const InjectableInit._();
 }
 
-const injectableInit = const InjectableConfig._();
+const injectableInit = const InjectableInit._();
 
 class Injectable {
-  // Passed to instanceName argument in
-  // getIt register function
-  final String instanceName;
-
-  // The type to bind your implementation to,
-  // typically an abstract class which is implemented by the
-  // annotated class.
-  final Type bindTo;
-
-  const Injectable({this.instanceName, this.bindTo});
+  const Injectable._();
 }
 
-const injectable = const Injectable();
+const injectable = const Injectable._();
 
 /// Classes annotated with @Singleton
 /// will generate registerSingleton  or
@@ -34,10 +25,17 @@ const lazySingleton = const Singleton.lazy();
 
 // Used to annotate a constructor dependency
 // that's registered with an instance names;
-class InstanceName {
+class Named {
   // the name in which an instance is registered
   final String name;
-  const InstanceName(this.name) : assert(name != null);
+
+  const Named(this.name) : type = null;
+
+  // instead of providing a literal name
+  // you can pass a type and it's name will be extrected
+  // in during generation
+  final Type type;
+  const Named.from(this.type) : name = null;
 }
 
 class Environment {
@@ -50,3 +48,29 @@ class Environment {
 
 const development = const Environment(Environment.development);
 const production = const Environment(Environment.production);
+
+class Bind {
+  // Passed to instanceName argument in
+  // getIt register function
+  final String name;
+
+  // The type to bind your implementation to,
+  // typically an abstract class which is implemented by the
+  // annotated class.
+  final Type type;
+
+  final bool _isNamed;
+
+  final String env;
+
+  const Bind.toType(this.type, {this.env})
+      : this.name = null,
+        _isNamed = false;
+
+  const Bind.toNamedtype(this.type, {this.name, this.env}) : _isNamed = true;
+
+  const Bind.toName(this.name)
+      : _isNamed = true,
+        this.env = null,
+        this.type = null;
+}
