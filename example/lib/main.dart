@@ -1,20 +1,11 @@
-import 'package:flutter/material.dart';
-
-import 'injector.dart';
-
 void main() {
-  configure();
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  MyApp();
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Container(
-        color: Colors.red,
-      ),
-    );
-  }
+	// print(services);
+	// services.sort((a, b) {
+	//   print(
+	//       "A ${a.runtimeType} : ${a.deps.map((d) => d.runtimeType)}   B ${b.runtimeType}");
+	//   return a.deps.contains(b) ? -1 : 1;
+	// });
+	// services.forEach((s) => print(s));
+	// configure();
+	// runApp(MyApp('s'));
 }

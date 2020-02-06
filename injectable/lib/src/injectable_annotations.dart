@@ -13,11 +13,17 @@ const injectable = const Injectable._();
 /// Classes annotated with @Singleton
 /// will generate registerSingleton  or
 /// registerLazySingleton if [_lazy] is true
-class Singleton {
+class Singleton extends Injectable {
   final bool signalsReady;
   final bool _lazy;
-  const Singleton({this.signalsReady}) : _lazy = false;
-  const Singleton.lazy({this.signalsReady}) : _lazy = true;
+
+  const Singleton({this.signalsReady})
+      : _lazy = false,
+        super._();
+
+  const Singleton.lazy({this.signalsReady})
+      : _lazy = true,
+        super._();
 }
 
 const singleton = const Singleton();
@@ -38,39 +44,40 @@ class Named {
   const Named.from(this.type) : name = null;
 }
 
-class Environment {
+class Env {
   final String name;
-  const Environment(this.name);
 
-  static const development = 'development';
-  static const production = 'production';
+  const Env(this.name);
+
+  static const dev = 'dev';
+  static const prod = 'prod';
+  static const test = 'test';
 }
 
-const development = const Environment(Environment.development);
-const production = const Environment(Environment.production);
+const dev = const Env(Env.dev);
+const prod = const Env(Env.prod);
+const test = const Env(Env.test);
 
 class Bind {
-  // Passed to instanceName argument in
-  // getIt register function
-  final String name;
-
   // The type to bind your implementation to,
   // typically an abstract class which is implemented by the
   // annotated class.
   final Type type;
-
-  final bool _isNamed;
-
+  final Type to;
   final String env;
+  final bool _standAlone;
 
-  const Bind.toType(this.type, {this.env})
-      : this.name = null,
-        _isNamed = false;
+  const Bind(this.type, {this.to, this.env})
+      : _standAlone = true,
+        assert(to != null);
 
-  const Bind.toNamedtype(this.type, {this.name, this.env}) : _isNamed = true;
-
-  const Bind.toName(this.name)
-      : _isNamed = true,
-        this.env = null,
-        this.type = null;
+  const Bind.toAbstract(this.to, {this.env})
+      : this.type = null,
+        this._standAlone = false;
 }
+
+class FactoryMethod {
+  const FactoryMethod._();
+}
+
+const factoryMethod = const FactoryMethod._();

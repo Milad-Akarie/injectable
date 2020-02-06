@@ -7,12 +7,13 @@
 import 'package:example/service.dart';
 import 'package:get_it/get_it.dart';
 
-final getIt = GetIt.instance;
-void $initGetIt({String environment}) {
-  getIt
-    ..registerFactory<Service>(() => ServiceImpl1(),
-        instanceName: 'ServiceImpl1')
-    ..registerFactory<Service>(() => ServiceImpl2(),
-        instanceName: 'ServiceImpl2')
-    ..registerFactory<MyRepository>(() => MyRepository(getIt('ServiceImpl1')));
+void $initGetIt(GetIt getIt, {String environment}) {
+  getIt..registerLazySingleton<ApiBloc>(() => ApiBloc.fromX(getIt<ServiceImpl2>()));
+  if (environment == 'dev') {
+    _registerDevDependencies(getIt);
+  }
+}
+
+void _registerDevDependencies(GetIt getIt) {
+  getIt..registerSingleton<MyRepository>(MyRepository(getIt<Service>()));
 }

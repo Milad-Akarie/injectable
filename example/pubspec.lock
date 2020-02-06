@@ -248,7 +248,7 @@ packages:
       path: "../injectable_generator"
       relative: true
     source: path
-    version: "0.2.1+3"
+    version: "0.1.0"
   io:
     dependency: transitive
     description:

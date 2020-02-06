@@ -3,7 +3,8 @@ targets:
     builders:
       injectable_generator:injectable_builder:
         options:
-          auto_register: true
+          auto_register: false
+          ignore_unbound_abstract_classes: true
           # auto register any class with a name matches the given pattern
           class_name_pattern:
             "Service$|Repository$|Bloc$"
