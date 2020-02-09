@@ -1,9 +1,9 @@
 // general utils
-
 import 'package:analyzer/dart/element/element.dart';
 
 String getImport(Element element) {
   //return early if element has no source
+
   if (element.source == null) {
     return null;
   }
@@ -12,9 +12,6 @@ String getImport(Element element) {
   if (!element.source.isInSystemLibrary) {
     final path = element.source.uri.toString();
     return path;
-    // if (!path.startsWith('package:flutter/')) {
-    //   return "'$path'";
-    // }
   }
   return null;
 }

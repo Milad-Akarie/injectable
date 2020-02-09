@@ -12,8 +12,6 @@ dependencies:
     path: ../injectable/
   # auto_route:
   cupertino_icons: ^0.1.3
-  provider:
-  kiwi:
   get_it:
 
 dev_dependencies:

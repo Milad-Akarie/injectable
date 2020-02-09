@@ -6,42 +6,48 @@ import 'package:source_gen/source_gen.dart';
 import 'dependency_config.dart';
 import 'injectable_types.dart';
 
-const TypeChecker instanceNameChecker = const TypeChecker.fromRuntime(Named);
+const TypeChecker namedChecker = const TypeChecker.fromRuntime(Named);
 const TypeChecker singletonChecker = const TypeChecker.fromRuntime(Singleton);
-const TypeChecker envrimentChecker = const TypeChecker.fromRuntime(Environment);
-const TypeChecker bindChecker = const TypeChecker.fromRuntime(Bind);
+const TypeChecker envrimentChecker = const TypeChecker.fromRuntime(Envirnoment);
+const TypeChecker bindChecker = const TypeChecker.fromRuntime(RegisterAs);
 
-// extracts route configs from class fields
+const TypeChecker constructorChecker =
+    const TypeChecker.fromRuntime(FactoryMethod);
+
 class DependencyResolver {
-  final ClassElement element;
-  final ConstantReader bindConst;
+  final Element element;
+  DependencyResolver(this.element);
 
-  DependencyResolver(this.element, [this.bindConst]);
-
-  DependencyConfig resolve() {
+  Future<DependencyConfig> resolve() async {
     final dep = DependencyConfig();
-    var inlineEnv;
-    dep.type = element.name;
-    dep.bindTo = element.name;
-    ConstructorElement constructor = element.unnamedConstructor;
 
-    if (bindConst != null) {
-      final concreateType = bindConst.peek('type')?.typeValue;
-      final isNamed = bindConst.read('_isNamed').boolValue;
-      final name = bindConst.peek('name')?.stringValue;
-      inlineEnv = bindConst.peek('env')?.stringValue;
-
-      if (concreateType != null) {
-        dep.type = element.name;
-        dep.bindTo = concreateType.name;
-        constructor =
-            (concreateType.element as ClassElement).unnamedConstructor;
-        if (isNamed) {
-          dep.instanceName = name ?? concreateType.name;
-        }
+    ClassElement clazz;
+    if (element is ClassElement) {
+      clazz = element;
+    } else if (element is PropertyAccessorElement) {
+      final PropertyAccessorElement accessorElement = element;
+      final returnType = accessorElement.returnType;
+      if (returnType.element is! ClassElement) {
+        throwBoxed('${returnType.name} is not a class element');
       } else {
-        dep.instanceName = name;
+        clazz = returnType.element;
       }
+    }
+
+    dep.imports.add(getImport(clazz));
+
+    dep.type = clazz.name;
+    dep.bindTo = clazz.name;
+
+    var inlineEnv;
+    final bindAnnotation = bindChecker.firstAnnotationOf(element);
+    if (bindAnnotation != null) {
+      ConstantReader bindReader = ConstantReader(bindAnnotation);
+      final abstractType = bindReader.peek('abstractType')?.typeValue;
+      inlineEnv = bindReader.peek('env')?.stringValue;
+      dep.type = abstractType.name;
+      dep.bindTo = clazz.name;
+      dep.imports.add(getImport(abstractType.element));
     }
 
     dep.environment = inlineEnv ??
@@ -49,6 +55,18 @@ class DependencyResolver {
             .firstAnnotationOfExact(element, throwOnUnresolved: false)
             ?.getField('name')
             ?.toStringValue();
+
+    final name = namedChecker
+        .firstAnnotationOfExact(element)
+        ?.getField('name')
+        ?.toStringValue();
+    if (name != null) {
+      if (name.isNotEmpty) {
+        dep.instanceName = name;
+      } else {
+        dep.instanceName = clazz.name;
+      }
+    }
 
     final singletonAnnotation =
         singletonChecker.firstAnnotationOf(element, throwOnUnresolved: false);
@@ -65,12 +83,25 @@ class DependencyResolver {
       dep.injectableType = InjectableType.factory;
     }
 
-    dep.imports.add(getImport(element));
+    ExecutableElement constructor;
+    if (clazz.isAbstract) {
+      constructor = clazz.methods.firstWhere(
+          (m) => constructorChecker.firstAnnotationOf(m) != null, orElse: () {
+        throwBoxed(
+            '''[${element.name}] is abstract and can not be registered directly!
+          \n if it ha a create method annotate with @factoryMethod''');
+        return null;
+      });
+    } else {
+      constructor = clazz.constructors.firstWhere(
+          (c) => constructorChecker.firstAnnotationOf(c) != null,
+          orElse: () => clazz.unnamedConstructor);
+    }
+    dep.constructorName = constructor.name;
 
     if (constructor != null) {
       constructor.parameters.forEach((param) {
-        final namedAnnotation = instanceNameChecker.firstAnnotationOf(param,
-            throwOnUnresolved: false);
+        final namedAnnotation = namedChecker.firstAnnotationOf(param);
 
         final instanceName =
             namedAnnotation?.getField('type')?.toTypeValue()?.name ??

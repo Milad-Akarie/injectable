@@ -10,6 +10,8 @@ import 'config_code_generator.dart';
 import 'dependency_config.dart';
 import 'utils.dart';
 
+const TypeChecker bindChecker = const TypeChecker.fromRuntime(RegisterAs);
+
 class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   final injectableConfigFiles = Glob("**.injectable.json");
 

@@ -13,11 +13,17 @@ const injectable = const Injectable._();
 /// Classes annotated with @Singleton
 /// will generate registerSingleton  or
 /// registerLazySingleton if [_lazy] is true
-class Singleton {
+class Singleton extends Injectable {
   final bool signalsReady;
   final bool _lazy;
-  const Singleton({this.signalsReady}) : _lazy = false;
-  const Singleton.lazy({this.signalsReady}) : _lazy = true;
+
+  const Singleton({this.signalsReady})
+      : _lazy = false,
+        super._();
+
+  const Singleton.lazy({this.signalsReady})
+      : _lazy = true,
+        super._();
 }
 
 const singleton = const Singleton();
@@ -38,39 +44,48 @@ class Named {
   const Named.from(this.type) : name = null;
 }
 
-class Environment {
-  final String name;
-  const Environment(this.name);
+const named = const Named("");
 
-  static const development = 'development';
-  static const production = 'production';
+class Envirnoment {
+  final String name;
+
+  const Envirnoment(this.name);
+
+  static const dev = 'dev';
+  static const prod = 'prod';
+  static const test = 'test';
 }
 
-const development = const Environment(Environment.development);
-const production = const Environment(Environment.production);
+const dev = const Envirnoment(Envirnoment.dev);
+const prod = const Envirnoment(Envirnoment.prod);
+const test = const Envirnoment(Envirnoment.test);
 
-class Bind {
-  // Passed to instanceName argument in
-  // getIt register function
-  final String name;
-
+class RegisterAs {
   // The type to bind your implementation to,
   // typically an abstract class which is implemented by the
   // annotated class.
-  final Type type;
-
-  final bool _isNamed;
-
+  final Type abstractType;
+  // an alternative way to pass env keys insted
+  // of annotated the element with @Environment
   final String env;
 
-  const Bind.toType(this.type, {this.env})
-      : this.name = null,
-        _isNamed = false;
-
-  const Bind.toNamedtype(this.type, {this.name, this.env}) : _isNamed = true;
-
-  const Bind.toName(this.name)
-      : _isNamed = true,
-        this.env = null,
-        this.type = null;
+  const RegisterAs(this.abstractType, {this.env});
 }
+
+// Marks a factory, a named constructor or a static create
+// function as an injectable constructor
+// if not added the defualt constructor will be used.
+class FactoryMethod {
+  const FactoryMethod._();
+}
+
+const factoryMethod = const FactoryMethod._();
+
+// marks a class as a register module where all
+// property accessors retrun types are considered factories
+// unless annotated with @singleton/lazySingelton.
+class RegisterModule {
+  const RegisterModule._();
+}
+
+const registerModule = const RegisterModule._();

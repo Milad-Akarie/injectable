@@ -3,205 +3,217 @@
   "packages": [
     {
       "name": "_fe_analyzer_shared",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/_fe_analyzer_shared-1.0.1",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/_fe_analyzer_shared-1.0.1",
       "packageUri": "lib/",
       "languageVersion": "2.2"
     },
     {
       "name": "analyzer",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/analyzer-0.39.2+1",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/analyzer-0.39.2+1",
       "packageUri": "lib/",
       "languageVersion": "2.2"
     },
     {
       "name": "archive",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/archive-2.0.11",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/archive-2.0.11",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "args",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/args-1.5.2",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/args-1.5.2",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "async",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/async-2.4.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/async-2.4.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "boolean_selector",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/boolean_selector-1.0.5",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/boolean_selector-1.0.5",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "build",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/build-1.2.1",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/build-1.2.1",
       "packageUri": "lib/",
       "languageVersion": "2.3"
     },
     {
       "name": "build_config",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/build_config-0.4.1+1",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/build_config-0.4.1+1",
       "packageUri": "lib/",
       "languageVersion": "2.3"
     },
     {
       "name": "build_daemon",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/build_daemon-2.1.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/build_daemon-2.1.0",
       "packageUri": "lib/",
       "languageVersion": "2.1"
     },
     {
       "name": "build_resolvers",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/build_resolvers-1.3.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/build_resolvers-1.3.0",
       "packageUri": "lib/",
       "languageVersion": "2.3"
     },
     {
       "name": "build_runner",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/build_runner-1.7.1",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/build_runner-1.7.1",
       "packageUri": "lib/",
       "languageVersion": "2.3"
     },
     {
       "name": "build_runner_core",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/build_runner_core-4.1.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/build_runner_core-4.1.0",
       "packageUri": "lib/",
       "languageVersion": "2.3"
     },
     {
       "name": "built_collection",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/built_collection-4.2.2",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/built_collection-4.2.2",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "built_value",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/built_value-6.7.1",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/built_value-6.7.1",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "charcode",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/charcode-1.1.2",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/charcode-1.1.2",
       "packageUri": "lib/",
       "languageVersion": "1.0"
     },
     {
       "name": "checked_yaml",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/checked_yaml-1.0.2",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/checked_yaml-1.0.2",
       "packageUri": "lib/",
       "languageVersion": "2.3"
     },
     {
       "name": "code_builder",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/code_builder-3.2.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/code_builder-3.2.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "collection",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/collection-1.14.11",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/collection-1.14.11",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "convert",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/convert-2.1.1",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/convert-2.1.1",
       "packageUri": "lib/",
       "languageVersion": "1.17"
     },
     {
       "name": "crypto",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/crypto-2.1.3",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/crypto-2.1.3",
       "packageUri": "lib/",
       "languageVersion": "2.1"
     },
     {
       "name": "csslib",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/csslib-0.16.1",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/csslib-0.16.1",
       "packageUri": "lib/",
       "languageVersion": "2.1"
     },
     {
       "name": "cupertino_icons",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/cupertino_icons-0.1.3",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/cupertino_icons-0.1.3",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "dart_style",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/dart_style-1.3.3",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/dart_style-1.3.3",
       "packageUri": "lib/",
       "languageVersion": "2.3"
     },
     {
+      "name": "event_bus",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/event_bus-1.1.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
       "name": "fixnum",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/fixnum-0.10.11",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/fixnum-0.10.11",
       "packageUri": "lib/",
       "languageVersion": "2.1"
     },
     {
       "name": "flutter",
-      "rootUri": "file:///Users/milad/dev-tools/flutter/packages/flutter",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/packages/flutter",
       "packageUri": "lib/",
       "languageVersion": "2.2"
     },
     {
       "name": "flutter_test",
-      "rootUri": "file:///Users/milad/dev-tools/flutter/packages/flutter_test",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/packages/flutter_test",
       "packageUri": "lib/",
       "languageVersion": "2.2"
     },
     {
+      "name": "flutter_web_plugins",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/packages/flutter_web_plugins",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
       "name": "get_it",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/get_it-3.1.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/get_it-3.1.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "glob",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/glob-1.2.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/glob-1.2.0",
       "packageUri": "lib/",
       "languageVersion": "2.1"
     },
     {
       "name": "graphs",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/graphs-0.2.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/graphs-0.2.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "html",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/html-0.14.0+3",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/html-0.14.0+3",
       "packageUri": "lib/",
       "languageVersion": "2.3"
     },
     {
       "name": "http",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/http-0.12.0+2",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/http-0.12.0+2",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "http_multi_server",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/http_multi_server-2.1.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/http_multi_server-2.1.0",
       "packageUri": "lib/",
       "languageVersion": "2.1"
     },
     {
       "name": "http_parser",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/http_parser-3.1.3",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/http_parser-3.1.3",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "image",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/image-2.1.4",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/image-2.1.4",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
@@ -219,229 +231,253 @@
     },
     {
       "name": "io",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/io-0.3.3",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/io-0.3.3",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "js",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/js-0.6.1+1",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/js-0.6.1+1",
       "packageUri": "lib/",
       "languageVersion": "1.19"
     },
     {
       "name": "json_annotation",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/json_annotation-3.0.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/json_annotation-3.0.0",
       "packageUri": "lib/",
       "languageVersion": "2.3"
     },
     {
       "name": "kiwi",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/kiwi-0.2.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/kiwi-0.2.0",
       "packageUri": "lib/",
       "languageVersion": "2.2"
     },
     {
       "name": "logging",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/logging-0.11.3+2",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/logging-0.11.3+2",
       "packageUri": "lib/",
       "languageVersion": "1.5"
     },
     {
       "name": "matcher",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/matcher-0.12.6",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/matcher-0.12.6",
       "packageUri": "lib/",
       "languageVersion": "2.2"
     },
     {
       "name": "meta",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/meta-1.1.8",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/meta-1.1.8",
       "packageUri": "lib/",
       "languageVersion": "1.12"
     },
     {
       "name": "mime",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/mime-0.9.6+3",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/mime-0.9.6+3",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "node_interop",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/node_interop-1.0.3",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/node_interop-1.0.3",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "node_io",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/node_io-1.0.1+2",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/node_io-1.0.1+2",
       "packageUri": "lib/",
       "languageVersion": "2.1"
     },
     {
       "name": "package_config",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/package_config-1.1.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/package_config-1.1.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "package_resolver",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/package_resolver-1.0.10",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/package_resolver-1.0.10",
       "packageUri": "lib/",
       "languageVersion": "2.1"
     },
     {
       "name": "path",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/path-1.6.4",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/path-1.6.4",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "pedantic",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/pedantic-1.8.0+1",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/pedantic-1.8.0+1",
       "packageUri": "lib/",
       "languageVersion": "2.1"
     },
     {
       "name": "petitparser",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/petitparser-2.4.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/petitparser-2.4.0",
       "packageUri": "lib/",
       "languageVersion": "2.4"
     },
     {
       "name": "pool",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/pool-1.4.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/pool-1.4.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "provider",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/provider-3.2.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/provider-3.2.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "pub_semver",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/pub_semver-1.4.2",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/pub_semver-1.4.2",
       "packageUri": "lib/",
       "languageVersion": "1.0"
     },
     {
       "name": "pubspec_parse",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/pubspec_parse-0.1.5",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/pubspec_parse-0.1.5",
       "packageUri": "lib/",
       "languageVersion": "2.2"
     },
     {
       "name": "quiver",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/quiver-2.0.5",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/quiver-2.0.5",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
+      "name": "shared_preferences",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences-0.5.6+1",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
+      "name": "shared_preferences_macos",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences_macos-0.0.1+4",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
+      "name": "shared_preferences_platform_interface",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences_platform_interface-1.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
+      "name": "shared_preferences_web",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences_web-0.1.2+3",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "shelf",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/shelf-0.7.5",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/shelf-0.7.5",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "shelf_web_socket",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/shelf_web_socket-0.2.3",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/shelf_web_socket-0.2.3",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "sky_engine",
-      "rootUri": "file:///Users/milad/dev-tools/flutter/bin/cache/pkg/sky_engine",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
       "languageVersion": "1.11"
     },
     {
       "name": "source_gen",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/source_gen-0.9.4+6",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/source_gen-0.9.4+6",
       "packageUri": "lib/",
       "languageVersion": "2.3"
     },
     {
       "name": "source_span",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/source_span-1.5.5",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/source_span-1.5.5",
       "packageUri": "lib/",
       "languageVersion": "1.8"
     },
     {
       "name": "stack_trace",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/stack_trace-1.9.3",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/stack_trace-1.9.3",
       "packageUri": "lib/",
       "languageVersion": "1.23"
     },
     {
       "name": "stream_channel",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/stream_channel-2.0.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/stream_channel-2.0.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "stream_transform",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/stream_transform-0.0.19",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/stream_transform-0.0.19",
       "packageUri": "lib/",
       "languageVersion": "2.2"
     },
     {
       "name": "string_scanner",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/string_scanner-1.0.5",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/string_scanner-1.0.5",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "term_glyph",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/term_glyph-1.1.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/term_glyph-1.1.0",
       "packageUri": "lib/",
       "languageVersion": "1.8"
     },
     {
       "name": "test_api",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/test_api-0.2.11",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/test_api-0.2.11",
       "packageUri": "lib/",
       "languageVersion": "2.2"
     },
     {
       "name": "timing",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/timing-0.1.1+2",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/timing-0.1.1+2",
       "packageUri": "lib/",
       "languageVersion": "2.2"
     },
     {
       "name": "typed_data",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/typed_data-1.1.6",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/typed_data-1.1.6",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "vector_math",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/vector_math-2.0.8",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/vector_math-2.0.8",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "watcher",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/watcher-0.9.7+12",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/watcher-0.9.7+12",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "web_socket_channel",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/web_socket_channel-1.1.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/web_socket_channel-1.1.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
     {
       "name": "xml",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/xml-3.5.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/xml-3.5.0",
       "packageUri": "lib/",
       "languageVersion": "2.3"
     },
     {
       "name": "yaml",
-      "rootUri": "file:///Users/milad/.pub-cache/hosted/pub.dartlang.org/yaml-2.2.0",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/yaml-2.2.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
@@ -452,7 +488,7 @@
       "languageVersion": "2.3"
     }
   ],
-  "generated": "2020-01-28T18:19:52.031217Z",
+  "generated": "2020-02-07T18:43:10.797828Z",
   "generator": "pub",
   "generatorVersion": "2.7.0"
 }

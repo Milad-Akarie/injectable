@@ -10,6 +10,7 @@ class DependencyConfig {
   bool signalsReady;
   String bindTo;
   String environment;
+  String constructorName;
 
   DependencyConfig();
 
@@ -18,6 +19,8 @@ class DependencyConfig {
     bindTo = json['bindTo'];
     instanceName = json['instanceName'];
     signalsReady = json['signalsReady'];
+    constructorName = json['constructorName'];
+
     imports = json['imports'].cast<String>();
     if (json['dependencies'] != null) {
       json['dependencies'].forEach((v) {
@@ -38,12 +41,19 @@ class DependencyConfig {
         "instanceName": instanceName,
         "signalsReady": signalsReady,
         "environment": environment,
+        "constructorName": constructorName
       };
 
   Set<String> get allImports => {
         ...imports.where((i) => i != null),
         ...dependencies.map((dep) => dep.import).where((i) => i != null),
       };
+
+  bool dependsOn(DependencyConfig b) {
+    final depends = dependencies.map((d) => d.type).toSet().contains(b.type);
+    // print('$type depends($depends) on ${b.type}');
+    return depends;
+  }
 }
 
 class InjectedDependency {
