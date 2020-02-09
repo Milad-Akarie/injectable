@@ -44,40 +44,48 @@ class Named {
   const Named.from(this.type) : name = null;
 }
 
-class Env {
+const named = const Named("");
+
+class Envirnoment {
   final String name;
 
-  const Env(this.name);
+  const Envirnoment(this.name);
 
   static const dev = 'dev';
   static const prod = 'prod';
   static const test = 'test';
 }
 
-const dev = const Env(Env.dev);
-const prod = const Env(Env.prod);
-const test = const Env(Env.test);
+const dev = const Envirnoment(Envirnoment.dev);
+const prod = const Envirnoment(Envirnoment.prod);
+const test = const Envirnoment(Envirnoment.test);
 
-class Bind {
+class RegisterAs {
   // The type to bind your implementation to,
   // typically an abstract class which is implemented by the
   // annotated class.
-  final Type type;
-  final Type to;
+  final Type abstractType;
+  // an alternative way to pass env keys insted
+  // of annotated the element with @Environment
   final String env;
-  final bool _standAlone;
 
-  const Bind(this.type, {this.to, this.env})
-      : _standAlone = true,
-        assert(to != null);
-
-  const Bind.toAbstract(this.to, {this.env})
-      : this.type = null,
-        this._standAlone = false;
+  const RegisterAs(this.abstractType, {this.env});
 }
 
+// Marks a factory, a named constructor or a static create
+// function as an injectable constructor
+// if not added the defualt constructor will be used.
 class FactoryMethod {
   const FactoryMethod._();
 }
 
 const factoryMethod = const FactoryMethod._();
+
+// marks a class as a register module where all
+// property accessors retrun types are considered factories
+// unless annotated with @singleton/lazySingelton.
+class RegisterModule {
+  const RegisterModule._();
+}
+
+const registerModule = const RegisterModule._();

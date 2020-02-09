@@ -10,6 +10,8 @@ Injectable is a convenient code generator for [get_it](https://pub.dev/packages/
 - [Registering singletons](#registering-singletons)
 - [Binding abstract classes to implementations](#binding-abstract-classes-to-implementations)
 - [Register under different environments](#register-under-different-environments)
+- [Using named factories and static create functions](#Using-named-factories-and-static-create-functions)
+- [Registering third party types](#Registering-third-party-types)
 - [Auto registering $Experimental$](#auto-registering-$experimental$)
 
 ## Installation
@@ -32,17 +34,20 @@ dev_dependencies:
 
 ---
 
-1- Create a new dart file and define a top-level function (lets call it configure) then annotate it with @injectableInit.
-2- Call the **Generated** func \$initGetIt() inside your confiugre func.
+.1 Create a new dart file and define a global var for your GetIt instance
+.2 Define a top-level function (lets call it configure) then annotate it with @injectableInit.
+.3 Call the **Generated** func \$initGetIt() inside your configure func and pass in the getIt instance.
 
 ```dart
+final getIt = GetIt.instance;
+
 @injectableInit
-void configure() => $initGetIt();
+void configure() => $initGetIt(getIt);
 ```
 
-3- Call configure() in your main func before running the App
+.4 Call configure() in your main func before running the App
 
-```daret
+```dart
 void main() {
  configure();
  runApp(MyApp());
@@ -87,7 +92,7 @@ Injectable will generate the needed register functions for you
 ```dart
 final getIt = GetIt.instance;
 
-void $initGetIt({String environment}) {
+void $initGetIt(GetIt getIt, {String environment}) {
   getIt..registerFactory<ServiceA>(() => ServiceA())
        ..registerFactory<ServiceB>(ServiceA(getIt<ServiceA>()))
 }
@@ -97,14 +102,13 @@ void $initGetIt({String environment}) {
 
 ---
 
-Simply add the @singleton or @lazySingleton annotations to your class.
+Use the @singleton or @lazySingleton to annotate your singleton classes.
 Alternatively use the constructor version to pass signalsReady to getIt.registerSingleton(signalsReady)
 @Singleton(signalsReady: true) >> getIt.registerSingleton(Model(), signalsReady: true)
 @Singleton.lazy(signalsReady: true) >> getIt.registerLazySingleton(() => Model(), signalsReady: true)
 
 ```dart
 @singleton // or @lazySingleton
-@injectable
 class ApiProvider {}
 ```
 
@@ -112,13 +116,13 @@ class ApiProvider {}
 
 ---
 
-Use the @Bind annotation to bind abstract types to their implementations.
-**Note:** the passed type needs to implement or extend the annotated type.
+Use the @RegisterAs annotation to bind an abstract class to it's implementation.
+**Annotate the implementation not the abstract class**
 
 ```dart
-@Bind.toType(ServiceImpl)
+@RegisterAs(Service)
 @injectable
-abstract class Service {}
+class ServiceImpl {}
 ```
 
 Generated code for the Above example
@@ -130,16 +134,21 @@ getIt.registerFactory<Service>(() => ServiceImpl())
 ### Binding an abstract class to multiable implementations
 
 Since we can't use type binding to register more than one implementation, we have to use names (tags)
-to register our instances.
+to register our instances or register under different environment. (we will get to that later)
 
-```dart
-@Bind.toNamedType(ServiceImpl1, name: 'impl1')
-@Bind.toNamedType(ServiceImpl2, name: 'impl2')
+```
+@Named("impl1")
+@RegisterAs(Service)
 @injectable
-abstract class Service {}
+class ServiceImpl implements Service {}
+
+@Named("impl2")
+@RegisterAs(Service)
+@injectable
+class ServiceImp2 implements Service {}
 ```
 
-Next annotate the injected instance with @Named() right in the construcor and pass in the name of the desired implementation.
+Next annotate the injected instance with @Named() right in the constructor and pass in the name of the desired implementation.
 
 ```dart
 @injectable
@@ -160,14 +169,14 @@ getIt.registerFactory<MyRepo>(() => MyRepo(getIt('impl1'))
 
 ### Auto Tagging
 
-if you don't pass a name to Bind.toNamedType() the implementation type name will be used
-@Bind.toNamedType(ServiceImpl1) == @Bind.toNamedType(ServiceImpl1, name: 'ServiceImpl1')
+Use the lower cased @named annotation to automatically assign the implementation class name to the instance name.
 Then use @Named.from(Type) annotation to extract the name from the type
 
 ```dart
-@Bind.toNamedType(ServiceImpl1)
+@named
+@RegisterAs(Service)
 @injectable
-abstract class Service {}
+ class ServiceImpl1 implements Service {}
 
 @injectable
 class MyRepo {
@@ -188,7 +197,7 @@ getIt.registerFactory<MyRepo>(() => MyRepo(getIt('ServiceImpl1'))
 ---
 
 it is possible to register different dependencies for different environments by using **@Environment('name')** annotation.
-in the below example ServiceA is now only registered if we pass the environment name to \$initGetIt(envirnoment: 'dev')
+in the below example ServiceA is now only registered if we pass the environment name to \$initGetIt(environment: 'dev')
 
 ```dart
 @Environment("dev")
@@ -207,20 +216,34 @@ void $initGetIt({String environment}) {
 }
 ```
 
-Usually you would want to register a diffirent implmenetation for the same abstract class under diffrent envirnoments.
-to do that pass your environment name to the Bind annotation
+you could also create your own environment annotations by assigning the const constructor Enviromnent("") to a global const var.
 
 ```dart
-@Bind.toType(FakeServiceImple, env: 'dev')
-@Bind.toType(RealServiceImple, env: 'prod')
+const dev = const Environment('dev');
+// then just use it to annotate your classes
+@dev
 @injectable
-abstract class Service {}
+class ServiceA {}
+```
+
+Usually you would want to register a different implementation for the same abstract class under different environments.
+to do that pass your environment name to the @RegisterAs annotation or use @Environment("env") annotation.
+
+```dart
+@RegisterAs(Service, env: 'dev')
+// or @Environment('dev')
+@injectable
+class FakeServiceImpl implements Service {}
+
+@RegisterAs(Service, env: 'prod')
+@injectable
+class RealServiceImpl implements Service {}
 ```
 
 Generated code for the Above example
 
 ```dart
-void $initGetIt({String environment}) {
+void $initGetIt(GetIt getIt, {String environment}) {
 // ..other deps
   if (environment == 'dev') {
     _registerDevDependencies();
@@ -231,22 +254,91 @@ void $initGetIt({String environment}) {
 }
 
 void _registerDevDependencies() {
-  getIt.registerFactory<Service>(() => FakeServiceImple());
+  getIt.registerFactory<Service>(() => FakeServiceImpl());
   // ..other dev deps
 }
 
 void _registerProdDependencies() {
-  getIt.registerFactory<Service>(() => RealServiceImple());
+  getIt.registerFactory<Service>(() => RealServiceImpl());
     // ..other prod deps
 }
 
 ```
 
+## Using named factories and static create functions
+
+---
+
+By default injectable will use the default constructor to build your dependencies but, you can tell injectable to use named/factory constructors or static create functions by using the @factoryMethod annotation.
+
+```dart
+@injectable
+class MyRepository {
+  @factoryMethod
+  MyRepository.from(Service s);
+}
+```
+
+The constructor named "from" will be used when building MyRepository.
+
+```dart
+getIt.registerFactory<MyRepository>(MyRepository.from(getIt<Service>()));
+```
+
+or annotate static create functions inside of abstract classes with @factoryMethod
+
+```dart
+@injectable
+abstract class Service {
+  @factoryMethod
+  static ServiceImpl2 create(ApiClient client) => ServiceImpl2(client);
+}
+```
+
+Generated code.
+
+```dart
+getIt.registerFactory<Service>(() => Service.create(getIt<ApiClient>()));
+```
+
+## Registering third party types
+
+---
+
+To Register third party types, create an abstract class and annotate it with @registerModule then add your third party types as property accessors like follows:
+
+```dart
+@registerModule
+abstract class RegisterModule {
+  @singleton
+  ThirdPartyType get thirdPartyType;
+
+  @prod
+  @RegisterAs(ThirdPartyAbstract)
+  ThirdPartyImpl get thirdPartyType;
+}
+```
+
+In some cases you'd need to register instances that's gotten asynchronous which can't be done using just a static annotation, for example SharedPreferences, this kind of dependencies has to be registered manually
+
+```dart
+@injectableInit
+Future<void> configure() async {
+  // make sure you still init the generated register functions
+  $initGetIt(getIt);
+  // add your manual dependencies
+  var prefs = await SharedPreferences.getInstance();
+  getIt.registerFactory(() => prefs);
+}
+```
+
+Also make sure you await for your configure function before running the App.
+
 ## Auto registering $Experimental$
 
 ---
 
-Instead of annotating every single injectable class you write, it is possible to use a [Convention Based Configruation](https://en.wikipedia.org/wiki/Convention_over_configuration) to auto register your injectable classes, espeically if you follow a consice naming convention.
+Instead of annotating every single injectable class you write, it is possible to use a [Convention Based Configuration](https://en.wikipedia.org/wiki/Convention_over_configuration) to auto register your injectable classes, especially if you follow a concise naming convention.
 
 for example you can tell the generator to auto-register any class that ends with Service, Repository or Bloc
 using a simple regex pattern

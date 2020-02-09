@@ -4,12 +4,14 @@
 
 import 'package:injectable/injectable_annotations.dart';
 
-@Bind.toNamedtype(ServiceImpl1)
-@Bind.toNamedtype(ServiceImpl2)
 abstract class Service {}
 
+@RegisterAs(Service, env: 'dev')
+@injectable
 class ServiceImpl1 extends Service {}
 
+@RegisterAs(Service, env: 'prod')
+@injectable
 class ServiceImpl2 implements Service {
 
 }

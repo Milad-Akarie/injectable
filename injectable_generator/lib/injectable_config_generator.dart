@@ -10,13 +10,14 @@ import 'config_code_generator.dart';
 import 'dependency_config.dart';
 import 'utils.dart';
 
-const TypeChecker bindChecker = const TypeChecker.fromRuntime(Bind);
+const TypeChecker bindChecker = const TypeChecker.fromRuntime(RegisterAs);
 
 class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   final injectableConfigFiles = Glob("**.injectable.json");
 
   @override
-  dynamic generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) async {
+  dynamic generateForAnnotatedElement(
+      Element element, ConstantReader annotation, BuildStep buildStep) async {
     final List<Map> jsonData = [];
     await for (final id in buildStep.findAssets(injectableConfigFiles)) {
       final json = jsonDecode(await buildStep.readAsString(id));
@@ -25,10 +26,6 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
 
     final deps = <DependencyConfig>[];
     jsonData.forEach((json) => deps.add(DependencyConfig.fromJson(json)));
-
-    bindChecker.annotationsOfExact(element).map((a) => ConstantReader(a)).forEach((bindReader) {
-      print(bindReader);
-    });
 
     _reportMissingDependencies(deps);
     return ConfigCodeGenerator(deps).generate();
@@ -40,13 +37,15 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     deps.forEach((dep) {
       dep.dependencies.forEach((idep) {
         if (!registeredDeps.contains(idep.type)) {
-          messages.add("[${dep.bindTo}] depends on [${idep.type}] which is not injectable!");
+          messages.add(
+              "[${dep.bindTo}] depends on [${idep.type}] which is not injectable!");
         }
       });
     });
 
     if (messages.isNotEmpty) {
-      messages.add('\nDid you forget to annotate the above classe(s) or their implementation with @injectable?');
+      messages.add(
+          '\nDid you forget to annotate the above classe(s) or their implementation with @injectable?');
       printBoxed(messages.join('\n'));
     }
   }

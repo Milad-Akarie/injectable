@@ -10,6 +10,7 @@ import 'dependency_config.dart';
 import 'dependency_resolver.dart';
 
 const TypeChecker typeChecker = const TypeChecker.fromRuntime(Injectable);
+const TypeChecker moduleChecker = const TypeChecker.fromRuntime(RegisterModule);
 
 class InjectableGenerator implements Generator {
   RegExp _classNameMatcher, _fileNameMatcher;
@@ -31,12 +32,13 @@ class InjectableGenerator implements Generator {
     final allDepsInStep = <DependencyConfig>[];
 
     for (var clazz in library.classes) {
-      if ((autoRegister && _hasConventionalMatch(clazz)) ||
-          _hasInjectable(clazz)) {
-	      final dep = await generateForElement(clazz, buildStep);
-	      if (dep != null) {
-		      allDepsInStep.add(dep);
+      if (moduleChecker.hasAnnotationOfExact(clazz)) {
+        for (var accessor in clazz.accessors) {
+          allDepsInStep.add(await DependencyResolver(accessor).resolve());
         }
+      } else if ((autoRegister && _hasConventionalMatch(clazz)) ||
+          _hasInjectable(clazz)) {
+        allDepsInStep.add(await DependencyResolver(clazz).resolve());
       }
     }
 
@@ -47,13 +49,8 @@ class InjectableGenerator implements Generator {
     return null;
   }
 
-  Future<DependencyConfig> generateForElement(
-      ClassElement clazz, BuildStep buildStep) async {
-	  return DependencyResolver(clazz).resolve();
-  }
-
   bool _hasInjectable(ClassElement element) {
-	  return typeChecker.hasAnnotationOf(element);
+    return typeChecker.hasAnnotationOf(element);
   }
 
   bool _hasConventionalMatch(ClassElement clazz) {
