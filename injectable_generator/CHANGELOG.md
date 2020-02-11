@@ -1,4 +1,8 @@
 # ChangeLog
+## [0.2.1]
+
+- fix type in @Environment annotation
+- ignore abstract classes in auto mode.
 
 ## [0.2.0] Breaking Changes!
 

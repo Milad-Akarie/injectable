@@ -171,7 +171,7 @@
     },
     {
       "name": "injectable",
-      "rootUri": "../../injectable",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/injectable-0.2.1",
       "packageUri": "lib/",
       "languageVersion": "2.5"
     },
@@ -380,7 +380,7 @@
       "languageVersion": "2.5"
     }
   ],
-  "generated": "2020-02-07T11:45:46.789797Z",
+  "generated": "2020-02-11T10:20:51.505484Z",
   "generator": "pub",
   "generatorVersion": "2.7.0"
 }

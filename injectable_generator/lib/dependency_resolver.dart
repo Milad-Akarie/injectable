@@ -8,7 +8,7 @@ import 'injectable_types.dart';
 
 const TypeChecker namedChecker = const TypeChecker.fromRuntime(Named);
 const TypeChecker singletonChecker = const TypeChecker.fromRuntime(Singleton);
-const TypeChecker envrimentChecker = const TypeChecker.fromRuntime(Envirnoment);
+const TypeChecker envChecker = const TypeChecker.fromRuntime(Environment);
 const TypeChecker bindChecker = const TypeChecker.fromRuntime(RegisterAs);
 
 const TypeChecker constructorChecker =
@@ -51,7 +51,7 @@ class DependencyResolver {
     }
 
     dep.environment = inlineEnv ??
-        envrimentChecker
+        envChecker
             .firstAnnotationOfExact(element, throwOnUnresolved: false)
             ?.getField('name')
             ?.toStringValue();

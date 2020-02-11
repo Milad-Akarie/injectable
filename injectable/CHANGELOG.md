@@ -1,4 +1,7 @@
 # ChangeLog
+## [0.2.1]
+
+- fix type in @Environment annotation
 
 ## [0.2.0] Breaking Changes!
 

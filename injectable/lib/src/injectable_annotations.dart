@@ -38,7 +38,7 @@ class Named {
   const Named(this.name) : type = null;
 
   // instead of providing a literal name
-  // you can pass a type and it's name will be extrected
+  // you can pass a type and it's name will be extracted
   // in during generation
   final Type type;
   const Named.from(this.type) : name = null;
@@ -46,26 +46,27 @@ class Named {
 
 const named = const Named("");
 
-class Envirnoment {
+class Environment {
   final String name;
 
-  const Envirnoment(this.name);
+  const Environment(this.name);
 
   static const dev = 'dev';
   static const prod = 'prod';
   static const test = 'test';
 }
 
-const dev = const Envirnoment(Envirnoment.dev);
-const prod = const Envirnoment(Envirnoment.prod);
-const test = const Envirnoment(Envirnoment.test);
+const dev = const Environment(Environment.dev);
+const prod = const Environment(Environment.prod);
+const test = const Environment(Environment.test);
 
 class RegisterAs {
   // The type to bind your implementation to,
   // typically an abstract class which is implemented by the
   // annotated class.
   final Type abstractType;
-  // an alternative way to pass env keys insted
+
+  // an alternative way to pass env keys instead
   // of annotated the element with @Environment
   final String env;
 
@@ -74,7 +75,7 @@ class RegisterAs {
 
 // Marks a factory, a named constructor or a static create
 // function as an injectable constructor
-// if not added the defualt constructor will be used.
+// if not added the default constructor will be used.
 class FactoryMethod {
   const FactoryMethod._();
 }
@@ -82,8 +83,8 @@ class FactoryMethod {
 const factoryMethod = const FactoryMethod._();
 
 // marks a class as a register module where all
-// property accessors retrun types are considered factories
-// unless annotated with @singleton/lazySingelton.
+// property accessors rerun types are considered factories
+// unless annotated with @singleton/lazySingleton.
 class RegisterModule {
   const RegisterModule._();
 }
