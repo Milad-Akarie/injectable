@@ -140,8 +140,50 @@
       "languageVersion": "2.3"
     },
     {
-      "name": "event_bus",
-      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/event_bus-1.1.1",
+      "name": "dio",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/dio-3.0.8",
+      "packageUri": "lib/",
+      "languageVersion": "2.4"
+    },
+    {
+      "name": "firebase",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/firebase-7.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.7"
+    },
+    {
+      "name": "firebase_auth",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_auth-0.15.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
+      "name": "firebase_auth_platform_interface",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_auth_platform_interface-1.1.5",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
+      "name": "firebase_auth_web",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_auth_web-0.1.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
+      "name": "firebase_core",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core-0.4.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
+      "name": "firebase_core_platform_interface",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core_platform_interface-1.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
+      "name": "firebase_core_web",
+      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core_web-0.1.1+2",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
@@ -248,12 +290,6 @@
       "languageVersion": "2.3"
     },
     {
-      "name": "kiwi",
-      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/kiwi-0.2.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.2"
-    },
-    {
       "name": "logging",
       "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/logging-0.11.3+2",
       "packageUri": "lib/",
@@ -322,12 +358,6 @@
     {
       "name": "pool",
       "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/pool-1.4.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.0"
-    },
-    {
-      "name": "provider",
-      "rootUri": "file:///Users/milad/dev/sdk/flutter/.pub-cache/hosted/pub.dartlang.org/provider-3.2.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
@@ -488,7 +518,7 @@
       "languageVersion": "2.3"
     }
   ],
-  "generated": "2020-02-07T18:43:10.797828Z",
+  "generated": "2020-02-14T15:25:50.264888Z",
   "generator": "pub",
   "generatorVersion": "2.7.0"
 }

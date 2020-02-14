@@ -35,8 +35,14 @@ class ConfigCodeGenerator {
     // generate all imports
     imports.forEach((import) => _writeln("import '$import';"));
 
+    if (_hasAsync(sorted)) {
+      _writeln(
+          "Future<void> \$initGetIt(GetIt g, {String environment}) async {");
+    } else {
+      _writeln("void \$initGetIt(GetIt g, {String environment}) {");
+    }
+
     // generate configuration function declaration
-    _writeln("void \$initGetIt(GetIt getIt, {String environment}) {");
 
     // generate common registering
     _generateDeps(lazyDeps.where((dep) => dep.environment == null).toSet());
@@ -50,21 +56,28 @@ class ConfigCodeGenerator {
         .where((env) => env != null)
         .forEach((env) {
       _writeln("if(environment == '$env'){");
-      _writeln('_register${capitalize(env)}Dependencies(getIt);');
-      environmentMap[env] =
-          sorted.where((dep) => dep.environment == env).toSet();
+      final envDeps = sorted.where((dep) => dep.environment == env).toSet();
+      environmentMap[env] = envDeps;
+      _writeln(
+          '${_hasAsync(envDeps) ? 'await' : ''} _register${capitalize(env)}Dependencies(g);');
       _writeln('}');
     });
 
     if (eagerDeps.isNotEmpty) {
-      _writeln('_registerEagerSingletons(getIt,environment);');
+      _writeln(
+          '${_hasAsync(eagerDeps) ? 'await' : ''} _registerEagerSingletons(g,environment);');
     }
 
     _write('}');
 
     // generate environment registering
     environmentMap.forEach((env, deps) {
-      _write("void _register${capitalize(env)}Dependencies(GetIt getIt){");
+      if (_hasAsync(deps)) {
+        _writeln(
+            "Future<void> _register${capitalize(env)}Dependencies(GetIt g) async {");
+      } else {
+        _writeln("void _register${capitalize(env)}Dependencies(GetIt g){");
+      }
       _generateDeps(deps);
       _writeln("}");
     });
@@ -73,16 +86,23 @@ class ConfigCodeGenerator {
       var currentEnv;
       final eagerList = eagerDeps.toList();
       _writeln("\n\n// Eager singletons must be registered in the right order");
-      _writeln("void _registerEagerSingletons(getIt,environment) {");
+
+      if (_hasAsync(eagerDeps)) {
+        _writeln(
+            "Future<void> _registerEagerSingletons(GetIt g,String environment) async {");
+      } else {
+        _writeln("void _registerEagerSingletons(GetIt g,String environment) {");
+      }
+
       for (int i = 0; i < eagerList.length; i++) {
         final dep = eagerList[i];
         if (dep.environment == null) {
-          _generateEagerRegisterFunction(dep);
+          _generateRegisterFunction(dep);
         } else {
           if (dep.environment != currentEnv) {
             _writeln("if(environment == '${dep.environment}'){");
           }
-          _generateEagerRegisterFunction(dep);
+          _generateRegisterFunction(dep);
           if (i == eagerList.length - 1 ||
               eagerList[i + 1].environment != dep.environment) {
             _writeln('}');
@@ -98,13 +118,7 @@ class ConfigCodeGenerator {
   }
 
   void _generateDeps(Set<DependencyConfig> deps) {
-    if (deps.isEmpty) {
-      return;
-    }
-
-    _write('getIt');
-    deps.forEach((dep) => _generateLazyRegisterFunction(dep));
-    _write(';');
+    deps.forEach((dep) => _generateRegisterFunction(dep));
   }
 
   void _sortByDependents(
@@ -123,29 +137,38 @@ class ConfigCodeGenerator {
     }
   }
 
-  void _generateLazyRegisterFunction(DependencyConfig dep) {
-    String construct = _generateConstructor(dep);
+  void _generateRegisterFunction(DependencyConfig dep) {
+    String registerFunc;
+    String constructBody;
+
+    if (dep.initializer != null) {
+      final init = dep.initializer;
+      if (init.isAsync) {
+        final awaitedVar = toCamelCase(dep.type);
+        _writeln('final $awaitedVar = await ${init.code} ;');
+        constructBody = awaitedVar;
+      } else {
+        constructBody = init.code;
+      }
+    } else {
+      constructBody = _generateConstructor(dep);
+    }
+
+    if (dep.injectableType == InjectableType.singleton) {
+      registerFunc = constructBody;
+    } else {
+      registerFunc = '=> $constructBody';
+    }
 
     final typeArg = '<${dep.type}>';
     if (dep.injectableType == InjectableType.factory) {
-      _writeln("..registerFactory$typeArg(()=> $construct)");
+      _writeln("g.registerFactory$typeArg(() $registerFunc");
+    } else if (dep.injectableType == InjectableType.lazySingleton) {
+      _writeln("g.registerLazySingleton$typeArg(() $registerFunc");
     } else {
-      _writeln("..registerLazySingleton$typeArg(()=> $construct)");
+      _writeln("g.registerSingleton$typeArg($registerFunc");
     }
 
-    if (dep.instanceName != null) {
-      _write(",instanceName: '${dep.instanceName}'");
-    }
-    if (dep.signalsReady != null) {
-      _write(',signalsReady: ${dep.signalsReady}');
-    }
-    _write(")");
-  }
-
-  void _generateEagerRegisterFunction(DependencyConfig dep) {
-    String construct = _generateConstructor(dep);
-    final typeArg = '<${dep.type}>';
-    _writeln("getIt.registerSingleton$typeArg( $construct)");
     if (dep.instanceName != null) {
       _write(",instanceName: '${dep.instanceName}'");
     }
@@ -158,11 +181,6 @@ class ConfigCodeGenerator {
   String _generateConstructor(DependencyConfig dep) {
     final constBuffer = StringBuffer();
     dep.dependencies.asMap().forEach((i, injectedDep) {
-      final comma =
-          (i < dep.dependencies.length - 1 || dep.dependencies.length > 2)
-              ? ','
-              : '';
-
       String type = '<${injectedDep.type}>';
       String instanceName = '';
       if (injectedDep.name != null) {
@@ -171,11 +189,15 @@ class ConfigCodeGenerator {
       }
       final paramName =
           (injectedDep.paramName != null) ? '${injectedDep.paramName}:' : '';
-      constBuffer.write("${paramName}getIt$type($instanceName)$comma");
+      constBuffer.write("${paramName}g$type($instanceName),");
     });
 
     final constructName =
         dep.constructorName.isEmpty ? "" : ".${dep.constructorName}";
-    return '${dep.bindTo}$constructName(${constBuffer.toString()}';
+    return '${dep.bindTo}$constructName(${constBuffer.toString()})';
+  }
+
+  bool _hasAsync(Set<DependencyConfig> deps) {
+    return deps.any((d) => d.initializer?.isAsync == true);
   }
 }

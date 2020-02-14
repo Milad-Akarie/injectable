@@ -92,9 +92,9 @@ Injectable will generate the needed register functions for you
 ```dart
 final getIt = GetIt.instance;
 
-void $initGetIt(GetIt getIt, {String environment}) {
-  getIt..registerFactory<ServiceA>(() => ServiceA())
-       ..registerFactory<ServiceB>(ServiceA(getIt<ServiceA>()))
+void $initGetIt(GetIt g, {String environment}) {
+  g.registerFactory<ServiceA>(() => ServiceA())
+  g.registerFactory<ServiceB>(ServiceA(getIt<ServiceA>()))
 }
 ```
 
@@ -128,7 +128,7 @@ class ServiceImpl {}
 Generated code for the Above example
 
 ```dart
-getIt.registerFactory<Service>(() => ServiceImpl())
+g.registerFactory<Service>(() => ServiceImpl())
 ```
 
 ### Binding an abstract class to multiable implementations
@@ -161,10 +161,10 @@ class MyRepo {
 Generated code for the Above example
 
 ```dart
-getIt.registerFactory<Service>(() => ServiceImpl1(), instanceName: 'impl1')
-getIt.registerFactory<Service>(() => ServiceImpl2(), instanceName: 'impl2')
+g.registerFactory<Service>(() => ServiceImpl1(), instanceName: 'impl1')
+g.registerFactory<Service>(() => ServiceImpl2(), instanceName: 'impl2')
 
-getIt.registerFactory<MyRepo>(() => MyRepo(getIt('impl1'))
+g.registerFactory<MyRepo>(() => MyRepo(getIt('impl1'))
 ```
 
 ### Auto Tagging
@@ -188,8 +188,8 @@ class MyRepo {
 Generated code for the Above example
 
 ```dart
-getIt.registerFactory<Service>(() => ServiceImpl1(), instanceName: 'ServiceImpl1')
-getIt.registerFactory<MyRepo>(() => MyRepo(getIt('ServiceImpl1'))
+g.registerFactory<Service>(() => ServiceImpl1(), instanceName: 'ServiceImpl1')
+g.registerFactory<MyRepo>(() => MyRepo(getIt('ServiceImpl1'))
 ```
 
 ## Register under different environments
@@ -246,20 +246,20 @@ Generated code for the Above example
 void $initGetIt(GetIt getIt, {String environment}) {
 // ..other deps
   if (environment == 'dev') {
-    _registerDevDependencies();
+    _registerDevDependencies(g);
   }
   if (environment == 'prod') {
-    _registerProdDependencies();
+    _registerProdDependencies(g);
   }
 }
 
-void _registerDevDependencies() {
-  getIt.registerFactory<Service>(() => FakeServiceImpl());
+void _registerDevDependencies(GetIt g) {
+  g.registerFactory<Service>(() => FakeServiceImpl());
   // ..other dev deps
 }
 
-void _registerProdDependencies() {
-  getIt.registerFactory<Service>(() => RealServiceImpl());
+void _registerProdDependencies(GetIt g) {
+  g.registerFactory<Service>(() => RealServiceImpl());
     // ..other prod deps
 }
 
@@ -269,7 +269,7 @@ void _registerProdDependencies() {
 
 ---
 
-By default injectable will use the default constructor to build your dependencies but, you can tell injectable to use named/factory constructors or static create functions by using the @factoryMethod annotation.
+By default injectable will use the default constructor to build your dependencies but, you can tell injectable to use named/factory constructors or static create functions by using the @factoryMethod annotation. .
 
 ```dart
 @injectable
@@ -282,23 +282,26 @@ class MyRepository {
 The constructor named "from" will be used when building MyRepository.
 
 ```dart
-getIt.registerFactory<MyRepository>(MyRepository.from(getIt<Service>()));
+g.registerFactory<MyRepository>(MyRepository.from(getIt<Service>()));
 ```
 
-or annotate static create functions inside of abstract classes with @factoryMethod
+or annotate static create functions or factories inside of abstract classes with @factoryMethod
 
 ```dart
 @injectable
 abstract class Service {
   @factoryMethod
   static ServiceImpl2 create(ApiClient client) => ServiceImpl2(client);
+
+  @factoryMethod
+  factory Service.from() => ServiceImpl();
 }
 ```
 
 Generated code.
 
 ```dart
-getIt.registerFactory<Service>(() => Service.create(getIt<ApiClient>()));
+g.registerFactory<Service>(() => Service.create(getIt<ApiClient>()));
 ```
 
 ## Registering third party types
@@ -319,20 +322,39 @@ abstract class RegisterModule {
 }
 ```
 
-In some cases you'd need to register instances that's gotten asynchronous which can't be done using just a static annotation, for example SharedPreferences, this kind of dependencies has to be registered manually
+### Providing custom initializers
+
+In some cases you'd need to register instances that are asynchronous or singleton instances or just have a custom initializer and that's a bit hard for injectable to figure out on it's own, so you need to tell injectable how to initialize them;
 
 ```dart
-@injectableInit
-Future<void> configure() async {
-  // make sure you still init the generated register functions
-  $initGetIt(getIt);
-  // add your manual dependencies
-  var prefs = await SharedPreferences.getInstance();
-  getIt.registerFactory(() => prefs);
+@registerModule
+abstract class RegisterModule {
+  @lazySingleton
+  Dio get dio => Dio(BaseOptions(baseUrl: "baseUrl"));
+  // same thing works for instances that's gotten asynchronous.
+  // all you need to do is wrap your instance with a future and tell injectable how
+  // to initialize it
+  Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
+  // Also make sure you await for your configure function before running the App.
 }
 ```
 
-Also make sure you await for your configure function before running the App.
+generated code
+
+```dart
+Future<void> $initGetIt(GetIt g, {String environment}) async {
+  g.lazySingleton<Dio>(() => Dio(BaseOptions(baseUrl: "baseUrl")));
+  final sharedPreferences = await SharedPreferences.getInstance();
+  g.registerFactory<SharedPreferences>(() => sharedPreferences);
+}
+```
+
+#### The limitation when providing custom initializers.
+
+- You can only use arrow functions (Expressions) => "at least for now"
+- Dependencies used in the custom initializers can not be imported automatically, meaning if you use any dependencies in your custom initializer make sure they're registered individually.
+
+if you're facing even a weirder scenario you can always register them manually in the configure function.
 
 ## Auto registering $Experimental$
 
@@ -372,5 +394,5 @@ flutter packages pub run build_runner clean
 
 ## Support the Library
 
-- You can support the library by staring in on Github or report any bugs you encounter.
-- also you have a suggestion or think something can be implemented in a better way, open an issue and lets talk about it.
+- You can support the library by staring it on Github or report any bugs you encounter.
+- also if you have a suggestion or think something can be implemented in a better way, open an issue and lets talk about it.
