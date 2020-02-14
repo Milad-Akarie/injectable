@@ -3,14 +3,15 @@ import 'package:analyzer/dart/element/element.dart';
 
 String getImport(Element element) {
   //return early if element has no source
-
   if (element.source == null) {
     return null;
   }
+
   // we don't need to import core dart types
   // or core flutter types
   if (!element.source.isInSystemLibrary) {
     final path = element.source.uri.toString();
+
     return path;
   }
   return null;
@@ -21,6 +22,13 @@ String capitalize(String s) {
     return s.toUpperCase();
   }
   return s[0].toUpperCase() + s.substring(1);
+}
+
+String toCamelCase(String s) {
+  if (s.length < 2) {
+    return s.toLowerCase();
+  }
+  return s[0].toLowerCase() + s.substring(1);
 }
 
 void throwBoxed(String message) {

@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 @injectable
 abstract class Service {
   @factoryMethod
-  static ServiceImpl2 create() => ServiceImpl2();
+  static create(Service11 s11) => ServiceImpl2();
 }
 
 @named
@@ -21,7 +21,7 @@ class ServiceImpl extends Service {}
 @injectable
 class MyRepository {
   @factoryMethod
-  MyRepository.from(Service s);
+  MyRepository.from(Service ss);
 }
 
 @injectable
@@ -39,8 +39,8 @@ class Service3 {
 
 @injectable
 class Service2 {
-  Service2(Service1 s1, ServiceA sa);
+  Service2(Service11 s1, ServiceA sa);
 }
 
 @injectable
-class Service1 {}
+class Service11 {}

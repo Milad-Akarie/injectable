@@ -12,6 +12,9 @@ dependencies:
     path: ../injectable/
   # auto_route:
   cupertino_icons: ^0.1.3
+  dio:
+  shared_preferences:
+  firebase_auth: ^0.15.4
   get_it:
 
 dev_dependencies:

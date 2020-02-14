@@ -1,7 +1,16 @@
 # ChangeLog
+
+## [0.2.2]
+
+- remove flutter dependency
+- add support for custom initializers in register Modules
+- minor fixes
+
+# ChangeLog
+
 ## [0.2.1]
 
-- fix type in @Environment annotation
+- fix typo in @Environment annotation
 - ignore abstract classes in auto mode.
 
 ## [0.2.0] Breaking Changes!

@@ -11,6 +11,7 @@ class DependencyConfig {
   String bindTo;
   String environment;
   String constructorName;
+  Initializer initializer;
 
   DependencyConfig();
 
@@ -19,7 +20,7 @@ class DependencyConfig {
     bindTo = json['bindTo'];
     instanceName = json['instanceName'];
     signalsReady = json['signalsReady'];
-    constructorName = json['constructorName'];
+    constructorName = json['constructorName'] ?? '';
 
     imports = json['imports'].cast<String>();
     if (json['dependencies'] != null) {
@@ -28,6 +29,9 @@ class DependencyConfig {
       });
     }
 
+    if (json['initializer'] != null) {
+      initializer = Initializer.fromJson(json['initializer']);
+    }
     injectableType = json['injectableType'];
     environment = json['environment'];
   }
@@ -41,7 +45,8 @@ class DependencyConfig {
         "instanceName": instanceName,
         "signalsReady": signalsReady,
         "environment": environment,
-        "constructorName": constructorName
+    "constructorName": constructorName,
+    if (initializer != null) "initializer": initializer.toJson(),
       };
 
   Set<String> get allImports => {
@@ -69,5 +74,26 @@ class InjectedDependency {
         "import": import,
         if (name != null) "name": name,
         if (paramName != null) "paramName": paramName,
+      };
+}
+
+class Initializer {
+  String code;
+  bool isClosure = false;
+  bool isAsync = false;
+
+  Initializer();
+
+  Initializer.fromJson(Map<String, dynamic> json) {
+    code = json['code'];
+    isClosure = json['isClosure'] ?? false;
+    isAsync = json['isAsync'] ?? false;
+  }
+
+  Map<String, dynamic> toJson() =>
+      {
+        "code": code,
+        "isClosure": isClosure,
+        "isAsync": isAsync,
       };
 }

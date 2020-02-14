@@ -33,12 +33,20 @@ class InjectableGenerator implements Generator {
 
     for (var clazz in library.classes) {
       if (moduleChecker.hasAnnotationOfExact(clazz)) {
+        final code = await buildStep.readAsString(buildStep.inputId);
         for (var accessor in clazz.accessors) {
-          allDepsInStep.add(await DependencyResolver(accessor).resolve());
+          final returnType = accessor.returnType;
+
+          final lib = await buildStep.resolver.findLibraryByName(
+              returnType.element.source?.uri?.pathSegments?.first);
+
+          allDepsInStep.add(DependencyResolver
+              .fromAccessor(accessor, code, lib)
+              .resolvedDependency);
         }
-      } else if ((autoRegister && _hasConventionalMatch(clazz)) ||
-          _hasInjectable(clazz)) {
-        allDepsInStep.add(await DependencyResolver(clazz).resolve());
+      } else if (_hasInjectable(clazz) ||
+          (autoRegister && _hasConventionalMatch(clazz))) {
+        allDepsInStep.add(DependencyResolver(clazz).resolvedDependency);
       }
     }
 

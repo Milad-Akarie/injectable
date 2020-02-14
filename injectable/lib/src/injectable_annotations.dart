@@ -46,6 +46,8 @@ class Named {
 
 const named = const Named("");
 
+// used to annotate dependecies which are
+// registered under different envionment
 class Environment {
   final String name;
 

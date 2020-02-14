@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:injectable/injectable.dart';
 import 'package:injectable_generator/utils.dart';
 import 'package:source_gen/source_gen.dart';
@@ -15,91 +16,124 @@ const TypeChecker constructorChecker =
     const TypeChecker.fromRuntime(FactoryMethod);
 
 class DependencyResolver {
-  final Element element;
-  DependencyResolver(this.element);
+  final Element _annotatedElement;
+  final _dep = DependencyConfig();
 
-  Future<DependencyConfig> resolve() async {
-    final dep = DependencyConfig();
+  DependencyResolver(this._annotatedElement) {
+    _dep.imports.add(getImport(_annotatedElement));
+    _resolve(_annotatedElement);
+  }
 
-    ClassElement clazz;
-    if (element is ClassElement) {
-      clazz = element;
-    } else if (element is PropertyAccessorElement) {
-      final PropertyAccessorElement accessorElement = element;
-      final returnType = accessorElement.returnType;
-      if (returnType.element is! ClassElement) {
-        throwBoxed('${returnType.name} is not a class element');
-      } else {
+  DependencyResolver.fromAccessor(this._annotatedElement, String registerModuleCode, LibraryElement lib) {
+    final PropertyAccessorElement accessorElement = _annotatedElement;
+    final returnType = accessorElement.returnType;
+
+    if (returnType.element is! ClassElement) {
+      throwBoxed('${returnType.name} is not a class element');
+    } else {
+      ClassElement clazz;
+      if (accessorElement.isAbstract) {
         clazz = returnType.element;
+      } else {
+        final initializer = Initializer();
+        final arrowReg = RegExp('${accessorElement.declaration}\\s+=>([^;]*)');
+        if (arrowReg.hasMatch(registerModuleCode)) {
+          initializer.code =
+              arrowReg.firstMatch(registerModuleCode).group(1).trim();
+          initializer.isClosure = true;
+        } else {
+          throwBoxed(
+              'Error parsing ${accessorElement.name} getter body! \nonly expressions [=>] are supported');
+        }
+
+        if (returnType.isDartAsyncFuture) {
+          final typeArg = returnType as ParameterizedType;
+          clazz = typeArg.typeArguments.first.element;
+          initializer.isAsync = true;
+        } else {
+          clazz = returnType.element;
+        }
+        _dep.initializer = initializer;
+      }
+
+      _resolve(clazz);
+
+      if (lib != null) {
+        _dep.imports.add(getImport(lib));
+      } else {
+        _dep.imports.add(getImport(clazz));
       }
     }
+  }
 
-    dep.imports.add(getImport(clazz));
-
-    dep.type = clazz.name;
-    dep.bindTo = clazz.name;
+  DependencyConfig _resolve(ClassElement clazz) {
+    _dep.type = clazz.name;
+    _dep.bindTo = clazz.name;
 
     var inlineEnv;
-    final bindAnnotation = bindChecker.firstAnnotationOf(element);
+    final bindAnnotation = bindChecker.firstAnnotationOf(_annotatedElement);
     if (bindAnnotation != null) {
       ConstantReader bindReader = ConstantReader(bindAnnotation);
       final abstractType = bindReader.peek('abstractType')?.typeValue;
       inlineEnv = bindReader.peek('env')?.stringValue;
-      dep.type = abstractType.name;
-      dep.bindTo = clazz.name;
-      dep.imports.add(getImport(abstractType.element));
+      _dep.type = abstractType.name;
+      _dep.bindTo = clazz.name;
+      _dep.imports.add(getImport(abstractType.element));
     }
 
-    dep.environment = inlineEnv ??
+    _dep.environment = inlineEnv ??
         envChecker
-            .firstAnnotationOfExact(element, throwOnUnresolved: false)
+            .firstAnnotationOfExact(_annotatedElement, throwOnUnresolved: false)
             ?.getField('name')
             ?.toStringValue();
 
     final name = namedChecker
-        .firstAnnotationOfExact(element)
+        .firstAnnotationOfExact(_annotatedElement)
         ?.getField('name')
         ?.toStringValue();
     if (name != null) {
       if (name.isNotEmpty) {
-        dep.instanceName = name;
+        _dep.instanceName = name;
       } else {
-        dep.instanceName = clazz.name;
+        _dep.instanceName = clazz.name;
       }
     }
 
-    final singletonAnnotation =
-        singletonChecker.firstAnnotationOf(element, throwOnUnresolved: false);
+    final singletonAnnotation = singletonChecker
+        .firstAnnotationOf(_annotatedElement, throwOnUnresolved: false);
     if (singletonAnnotation != null) {
       if (singletonAnnotation.getField('_lazy').toBoolValue()) {
-        dep.injectableType = InjectableType.lazySingleton;
+        _dep.injectableType = InjectableType.lazySingleton;
       } else {
-        dep.injectableType = InjectableType.singleton;
+        _dep.injectableType = InjectableType.singleton;
       }
 
-      dep.signalsReady =
+      _dep.signalsReady =
           singletonAnnotation.getField('signalsReady')?.toBoolValue();
     } else {
-      dep.injectableType = InjectableType.factory;
+      _dep.injectableType = InjectableType.factory;
     }
 
     ExecutableElement constructor;
-    if (clazz.isAbstract) {
-      constructor = clazz.methods.firstWhere(
-          (m) => constructorChecker.firstAnnotationOf(m) != null, orElse: () {
-        throwBoxed(
-            '''[${element.name}] is abstract and can not be registered directly!
-          \n if it ha a create method annotate with @factoryMethod''');
-        return null;
-      });
-    } else {
-      constructor = clazz.constructors.firstWhere(
-          (c) => constructorChecker.firstAnnotationOf(c) != null,
-          orElse: () => clazz.unnamedConstructor);
-    }
-    dep.constructorName = constructor.name;
+    if (_dep.initializer == null) {
+      final possibleFactories = <ExecutableElement>[
+        ...clazz.methods.where((m) => m.isStatic),
+        ...clazz.constructors
+      ];
 
+      constructor = possibleFactories
+          .firstWhere((m) => constructorChecker.hasAnnotationOf(m), orElse: () {
+        if (clazz.isAbstract) {
+          throwBoxed(
+              '''[${_annotatedElement.name}] is abstract and can not be registered directly!
+          \n if it has a factory or a create method annotate it with @factoryMethod''');
+        }
+        return clazz.unnamedConstructor;
+      });
+    }
     if (constructor != null) {
+      _dep.constructorName = constructor.name;
+
       constructor.parameters.forEach((param) {
         final namedAnnotation = namedChecker.firstAnnotationOf(param);
 
@@ -107,7 +141,7 @@ class DependencyResolver {
             namedAnnotation?.getField('type')?.toTypeValue()?.name ??
                 namedAnnotation?.getField('name')?.toStringValue();
 
-        dep.dependencies.add(InjectedDependency(
+        _dep.dependencies.add(InjectedDependency(
           type: param.type.element.name,
           name: instanceName,
           paramName: param.isPositional ? null : param.name,
@@ -116,6 +150,8 @@ class DependencyResolver {
       });
     }
 
-    return dep;
+    return _dep;
   }
+
+  DependencyConfig get resolvedDependency => _dep;
 }
