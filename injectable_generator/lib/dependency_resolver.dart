@@ -24,37 +24,43 @@ class DependencyResolver {
     _resolve(_annotatedElement);
   }
 
-  DependencyResolver.fromAccessor(this._annotatedElement, String registerModuleCode, LibraryElement lib) {
+  DependencyResolver.fromAccessor(
+      this._annotatedElement, ClassElement moduleClazz, LibraryElement lib) {
     final PropertyAccessorElement accessorElement = _annotatedElement;
     final returnType = accessorElement.returnType;
 
     if (returnType.element is! ClassElement) {
       throwBoxed('${returnType.name} is not a class element');
     } else {
+      final registerModuelItem = RegisterModuleItem();
+      registerModuelItem.moduleName = moduleClazz.name;
+      registerModuelItem.import = getImport(moduleClazz);
       ClassElement clazz;
       if (accessorElement.isAbstract) {
         clazz = returnType.element;
+        registerModuelItem.isAbstract = true;
       } else {
-        final initializer = Initializer();
-        final arrowReg = RegExp('${accessorElement.declaration}\\s+=>([^;]*)');
-        if (arrowReg.hasMatch(registerModuleCode)) {
-          initializer.code =
-              arrowReg.firstMatch(registerModuleCode).group(1).trim();
-          initializer.isClosure = true;
-        } else {
-          throwBoxed(
-              'Error parsing ${accessorElement.name} getter body! \nonly expressions [=>] are supported');
-        }
+        // final arrowReg = RegExp('${accessorElement.declaration}\\s+=>([^;]*)');
+        // if (arrowReg.hasMatch(registerModuleCode)) {
+        //   registerModuelItem.code =
+        //       arrowReg.firstMatch(registerModuleCode).group(1).trim();
+        //   registerModuelItem.isClosure = true;
+        // } else {
+        //   throwBoxed(
+        //       'Error parsing ${accessorElement.name} getter body! \nonly expressions [=>] are supported');
+        // }
 
         if (returnType.isDartAsyncFuture) {
           final typeArg = returnType as ParameterizedType;
           clazz = typeArg.typeArguments.first.element;
-          initializer.isAsync = true;
+          registerModuelItem.isAsync = true;
         } else {
           clazz = returnType.element;
         }
-        _dep.initializer = initializer;
       }
+      registerModuelItem.name = accessorElement.name;
+
+      _dep.moduleConfig = registerModuelItem;
 
       _resolve(clazz);
 
@@ -115,7 +121,7 @@ class DependencyResolver {
     }
 
     ExecutableElement constructor;
-    if (_dep.initializer == null) {
+    if (_dep.moduleConfig == null || _dep.moduleConfig.isAbstract) {
       final possibleFactories = <ExecutableElement>[
         ...clazz.methods.where((m) => m.isStatic),
         ...clazz.constructors

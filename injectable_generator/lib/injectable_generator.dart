@@ -33,16 +33,16 @@ class InjectableGenerator implements Generator {
 
     for (var clazz in library.classes) {
       if (moduleChecker.hasAnnotationOfExact(clazz)) {
-        final code = await buildStep.readAsString(buildStep.inputId);
+        // final code = await buildStep.readAsString(buildStep.inputId);
         for (var accessor in clazz.accessors) {
           final returnType = accessor.returnType;
 
           final lib = await buildStep.resolver.findLibraryByName(
               returnType.element.source?.uri?.pathSegments?.first);
 
-          allDepsInStep.add(DependencyResolver
-              .fromAccessor(accessor, code, lib)
-              .resolvedDependency);
+          allDepsInStep.add(
+              DependencyResolver.fromAccessor(accessor, clazz, lib)
+                  .resolvedDependency);
         }
       } else if (_hasInjectable(clazz) ||
           (autoRegister && _hasConventionalMatch(clazz))) {
@@ -67,7 +67,7 @@ class InjectableGenerator implements Generator {
     }
     final fileName = clazz.source.shortName.replaceFirst('.dart', '');
     return (_classNameMatcher != null &&
-        _classNameMatcher.hasMatch(clazz.name)) ||
+            _classNameMatcher.hasMatch(clazz.name)) ||
         (_fileNameMatcher != null && _fileNameMatcher.hasMatch(fileName));
   }
 }

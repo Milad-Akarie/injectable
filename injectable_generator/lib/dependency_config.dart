@@ -11,7 +11,7 @@ class DependencyConfig {
   String bindTo;
   String environment;
   String constructorName;
-  Initializer initializer;
+  RegisterModuleItem moduleConfig;
 
   DependencyConfig();
 
@@ -29,8 +29,8 @@ class DependencyConfig {
       });
     }
 
-    if (json['initializer'] != null) {
-      initializer = Initializer.fromJson(json['initializer']);
+    if (json['moduleConfig'] != null) {
+      moduleConfig = RegisterModuleItem.fromJson(json['moduleConfig']);
     }
     injectableType = json['injectableType'];
     environment = json['environment'];
@@ -45,13 +45,14 @@ class DependencyConfig {
         "instanceName": instanceName,
         "signalsReady": signalsReady,
         "environment": environment,
-    "constructorName": constructorName,
-    if (initializer != null) "initializer": initializer.toJson(),
+        "constructorName": constructorName,
+        if (moduleConfig != null) "moduleConfig": moduleConfig.toJson(),
       };
 
   Set<String> get allImports => {
         ...imports.where((i) => i != null),
         ...dependencies.map((dep) => dep.import).where((i) => i != null),
+        if (moduleConfig != null) moduleConfig?.import
       };
 }
 
@@ -77,23 +78,28 @@ class InjectedDependency {
       };
 }
 
-class Initializer {
-  String code;
-  bool isClosure = false;
+class RegisterModuleItem {
   bool isAsync = false;
+  bool isAbstract = false;
+  String name;
+  String moduleName;
+  String import;
 
-  Initializer();
+  RegisterModuleItem();
 
-  Initializer.fromJson(Map<String, dynamic> json) {
-    code = json['code'];
-    isClosure = json['isClosure'] ?? false;
+  RegisterModuleItem.fromJson(Map<String, dynamic> json) {
     isAsync = json['isAsync'] ?? false;
+    isAbstract = json['isAbstract'] ?? false;
+    name = json['name'];
+    moduleName = json['moduleName'];
+    import = json['import'];
   }
 
-  Map<String, dynamic> toJson() =>
-      {
-        "code": code,
-        "isClosure": isClosure,
-        "isAsync": isAsync,
+  Map<String, dynamic> toJson() => {
+        'isAsync': isAsync,
+        'isAbstract': isAbstract,
+        'name': name,
+        'moduleName': moduleName,
+        "import": import,
       };
 }

@@ -20,6 +20,11 @@ class ConfigCodeGenerator {
     final Set<DependencyConfig> sorted = {};
     _sortByDependents(allDeps.toSet(), sorted);
 
+    final modules = sorted
+        .where((d) => d.moduleConfig != null)
+        .map((d) => d.moduleConfig.moduleName)
+        .toSet();
+
     final Set<DependencyConfig> eagerDeps = sorted
         .where((d) => d.injectableType == InjectableType.singleton)
         .toSet();
@@ -42,6 +47,9 @@ class ConfigCodeGenerator {
       _writeln("void \$initGetIt(GetIt g, {String environment}) {");
     }
 
+    modules.forEach((m) {
+      _writeln('final ${toCamelCase(m)} = _\$$m(g);');
+    });
     // generate configuration function declaration
 
     // generate common registering
@@ -49,50 +57,24 @@ class ConfigCodeGenerator {
 
     _writeln("");
 
-    final environmentMap = <String, Set<DependencyConfig>>{};
     lazyDeps
         .map((dep) => dep.environment)
         .toSet()
         .where((env) => env != null)
         .forEach((env) {
+      _writeln('\n\n  //Register $env Dependencies --------');
       _writeln("if(environment == '$env'){");
-      final envDeps = sorted.where((dep) => dep.environment == env).toSet();
-      environmentMap[env] = envDeps;
-      _writeln(
-          '${_hasAsync(envDeps) ? 'await' : ''} _register${capitalize(env)}Dependencies(g);');
+      final envDeps = lazyDeps.where((dep) => dep.environment == env).toSet();
+      _generateDeps(envDeps);
       _writeln('}');
     });
 
     if (eagerDeps.isNotEmpty) {
       _writeln(
-          '${_hasAsync(eagerDeps) ? 'await' : ''} _registerEagerSingletons(g,environment);');
-    }
+          "\n\n//  Eager singletons must be registered in the right order");
 
-    _write('}');
-
-    // generate environment registering
-    environmentMap.forEach((env, deps) {
-      if (_hasAsync(deps)) {
-        _writeln(
-            "Future<void> _register${capitalize(env)}Dependencies(GetIt g) async {");
-      } else {
-        _writeln("void _register${capitalize(env)}Dependencies(GetIt g){");
-      }
-      _generateDeps(deps);
-      _writeln("}");
-    });
-
-    if (eagerDeps.isNotEmpty) {
       var currentEnv;
       final eagerList = eagerDeps.toList();
-      _writeln("\n\n// Eager singletons must be registered in the right order");
-
-      if (_hasAsync(eagerDeps)) {
-        _writeln(
-            "Future<void> _registerEagerSingletons(GetIt g,String environment) async {");
-      } else {
-        _writeln("void _registerEagerSingletons(GetIt g,String environment) {");
-      }
 
       for (int i = 0; i < eagerList.length; i++) {
         final dep = eagerList[i];
@@ -110,9 +92,11 @@ class ConfigCodeGenerator {
         }
         currentEnv = dep.environment;
       }
-
-      _writeln("}");
     }
+
+    _write('}');
+
+    _generateModules(modules, sorted);
 
     return _buffer.toString();
   }
@@ -141,14 +125,15 @@ class ConfigCodeGenerator {
     String registerFunc;
     String constructBody;
 
-    if (dep.initializer != null) {
-      final init = dep.initializer;
-      if (init.isAsync) {
+    if (dep.moduleConfig != null) {
+      final mConfig = dep.moduleConfig;
+      final mName = toCamelCase(mConfig.moduleName);
+      if (mConfig.isAsync) {
         final awaitedVar = toCamelCase(dep.type);
-        _writeln('final $awaitedVar = await ${init.code} ;');
+        _writeln('final $awaitedVar = await $mName.${mConfig.name};');
         constructBody = awaitedVar;
       } else {
-        constructBody = init.code;
+        constructBody = '$mName.${mConfig.name}';
       }
     } else {
       constructBody = _generateConstructor(dep);
@@ -198,6 +183,31 @@ class ConfigCodeGenerator {
   }
 
   bool _hasAsync(Set<DependencyConfig> deps) {
-    return deps.any((d) => d.initializer?.isAsync == true);
+    return deps.any((d) => d.moduleConfig?.isAsync == true);
+  }
+
+  void _generateModules(Set<String> modules, Set<DependencyConfig> deps) {
+    modules.forEach((m) {
+      _writeln('class _\$$m extends $m{');
+      final moduleDeps = deps
+          .where((d) =>
+              d.moduleConfig != null &&
+              d.moduleConfig.moduleName == m &&
+              d.moduleConfig.isAbstract)
+          .toList();
+
+      _writeln("final GetIt g;");
+      _writeln('_\$$m(this.g);');
+      _generateModuleItems(moduleDeps);
+
+      _writeln('}');
+    });
+  }
+
+  void _generateModuleItems(List<DependencyConfig> moduleDeps) {
+    moduleDeps.forEach((d) {
+      final constructor = _generateConstructor(d);
+      _writeln('${d.bindTo} get ${d.moduleConfig.name} => $constructor ;');
+    });
   }
 }

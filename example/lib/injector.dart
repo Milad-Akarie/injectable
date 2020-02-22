@@ -9,10 +9,3 @@ final getIt = GetIt.instance;
 
 @injectableInit
 Future<void> configure() async => await $initGetIt(getIt);
-
-@registerModule
-abstract class RegisterModule {
-  Dio get dioDev => Dio(BaseOptions(baseUrl: "baseUrl"));
-
-  Future<SharedPreferences> get prefss => SharedPreferences.getInstance();
-}
