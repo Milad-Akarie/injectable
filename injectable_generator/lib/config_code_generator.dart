@@ -48,9 +48,12 @@ class ConfigCodeGenerator {
     }
 
     modules.forEach((m) {
-      _writeln('final ${toCamelCase(m)} = _\$$m(g);');
+      final constParam = _getAbstractModuleDeps(sorted, m)
+              .any((d) => d.dependencies.isNotEmpty)
+          ? 'g'
+          : '';
+      _writeln('final ${toCamelCase(m)} = _\$$m($constParam);');
     });
-    // generate configuration function declaration
 
     // generate common registering
     _generateDeps(lazyDeps.where((dep) => dep.environment == null).toSet());
@@ -71,7 +74,7 @@ class ConfigCodeGenerator {
 
     if (eagerDeps.isNotEmpty) {
       _writeln(
-          "\n\n//  Eager singletons must be registered in the right order");
+          "\n\n  //Eager singletons must be registered in the right order");
 
       var currentEnv;
       final eagerList = eagerDeps.toList();
@@ -163,7 +166,7 @@ class ConfigCodeGenerator {
     _write(");");
   }
 
-  String _generateConstructor(DependencyConfig dep) {
+  String _generateConstructor(DependencyConfig dep, {String getIt = 'g'}) {
     final constBuffer = StringBuffer();
     dep.dependencies.asMap().forEach((i, injectedDep) {
       String type = '<${injectedDep.type}>';
@@ -174,7 +177,7 @@ class ConfigCodeGenerator {
       }
       final paramName =
           (injectedDep.paramName != null) ? '${injectedDep.paramName}:' : '';
-      constBuffer.write("${paramName}g$type($instanceName),");
+      constBuffer.write("${paramName}$getIt$type($instanceName),");
     });
 
     final constructName =
@@ -189,24 +192,27 @@ class ConfigCodeGenerator {
   void _generateModules(Set<String> modules, Set<DependencyConfig> deps) {
     modules.forEach((m) {
       _writeln('class _\$$m extends $m{');
-      final moduleDeps = deps
-          .where((d) =>
-              d.moduleConfig != null &&
-              d.moduleConfig.moduleName == m &&
-              d.moduleConfig.isAbstract)
-          .toList();
-
-      _writeln("final GetIt g;");
-      _writeln('_\$$m(this.g);');
+      final moduleDeps = _getAbstractModuleDeps(deps, m).toList();
+      if (moduleDeps.any((d) => d.dependencies.isNotEmpty)) {
+        _writeln("final GetIt _g;");
+        _writeln('_\$$m(this._g);');
+      }
       _generateModuleItems(moduleDeps);
-
       _writeln('}');
     });
   }
 
+  Iterable<DependencyConfig> _getAbstractModuleDeps(
+      Set<DependencyConfig> deps, String m) {
+    return deps.where((d) =>
+        d.moduleConfig != null &&
+        d.moduleConfig.moduleName == m &&
+        d.moduleConfig.isAbstract);
+  }
+
   void _generateModuleItems(List<DependencyConfig> moduleDeps) {
     moduleDeps.forEach((d) {
-      final constructor = _generateConstructor(d);
+      final constructor = _generateConstructor(d, getIt: '_g');
       _writeln('${d.bindTo} get ${d.moduleConfig.name} => $constructor ;');
     });
   }

@@ -216,7 +216,7 @@ void $initGetIt({String environment}) {
 }
 ```
 
-you could also create your own environment annotations by assigning the const constructor Enviromnent("") to a global const var.
+you could also create your own environment annotations by assigning the const constructor Environment("") to a global const var.
 
 ```dart
 const dev = const Environment('dev');
@@ -245,24 +245,15 @@ Generated code for the Above example
 ```dart
 void $initGetIt(GetIt getIt, {String environment}) {
 // ..other deps
+   //Register dev Dependencies --------
   if (environment == 'dev') {
-    _registerDevDependencies(g);
+     g.registerFactory<Service>(() => FakeServiceImpl());
   }
+   //Register prod Dependencies --------
   if (environment == 'prod') {
-    _registerProdDependencies(g);
+      g.registerFactory<Service>(() => RealServiceImpl());
   }
 }
-
-void _registerDevDependencies(GetIt g) {
-  g.registerFactory<Service>(() => FakeServiceImpl());
-  // ..other dev deps
-}
-
-void _registerProdDependencies(GetIt g) {
-  g.registerFactory<Service>(() => RealServiceImpl());
-    // ..other prod deps
-}
-
 ```
 
 ## Using named factories and static create functions
@@ -339,21 +330,6 @@ abstract class RegisterModule {
 }
 ```
 
-generated code
-
-```dart
-Future<void> $initGetIt(GetIt g, {String environment}) async {
-  g.lazySingleton<Dio>(() => Dio(BaseOptions(baseUrl: "baseUrl")));
-  final sharedPreferences = await SharedPreferences.getInstance();
-  g.registerFactory<SharedPreferences>(() => sharedPreferences);
-}
-```
-
-#### The limitation when providing custom initializers.
-
-- You can only use arrow functions (Expressions) => "at least for now"
-- Dependencies used in the custom initializers can not be imported automatically, meaning if you use any dependencies in your custom initializer make sure they're registered individually.
-
 if you're facing even a weirder scenario you can always register them manually in the configure function.
 
 ## Auto registering $Experimental$
@@ -386,7 +362,7 @@ targets:
 
 ---
 
-Make sure you always **Save** your files before running the generator, if that doesn't work you can always try to clean and rebuild.
+Make sure you always **Save** your files before running the generator, if that does not work you can always try to clean and rebuild.
 
 ```terminal
 flutter packages pub run build_runner clean

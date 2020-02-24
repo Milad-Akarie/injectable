@@ -1,19 +1,23 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'injector.dart';
-
 @registerModule
 abstract class RegisterModule {
-  @dev
+  // @dev
   @singleton
-  Dio get dioDev => Dio(BaseOptions(baseUrl: "baseUrl"));
+  Dio get dioDev => Dio(BaseOptions(baseUrl: "basweUwrl"));
 
-  @prod
-  ServiceAA get service;
+  @RegisterAs(ServiceAbs)
+  ServiceAA get serviceAA;
+
   @dev
   Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
 }
 
-class ServiceAA {}
+class ServiceAA implements ServiceAbs {
+  ServiceAA(FirebaseAuth auth, Dio dio);
+}
+
+abstract class ServiceAbs {}

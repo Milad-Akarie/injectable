@@ -35,10 +35,10 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final messages = [];
     final registeredDeps = deps.map((dep) => dep.type).toSet();
     deps.forEach((dep) {
-      dep.dependencies.forEach((idep) {
-        if (!registeredDeps.contains(idep.type)) {
+      dep.dependencies.forEach((iDep) {
+        if (!registeredDeps.contains(iDep.type)) {
           messages.add(
-              "[${dep.bindTo}] depends on [${idep.type}] which is not injectable!");
+              "[${dep.bindTo}] depends on [${iDep.type}] which is not injectable!");
         }
       });
     });

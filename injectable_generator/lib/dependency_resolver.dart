@@ -1,5 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:build/build.dart';
 import 'package:injectable/injectable.dart';
 import 'package:injectable_generator/utils.dart';
 import 'package:source_gen/source_gen.dart';
@@ -19,60 +20,50 @@ class DependencyResolver {
   final Element _annotatedElement;
   final _dep = DependencyConfig();
 
-  DependencyResolver(this._annotatedElement) {
+  DependencyResolver(this._annotatedElement) {}
+
+  Future<DependencyConfig> resolve(Resolver resolver) {
     _dep.imports.add(getImport(_annotatedElement));
-    _resolve(_annotatedElement);
+    return _resolve(_annotatedElement, resolver);
   }
 
-  DependencyResolver.fromAccessor(
-      this._annotatedElement, ClassElement moduleClazz, LibraryElement lib) {
+  Future<DependencyConfig> resolveFromAccessor(
+      ClassElement moduleClazz, Resolver resolver) async {
     final PropertyAccessorElement accessorElement = _annotatedElement;
     final returnType = accessorElement.returnType;
 
     if (returnType.element is! ClassElement) {
-      throwBoxed('${returnType.name} is not a class element');
+      throwBoxed('${returnType.getDisplayString()} is not a class element');
+      return null;
     } else {
-      final registerModuelItem = RegisterModuleItem();
-      registerModuelItem.moduleName = moduleClazz.name;
-      registerModuelItem.import = getImport(moduleClazz);
+      final registerModuleItem = RegisterModuleItem();
+      registerModuleItem.moduleName = moduleClazz.name;
+      registerModuleItem.import = getImport(moduleClazz);
       ClassElement clazz;
       if (accessorElement.isAbstract) {
         clazz = returnType.element;
-        registerModuelItem.isAbstract = true;
+        registerModuleItem.isAbstract = true;
       } else {
-        // final arrowReg = RegExp('${accessorElement.declaration}\\s+=>([^;]*)');
-        // if (arrowReg.hasMatch(registerModuleCode)) {
-        //   registerModuelItem.code =
-        //       arrowReg.firstMatch(registerModuleCode).group(1).trim();
-        //   registerModuelItem.isClosure = true;
-        // } else {
-        //   throwBoxed(
-        //       'Error parsing ${accessorElement.name} getter body! \nonly expressions [=>] are supported');
-        // }
-
         if (returnType.isDartAsyncFuture) {
           final typeArg = returnType as ParameterizedType;
           clazz = typeArg.typeArguments.first.element;
-          registerModuelItem.isAsync = true;
+          registerModuleItem.isAsync = true;
         } else {
           clazz = returnType.element;
         }
       }
-      registerModuelItem.name = accessorElement.name;
 
-      _dep.moduleConfig = registerModuelItem;
+      registerModuleItem.name = accessorElement.name;
+      _dep.moduleConfig = registerModuleItem;
 
-      _resolve(clazz);
-
-      if (lib != null) {
-        _dep.imports.add(getImport(lib));
-      } else {
-        _dep.imports.add(getImport(clazz));
-      }
+      final import = await _resolveLibImport(clazz, resolver);
+      _dep.imports.add(import);
+      return _resolve(clazz, resolver);
     }
   }
 
-  DependencyConfig _resolve(ClassElement clazz) {
+  Future<DependencyConfig> _resolve(
+      ClassElement clazz, Resolver resolver) async {
     _dep.type = clazz.name;
     _dep.bindTo = clazz.name;
 
@@ -82,7 +73,7 @@ class DependencyResolver {
       ConstantReader bindReader = ConstantReader(bindAnnotation);
       final abstractType = bindReader.peek('abstractType')?.typeValue;
       inlineEnv = bindReader.peek('env')?.stringValue;
-      _dep.type = abstractType.name;
+      _dep.type = abstractType.getDisplayString();
       _dep.bindTo = clazz.name;
       _dep.imports.add(getImport(abstractType.element));
     }
@@ -132,7 +123,7 @@ class DependencyResolver {
         if (clazz.isAbstract) {
           throwBoxed(
               '''[${_annotatedElement.name}] is abstract and can not be registered directly!
-          \n if it has a factory or a create method annotate it with @factoryMethod''');
+                \n if it has a factory or a create method annotate it with @factoryMethod''');
         }
         return clazz.unnamedConstructor;
       });
@@ -140,24 +131,33 @@ class DependencyResolver {
     if (constructor != null) {
       _dep.constructorName = constructor.name;
 
-      constructor.parameters.forEach((param) {
+      for (ParameterElement param in constructor.parameters) {
         final namedAnnotation = namedChecker.firstAnnotationOf(param);
-
-        final instanceName =
-            namedAnnotation?.getField('type')?.toTypeValue()?.name ??
-                namedAnnotation?.getField('name')?.toStringValue();
-
+        final instanceName = namedAnnotation
+                ?.getField('type')
+                ?.toTypeValue()
+                ?.getDisplayString() ??
+            namedAnnotation?.getField('name')?.toStringValue();
+        final import = await _resolveLibImport(param.type.element, resolver);
         _dep.dependencies.add(InjectedDependency(
-          type: param.type.element.name,
+          type: param.type.getDisplayString(),
           name: instanceName,
           paramName: param.isPositional ? null : param.name,
-          import: getImport(param.type.element),
+          import: import,
         ));
-      });
+      }
     }
 
     return _dep;
   }
 
-  DependencyConfig get resolvedDependency => _dep;
+  Future<String> _resolveLibImport(Element element, Resolver resolver) async {
+    final assetId = await resolver.assetIdForElement(element);
+    final lib = await resolver.findLibraryByName(assetId.package);
+    if (lib != null) {
+      return getImport(lib);
+    } else {
+      return getImport(element);
+    }
+  }
 }

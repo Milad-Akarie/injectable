@@ -34,13 +34,13 @@
 
 // @injectable
 // class Service3 {
-//   Service3(Service2 s2);
+//   Service3(Service2 s2s);
 // }
+import 'package:injectable/injectable.dart';
 
-// @injectable
-// class Service2 {
-//   Service2(Service11 s1, ServiceA sa);
-// }
+class Service2 {
+  Service2(Service11 s1);
+}
 
-// @injectable
-// class Service11 {}
+@injectable
+class Service11 {}

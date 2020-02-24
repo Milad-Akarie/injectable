@@ -1,5 +1,9 @@
 # ChangeLog
 
+## [0.2.3]
+- improve support for custom initializers
+- fix src import issue
+
 ## [0.2.2]
 - remove flutter dependency
 - add support for custom initializers in register Modules

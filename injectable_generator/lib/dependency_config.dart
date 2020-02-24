@@ -42,17 +42,17 @@ class DependencyConfig {
         "injectableType": injectableType,
         "imports": imports.toSet().toList(),
         "dependencies": dependencies.map((v) => v.toJson()).toList(),
-        "instanceName": instanceName,
-        "signalsReady": signalsReady,
-        "environment": environment,
-        "constructorName": constructorName,
+        if (instanceName != null) "instanceName": instanceName,
+        if (signalsReady != null) "signalsReady": signalsReady,
+        if (environment != null) "environment": environment,
+        if (constructorName != null) "constructorName": constructorName,
         if (moduleConfig != null) "moduleConfig": moduleConfig.toJson(),
       };
 
   Set<String> get allImports => {
         ...imports.where((i) => i != null),
         ...dependencies.map((dep) => dep.import).where((i) => i != null),
-        if (moduleConfig != null) moduleConfig?.import
+        if (moduleConfig != null) moduleConfig.import
       };
 }
 
