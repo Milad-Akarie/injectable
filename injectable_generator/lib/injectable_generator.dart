@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:injectable/injectable.dart';
+import 'package:injectable_generator/utils.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'dependency_config.dart';
@@ -33,20 +34,17 @@ class InjectableGenerator implements Generator {
 
     for (var clazz in library.classes) {
       if (moduleChecker.hasAnnotationOfExact(clazz)) {
-        final code = await buildStep.readAsString(buildStep.inputId);
-        for (var accessor in clazz.accessors) {
-          final returnType = accessor.returnType;
+        throwBoxedIf(
+            !clazz.isAbstract, '[${clazz.name}] must be an abstract class!');
 
-          final lib = await buildStep.resolver.findLibraryByName(
-              returnType.element.source?.uri?.pathSegments?.first);
-
-          allDepsInStep.add(DependencyResolver
-              .fromAccessor(accessor, code, lib)
-              .resolvedDependency);
+        for (var annotatedElement in clazz.accessors) {
+          allDepsInStep.add(await DependencyResolver(annotatedElement)
+              .resolveFromAccessor(clazz, buildStep.resolver));
         }
       } else if (_hasInjectable(clazz) ||
           (autoRegister && _hasConventionalMatch(clazz))) {
-        allDepsInStep.add(DependencyResolver(clazz).resolvedDependency);
+        allDepsInStep
+            .add(await DependencyResolver(clazz).resolve(buildStep.resolver));
       }
     }
 
@@ -67,7 +65,7 @@ class InjectableGenerator implements Generator {
     }
     final fileName = clazz.source.shortName.replaceFirst('.dart', '');
     return (_classNameMatcher != null &&
-        _classNameMatcher.hasMatch(clazz.name)) ||
+            _classNameMatcher.hasMatch(clazz.name)) ||
         (_fileNameMatcher != null && _fileNameMatcher.hasMatch(fileName));
   }
 }
