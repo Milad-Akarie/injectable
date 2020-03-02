@@ -16,8 +16,6 @@
 - add support for custom initializers in register Modules
 - minor fixes
 
-# ChangeLog
-
 ## [0.2.1]
 
 - fix typo in @Environment annotation

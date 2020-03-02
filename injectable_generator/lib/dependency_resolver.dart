@@ -12,6 +12,7 @@ const TypeChecker namedChecker = const TypeChecker.fromRuntime(Named);
 const TypeChecker singletonChecker = const TypeChecker.fromRuntime(Singleton);
 const TypeChecker envChecker = const TypeChecker.fromRuntime(Environment);
 const TypeChecker bindChecker = const TypeChecker.fromRuntime(RegisterAs);
+const TypeChecker asInstanceChecker = const TypeChecker.fromRuntime(AsInstance);
 
 const TypeChecker constructorChecker =
     const TypeChecker.fromRuntime(FactoryMethod);
@@ -36,7 +37,7 @@ class DependencyResolver {
       ClassElement moduleClazz, PropertyAccessorElement accessorElement) async {
     _annotatedElement = accessorElement;
     final returnType = accessorElement.returnType;
-
+    String typeName = returnType.getDisplayString();
     if (returnType.element is! ClassElement) {
       throwBoxed('${returnType.getDisplayString()} is not a class element');
       return null;
@@ -53,7 +54,8 @@ class DependencyResolver {
         if (returnType.isDartAsyncFuture) {
           final typeArg = returnType as ParameterizedType;
           clazz = typeArg.typeArguments.first.element;
-          registerModuleItem.isAsync = true;
+          _dep.isAsync = true;
+          typeName = typeArg.typeArguments.first.getDisplayString();
         } else {
           clazz = returnType.element;
         }
@@ -62,7 +64,7 @@ class DependencyResolver {
       registerModuleItem.name = accessorElement.name;
       _dep.moduleConfig = registerModuleItem;
       await _resolveAndAddImport(clazz);
-      return _resolve(clazz, returnType.getDisplayString());
+      return _resolve(clazz, typeName);
     }
   }
 
@@ -88,6 +90,7 @@ class DependencyResolver {
             ?.getField('name')
             ?.toStringValue();
 
+    _dep.asInstance = asInstanceChecker.hasAnnotationOfExact(_annotatedElement);
     final name = namedChecker
         .firstAnnotationOfExact(_annotatedElement)
         ?.getField('name')
@@ -131,6 +134,7 @@ class DependencyResolver {
       });
     }
     if (constructor != null) {
+      _dep.isAsync = constructor.returnType.isDartAsyncFuture;
       _dep.constructorName = constructor.name;
 
       for (ParameterElement param in constructor.parameters) {
@@ -155,6 +159,9 @@ class DependencyResolver {
   }
 
   Future<String> _resolveLibImport(Element element) async {
+    if (element.source?.isInSystemLibrary == true) {
+      return null;
+    }
     final assetId = await _resolver.assetIdForElement(element);
     final lib = await _resolver.findLibraryByName(assetId.package);
     if (lib != null) {

@@ -47,3 +47,5 @@ void printBoxed(String message) {
   final pre = 'Injectable Generator ';
   print("${pre.padRight(71, '-')}\n\n$message\n${''.padRight(72, '-')} \n");
 }
+
+String stripGenericTypes(String type) => RegExp('^([^<]*)').stringMatch(type);

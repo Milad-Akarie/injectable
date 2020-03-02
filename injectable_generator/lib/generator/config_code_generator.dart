@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:injectable_generator/dependency_config.dart';
+import 'package:injectable_generator/generator/singleton_generator.dart';
+import 'package:injectable_generator/injectable_types.dart';
 import 'package:injectable_generator/utils.dart';
 
-import 'dependency_config.dart';
-import 'injectable_types.dart';
+import 'factory_generator.dart';
 
 class ConfigCodeGenerator {
   final List<DependencyConfig> allDeps;
@@ -24,12 +26,6 @@ class ConfigCodeGenerator {
         .where((d) => d.moduleConfig != null)
         .map((d) => d.moduleConfig.moduleName)
         .toSet();
-
-    final Set<DependencyConfig> eagerDeps = sorted
-        .where((d) => d.injectableType == InjectableType.singleton)
-        .toSet();
-
-    final lazyDeps = sorted.difference(eagerDeps);
 
     // generate import
     final imports =
@@ -56,46 +52,21 @@ class ConfigCodeGenerator {
     });
 
     // generate common registering
-    _generateDeps(lazyDeps.where((dep) => dep.environment == null).toSet());
+    _generateDeps(sorted.where((dep) => dep.environment == null).toSet());
 
     _writeln("");
 
-    lazyDeps
+    sorted
         .map((dep) => dep.environment)
         .toSet()
         .where((env) => env != null)
         .forEach((env) {
       _writeln('\n\n  //Register $env Dependencies --------');
       _writeln("if(environment == '$env'){");
-      final envDeps = lazyDeps.where((dep) => dep.environment == env).toSet();
+      final envDeps = sorted.where((dep) => dep.environment == env).toSet();
       _generateDeps(envDeps);
       _writeln('}');
     });
-
-    if (eagerDeps.isNotEmpty) {
-      _writeln(
-          "\n\n  //Eager singletons must be registered in the right order");
-
-      var currentEnv;
-      final eagerList = eagerDeps.toList();
-
-      for (int i = 0; i < eagerList.length; i++) {
-        final dep = eagerList[i];
-        if (dep.environment == null) {
-          _generateRegisterFunction(dep);
-        } else {
-          if (dep.environment != currentEnv) {
-            _writeln("if(environment == '${dep.environment}'){");
-          }
-          _generateRegisterFunction(dep);
-          if (i == eagerList.length - 1 ||
-              eagerList[i + 1].environment != dep.environment) {
-            _writeln('}');
-          }
-        }
-        currentEnv = dep.environment;
-      }
-    }
 
     _write('}');
 
@@ -105,7 +76,16 @@ class ConfigCodeGenerator {
   }
 
   void _generateDeps(Set<DependencyConfig> deps) {
-    deps.forEach((dep) => _generateRegisterFunction(dep));
+    deps.forEach((dep) {
+      if (dep.injectableType == InjectableType.factory) {
+        _writeln(LazyFactoryGenerator().generate(dep));
+      } else if (dep.injectableType == InjectableType.lazySingleton) {
+        _writeln(LazySingletonGenerator().generate(dep));
+      } else if (dep.injectableType == InjectableType.singleton) {
+        _writeln(SingletonGenerator().generate(dep));
+      }
+      // _generateRegisterFunction(dep);
+    });
   }
 
   void _sortByDependents(
@@ -131,8 +111,8 @@ class ConfigCodeGenerator {
     if (dep.moduleConfig != null) {
       final mConfig = dep.moduleConfig;
       final mName = toCamelCase(mConfig.moduleName);
-      if (mConfig.isAsync) {
-        final awaitedVar = toCamelCase(dep.type);
+      if (dep.isAsync && dep.asInstance) {
+        final awaitedVar = toCamelCase(stripGenericTypes(dep.type));
         _writeln('final $awaitedVar = await $mName.${mConfig.name};');
         constructBody = awaitedVar;
       } else {
@@ -142,19 +122,34 @@ class ConfigCodeGenerator {
       constructBody = _generateConstructor(dep);
     }
 
-    if (dep.injectableType == InjectableType.singleton) {
+    if (dep.injectableType == InjectableType.singleton &&
+        dep.dependencies.isEmpty &&
+        dep.asInstance) {
       registerFunc = constructBody;
     } else {
       registerFunc = '=> $constructBody';
     }
 
     final typeArg = '<${dep.type}>';
+    final asyncStr = dep.isAsync && !dep.asInstance ? 'Async' : '';
     if (dep.injectableType == InjectableType.factory) {
-      _writeln("g.registerFactory$typeArg(() $registerFunc");
+      _writeln("g.registerFactory$asyncStr$typeArg(() $registerFunc");
     } else if (dep.injectableType == InjectableType.lazySingleton) {
-      _writeln("g.registerLazySingleton$typeArg(() $registerFunc");
+      _writeln("g.registerLazySingleton$asyncStr$typeArg(() $registerFunc");
     } else {
-      _writeln("g.registerSingleton$typeArg($registerFunc");
+      if (dep.dependencies.isNotEmpty) {
+        final suffix = dep.isAsync ? 'Async' : 'WithDependencies';
+        final dependsOn =
+            dep.dependencies.map((d) => stripGenericTypes(d.type)).toList();
+        _writeln(
+            "g.registerSingleton$suffix$typeArg(()$registerFunc, dependsOn:$dependsOn");
+      } else {
+        if (dep.isAsync && !dep.asInstance) {
+          _writeln("g.registerSingletonAsync$typeArg(()$registerFunc");
+        } else {
+          _writeln("g.registerSingleton$typeArg($registerFunc");
+        }
+      }
     }
 
     if (dep.instanceName != null) {
@@ -181,12 +176,11 @@ class ConfigCodeGenerator {
 
     final constructName =
         dep.constructorName.isEmpty ? "" : ".${dep.constructorName}";
-    final strippedClassName = RegExp('^([^<]*)').stringMatch(dep.bindTo);
-    return '${strippedClassName}$constructName(${constBuffer.toString()})';
+    return '${stripGenericTypes(dep.bindTo)}$constructName(${constBuffer.toString()})';
   }
 
   bool _hasAsync(Set<DependencyConfig> deps) {
-    return deps.any((d) => d.moduleConfig?.isAsync == true);
+    return deps.any((d) => d.isAsync && d.asInstance);
   }
 
   void _generateModules(Set<String> modules, Set<DependencyConfig> deps) {

@@ -1,13 +1,11 @@
-import 'package:dio/dio.dart';
 import 'package:example/services.dart';
 import 'package:injectable/injectable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 @registerModule
 abstract class RegisterModule {
   // @dev
-  @singleton
-  Dio get dioDev => Dio(BaseOptions(baseUrl: "basweUwrl"));
+  // @singleton
+  // Dio get dioDev => Dio(BaseOptions(baseUrl: "basweUwrl"));
 
   // @RegisterAs(ServiceAbs)
   // ServiceAA get serviceAA;
@@ -16,17 +14,25 @@ abstract class RegisterModule {
   // Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
 
   // Future<ServiceAA> get service => ServiceAA.createService();
-
-  ServiceAA<Service11> get serviceA;
+  // @asInstance
+  // @singleton
+  // Future<ServiceAA<Service11>> get serviceA =>
+  //     ServiceAA.createService<Service11>('');
+  // // @dev
+  // @singleton
+  // ServiceX get serviceX;
 }
+// @injectable
 
-@injectable
+// @singleton
 class ServiceX {
-  ServiceX(ServiceAA<Service11> serviceAA);
+  ServiceX(ServiceAA serviceAA);
 }
 
-//@injectable
+// @asInstance
+// @singleton
+@singleton
 class ServiceAA<T> {
   @factoryMethod
-  static ServiceAA createService<T>() => ServiceAA<T>();
+  static Future<ServiceAA> createService<T>(String x) async => ServiceAA<T>();
 }

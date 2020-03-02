@@ -1,7 +1,6 @@
-import 'package:dio/dio.dart';
+import 'package:example/register_module.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'injector.iconfig.dart';
 
@@ -11,6 +10,14 @@ final getIt = GetIt.instance;
 Future<void> configure() async {
   $initGetIt(getIt);
 
+  getIt.registerSingletonWithDependencies(() => ServiceAA(),
+      dependsOn: [ServiceX]);
+
+  // getIt.registerFactory(() => ServiceAA());
+  // getIt.registerFactoryAsync(() => ServiceAA.createService());
+  // getIt.registerSingletonAsync(() => ServiceAA.createService());
+  // getIt.registerSingletonAsync(() => ServiceAA.createService());
+  // getIt.registerSingletonWithDependencies(() => ServiceAA.createService());
   // getIt.registerLazySingletonAsync<SharedPreferences>(
   //     () async => SharedPreferences.getInstance());
 

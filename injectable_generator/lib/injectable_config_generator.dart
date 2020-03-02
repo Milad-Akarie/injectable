@@ -6,8 +6,8 @@ import 'package:glob/glob.dart';
 import 'package:injectable/injectable.dart';
 import 'package:source_gen/source_gen.dart';
 
-import 'config_code_generator.dart';
 import 'dependency_config.dart';
+import 'generator/config_code_generator.dart';
 import 'utils.dart';
 
 const TypeChecker bindChecker = const TypeChecker.fromRuntime(RegisterAs);
