@@ -17,25 +17,31 @@ const TypeChecker constructorChecker =
     const TypeChecker.fromRuntime(FactoryMethod);
 
 class DependencyResolver {
-  final Element _annotatedElement;
+  Element _annotatedElement;
   final _dep = DependencyConfig();
+  final Resolver _resolver;
 
-  DependencyResolver(this._annotatedElement) {}
+  DependencyResolver(this._resolver);
 
-  Future<DependencyConfig> resolve(Resolver resolver) {
-    _dep.imports.add(getImport(_annotatedElement));
-    return _resolve(_annotatedElement, resolver);
+  Future<DependencyConfig> resolve(Element element) {
+    _annotatedElement = element;
+    final import = getImport(element);
+    if (import != null) {
+      _dep.imports.add(import);
+    }
+    return _resolve(_annotatedElement);
   }
 
-  Future<DependencyConfig> resolveFromAccessor(
-      ClassElement moduleClazz, Resolver resolver) async {
-    final PropertyAccessorElement accessorElement = _annotatedElement;
+  Future<DependencyConfig> resolveAccessor(
+      ClassElement moduleClazz, PropertyAccessorElement accessorElement) async {
+    _annotatedElement = accessorElement;
     final returnType = accessorElement.returnType;
 
     if (returnType.element is! ClassElement) {
       throwBoxed('${returnType.getDisplayString()} is not a class element');
       return null;
     } else {
+      await _checkForParameterizedTypes(returnType);
       final registerModuleItem = RegisterModuleItem();
       registerModuleItem.moduleName = moduleClazz.name;
       registerModuleItem.import = getImport(moduleClazz);
@@ -55,17 +61,15 @@ class DependencyResolver {
 
       registerModuleItem.name = accessorElement.name;
       _dep.moduleConfig = registerModuleItem;
-
-      final import = await _resolveLibImport(clazz, resolver);
-      _dep.imports.add(import);
-      return _resolve(clazz, resolver);
+      await _resolveAndAddImport(clazz);
+      return _resolve(clazz, returnType.getDisplayString());
     }
   }
 
-  Future<DependencyConfig> _resolve(
-      ClassElement clazz, Resolver resolver) async {
-    _dep.type = clazz.name;
-    _dep.bindTo = clazz.name;
+  Future<DependencyConfig> _resolve(ClassElement clazz,
+      [String typeName]) async {
+    _dep.type = typeName ?? clazz.name;
+    _dep.bindTo = typeName ?? clazz.name;
 
     var inlineEnv;
     final bindAnnotation = bindChecker.firstAnnotationOf(_annotatedElement);
@@ -75,7 +79,7 @@ class DependencyResolver {
       inlineEnv = bindReader.peek('env')?.stringValue;
       _dep.type = abstractType.getDisplayString();
       _dep.bindTo = clazz.name;
-      _dep.imports.add(getImport(abstractType.element));
+      await _resolveAndAddImport(abstractType.element);
     }
 
     _dep.environment = inlineEnv ??
@@ -120,11 +124,9 @@ class DependencyResolver {
 
       constructor = possibleFactories
           .firstWhere((m) => constructorChecker.hasAnnotationOf(m), orElse: () {
-        if (clazz.isAbstract) {
-          throwBoxed(
-              '''[${_annotatedElement.name}] is abstract and can not be registered directly!
+        throwBoxedIf(clazz.isAbstract,
+            '''[${_annotatedElement.name}] is abstract and can not be registered directly!
                 \n if it has a factory or a create method annotate it with @factoryMethod''');
-        }
         return clazz.unnamedConstructor;
       });
     }
@@ -138,12 +140,13 @@ class DependencyResolver {
                 ?.toTypeValue()
                 ?.getDisplayString() ??
             namedAnnotation?.getField('name')?.toStringValue();
-        final import = await _resolveLibImport(param.type.element, resolver);
+        await _resolveAndAddImport(param.type.element);
+        await _checkForParameterizedTypes(param.type);
+
         _dep.dependencies.add(InjectedDependency(
           type: param.type.getDisplayString(),
           name: instanceName,
           paramName: param.isPositional ? null : param.name,
-          import: import,
         ));
       }
     }
@@ -151,13 +154,32 @@ class DependencyResolver {
     return _dep;
   }
 
-  Future<String> _resolveLibImport(Element element, Resolver resolver) async {
-    final assetId = await resolver.assetIdForElement(element);
-    final lib = await resolver.findLibraryByName(assetId.package);
+  Future<String> _resolveLibImport(Element element) async {
+    final assetId = await _resolver.assetIdForElement(element);
+    final lib = await _resolver.findLibraryByName(assetId.package);
     if (lib != null) {
       return getImport(lib);
     } else {
       return getImport(element);
+    }
+  }
+
+  Future<void> _checkForParameterizedTypes(DartType paramType) async {
+    if (paramType is ParameterizedType) {
+      for (DartType type in paramType.typeArguments) {
+        await _checkForParameterizedTypes(type);
+        if (type.element.source != null) {
+          await _resolveAndAddImport(type.element);
+        }
+      }
+      ;
+    }
+  }
+
+  Future<void> _resolveAndAddImport(Element element) async {
+    final import = await _resolveLibImport(element);
+    if (import != null) {
+      _dep.imports.add(import);
     }
   }
 }

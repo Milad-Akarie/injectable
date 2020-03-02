@@ -1,5 +1,12 @@
 # ChangeLog
+
+## [0.2.4]
+
+- fix type arguments are not imported.
+- fix get with instanceNname missing type.
+
 ## [0.2.3]
+
 - improve support for custom initializers
 - fix src import issue
 

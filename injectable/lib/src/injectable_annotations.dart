@@ -92,3 +92,9 @@ class RegisterModule {
 }
 
 const registerModule = const RegisterModule._();
+
+class _AsInstance {
+  const _AsInstance();
+}
+
+const asInstance = const _AsInstance();

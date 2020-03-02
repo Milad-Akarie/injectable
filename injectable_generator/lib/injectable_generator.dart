@@ -38,13 +38,13 @@ class InjectableGenerator implements Generator {
             !clazz.isAbstract, '[${clazz.name}] must be an abstract class!');
 
         for (var annotatedElement in clazz.accessors) {
-          allDepsInStep.add(await DependencyResolver(annotatedElement)
-              .resolveFromAccessor(clazz, buildStep.resolver));
+          allDepsInStep.add(await DependencyResolver(buildStep.resolver)
+              .resolveAccessor(clazz, annotatedElement));
         }
       } else if (_hasInjectable(clazz) ||
           (autoRegister && _hasConventionalMatch(clazz))) {
         allDepsInStep
-            .add(await DependencyResolver(clazz).resolve(buildStep.resolver));
+            .add(await DependencyResolver(buildStep.resolver).resolve(clazz));
       }
     }
 

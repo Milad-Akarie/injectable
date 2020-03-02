@@ -42,5 +42,4 @@ class Service2 {
   Service2(Service11 s1);
 }
 
-@injectable
 class Service11 {}

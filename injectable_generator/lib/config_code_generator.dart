@@ -172,7 +172,6 @@ class ConfigCodeGenerator {
       String type = '<${injectedDep.type}>';
       String instanceName = '';
       if (injectedDep.name != null) {
-        type = '';
         instanceName = "'${injectedDep.name}'";
       }
       final paramName =
@@ -182,7 +181,8 @@ class ConfigCodeGenerator {
 
     final constructName =
         dep.constructorName.isEmpty ? "" : ".${dep.constructorName}";
-    return '${dep.bindTo}$constructName(${constBuffer.toString()})';
+    final strippedClassName = RegExp('^([^<]*)').stringMatch(dep.bindTo);
+    return '${strippedClassName}$constructName(${constBuffer.toString()})';
   }
 
   bool _hasAsync(Set<DependencyConfig> deps) {
@@ -212,6 +212,7 @@ class ConfigCodeGenerator {
 
   void _generateModuleItems(List<DependencyConfig> moduleDeps) {
     moduleDeps.forEach((d) {
+      _writeln('@override');
       final constructor = _generateConstructor(d, getIt: '_g');
       _writeln('${d.bindTo} get ${d.moduleConfig.name} => $constructor ;');
     });

@@ -51,7 +51,6 @@ class DependencyConfig {
 
   Set<String> get allImports => {
         ...imports.where((i) => i != null),
-        ...dependencies.map((dep) => dep.import).where((i) => i != null),
         if (moduleConfig != null) moduleConfig.import
       };
 }
@@ -59,20 +58,17 @@ class DependencyConfig {
 class InjectedDependency {
   String type;
   String name;
-  String import;
   String paramName;
 
-  InjectedDependency({this.type, this.name, this.import, this.paramName});
+  InjectedDependency({this.type, this.name, this.paramName});
   InjectedDependency.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     type = json['type'];
-    import = json['import'];
     paramName = json['paramName'];
   }
 
   Map<String, dynamic> toJson() => {
         "type": type,
-        "import": import,
         if (name != null) "name": name,
         if (paramName != null) "paramName": paramName,
       };

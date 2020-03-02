@@ -3,6 +3,7 @@ import 'package:analyzer/dart/element/element.dart';
 
 String getImport(Element element) {
   //return early if element has no source
+
   if (element.source == null) {
     return null;
   }
