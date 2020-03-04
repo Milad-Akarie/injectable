@@ -36,7 +36,6 @@ abstract class RegisterFuncGenerator {
   String generateConstructorForModule(DependencyConfig dep) {
     final mConfig = dep.moduleConfig;
     final mName = toCamelCase(mConfig.moduleName);
-    print(dep.regsiterAsInstance);
     if (dep.regsiterAsInstance) {
       final awaitedVar = toCamelCase(stripGenericTypes(dep.type));
       writeln('final $awaitedVar = await $mName.${mConfig.name};');
