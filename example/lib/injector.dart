@@ -6,4 +6,8 @@ import 'injector.iconfig.dart';
 final getIt = GetIt.instance;
 
 @injectableInit
-Future<void> configure() async => await $initGetIt(getIt);
+Future<void> configure() async {
+  $initGetIt(getIt);
+  // getIt.registerFactoryParam<ProductService, String, dynamic>(
+  //     (s, d) => ProductService(s));
+}

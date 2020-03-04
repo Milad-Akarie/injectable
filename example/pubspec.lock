@@ -246,7 +246,7 @@ packages:
       name: get_it
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.0"
+    version: "4.0.0"
   glob:
     dependency: transitive
     description:
@@ -302,14 +302,14 @@ packages:
       path: "../injectable"
       relative: true
     source: path
-    version: "0.2.2"
+    version: "0.2.3"
   injectable_generator:
     dependency: "direct dev"
     description:
       path: "../injectable_generator"
       relative: true
     source: path
-    version: "0.2.2"
+    version: "0.2.4"
   io:
     dependency: transitive
     description:

@@ -11,7 +11,11 @@ class DependencyConfig {
   String bindTo;
   String environment;
   String constructorName;
+  bool isAsync;
   RegisterModuleItem moduleConfig;
+  List<String> dependsOn;
+
+  bool preResolve;
 
   DependencyConfig();
 
@@ -21,8 +25,10 @@ class DependencyConfig {
     instanceName = json['instanceName'];
     signalsReady = json['signalsReady'];
     constructorName = json['constructorName'] ?? '';
-
-    imports = json['imports'].cast<String>();
+    isAsync = json['isAsync'] ?? false;
+    preResolve = json['preResolve'] ?? preResolve;
+    imports = json['imports']?.cast<String>();
+    dependsOn = json['dependsOn']?.cast<String>() ?? [];
     if (json['dependencies'] != null) {
       json['dependencies'].forEach((v) {
         dependencies.add(InjectedDependency.fromJson(v));
@@ -36,11 +42,16 @@ class DependencyConfig {
     environment = json['environment'];
   }
 
+  bool get registerAsInstance => isAsync && preResolve;
+
   Map<String, dynamic> toJson() => {
         "type": type,
         "bindTo": bindTo,
+        "isAsync": isAsync,
+        "preResolve": preResolve,
         "injectableType": injectableType,
         "imports": imports.toSet().toList(),
+        "dependsOn": dependsOn,
         "dependencies": dependencies.map((v) => v.toJson()).toList(),
         if (instanceName != null) "instanceName": instanceName,
         if (signalsReady != null) "signalsReady": signalsReady,
@@ -51,7 +62,6 @@ class DependencyConfig {
 
   Set<String> get allImports => {
         ...imports.where((i) => i != null),
-        ...dependencies.map((dep) => dep.import).where((i) => i != null),
         if (moduleConfig != null) moduleConfig.import
       };
 }
@@ -59,47 +69,58 @@ class DependencyConfig {
 class InjectedDependency {
   String type;
   String name;
-  String import;
   String paramName;
+  bool isFactoryParam;
+  bool isPositional;
 
-  InjectedDependency({this.type, this.name, this.import, this.paramName});
+  InjectedDependency(
+      {this.type,
+      this.name,
+      this.paramName,
+      this.isFactoryParam,
+      this.isPositional});
   InjectedDependency.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     type = json['type'];
-    import = json['import'];
     paramName = json['paramName'];
+    isFactoryParam = json['isFactoryParam'];
+    isPositional = json['isPositional'];
   }
 
   Map<String, dynamic> toJson() => {
         "type": type,
-        "import": import,
+        "isFactoryParam": isFactoryParam,
+        "isPositional": isPositional,
         if (name != null) "name": name,
         if (paramName != null) "paramName": paramName,
       };
 }
 
 class RegisterModuleItem {
-  bool isAsync = false;
   bool isAbstract = false;
+  bool isMethod = false;
   String name;
   String moduleName;
   String import;
+  Map params = {};
 
   RegisterModuleItem();
 
   RegisterModuleItem.fromJson(Map<String, dynamic> json) {
-    isAsync = json['isAsync'] ?? false;
     isAbstract = json['isAbstract'] ?? false;
+    isMethod = json['isMethod'] ?? false;
     name = json['name'];
     moduleName = json['moduleName'];
     import = json['import'];
+    params = json['params'];
   }
 
   Map<String, dynamic> toJson() => {
-        'isAsync': isAsync,
         'isAbstract': isAbstract,
+        'isMethod': isMethod,
         'name': name,
         'moduleName': moduleName,
-        "import": import,
+        'import': import,
+        'params': params
       };
 }

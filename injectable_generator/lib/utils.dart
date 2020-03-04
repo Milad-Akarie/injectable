@@ -3,6 +3,7 @@ import 'package:analyzer/dart/element/element.dart';
 
 String getImport(Element element) {
   //return early if element has no source
+
   if (element.source == null) {
     return null;
   }
@@ -46,3 +47,5 @@ void printBoxed(String message) {
   final pre = 'Injectable Generator ';
   print("${pre.padRight(71, '-')}\n\n$message\n${''.padRight(72, '-')} \n");
 }
+
+String stripGenericTypes(String type) => RegExp('^([^<]*)').stringMatch(type);

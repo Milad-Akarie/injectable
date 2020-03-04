@@ -12,70 +12,97 @@ const TypeChecker namedChecker = const TypeChecker.fromRuntime(Named);
 const TypeChecker singletonChecker = const TypeChecker.fromRuntime(Singleton);
 const TypeChecker envChecker = const TypeChecker.fromRuntime(Environment);
 const TypeChecker bindChecker = const TypeChecker.fromRuntime(RegisterAs);
-
+const TypeChecker preResolveChecker = const TypeChecker.fromRuntime(PreResolve);
+const TypeChecker factoryParamChecker =
+    const TypeChecker.fromRuntime(FactoryParam);
 const TypeChecker constructorChecker =
     const TypeChecker.fromRuntime(FactoryMethod);
 
 class DependencyResolver {
-  final Element _annotatedElement;
+  Element _annotatedElement;
   final _dep = DependencyConfig();
+  final Resolver _resolver;
 
-  DependencyResolver(this._annotatedElement) {}
+  DependencyResolver(this._resolver);
 
-  Future<DependencyConfig> resolve(Resolver resolver) {
-    _dep.imports.add(getImport(_annotatedElement));
-    return _resolve(_annotatedElement, resolver);
-  }
-
-  Future<DependencyConfig> resolveFromAccessor(
-      ClassElement moduleClazz, Resolver resolver) async {
-    final PropertyAccessorElement accessorElement = _annotatedElement;
-    final returnType = accessorElement.returnType;
-
-    if (returnType.element is! ClassElement) {
-      throwBoxed('${returnType.getDisplayString()} is not a class element');
-      return null;
-    } else {
-      final registerModuleItem = RegisterModuleItem();
-      registerModuleItem.moduleName = moduleClazz.name;
-      registerModuleItem.import = getImport(moduleClazz);
-      ClassElement clazz;
-      if (accessorElement.isAbstract) {
-        clazz = returnType.element;
-        registerModuleItem.isAbstract = true;
-      } else {
-        if (returnType.isDartAsyncFuture) {
-          final typeArg = returnType as ParameterizedType;
-          clazz = typeArg.typeArguments.first.element;
-          registerModuleItem.isAsync = true;
-        } else {
-          clazz = returnType.element;
-        }
-      }
-
-      registerModuleItem.name = accessorElement.name;
-      _dep.moduleConfig = registerModuleItem;
-
-      final import = await _resolveLibImport(clazz, resolver);
+  Future<DependencyConfig> resolve(Element element) {
+    _annotatedElement = element;
+    final import = getImport(element);
+    if (import != null) {
       _dep.imports.add(import);
-      return _resolve(clazz, resolver);
     }
+    return _resolveActualType(_annotatedElement);
   }
 
-  Future<DependencyConfig> _resolve(
-      ClassElement clazz, Resolver resolver) async {
-    _dep.type = clazz.name;
-    _dep.bindTo = clazz.name;
+  Future<DependencyConfig> resolveModuleMemeber(
+      ClassElement moduleClazz, ExecutableElement excutableElement) async {
+    _annotatedElement = excutableElement;
+    final returnType = excutableElement.returnType;
+    String typeName = returnType.getDisplayString();
+
+    throwBoxedIf(returnType.element is! ClassElement,
+        '${returnType.getDisplayString()} is not a class element');
+
+    await _checkForParameterizedTypes(returnType);
+    final registerModuleItem = RegisterModuleItem();
+    registerModuleItem.moduleName = moduleClazz.name;
+    registerModuleItem.import = getImport(moduleClazz);
+
+    if (excutableElement is MethodElement) {
+      throwBoxedIf(excutableElement.parameters.length > 2,
+          'Error generating [$returnType]! Max number of factory params is 2');
+      registerModuleItem.isMethod = true;
+
+      excutableElement.parameters.forEach((param) {
+        registerModuleItem.params[param.name] = param.type.getDisplayString();
+      });
+    }
+
+    ClassElement clazz;
+    if (excutableElement.isAbstract) {
+      clazz = returnType.element;
+      registerModuleItem.isAbstract = true;
+    } else {
+      if (returnType.isDartAsyncFuture) {
+        final typeArg = returnType as ParameterizedType;
+        clazz = typeArg.typeArguments.first.element;
+        _dep.isAsync = true;
+        typeName = typeArg.typeArguments.first.getDisplayString();
+      } else {
+        clazz = returnType.element;
+      }
+    }
+    registerModuleItem.name = excutableElement.name;
+    _dep.moduleConfig = registerModuleItem;
+    await _resolveAndAddImport(clazz);
+    return _resolveActualType(clazz, typeName);
+  }
+
+  Future<DependencyConfig> _resolveActualType(ClassElement clazz,
+      [String typeName]) async {
+    _dep.type = typeName ?? clazz.name;
+    _dep.bindTo = typeName ?? clazz.name;
 
     var inlineEnv;
     final bindAnnotation = bindChecker.firstAnnotationOf(_annotatedElement);
     if (bindAnnotation != null) {
       ConstantReader bindReader = ConstantReader(bindAnnotation);
       final abstractType = bindReader.peek('abstractType')?.typeValue;
+      final abstractChecker = TypeChecker.fromStatic(abstractType);
+
+      final abstractSubtype = clazz.allSupertypes.firstWhere(
+          (type) => abstractChecker.isExactly(type.element), orElse: () {
+        throwBoxed(
+            '[${clazz.name}] is not a subtype of [${abstractType.getDisplayString()}]');
+        return null;
+      });
+
+      _dep.type = abstractSubtype.getDisplayString();
       inlineEnv = bindReader.peek('env')?.stringValue;
-      _dep.type = abstractType.getDisplayString();
+
       _dep.bindTo = clazz.name;
-      _dep.imports.add(getImport(abstractType.element));
+      await _resolveAndAddImport(abstractSubtype.element);
+      await _checkForParameterizedTypes(abstractSubtype);
     }
 
     _dep.environment = inlineEnv ??
@@ -84,6 +111,7 @@ class DependencyResolver {
             ?.getField('name')
             ?.toStringValue();
 
+    _dep.preResolve = preResolveChecker.hasAnnotationOfExact(_annotatedElement);
     final name = namedChecker
         .firstAnnotationOfExact(_annotatedElement)
         ?.getField('name')
@@ -103,6 +131,11 @@ class DependencyResolver {
         _dep.injectableType = InjectableType.lazySingleton;
       } else {
         _dep.injectableType = InjectableType.singleton;
+        _dep.dependsOn = singletonAnnotation
+            .getField('dependsOn')
+            ?.toListValue()
+            ?.map<String>((v) => v.toTypeValue().getDisplayString())
+            ?.toList();
       }
 
       _dep.signalsReady =
@@ -120,15 +153,14 @@ class DependencyResolver {
 
       constructor = possibleFactories
           .firstWhere((m) => constructorChecker.hasAnnotationOf(m), orElse: () {
-        if (clazz.isAbstract) {
-          throwBoxed(
-              '''[${_annotatedElement.name}] is abstract and can not be registered directly!
+        throwBoxedIf(clazz.isAbstract,
+            '''[${clazz.name}] is abstract and can not be registered directly!
                 \n if it has a factory or a create method annotate it with @factoryMethod''');
-        }
         return clazz.unnamedConstructor;
       });
     }
     if (constructor != null) {
+      _dep.isAsync = constructor.returnType.isDartAsyncFuture;
       _dep.constructorName = constructor.name;
 
       for (ParameterElement param in constructor.parameters) {
@@ -138,26 +170,56 @@ class DependencyResolver {
                 ?.toTypeValue()
                 ?.getDisplayString() ??
             namedAnnotation?.getField('name')?.toStringValue();
-        final import = await _resolveLibImport(param.type.element, resolver);
+        await _resolveAndAddImport(param.type.element);
+        await _checkForParameterizedTypes(param.type);
+
         _dep.dependencies.add(InjectedDependency(
           type: param.type.getDisplayString(),
           name: instanceName,
-          paramName: param.isPositional ? null : param.name,
-          import: import,
+          isFactoryParam: _dep.moduleConfig == null &&
+              factoryParamChecker.hasAnnotationOf(param),
+          paramName: param.name,
+          isPositional: param.isPositional,
         ));
+
+        throwBoxedIf(
+            _dep.dependencies.where((d) => d.isFactoryParam).length > 2,
+            'Error generating [${clazz.name}]! Max number of factory params is 2');
       }
     }
 
     return _dep;
   }
 
-  Future<String> _resolveLibImport(Element element, Resolver resolver) async {
-    final assetId = await resolver.assetIdForElement(element);
-    final lib = await resolver.findLibraryByName(assetId.package);
+  Future<String> _resolveLibImport(Element element) async {
+    if (element.source?.isInSystemLibrary == true) {
+      return null;
+    }
+    final assetId = await _resolver.assetIdForElement(element);
+    final lib = await _resolver.findLibraryByName(assetId.package);
     if (lib != null) {
       return getImport(lib);
     } else {
       return getImport(element);
+    }
+  }
+
+  Future<void> _checkForParameterizedTypes(DartType paramType) async {
+    if (paramType is ParameterizedType) {
+      for (DartType type in paramType.typeArguments) {
+        await _checkForParameterizedTypes(type);
+        if (type.element.source != null) {
+          await _resolveAndAddImport(type.element);
+        }
+      }
+      ;
+    }
+  }
+
+  Future<void> _resolveAndAddImport(Element element) async {
+    final import = await _resolveLibImport(element);
+    if (import != null) {
+      _dep.imports.add(import);
     }
   }
 }
