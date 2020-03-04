@@ -1,6 +1,5 @@
 import 'package:injectable_generator/dependency_config.dart';
 import 'package:injectable_generator/generator/register_func_generator.dart';
-import 'package:injectable_generator/utils.dart';
 
 class SingletonGenerator extends RegisterFuncGenerator {
   @override
@@ -9,28 +8,30 @@ class SingletonGenerator extends RegisterFuncGenerator {
         ? generateConstructor(dep)
         : generateConstructorForModule(dep);
 
+    var constructor = constructBody;
+    if (dep.registerAsInstance) {
+      constructor = generateAwaitSetup(dep, constructBody);
+    }
+
+    print(constructor);
+
     final typeArg = '<${dep.type}>';
-    if (dep.dependencies.isNotEmpty) {
-      final suffix =
-          dep.isAsync && !dep.asInstance ? 'Async' : 'WithDependencies';
-      final dependsOn =
-          dep.dependencies.map((d) => stripGenericTypes(d.type)).toList();
-      writeln(
-          "g.registerSingleton$suffix$typeArg(()=> $constructBody, dependsOn:$dependsOn");
+
+    if (dep.isAsync && !dep.preResolve) {
+      writeln('g.registerSingletonAsync$typeArg(()=> $constructor');
+      if (dep.dependsOn.isNotEmpty) {
+        write(', dependsOn:${dep.dependsOn}');
+      }
     } else {
-      if (dep.isAsync && !dep.asInstance) {
-        writeln("g.registerSingletonAsync$typeArg(()=> $constructBody");
+      if (dep.dependsOn.isEmpty) {
+        writeln("g.registerSingleton$typeArg($constructor");
       } else {
-        writeln("g.registerSingleton$typeArg($constructBody");
+        writeln(
+            'g.registerSingletonWithDependencies$typeArg(()=> $constructor, dependsOn:${dep.dependsOn}');
       }
     }
-    if (dep.signalsReady != null) {
-      write(',signalsReady: ${dep.signalsReady}');
-    }
-    if (dep.instanceName != null) {
-      write(",instanceName: '${dep.instanceName}'");
-    }
-    write(");");
+
+    closeRegisterFunc(dep);
     return buffer.toString();
   }
 }

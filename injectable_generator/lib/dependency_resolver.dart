@@ -12,8 +12,9 @@ const TypeChecker namedChecker = const TypeChecker.fromRuntime(Named);
 const TypeChecker singletonChecker = const TypeChecker.fromRuntime(Singleton);
 const TypeChecker envChecker = const TypeChecker.fromRuntime(Environment);
 const TypeChecker bindChecker = const TypeChecker.fromRuntime(RegisterAs);
-const TypeChecker asInstanceChecker = const TypeChecker.fromRuntime(AsInstance);
-
+const TypeChecker preResolveChecker = const TypeChecker.fromRuntime(PreResolve);
+const TypeChecker factoryParamChecker =
+    const TypeChecker.fromRuntime(FactoryParam);
 const TypeChecker constructorChecker =
     const TypeChecker.fromRuntime(FactoryMethod);
 
@@ -30,45 +31,54 @@ class DependencyResolver {
     if (import != null) {
       _dep.imports.add(import);
     }
-    return _resolve(_annotatedElement);
+    return _resolveActualType(_annotatedElement);
   }
 
-  Future<DependencyConfig> resolveAccessor(
-      ClassElement moduleClazz, PropertyAccessorElement accessorElement) async {
-    _annotatedElement = accessorElement;
-    final returnType = accessorElement.returnType;
+  Future<DependencyConfig> resolveModuleMemeber(
+      ClassElement moduleClazz, ExecutableElement excutableElement) async {
+    _annotatedElement = excutableElement;
+    final returnType = excutableElement.returnType;
     String typeName = returnType.getDisplayString();
-    if (returnType.element is! ClassElement) {
-      throwBoxed('${returnType.getDisplayString()} is not a class element');
-      return null;
-    } else {
-      await _checkForParameterizedTypes(returnType);
-      final registerModuleItem = RegisterModuleItem();
-      registerModuleItem.moduleName = moduleClazz.name;
-      registerModuleItem.import = getImport(moduleClazz);
-      ClassElement clazz;
-      if (accessorElement.isAbstract) {
-        clazz = returnType.element;
-        registerModuleItem.isAbstract = true;
-      } else {
-        if (returnType.isDartAsyncFuture) {
-          final typeArg = returnType as ParameterizedType;
-          clazz = typeArg.typeArguments.first.element;
-          _dep.isAsync = true;
-          typeName = typeArg.typeArguments.first.getDisplayString();
-        } else {
-          clazz = returnType.element;
-        }
-      }
 
-      registerModuleItem.name = accessorElement.name;
-      _dep.moduleConfig = registerModuleItem;
-      await _resolveAndAddImport(clazz);
-      return _resolve(clazz, typeName);
+    throwBoxedIf(returnType.element is! ClassElement,
+        '${returnType.getDisplayString()} is not a class element');
+
+    await _checkForParameterizedTypes(returnType);
+    final registerModuleItem = RegisterModuleItem();
+    registerModuleItem.moduleName = moduleClazz.name;
+    registerModuleItem.import = getImport(moduleClazz);
+
+    if (excutableElement is MethodElement) {
+      throwBoxedIf(excutableElement.parameters.length > 2,
+          'Error generating [$returnType]! Max number of factory params is 2');
+      registerModuleItem.isMethod = true;
+
+      excutableElement.parameters.forEach((param) {
+        registerModuleItem.params[param.name] = param.type.getDisplayString();
+      });
     }
+
+    ClassElement clazz;
+    if (excutableElement.isAbstract) {
+      clazz = returnType.element;
+      registerModuleItem.isAbstract = true;
+    } else {
+      if (returnType.isDartAsyncFuture) {
+        final typeArg = returnType as ParameterizedType;
+        clazz = typeArg.typeArguments.first.element;
+        _dep.isAsync = true;
+        typeName = typeArg.typeArguments.first.getDisplayString();
+      } else {
+        clazz = returnType.element;
+      }
+    }
+    registerModuleItem.name = excutableElement.name;
+    _dep.moduleConfig = registerModuleItem;
+    await _resolveAndAddImport(clazz);
+    return _resolveActualType(clazz, typeName);
   }
 
-  Future<DependencyConfig> _resolve(ClassElement clazz,
+  Future<DependencyConfig> _resolveActualType(ClassElement clazz,
       [String typeName]) async {
     _dep.type = typeName ?? clazz.name;
     _dep.bindTo = typeName ?? clazz.name;
@@ -78,10 +88,21 @@ class DependencyResolver {
     if (bindAnnotation != null) {
       ConstantReader bindReader = ConstantReader(bindAnnotation);
       final abstractType = bindReader.peek('abstractType')?.typeValue;
+      final abstractChecker = TypeChecker.fromStatic(abstractType);
+
+      final abstractSubtype = clazz.allSupertypes.firstWhere(
+          (type) => abstractChecker.isExactly(type.element), orElse: () {
+        throwBoxed(
+            '[${clazz.name}] is not a subtype of [${abstractType.getDisplayString()}]');
+        return null;
+      });
+
+      _dep.type = abstractSubtype.getDisplayString();
       inlineEnv = bindReader.peek('env')?.stringValue;
-      _dep.type = abstractType.getDisplayString();
+
       _dep.bindTo = clazz.name;
-      await _resolveAndAddImport(abstractType.element);
+      await _resolveAndAddImport(abstractSubtype.element);
+      await _checkForParameterizedTypes(abstractSubtype);
     }
 
     _dep.environment = inlineEnv ??
@@ -90,7 +111,7 @@ class DependencyResolver {
             ?.getField('name')
             ?.toStringValue();
 
-    _dep.asInstance = asInstanceChecker.hasAnnotationOfExact(_annotatedElement);
+    _dep.preResolve = preResolveChecker.hasAnnotationOfExact(_annotatedElement);
     final name = namedChecker
         .firstAnnotationOfExact(_annotatedElement)
         ?.getField('name')
@@ -110,6 +131,11 @@ class DependencyResolver {
         _dep.injectableType = InjectableType.lazySingleton;
       } else {
         _dep.injectableType = InjectableType.singleton;
+        _dep.dependsOn = singletonAnnotation
+            .getField('dependsOn')
+            ?.toListValue()
+            ?.map<String>((v) => v.toTypeValue().getDisplayString())
+            ?.toList();
       }
 
       _dep.signalsReady =
@@ -128,7 +154,7 @@ class DependencyResolver {
       constructor = possibleFactories
           .firstWhere((m) => constructorChecker.hasAnnotationOf(m), orElse: () {
         throwBoxedIf(clazz.isAbstract,
-            '''[${_annotatedElement.name}] is abstract and can not be registered directly!
+            '''[${clazz.name}] is abstract and can not be registered directly!
                 \n if it has a factory or a create method annotate it with @factoryMethod''');
         return clazz.unnamedConstructor;
       });
@@ -150,8 +176,15 @@ class DependencyResolver {
         _dep.dependencies.add(InjectedDependency(
           type: param.type.getDisplayString(),
           name: instanceName,
-          paramName: param.isPositional ? null : param.name,
+          isFactoryParam: _dep.moduleConfig == null &&
+              factoryParamChecker.hasAnnotationOf(param),
+          paramName: param.name,
+          isPositional: param.isPositional,
         ));
+
+        throwBoxedIf(
+            _dep.dependencies.where((d) => d.isFactoryParam).length > 2,
+            'Error generating [${clazz.name}]! Max number of factory params is 2');
       }
     }
 

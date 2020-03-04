@@ -1,5 +1,11 @@
 # ChangeLog
 
+## [0.3.0] Breaking Changes!
+- add support for GetIt 4.0.0
+- fix generic types are registered as dynamic
+- fix unresolved future when registering asynchronous dependencies
+- change asynchronous dependencies will be registered using async factory unless annotated with @preResolve
+
 ## [0.2.3]
 - improve support for custom initializers
 - fix src import issue
