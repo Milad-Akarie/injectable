@@ -16,13 +16,15 @@ const injectable = const Injectable._();
 class Singleton extends Injectable {
   final bool signalsReady;
   final bool _lazy;
+  final List<Type> dependsOn;
 
-  const Singleton({this.signalsReady})
+  const Singleton({this.signalsReady, this.dependsOn})
       : _lazy = false,
         super._();
 
   const Singleton.lazy({this.signalsReady})
       : _lazy = true,
+        dependsOn = null,
         super._();
 }
 
@@ -84,6 +86,15 @@ class FactoryMethod {
 
 const factoryMethod = const FactoryMethod._();
 
+/// Marks a constructor param as
+/// facotryParam so it can be passed
+/// to the resolver function
+class FactoryParam {
+  const FactoryParam._();
+}
+
+const factoryParam = const FactoryParam._();
+
 // marks a class as a register module where all
 // property accessors rerun types are considered factories
 // unless annotated with @singleton/lazySingleton.
@@ -93,8 +104,11 @@ class RegisterModule {
 
 const registerModule = const RegisterModule._();
 
-class AsInstance {
-  const AsInstance._();
+/// Futures annotated with [preResolv]
+/// will be pre-awaited before they're
+/// registered inside of GetIt
+class PreResolve {
+  const PreResolve._();
 }
 
-const asInstance = const AsInstance._();
+const preResolve = const PreResolve._();

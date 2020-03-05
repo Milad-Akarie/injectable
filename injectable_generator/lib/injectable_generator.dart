@@ -36,10 +36,13 @@ class InjectableGenerator implements Generator {
       if (moduleChecker.hasAnnotationOfExact(clazz)) {
         throwBoxedIf(
             !clazz.isAbstract, '[${clazz.name}] must be an abstract class!');
-
-        for (var annotatedElement in clazz.accessors) {
+        final executables = <ExecutableElement>[
+          ...clazz.accessors,
+          ...clazz.methods,
+        ];
+        for (var annotatedElement in executables) {
           allDepsInStep.add(await DependencyResolver(buildStep.resolver)
-              .resolveAccessor(clazz, annotatedElement));
+              .resolveModuleMemeber(clazz, annotatedElement));
         }
       } else if (_hasInjectable(clazz) ||
           (autoRegister && _hasConventionalMatch(clazz))) {

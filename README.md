@@ -8,6 +8,8 @@ Injectable is a convenient code generator for [get_it](https://pub.dev/packages/
 - [Setup](#setup)
 - [Registering factories](#registering-factories)
 - [Registering singletons](#registering-singletons)
+- [Registering asynchronous injectables](#registering-asynchronous-injectables)
+- [Passing Parameters to factories](#passing-parameters-to-factories)
 - [Binding abstract classes to implementations](#binding-abstract-classes-to-implementations)
 - [Register under different environments](#register-under-different-environments)
 - [Using named factories and static create functions](#Using-named-factories-and-static-create-functions)
@@ -93,8 +95,8 @@ Injectable will generate the needed register functions for you
 final getIt = GetIt.instance;
 
 void $initGetIt(GetIt g, {String environment}) {
-  g.registerFactory<ServiceA>(() => ServiceA())
-  g.registerFactory<ServiceB>(ServiceA(getIt<ServiceA>()))
+  g.registerFactory<ServiceA>(() => ServiceA());
+  g.registerFactory<ServiceB>(ServiceA(getIt<ServiceA>()));
 }
 ```
 
@@ -110,6 +112,121 @@ Alternatively use the constructor version to pass signalsReady to getIt.register
 ```dart
 @singleton // or @lazySingleton
 class ApiProvider {}
+```
+
+## Registering asynchronous injectables
+
+---
+
+Requires **GetIt >= 4.0.0**
+
+if you are to make our instance creation async you're gonna need a static initializer method since constructors can not be asynchronous.
+
+```dart
+class ApiClient {
+  static Future<ApiClient> create(Deps ...) async {
+    ....
+    return apiClient;
+  }
+}
+```
+
+Now simply annotate your class with @injectable and tell injectable to use that static initializer method as a factory method using the @factoryMethod annotation
+
+```dart
+@injectable // or lazy/singleton
+class ApiClient {
+@factoryMethod
+  static Future<ApiClient> create(Deps ...) async {
+    ....
+    return apiClient;
+  }
+}
+```
+
+injectable will automatically register it as an asynchronous factory because the return type is a Future.
+this will generate
+
+```dart
+g.registerFactoryAsync<ApiClient>(() => ApiClient.create());
+```
+
+### Using a register module (for third party dependencies)
+
+just wrap your instance with a future and you're good to go
+
+```dart
+@registerModule
+abstract class RegisterModule {
+  Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
+}
+```
+
+Don't forget to call getAsync() instead of get() when resolving an async injectable
+
+### Pre-Resolving the future
+
+if you want to pre-await the future and register it as value, annotate your async dependencies with @preResolve
+
+```dart
+@registerModule
+abstract class RegisterModule {
+  @preResolve
+  Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
+}
+```
+
+generated code
+
+```dart
+Future<void> $initGetIt(GetIt g, {String environment}) async {
+  final registerModule = _$RegisterModule();
+  final sharedPreferences = await registerModule.prefs;
+  g.registerFactory<SharedPreferences>(() => sharedPreferences);
+  ...
+  }
+```
+
+as you can see this will make your initGetIt func async so be sure to **await** for it
+
+## Passing Parameters to factories
+
+---
+
+Requires **GetIt >= 4.0.0**
+If you're working with a class you own simply annotate your changing constructor param with @factoryParam, you can have up to two parameters **max**!
+
+```dart
+@injectable
+class BackendService {
+  BackendService(@factoryParam String url);
+}
+```
+
+generated code
+
+```dart
+g.registerFactoryParam<BackendService, String, dynamic>(
+    (url, _) => BackendService(url),
+  );
+```
+
+### Using a register module (for third party dependencies)
+
+instead of declaring your dependency as a property accessor, declare it as a method that takes in a parameter or two **max**!
+
+```dart
+@registerModule
+abstract class RegisterModule {
+   BackendService getService(String url) => BackendService(url);
+}
+```
+
+generated code
+
+```dart
+g.registerFactoryParam<BackendService, String, dynamic>(
+      (url, _) => registerModule.getService(url));
 ```
 
 ## Binding abstract classes to implementations
@@ -131,7 +248,7 @@ Generated code for the Above example
 g.registerFactory<Service>(() => ServiceImpl())
 ```
 
-### Binding an abstract class to multiable implementations
+### Binding an abstract class to multiple implementations
 
 Since we can't use type binding to register more than one implementation, we have to use names (tags)
 to register our instances or register under different environment. (we will get to that later)
@@ -325,6 +442,8 @@ abstract class RegisterModule {
   // same thing works for instances that's gotten asynchronous.
   // all you need to do is wrap your instance with a future and tell injectable how
   // to initialize it
+
+  @preResolve // if you need to  pre resolve the value
   Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
   // Also make sure you await for your configure function before running the App.
 }
@@ -370,5 +489,5 @@ flutter packages pub run build_runner clean
 
 ## Support the Library
 
-- You can support the library by staring it on Github or report any bugs you encounter.
+- You can support the library by staring it on Github && liking it on pub or report any bugs you encounter.
 - also if you have a suggestion or think something can be implemented in a better way, open an issue and lets talk about it.

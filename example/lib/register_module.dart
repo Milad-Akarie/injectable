@@ -1,38 +1,41 @@
-import 'package:example/services.dart';
 import 'package:injectable/injectable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 @registerModule
 abstract class RegisterModule {
-  // @dev
+  @preResolve
+  Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
+  // AbsService get absS;
+  // Future<ServiceX> genIml(String x, int y) async => ServiceX();
   // @singleton
-  // Dio get dioDev => Dio(BaseOptions(baseUrl: "basweUwrl"));
-
-  // @RegisterAs(ServiceAbs)
-  // ServiceAA get serviceAA;
-
-  // @dev
-  // Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
-
-  // Future<ServiceAA> get service => ServiceAA.createService();
-  // @asInstance
+  // ServiceX ser();
   // @singleton
-  // Future<ServiceAA<Service11>> get serviceA =>
-  //     ServiceAA.createService<Service11>('');
-  // // @dev
-  // @singleton
-  // ServiceX get serviceX;
+  // TestClass get testClass;
+  // TestSingleton2 get testSing33;
+
+  // TestSingleton testSing(String x, int y) => TestSingleton();
+
+  BackendService getService(String url) => BackendService(url);
+  // @preResolve
+  // @Singleton(dependsOn: [TestClass])
+  // Future<TestSingleton> get futureSing => TestSingleton.create();
 }
+
 // @injectable
+// class TestSingleton2 {
+//   TestSingleton2(@factoryParam String x, TestSingleton test);
+// }
 
-// @singleton
-class ServiceX {
-  ServiceX(ServiceAA serviceAA);
+abstract class AbsService<T> {}
+
+class BackendService extends AbsService<int> {
+  BackendService(@factoryParam String url);
 }
 
-// @asInstance
-// @singleton
-@singleton
-class ServiceAA<T> {
+@injectable
+class ApiClient {
   @factoryMethod
-  static Future<ServiceAA> createService<T>(String x) async => ServiceAA<T>();
+  static Future<ApiClient> create() async {
+    return ApiClient();
+  }
 }

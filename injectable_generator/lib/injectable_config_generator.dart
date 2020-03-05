@@ -32,13 +32,12 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   }
 
   void _reportMissingDependencies(List<DependencyConfig> deps) {
-    final typeArgsStripper = RegExp('^([^<]*)');
     final messages = [];
     final registeredDeps =
-        deps.map((dep) => typeArgsStripper.stringMatch(dep.bindTo)).toSet();
+        deps.map((dep) => stripGenericTypes(dep.bindTo)).toSet();
     deps.forEach((dep) {
-      dep.dependencies.forEach((iDep) {
-        final strippedClassName = typeArgsStripper.stringMatch(iDep.type);
+      dep.dependencies.where((d) => !d.isFactoryParam).forEach((iDep) {
+        final strippedClassName = stripGenericTypes(iDep.type);
         if (!registeredDeps.contains(strippedClassName)) {
           messages.add(
               "[${dep.bindTo}] depends on [$strippedClassName] which is not injectable!");

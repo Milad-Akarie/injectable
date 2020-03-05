@@ -36,10 +36,40 @@
 // class Service3 {
 //   Service3(Service2 s2s);
 // }
-import 'package:injectable/injectable.dart';
 
-class Service2 {
-  Service2(Service11 s1);
-}
+// @singleton
+// class ComponentBloc {
+//   ComponentBloc(
+//     ProductService s1,
+//     CategoriesService s2,
+//   );
+// }
 
-class Service11 {}
+// @injectable
+// class ProductService {
+//   @factoryMethod
+//   static ProductService create(
+//     @factoryParam String varName,
+//     @factoryParam int varTwo,
+//   ) =>
+//       ProductService();
+// }
+
+// @injectable
+// class CategoriesService {}
+
+// @dev
+// @singleton
+// class TestClass {
+//   TestClass();
+//   // @factoryMethod
+//   static Future<TestClass> create() async => TestClass();
+// }
+
+// @prod
+// @Singleton(dependsOn: [TestClass])
+// class TestSingleton {
+//   TestSingleton();
+//   @factoryMethod
+//   static Future<TestSingleton> create(TestClass claxx) async => TestSingleton();
+// }
