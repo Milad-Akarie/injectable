@@ -37,7 +37,7 @@ String toCamelCase(String s) {
 
 void throwBoxed(String message) {
   final pre = 'Injectable Generator ';
-  throw ("\n${pre.padRight(71, '-')}\n$message\n${''.padRight(72, '-')} \n");
+  throw ("\n${pre.padRight(72, '-')}\n$message\n${''.padRight(72, '-')} \n");
 }
 
 void throwBoxedIf(bool condition, String message) {
@@ -48,7 +48,7 @@ void throwBoxedIf(bool condition, String message) {
 
 void printBoxed(String message) {
   final pre = 'Injectable Generator ';
-  print("${pre.padRight(71, '-')}\n\n$message\n${''.padRight(72, '-')} \n");
+  print("${pre.padRight(72, '-')}\n\n$message\n${''.padRight(72, '-')} \n");
 }
 
 String stripGenericTypes(String type) => RegExp('^([^<]*)').stringMatch(type);

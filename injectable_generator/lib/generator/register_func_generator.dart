@@ -12,7 +12,7 @@ abstract class RegisterFuncGenerator {
       var type = '<${injectedDep.type}>';
       var instanceName = '';
       if (injectedDep.name != null) {
-        instanceName = "'${injectedDep.name}'";
+        instanceName = "instanceName:'${injectedDep.name}'";
       }
       final paramName =
           (!injectedDep.isPositional) ? '${injectedDep.paramName}:' : '';

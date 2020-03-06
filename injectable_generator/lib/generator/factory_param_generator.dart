@@ -21,7 +21,7 @@ class FactoryParamGenerator extends RegisterFuncGenerator {
     final methodParams = typeArgs.keys.join(',');
 
     writeln(
-        "g.registerFactoryParam$asyncStr$argsDeclaration(($methodParams)=> $constructBody,");
+        "g.registerFactoryParam$asyncStr$argsDeclaration(($methodParams)=> $constructBody");
 
     closeRegisterFunc(dep);
     return buffer.toString();

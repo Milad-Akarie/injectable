@@ -1,6 +1,13 @@
 # ChangeLog
 
+## [0.3.1] Breaking Changes!
+
+- fix resolve by instanceName is using positional var instead of named
+- fix part files are imported as stand alone
+- minor fixes
+
 ## [0.3.0] Breaking Changes!
+
 - add support for GetIt 4.0.0
 - fix generic types are registered as dynamic
 - fix unresolved future when registering asynchronous dependencies
@@ -9,7 +16,7 @@
 ## [0.2.4]
 
 - fix type arguments are not imported.
-- fix get with instanceNname missing type.
+- fix get with instanceName missing type.
 
 ## [0.2.3]
 

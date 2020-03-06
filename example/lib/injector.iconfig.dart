@@ -4,17 +4,16 @@
 // InjectableConfigGenerator
 // **************************************************************************
 
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:example/register_module.dart';
 import 'package:get_it/get_it.dart';
 
-Future<void> $initGetIt(GetIt g, {String environment}) async {
+void $initGetIt(GetIt g, {String environment}) {
   final registerModule = _$RegisterModule();
-  final sharedPreferences = await registerModule.prefs;
-  g.registerFactory<SharedPreferences>(() => sharedPreferences);
-  g.registerFactoryParam<BackendService, String, dynamic>(
-      (url, _) => registerModule.getService(url));
-  g.registerFactoryAsync<ApiClient>(() => ApiClient.create());
+  g.registerFactoryParam<TestSingleton2, String, dynamic>(
+      (xs, _) => registerModule.sinleton(xs));
+  g.registerFactoryParam<AbsService<int>, String, dynamic>(
+      (url, _) => BackendService(url),
+      instanceName: 'BackendService');
 }
 
 class _$RegisterModule extends RegisterModule {}

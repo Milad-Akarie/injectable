@@ -188,6 +188,11 @@ class DependencyResolver {
       }
     }
 
+    throwBoxedIf(
+        _dep.injectableType != InjectableType.factory &&
+            (_dep.dependencies.where((d) => d.isFactoryParam).isNotEmpty ||
+                _dep.moduleConfig?.params != null),
+        'Error generating [${clazz.name}]! only factories can have parameters');
     return _dep;
   }
 
