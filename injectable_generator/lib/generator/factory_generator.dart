@@ -12,7 +12,6 @@ class FactoryGenerator extends RegisterFuncGenerator {
     if (dep.registerAsInstance) {
       constructor = generateAwaitSetup(dep, constructBody);
     }
-
     final asyncStr = dep.isAsync && !dep.preResolve ? 'Async' : '';
     writeln("g.registerFactory$asyncStr<${dep.type}>(()=> $constructor");
     closeRegisterFunc(dep);
