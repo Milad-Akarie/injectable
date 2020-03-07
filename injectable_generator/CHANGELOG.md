@@ -1,6 +1,11 @@
 # ChangeLog
 
-## [0.3.1] Breaking Changes!
+## [0.3.2]
+
+- fix registered abstract dependencies are reported missing.
+- fix registering third party types as singleton throws an error.
+
+## [0.3.1]
 
 - fix resolve by instanceName is using positional var instead of named
 - fix part files are imported as stand alone

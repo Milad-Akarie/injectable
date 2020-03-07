@@ -10,8 +10,8 @@ import 'package:source_gen/source_gen.dart';
 import 'dependency_config.dart';
 import 'dependency_resolver.dart';
 
-const TypeChecker typeChecker = const TypeChecker.fromRuntime(Injectable);
-const TypeChecker moduleChecker = const TypeChecker.fromRuntime(RegisterModule);
+const TypeChecker typeChecker = TypeChecker.fromRuntime(Injectable);
+const TypeChecker moduleChecker = TypeChecker.fromRuntime(RegisterModule);
 
 class InjectableGenerator implements Generator {
   RegExp _classNameMatcher, _fileNameMatcher;
@@ -53,6 +53,7 @@ class InjectableGenerator implements Generator {
 
     if (allDepsInStep.isNotEmpty) {
       final inputID = buildStep.inputId.changeExtension(".injectable.json");
+
       buildStep.writeAsString(inputID, json.encode(allDepsInStep));
     }
     return null;

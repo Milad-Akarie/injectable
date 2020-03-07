@@ -16,19 +16,18 @@ abstract class RegisterModule {
   // @preResolve
   // @Singleton(dependsOn: [TestClass])
   // Future<TestSingleton> get futureSing => TestSingleton.create();
-  @injectable
-  TestSingleton2 sinleton(String xs) => TestSingleton2(xs);
+
+  TestSingleton2 get test;
 }
 
 // @Named("class")
 // @injectable
 class TestSingleton2 {
-  TestSingleton2(@factoryParam String x);
+  TestSingleton2(AbsService service);
 }
 
 abstract class AbsService<T> {}
 
-@named
 @RegisterAs(AbsService)
 @injectable
 class BackendService extends AbsService<int> {
@@ -38,8 +37,7 @@ class BackendService extends AbsService<int> {
 // @injectable
 class ApiClient {
   @factoryMethod
-  static Future<ApiClient> create(
-      @Named.from(BackendService) AbsService service) async {
+  static Future<ApiClient> create(AbsService service) async {
     return ApiClient();
   }
 }
