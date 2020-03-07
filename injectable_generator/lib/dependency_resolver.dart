@@ -8,15 +8,13 @@ import 'package:source_gen/source_gen.dart';
 import 'dependency_config.dart';
 import 'injectable_types.dart';
 
-const TypeChecker namedChecker = const TypeChecker.fromRuntime(Named);
-const TypeChecker singletonChecker = const TypeChecker.fromRuntime(Singleton);
-const TypeChecker envChecker = const TypeChecker.fromRuntime(Environment);
-const TypeChecker bindChecker = const TypeChecker.fromRuntime(RegisterAs);
-const TypeChecker preResolveChecker = const TypeChecker.fromRuntime(PreResolve);
-const TypeChecker factoryParamChecker =
-    const TypeChecker.fromRuntime(FactoryParam);
-const TypeChecker constructorChecker =
-    const TypeChecker.fromRuntime(FactoryMethod);
+const TypeChecker namedChecker = TypeChecker.fromRuntime(Named);
+const TypeChecker singletonChecker = TypeChecker.fromRuntime(Singleton);
+const TypeChecker envChecker = TypeChecker.fromRuntime(Environment);
+const TypeChecker bindChecker = TypeChecker.fromRuntime(RegisterAs);
+const TypeChecker preResolveChecker = TypeChecker.fromRuntime(PreResolve);
+const TypeChecker factoryParamChecker = TypeChecker.fromRuntime(FactoryParam);
+const TypeChecker constructorChecker = TypeChecker.fromRuntime(FactoryMethod);
 
 class DependencyResolver {
   Element _annotatedElement;
@@ -191,7 +189,7 @@ class DependencyResolver {
     throwBoxedIf(
         _dep.injectableType != InjectableType.factory &&
             (_dep.dependencies.where((d) => d.isFactoryParam).isNotEmpty ||
-                _dep.moduleConfig?.params != null),
+                _dep.moduleConfig?.params?.isNotEmpty == true),
         'Error generating [${clazz.name}]! only factories can have parameters');
     return _dep;
   }

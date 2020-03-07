@@ -13,8 +13,6 @@ class SingletonGenerator extends RegisterFuncGenerator {
       constructor = generateAwaitSetup(dep, constructBody);
     }
 
-    print(constructor);
-
     final typeArg = '<${dep.type}>';
 
     if (dep.isAsync && !dep.preResolve) {

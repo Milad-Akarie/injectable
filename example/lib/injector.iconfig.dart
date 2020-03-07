@@ -8,12 +8,15 @@ import 'package:example/register_module.dart';
 import 'package:get_it/get_it.dart';
 
 void $initGetIt(GetIt g, {String environment}) {
-  final registerModule = _$RegisterModule();
-  g.registerFactoryParam<TestSingleton2, String, dynamic>(
-      (xs, _) => registerModule.sinleton(xs));
+  final registerModule = _$RegisterModule(g);
+  g.registerFactory<TestSingleton2>(() => registerModule.test);
   g.registerFactoryParam<AbsService<int>, String, dynamic>(
-      (url, _) => BackendService(url),
-      instanceName: 'BackendService');
+      (url, _) => BackendService(url));
 }
 
-class _$RegisterModule extends RegisterModule {}
+class _$RegisterModule extends RegisterModule {
+  final GetIt _g;
+  _$RegisterModule(this._g);
+  @override
+  TestSingleton2 get test => TestSingleton2(_g<AbsService<dynamic>>());
+}

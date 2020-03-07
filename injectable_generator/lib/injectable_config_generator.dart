@@ -10,7 +10,7 @@ import 'dependency_config.dart';
 import 'generator/config_code_generator.dart';
 import 'utils.dart';
 
-const TypeChecker bindChecker = const TypeChecker.fromRuntime(RegisterAs);
+const TypeChecker bindChecker = TypeChecker.fromRuntime(RegisterAs);
 
 class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   final injectableConfigFiles = Glob("**.injectable.json");
@@ -34,7 +34,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   void _reportMissingDependencies(List<DependencyConfig> deps) {
     final messages = [];
     final registeredDeps =
-        deps.map((dep) => stripGenericTypes(dep.bindTo)).toSet();
+        deps.map((dep) => stripGenericTypes(dep.type)).toSet();
     deps.forEach((dep) {
       dep.dependencies.where((d) => !d.isFactoryParam).forEach((iDep) {
         final strippedClassName = stripGenericTypes(iDep.type);
