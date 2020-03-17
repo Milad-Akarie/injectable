@@ -1,4 +1,5 @@
 import 'package:injectable_generator/dependency_config.dart';
+import 'package:injectable_generator/generator/config_code_generator.dart';
 import 'package:injectable_generator/utils.dart';
 
 abstract class RegisterFuncGenerator {
@@ -33,7 +34,13 @@ abstract class RegisterFuncGenerator {
   }
 
   String generateAwaitSetup(DependencyConfig dep, String constructBody) {
-    final awaitedVar = toCamelCase(stripGenericTypes(dep.type));
+    var awaitedVar = toCamelCase(stripGenericTypes(dep.type));
+    if (registeredVarNames.contains(awaitedVar)) {
+      awaitedVar =
+          '$awaitedVar${registeredVarNames.where((i) => i.startsWith(awaitedVar)).length}';
+    }
+    registeredVarNames.add(awaitedVar);
+
     writeln('final $awaitedVar = await $constructBody;');
     return awaitedVar;
   }
@@ -42,14 +49,14 @@ abstract class RegisterFuncGenerator {
     final mConfig = dep.moduleConfig;
     final mName = toCamelCase(mConfig.moduleName);
 
-    var initializr = StringBuffer()..write(mConfig.name);
+    var initializer = StringBuffer()..write(mConfig.name);
     if (mConfig.isMethod) {
-      initializr.write('(');
-      initializr.write(mConfig.params.keys.join(','));
-      initializr.write(')');
+      initializer.write('(');
+      initializer.write(mConfig.params.keys.join(','));
+      initializer.write(')');
     }
 
-    return '$mName.${initializr.toString()}';
+    return '$mName.${initializer.toString()}';
   }
 
   void closeRegisterFunc(DependencyConfig dep) {

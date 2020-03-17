@@ -13,9 +13,14 @@ abstract class RegisterModule {
   // TestSingleton testSing(String x, int y) => TestSingleton();
 
   // BackendService getService(String url) => BackendService(url);
-  // @preResolve
+
+  @Named('testName')
+  @preResolve
   // @Singleton(dependsOn: [TestClass])
-  // Future<TestSingleton> get futureSing => TestSingleton.create();
+  Future<ApiClient> get futureSing => ApiClient.create(null);
+  @preResolve
+  // @Singleton(dependsOn: [TestClass])
+  Future<ApiClient> get futureSingr => ApiClient.create(null);
 
   TestSingleton2 get test;
 }
@@ -34,7 +39,8 @@ class BackendService extends AbsService<int> {
   BackendService(@factoryParam String url);
 }
 
-// @injectable
+@preResolve
+@injectable
 class ApiClient {
   @factoryMethod
   static Future<ApiClient> create(AbsService service) async {

@@ -1,4 +1,7 @@
 # ChangeLog
+## [0.3.3]
+
+- fix duplicate var names issue when pre-resolving multiple instances of the same type 
 
 ## [0.3.2]
 
