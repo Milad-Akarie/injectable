@@ -11,6 +11,11 @@ import 'package:injectable_generator/utils.dart';
 import 'factory_generator.dart';
 import 'module_factory_param_generator.dart';
 
+// holds all used var names
+// to make sure we don't have duplicate var names
+// in the register function
+final Set<String> registeredVarNames = {};
+
 class ConfigCodeGenerator {
   final List<DependencyConfig> allDeps;
   final _buffer = StringBuffer();
@@ -22,6 +27,9 @@ class ConfigCodeGenerator {
 
   // generate configuration function from dependency configs
   FutureOr<String> generate() async {
+    // clear previously registered var names
+    registeredVarNames.clear();
+
     // sort dependencies by their register order
     final Set<DependencyConfig> sorted = {};
     _sortByDependents(allDeps.toSet(), sorted);
