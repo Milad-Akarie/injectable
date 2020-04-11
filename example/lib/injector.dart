@@ -7,5 +7,5 @@ final getIt = GetIt.instance;
 
 @injectableInit
 Future<void> configure() async {
-  $initGetIt(getIt);
+  return $initGetIt(getIt);
 }

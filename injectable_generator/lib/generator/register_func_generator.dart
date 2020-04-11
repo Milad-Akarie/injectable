@@ -10,7 +10,7 @@ abstract class RegisterFuncGenerator {
   String generate(DependencyConfig dep);
   String generateConstructor(DependencyConfig dep, {String getIt = 'g'}) {
     final params = dep.dependencies.map((injectedDep) {
-      var type = '<${injectedDep.type}>';
+      var type = injectedDep.type == 'dynamic' ? '' : '<${injectedDep.type}>';
       var instanceName = '';
       if (injectedDep.name != null) {
         instanceName = "instanceName:'${injectedDep.name}'";
