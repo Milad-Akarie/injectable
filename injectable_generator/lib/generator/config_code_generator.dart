@@ -30,6 +30,9 @@ class ConfigCodeGenerator {
     // clear previously registered var names
     registeredVarNames.clear();
 
+    // sort dependencies alphabetically
+    allDeps.sort((a, b) => a.type.compareTo(b.type));
+
     // sort dependencies by their register order
     final Set<DependencyConfig> sorted = {};
     _sortByDependents(allDeps.toSet(), sorted);

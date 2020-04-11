@@ -42,7 +42,7 @@ class InjectableGenerator implements Generator {
         ];
         for (var annotatedElement in executables) {
           allDepsInStep.add(await DependencyResolver(buildStep.resolver)
-              .resolveModuleMemeber(clazz, annotatedElement));
+              .resolveModuleMember(clazz, annotatedElement));
         }
       } else if (_hasInjectable(clazz) ||
           (autoRegister && _hasConventionalMatch(clazz))) {

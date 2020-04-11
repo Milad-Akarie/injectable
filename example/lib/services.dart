@@ -1,4 +1,4 @@
-// import 'package:injectable/injectable.dart';
+import 'package:injectable/injectable.dart';
 
 // @injectable
 // abstract class Service {
@@ -24,47 +24,44 @@
 //   MyRepository.from(Service ss);
 // }
 
-// @injectable
-// class ServiceA {}
+@injectable
+class ServiceA {}
 
-// @injectable
-// class ServiceB {
-//   ServiceB(ServiceA sa);
-// }
+@injectable
+class ServiceB {
+  ServiceB(ServiceA sa);
+}
 
-// @injectable
-// class Service3 {
-//   Service3(Service2 s2s);
-// }
+@injectable
+class Service3 {
+  Service3(ServiceB s2s);
+}
 
-// @singleton
-// class ComponentBloc {
-//   ComponentBloc(
-//     ProductService s1,
-//     CategoriesService s2,
-//   );
-// }
+@singleton
+class ComponentBloc {
+  ComponentBloc(ProductService s1,
+                CategoriesService s2,);
+}
 
-// @injectable
-// class ProductService {
-//   @factoryMethod
-//   static ProductService create(
-//     @factoryParam String varName,
-//     @factoryParam int varTwo,
-//   ) =>
-//       ProductService();
-// }
+@injectable
+class ProductService {
+  @factoryMethod
+  static ProductService create(@factoryParam String varName,
+                               @factoryParam int varTwo,) =>
+      ProductService();
+}
 
-// @injectable
-// class CategoriesService {}
+@injectable
+class CategoriesService {}
 
-// @dev
-// @singleton
-// class TestClass {
-//   TestClass();
-//   // @factoryMethod
-//   static Future<TestClass> create() async => TestClass();
-// }
+@dev
+@singleton
+class TestClass {
+  TestClass();
+
+  // @factoryMethod
+  static Future<TestClass> create() async => TestClass();
+}
 
 // @prod
 // @Singleton(dependsOn: [TestClass])
