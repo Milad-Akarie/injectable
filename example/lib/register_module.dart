@@ -1,4 +1,8 @@
+import 'package:example/user.dart';
 import 'package:injectable/injectable.dart';
+import 'package:i18n_extension/default.i18n.dart';
+
+import 'generic.dart';
 
 @registerModule
 abstract class RegisterModule {
@@ -10,7 +14,8 @@ abstract class RegisterModule {
   // TestClass get testClass;
   // TestSingleton2 get testSing33;
 
-  // TestSingleton testSing(String x, int y) => TestSingleton();
+  BackendService testSing(User<Generic> x, int y) =>
+      BackendService("Title".i18n);
 
   // BackendService getService(String url) => BackendService(url);
   // @preResolve
@@ -20,9 +25,6 @@ abstract class RegisterModule {
   // TestSingleton2 get test;
   @preResolve
   Future<ApiClient> get apiClient => ApiClient.create();
-
-  @preResolve
-  Future<ApiClient> get apiClient2 => ApiClient.create();
 }
 
 // // @Named("class")
@@ -33,8 +35,12 @@ abstract class RegisterModule {
 
 // abstract class AbsService<T> {}
 
-@injectable
-class BackendService {}
+// @injectable
+class BackendService {
+  final String title;
+
+  BackendService(this.title);
+}
 
 // @RegisterAs(BackendService, env: 'test')
 // @injectable

@@ -1,5 +1,4 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:injectable/injectable.dart';
@@ -60,9 +59,11 @@ class DependencyResolver {
           'Error generating [$returnType]! Max number of factory params is 2');
       registerModuleItem.isMethod = true;
 
-      executableElement.parameters.forEach((param) {
+      for (var param in executableElement.parameters) {
+        await _resolveAndAddImport(param.type.element);
+        await _checkForParameterizedTypes(param.type);
         registerModuleItem.params[param.name] = param.type.getDisplayString();
-      });
+      }
     }
 
     ClassElement clazz;
