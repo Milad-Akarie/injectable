@@ -5,6 +5,8 @@
 // **************************************************************************
 
 import 'package:example/register_module.dart';
+import 'package:example/user.dart';
+import 'package:example/generic.dart';
 import 'package:example/services.dart';
 import 'package:get_it/get_it.dart';
 
@@ -12,9 +14,8 @@ Future<void> $initGetIt(GetIt g, {String environment}) async {
   final registerModule = _$RegisterModule();
   final apiClient = await registerModule.apiClient;
   g.registerFactory<ApiClient>(() => apiClient);
-  final apiClient1 = await registerModule.apiClient2;
-  g.registerFactory<ApiClient>(() => apiClient1);
-  g.registerFactory<BackendService>(() => BackendService());
+  g.registerFactoryParam<BackendService, User<Generic>, int>(
+          (x, y) => registerModule.testSing(x, y));
   g.registerFactory<CategoriesService>(() => CategoriesService());
   g.registerFactoryParam<ProductService, String, int>(
           (varName, varTwo) => ProductService.create(varName, varTwo));

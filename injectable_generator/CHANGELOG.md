@@ -1,4 +1,6 @@
 # ChangeLog
+## [0.3.5]
+- Fix non-primitive factory params aren't imported
 
 ## [0.3.4]
 - fix parameterized dependencies aren't resolved properly
