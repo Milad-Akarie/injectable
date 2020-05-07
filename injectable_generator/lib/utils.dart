@@ -1,5 +1,11 @@
 // general utils
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/src/generated/source.dart';
+
+// Checks if source is from dart:core library
+bool isCoreDartType(Source source) {
+  return source.isInSystemLibrary && source.uri.path.startsWith('core/');
+}
 
 String getImport(Element element) {
   // prefer library source, because otherwise "part of"-files will lead to
@@ -12,10 +18,8 @@ String getImport(Element element) {
   }
 
   // we don't need to import core dart types
-  // or core flutter types
-  if (!source.isInSystemLibrary) {
+  if (!isCoreDartType(source)) {
     final path = source.uri.toString();
-
     return path;
   }
   return null;
