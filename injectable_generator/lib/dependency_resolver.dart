@@ -33,8 +33,10 @@ class DependencyResolver {
     return _resolveActualType(_annotatedElement);
   }
 
-  Future<DependencyConfig> resolveModuleMember(ClassElement moduleClazz,
-                                               ExecutableElement executableElement,) async {
+  Future<DependencyConfig> resolveModuleMember(
+    ClassElement moduleClazz,
+    ExecutableElement executableElement,
+  ) async {
     _annotatedElement = executableElement;
     final returnType = executableElement.returnType;
     String typeName = returnType.getDisplayString();
@@ -93,12 +95,10 @@ class DependencyResolver {
 
     var inlineEnv;
     final registerAsAnnotation =
-    registerAsChecker.firstAnnotationOf(_annotatedElement);
+        registerAsChecker.firstAnnotationOf(_annotatedElement);
     if (registerAsAnnotation != null) {
       ConstantReader registerAsReader = ConstantReader(registerAsAnnotation);
-      final abstractType = registerAsReader
-          .peek('abstractType')
-          .typeValue;
+      final abstractType = registerAsReader.peek('abstractType').typeValue;
       final abstractChecker = TypeChecker.fromStatic(abstractType);
 
       final abstractSubtype = clazz.allSupertypes.firstWhere(
@@ -110,9 +110,7 @@ class DependencyResolver {
 
       _dep.type = abstractSubtype.getDisplayString();
 
-      inlineEnv = registerAsReader
-          .peek('env')
-          ?.stringValue;
+      inlineEnv = registerAsReader.peek('env')?.stringValue;
 
       _dep.bindTo = clazz.name;
       await _resolveAndAddImport(abstractSubtype.element);
@@ -218,8 +216,12 @@ class DependencyResolver {
   }
 
   Future<String> _resolveLibImport(Element element) async {
-    if (element.source?.isInSystemLibrary == true) {
+    if (element.source == null || isCoreDartType(element.source)) {
       return null;
+    }
+    //if element from a system library but not from dart:core
+    if (element.source.isInSystemLibrary) {
+      return getImport(element);
     }
     final assetId = await _resolver.assetIdForElement(element);
     final lib = await _resolver.findLibraryByName(assetId.package);
