@@ -41,6 +41,7 @@ class InjectableGenerator implements Generator {
           ...clazz.methods,
         ];
         for (var annotatedElement in executables) {
+          if (annotatedElement.isPrivate) continue;
           allDepsInStep.add(await DependencyResolver(buildStep.resolver)
               .resolveModuleMember(clazz, annotatedElement));
         }
