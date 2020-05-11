@@ -8,23 +8,29 @@ class DependencyConfig {
   int injectableType;
   String instanceName;
   bool signalsReady;
-  String bindTo;
+  String typeImpl;
   String environment;
+  String initializerName;
   String constructorName;
   bool isAsync;
-  RegisterModuleItem moduleConfig;
   List<String> dependsOn;
-
   bool preResolve;
+
+  bool isAbstract = false;
+  bool isModuleMethod = false;
+  // String name;
+  String moduleName;
 
   DependencyConfig();
 
   DependencyConfig.fromJson(Map<String, dynamic> json) {
     type = json['type'];
-    bindTo = json['bindTo'];
+    typeImpl = json['typeImpl'];
     instanceName = json['instanceName'];
     signalsReady = json['signalsReady'];
+    initializerName = json['initializerName'] ?? '';
     constructorName = json['constructorName'] ?? '';
+
     isAsync = json['isAsync'] ?? false;
     preResolve = json['preResolve'] ?? preResolve;
     imports = json['imports']?.cast<String>();
@@ -35,18 +41,20 @@ class DependencyConfig {
       });
     }
 
-    if (json['moduleConfig'] != null) {
-      moduleConfig = RegisterModuleItem.fromJson(json['moduleConfig']);
-    }
     injectableType = json['injectableType'];
     environment = json['environment'];
+
+    isAbstract = json['isAbstract'] ?? false;
+    isModuleMethod = json['isModuleMethod'] ?? false;
+    moduleName = json['moduleName'];
   }
+  bool get isFromModule => moduleName != null;
 
   bool get registerAsInstance => isAsync && preResolve;
 
   Map<String, dynamic> toJson() => {
         "type": type,
-        "bindTo": bindTo,
+        "typeImpl": typeImpl,
         "isAsync": isAsync,
         "preResolve": preResolve,
         "injectableType": injectableType,
@@ -56,13 +64,15 @@ class DependencyConfig {
         if (instanceName != null) "instanceName": instanceName,
         if (signalsReady != null) "signalsReady": signalsReady,
         if (environment != null) "environment": environment,
+        if (initializerName != null) "initializerName": initializerName,
         if (constructorName != null) "constructorName": constructorName,
-        if (moduleConfig != null) "moduleConfig": moduleConfig.toJson(),
+        if (isAbstract != null) 'isAbstract': isAbstract,
+        if (isModuleMethod != null) 'isModuleMethod': isModuleMethod,
+        if (moduleName != null) 'moduleName': moduleName,
       };
 
   Set<String> get allImports => {
         ...imports.where((i) => i != null),
-        if (moduleConfig != null) moduleConfig.import
       };
 }
 

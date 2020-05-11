@@ -5,31 +5,38 @@ class InjectableInit {
 const injectableInit = const InjectableInit._();
 
 class Injectable {
-  const Injectable._();
+  final Type as;
+  final String env;
+  const Injectable({this.as, this.env});
 }
 
-const injectable = const Injectable._();
+const injectable = const Injectable();
 
 /// Classes annotated with @Singleton
-/// will generate registerSingleton  or
-/// registerLazySingleton if [_lazy] is true
+/// will generate registerSingleton func
 class Singleton extends Injectable {
   final bool signalsReady;
-  final bool _lazy;
   final List<Type> dependsOn;
 
-  const Singleton({this.signalsReady, this.dependsOn})
-      : _lazy = false,
-        super._();
+  const Singleton({
+    this.signalsReady,
+    this.dependsOn,
+    Type as,
+    String env,
+  }) : super(as: as, env: env);
+}
 
-  const Singleton.lazy({this.signalsReady})
-      : _lazy = true,
-        dependsOn = null,
-        super._();
+/// Classes annotated with @LazySingleton
+/// will generate registerLazySingleton func
+class LazySingleton extends Injectable {
+  const LazySingleton({
+    Type as,
+    String env,
+  }) : super(as: as, env: env);
 }
 
 const singleton = const Singleton();
-const lazySingleton = const Singleton.lazy();
+const lazySingleton = const LazySingleton();
 
 // Used to annotate a constructor dependency
 // that's registered with an instance names;
@@ -102,7 +109,10 @@ class RegisterModule {
   const RegisterModule._();
 }
 
+@Deprecated('Use module instead')
 const registerModule = const RegisterModule._();
+
+const module = const RegisterModule._();
 
 /// Futures annotated with [preResolv]
 /// will be pre-awaited before they're

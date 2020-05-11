@@ -40,7 +40,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
         final strippedClassName = stripGenericTypes(iDep.type);
         if (!registeredDeps.contains(strippedClassName)) {
           messages.add(
-              "[${dep.bindTo}] depends on [$strippedClassName] which is not injectable!");
+              "[${dep.typeImpl}] depends on [$strippedClassName] which is not injectable!");
         }
       });
     });

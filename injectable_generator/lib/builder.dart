@@ -7,6 +7,7 @@ import 'injectable_generator.dart';
 Builder injectableBuilder(BuilderOptions options) {
   return LibraryBuilder(
     InjectableGenerator(options.config),
+    formatOutput: (generated) => generated.replaceAll(RegExp(r'//.*|\s'), ''),
     generatedExtension: '.injectable.json',
   );
 }

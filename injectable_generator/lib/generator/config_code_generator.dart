@@ -9,7 +9,6 @@ import 'package:injectable_generator/injectable_types.dart';
 import 'package:injectable_generator/utils.dart';
 
 import 'factory_generator.dart';
-import 'module_factory_param_generator.dart';
 
 // holds all used var names
 // to make sure we don't have duplicate var names
@@ -37,10 +36,8 @@ class ConfigCodeGenerator {
     final Set<DependencyConfig> sorted = {};
     _sortByDependents(allDeps.toSet(), sorted);
 
-    final modules = sorted
-        .where((d) => d.moduleConfig != null)
-        .map((d) => d.moduleConfig.moduleName)
-        .toSet();
+    final modules =
+        sorted.where((d) => d.isFromModule).map((d) => d.moduleName).toSet();
 
     final Set<DependencyConfig> eagerDeps = sorted
         .where((d) => d.injectableType == InjectableType.singleton)
@@ -122,11 +119,8 @@ class ConfigCodeGenerator {
   void _generateDeps(Set<DependencyConfig> deps) {
     deps.forEach((dep) {
       if (dep.injectableType == InjectableType.factory) {
-        if (dep.moduleConfig == null &&
-            dep.dependencies.where((d) => d.isFactoryParam).isNotEmpty) {
+        if (dep.dependencies.any((d) => d.isFactoryParam)) {
           _writeln(FactoryParamGenerator().generate(dep));
-        } else if (dep.moduleConfig?.params?.isNotEmpty == true) {
-          _writeln(ModuleFactoryParamGenerator().generate(dep));
         } else {
           _writeln(FactoryGenerator().generate(dep));
         }
@@ -171,10 +165,8 @@ class ConfigCodeGenerator {
 
   Iterable<DependencyConfig> _getAbstractModuleDeps(
       Set<DependencyConfig> deps, String m) {
-    return deps.where((d) =>
-        d.moduleConfig != null &&
-        d.moduleConfig.moduleName == m &&
-        d.moduleConfig.isAbstract);
+    return deps
+        .where((d) => d.isFromModule && d.moduleName == m && d.isAbstract);
   }
 
   void _generateModuleItems(List<DependencyConfig> moduleDeps) {

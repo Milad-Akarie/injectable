@@ -72,7 +72,7 @@ packages:
     source: hosted
     version: "5.1.0"
   built_collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: built_collection
       url: "https://pub.dartlang.org"
@@ -100,7 +100,7 @@ packages:
     source: hosted
     version: "1.0.2"
   code_builder:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: code_builder
       url: "https://pub.dartlang.org"
@@ -186,9 +186,9 @@ packages:
   injectable:
     dependency: "direct main"
     description:
-      name: injectable
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../injectable"
+      relative: true
+    source: path
     version: "0.3.0"
   io:
     dependency: transitive

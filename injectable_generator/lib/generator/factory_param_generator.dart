@@ -4,9 +4,7 @@ import 'package:injectable_generator/generator/register_func_generator.dart';
 class FactoryParamGenerator extends RegisterFuncGenerator {
   @override
   String generate(DependencyConfig dep) {
-    final constructBody = dep.moduleConfig == null
-        ? generateConstructor(dep)
-        : generateConstructorForModule(dep);
+    final initializer = generateInitializer(dep);
 
     var asyncStr = dep.isAsync && !dep.preResolve ? 'Async' : '';
 
@@ -21,7 +19,7 @@ class FactoryParamGenerator extends RegisterFuncGenerator {
     final methodParams = typeArgs.keys.join(',');
 
     writeln(
-        "g.registerFactoryParam$asyncStr$argsDeclaration(($methodParams)=> $constructBody");
+        "g.registerFactoryParam$asyncStr$argsDeclaration(($methodParams)=> $initializer");
 
     closeRegisterFunc(dep);
     return buffer.toString();

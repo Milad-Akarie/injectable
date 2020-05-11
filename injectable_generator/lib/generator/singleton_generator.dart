@@ -4,13 +4,11 @@ import 'package:injectable_generator/generator/register_func_generator.dart';
 class SingletonGenerator extends RegisterFuncGenerator {
   @override
   String generate(DependencyConfig dep) {
-    final constructBody = dep.moduleConfig == null
-        ? generateConstructor(dep)
-        : generateConstructorForModule(dep);
+    final initializer = generateInitializer(dep);
 
-    var constructor = constructBody;
+    var constructor = initializer;
     if (dep.registerAsInstance) {
-      constructor = generateAwaitSetup(dep, constructBody);
+      constructor = generateAwaitSetup(dep, initializer);
     }
 
     final typeArg = '<${dep.type}>';

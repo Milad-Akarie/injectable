@@ -34,8 +34,11 @@ class InjectableGenerator implements Generator {
 
     for (var clazz in library.classes) {
       if (moduleChecker.hasAnnotationOfExact(clazz)) {
-        throwBoxedIf(
-            !clazz.isAbstract, '[${clazz.name}] must be an abstract class!');
+        throwIf(
+          !clazz.isAbstract,
+          '[${clazz.name}] must be an abstract class!',
+          element: clazz,
+        );
         final executables = <ExecutableElement>[
           ...clazz.accessors,
           ...clazz.methods,
@@ -52,12 +55,7 @@ class InjectableGenerator implements Generator {
       }
     }
 
-    if (allDepsInStep.isNotEmpty) {
-      final inputID = buildStep.inputId.changeExtension(".injectable.json");
-
-      buildStep.writeAsString(inputID, json.encode(allDepsInStep));
-    }
-    return null;
+    return allDepsInStep.isNotEmpty ? json.encode(allDepsInStep) : null;
   }
 
   bool _hasInjectable(ClassElement element) {
