@@ -1,35 +1,54 @@
 class InjectableInit {
-  const InjectableInit._();
+  // only files exist in provided directories will be processed
+  final List<String> generateForDir;
+
+  const InjectableInit({this.generateForDir = const ['lib', 'bin']})
+      : assert(generateForDir != null);
 }
 
-const injectableInit = const InjectableInit._();
+const injectableInit = const InjectableInit();
 
 class Injectable {
-  const Injectable._();
+  // The type to bind your implementation to,
+  // typically an abstract class which is implemented by the
+  // annotated class.
+  final Type as;
+
+  // an alternative way to pass env keys instead
+  // of annotating the element with @Environment
+  final String env;
+
+  const Injectable({this.as, this.env});
 }
 
-const injectable = const Injectable._();
+const injectable = const Injectable();
 
 /// Classes annotated with @Singleton
-/// will generate registerSingleton  or
-/// registerLazySingleton if [_lazy] is true
+/// will generate registerSingleton func
 class Singleton extends Injectable {
   final bool signalsReady;
-  final bool _lazy;
   final List<Type> dependsOn;
 
-  const Singleton({this.signalsReady, this.dependsOn})
-      : _lazy = false,
-        super._();
-
-  const Singleton.lazy({this.signalsReady})
-      : _lazy = true,
-        dependsOn = null,
-        super._();
+  const Singleton({
+    this.signalsReady,
+    this.dependsOn,
+    Type as,
+    String env,
+  }) : super(as: as, env: env);
 }
 
 const singleton = const Singleton();
-const lazySingleton = const Singleton.lazy();
+
+/// Classes annotated with @LazySingleton
+/// will generate registerLazySingleton func
+class LazySingleton extends Injectable {
+  const LazySingleton({
+    Type as,
+    String env,
+  }) : super(as: as, env: env);
+}
+
+const lazySingleton = const LazySingleton();
 
 // Used to annotate a constructor dependency
 // that's registered with an instance names;
@@ -43,13 +62,14 @@ class Named {
   // you can pass a type and it's name will be extracted
   // in during generation
   final Type type;
+
   const Named.from(this.type) : name = null;
 }
 
 const named = const Named("");
 
-// used to annotate dependecies which are
-// registered under different envionment
+// used to annotate dependencies which are
+// registered under different environment
 class Environment {
   final String name;
 
@@ -64,6 +84,7 @@ const dev = const Environment(Environment.dev);
 const prod = const Environment(Environment.prod);
 const test = const Environment(Environment.test);
 
+@Deprecated('Use @Injectable(as:...) instead')
 class RegisterAs {
   // The type to bind your implementation to,
   // typically an abstract class which is implemented by the
@@ -71,7 +92,7 @@ class RegisterAs {
   final Type abstractType;
 
   // an alternative way to pass env keys instead
-  // of annotated the element with @Environment
+  // of annotating the element with @Environment
   final String env;
 
   const RegisterAs(this.abstractType, {this.env});
@@ -87,7 +108,7 @@ class FactoryMethod {
 const factoryMethod = const FactoryMethod._();
 
 /// Marks a constructor param as
-/// facotryParam so it can be passed
+/// factoryParam so it can be passed
 /// to the resolver function
 class FactoryParam {
   const FactoryParam._();
@@ -102,7 +123,10 @@ class RegisterModule {
   const RegisterModule._();
 }
 
+@Deprecated('Use module instead')
 const registerModule = const RegisterModule._();
+
+const module = const RegisterModule._();
 
 /// Futures annotated with [preResolv]
 /// will be pre-awaited before they're

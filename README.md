@@ -37,21 +37,28 @@ dev_dependencies:
 ---
 
 .1 Create a new dart file and define a global var for your GetIt instance
-.2 Define a top-level function (lets call it configure) then annotate it with @injectableInit.
+.2 Define a top-level function (lets call it configureDependencies) then annotate it with @injectableInit.
 .3 Call the **Generated** func \$initGetIt() inside your configure func and pass in the getIt instance.
 
 ```dart
 final getIt = GetIt.instance;
 
-@injectableInit
-void configure() => $initGetIt(getIt);
+@injectableInit 
+void configureDependencies() => $initGetIt(getIt);
+```
+Note: you can tell injectable what directories to generate for using the generateForDir property inside of @injectableInit.
+The following example will only process files inside of the test folder
+```dart
+@InjectableInit(generateForDir: ['test'])
+void configureDependencies() => $initGetIt(getIt);
 ```
 
-.4 Call configure() in your main func before running the App
+
+.4 Call configureDependencies() in your main func before running the App
 
 ```dart
 void main() {
- configure();
+ configureDependencies();
  runApp(MyApp());
 }
 ```
@@ -107,7 +114,7 @@ void $initGetIt(GetIt g, {String environment}) {
 Use the @singleton or @lazySingleton to annotate your singleton classes.
 Alternatively use the constructor version to pass signalsReady to getIt.registerSingleton(signalsReady)
 @Singleton(signalsReady: true) >> getIt.registerSingleton(Model(), signalsReady: true)
-@Singleton.lazy(signalsReady: true) >> getIt.registerLazySingleton(() => Model(), signalsReady: true)
+@LazySingleton() >> getIt.registerLazySingleton(() => Model())
 
 ```dart
 @singleton // or @lazySingleton
@@ -145,7 +152,7 @@ class ApiClient {
 ```
 
 injectable will automatically register it as an asynchronous factory because the return type is a Future.
-this will generate
+Generated Code:
 
 ```dart
 g.registerFactoryAsync<ApiClient>(() => ApiClient.create());
@@ -156,7 +163,7 @@ g.registerFactoryAsync<ApiClient>(() => ApiClient.create());
 just wrap your instance with a future and you're good to go
 
 ```dart
-@registerModule
+@module
 abstract class RegisterModule {
   Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
 }
@@ -166,10 +173,10 @@ Don't forget to call getAsync() instead of get() when resolving an async injecta
 
 ### Pre-Resolving the future
 
-if you want to pre-await the future and register it as value, annotate your async dependencies with @preResolve
+if you want to pre-await the future and register it's resolved value, annotate your async dependencies with @preResolve
 
 ```dart
-@registerModule
+@module
 abstract class RegisterModule {
   @preResolve
   Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
@@ -212,13 +219,13 @@ g.registerFactoryParam<BackendService, String, dynamic>(
 ```
 
 ### Using a register module (for third party dependencies)
-
-instead of declaring your dependency as a property accessor, declare it as a method that takes in a parameter or two **max**!
+if you declare a module member as a method instead of a simple accessor, injectable will treat it as a factory method, meaning it will inject it's parameters as it would with a regular constructor.
+The same way if you annotate an injected param with @factoryParam injectable will treat it as a factory param.
 
 ```dart
-@registerModule
+@module
 abstract class RegisterModule {
-   BackendService getService(String url) => BackendService(url);
+   BackendService getService(ApiClient client, @factoryParam String url) => BackendService(client, url);
 }
 ```
 
@@ -226,20 +233,17 @@ generated code
 
 ```dart
 g.registerFactoryParam<BackendService, String, dynamic>(
-      (url, _) => registerModule.getService(url));
+      (url, _) => registerModule.getService(g<ApiClient>(), url));
 ```
 
 ## Binding abstract classes to implementations
 
 ---
-
-Use the @RegisterAs annotation to bind an abstract class to it's implementation.
-**Annotate the implementation not the abstract class**
+Use the 'as' Property inside of Injectable(as:..) to pass an abstract type that's implemented by the registered dependency
 
 ```dart
-@RegisterAs(Service)
-@injectable
-class ServiceImpl {}
+@Injectable(as: Service) //Singleton(as: Service) ..
+class ServiceImpl implements Service {}
 ```
 
 Generated code for the Above example
@@ -255,13 +259,11 @@ to register our instances or register under different environment. (we will get 
 
 ```
 @Named("impl1")
-@RegisterAs(Service)
-@injectable
+@Injectable(as: Service)
 class ServiceImpl implements Service {}
 
 @Named("impl2")
-@RegisterAs(Service)
-@injectable
+@Injectable(as: Service)
 class ServiceImp2 implements Service {}
 ```
 
@@ -291,8 +293,7 @@ Then use @Named.from(Type) annotation to extract the name from the type
 
 ```dart
 @named
-@RegisterAs(Service)
-@injectable
+@Injectable(as: Service)
  class ServiceImpl1 implements Service {}
 
 @injectable
@@ -344,16 +345,14 @@ class ServiceA {}
 ```
 
 Usually you would want to register a different implementation for the same abstract class under different environments.
-to do that pass your environment name to the @RegisterAs annotation or use @Environment("env") annotation.
+to do that pass your environment name to the env property inside of Injectable(env:..) annotation or use  @Environment("env") annotation.
 
 ```dart
-@RegisterAs(Service, env: 'dev')
-// or @Environment('dev')
-@injectable
-class FakeServiceImpl implements Service {}
-
-@RegisterAs(Service, env: 'prod')
-@injectable
+@dev
+@Injectable(as: Service)
+class MockServiceImpl implements Service {}
+// or
+@Injectable(as: Service, env: Environment.prod)
 class RealServiceImpl implements Service {}
 ```
 
@@ -416,17 +415,18 @@ g.registerFactory<Service>(() => Service.create(getIt<ApiClient>()));
 
 ---
 
-To Register third party types, create an abstract class and annotate it with @registerModule then add your third party types as property accessors like follows:
+To Register third party types, create an abstract class and annotate it with @module then add your third party types as property accessors or methods like follows:
 
 ```dart
-@registerModule
+@module
 abstract class RegisterModule {
   @singleton
   ThirdPartyType get thirdPartyType;
 
   @prod
-  @RegisterAs(ThirdPartyAbstract)
+  @Injectable(as: ThirdPartyAbstract)
   ThirdPartyImpl get thirdPartyType;
+ 
 }
 ```
 
@@ -435,17 +435,24 @@ abstract class RegisterModule {
 In some cases you'd need to register instances that are asynchronous or singleton instances or just have a custom initializer and that's a bit hard for injectable to figure out on it's own, so you need to tell injectable how to initialize them;
 
 ```dart
-@registerModule
+@module
 abstract class RegisterModule {
+
+ // You can register named premetive types like follows
+  @Named("BaseUrl")
+  String get baseUrl => 'My base url'
+  
+  // url here will be injected 
   @lazySingleton
-  Dio get dio => Dio(BaseOptions(baseUrl: "baseUrl"));
+  Dio dio(@Named('BaseUrl) String url) => Dio(BaseOptions(baseUrl: url));
+ 
   // same thing works for instances that's gotten asynchronous.
   // all you need to do is wrap your instance with a future and tell injectable how
   // to initialize it
-
   @preResolve // if you need to  pre resolve the value
   Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
   // Also make sure you await for your configure function before running the App.
+ 
 }
 ```
 
