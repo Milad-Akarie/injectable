@@ -14,16 +14,16 @@ class SingletonGenerator extends RegisterFuncGenerator {
     final typeArg = '<${dep.type}>';
 
     if (dep.isAsync && !dep.preResolve) {
-      writeln('g.registerSingletonAsync$typeArg(()=> $constructor');
+      write('g.registerSingletonAsync$typeArg(()=> $constructor');
       if (dep.dependsOn.isNotEmpty) {
-        write(', dependsOn:${dep.dependsOn}');
+        write(', dependsOn: ${dep.dependsOn}');
       }
     } else {
       if (dep.dependsOn.isEmpty) {
-        writeln("g.registerSingleton$typeArg($constructor");
+        write("g.registerSingleton$typeArg($constructor");
       } else {
-        writeln(
-            'g.registerSingletonWithDependencies$typeArg(()=> $constructor, dependsOn:${dep.dependsOn}');
+        write(
+            'g.registerSingletonWithDependencies$typeArg(()=> $constructor, dependsOn: ${dep.dependsOn}');
       }
     }
 

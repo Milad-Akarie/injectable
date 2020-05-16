@@ -240,6 +240,12 @@ class DependencyResolver {
       );
 
       throwIf(
+        _dep.isAbstract && factoryParamsCount != 0,
+        'Module dependecies with factory params must have custom initilaizers',
+        element: clazz,
+      );
+
+      throwIf(
         _dep.injectableType != InjectableType.factory &&
             factoryParamsCount != 0,
         'only factories can have parameters',

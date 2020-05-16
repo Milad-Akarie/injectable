@@ -1,4 +1,13 @@
 # ChangeLog
+
+## [0.4.0] Breaking Changes!
+- Change Methods inside of register modules are treated as factory methods now,
+  so all params are considered injected params unless annotated with @factoryParam.
+- Change registerModule is now replaced with @module
+- Change RegisterAs(Type) Annotation is now replaced with @Injectable(as:Type)
+- Change Singleton.Lazy() is replaced with @LazySingleton()
+- Add generateForDir property to @InjectableInt to specify what directories to generate for.
+
 ## [0.3.5]
 - Fix non-primitive factory params aren't imported
 

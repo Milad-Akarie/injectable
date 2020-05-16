@@ -2,13 +2,12 @@ import 'dart:async';
 
 import 'package:injectable_generator/dependency_config.dart';
 import 'package:injectable_generator/generator/factory_param_generator.dart';
-import 'package:injectable_generator/generator/lazy_singleton_generator.dart';
 import 'package:injectable_generator/generator/module_factory_generator.dart';
 import 'package:injectable_generator/generator/singleton_generator.dart';
 import 'package:injectable_generator/injectable_types.dart';
 import 'package:injectable_generator/utils.dart';
 
-import 'factory_generator.dart';
+import 'lazy_factory_generator.dart';
 
 // holds all used var names
 // to make sure we don't have duplicate var names
@@ -22,6 +21,7 @@ class ConfigCodeGenerator {
   ConfigCodeGenerator(this.allDeps);
 
   _write(Object o) => _buffer.write(o);
+
   _writeln(Object o) => _buffer.writeln(o);
 
   // generate configuration function from dependency configs
@@ -46,8 +46,8 @@ class ConfigCodeGenerator {
     final lazyDeps = sorted.difference(eagerDeps);
 
     // generate import
-    final imports =
-        sorted.fold<Set<String>>({}, (a, b) => a..addAll(b.allImports));
+    final imports = sorted.fold<Set<String>>(
+        {}, (a, b) => a..addAll(b.imports.where((i) => i != null)));
 
     // add getIt import statement
     imports.add("package:get_it/get_it.dart");
@@ -122,10 +122,10 @@ class ConfigCodeGenerator {
         if (dep.dependencies.any((d) => d.isFactoryParam)) {
           _writeln(FactoryParamGenerator().generate(dep));
         } else {
-          _writeln(FactoryGenerator().generate(dep));
+          _writeln(LazyFactoryGenerator().generate(dep));
         }
       } else if (dep.injectableType == InjectableType.lazySingleton) {
-        _writeln(LazySingletonGenerator().generate(dep));
+        _writeln(LazyFactoryGenerator(isLazySingleton: true).generate(dep));
       }
     });
   }

@@ -15,10 +15,10 @@ class FactoryParamGenerator extends RegisterFuncGenerator {
       typeArgs['_'] = 'dynamic';
     }
 
-    final argsDeclaration = '<${dep.type},${typeArgs.values.join(',')} >';
-    final methodParams = typeArgs.keys.join(',');
+    final argsDeclaration = '<${dep.type},${typeArgs.values.join(',')}>';
+    final methodParams = typeArgs.keys.join(', ');
 
-    writeln(
+    write(
         "g.registerFactoryParam$asyncStr$argsDeclaration(($methodParams)=> $initializer");
 
     closeRegisterFunc(dep);

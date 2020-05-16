@@ -41,23 +41,23 @@ abstract class RegisterFuncGenerator {
       var instanceName = '';
 
       if (injectedDep.name != null) {
-        instanceName = "instanceName:'${injectedDep.name}'";
+        instanceName = "instanceName: '${injectedDep.name}'";
       }
 
       final paramName =
-          (!injectedDep.isPositional) ? '${injectedDep.paramName}:' : '';
+      (!injectedDep.isPositional) ? '${injectedDep.paramName}: ' : '';
 
       if (injectedDep.isFactoryParam) {
         return '$paramName${injectedDep.paramName}';
       } else {
-        return '${paramName}$getIt$type($instanceName)';
+        return '$paramName$getIt$type($instanceName)';
       }
     }).toList();
 
     if (params.length > 2) {
       params.add('');
     }
-    return params.join(',');
+    return params.join(', ');
   }
 
   String generateAwaitSetup(DependencyConfig dep, String constructBody) {
@@ -74,10 +74,10 @@ abstract class RegisterFuncGenerator {
 
   void closeRegisterFunc(DependencyConfig dep) {
     if (dep.signalsReady != null) {
-      write(',signalsReady: ${dep.signalsReady}');
+      write(', signalsReady: ${dep.signalsReady}');
     }
     if (dep.instanceName != null) {
-      write(",instanceName: '${dep.instanceName}'");
+      write(", instanceName: '${dep.instanceName}'");
     }
     write(");");
   }

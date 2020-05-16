@@ -1,5 +1,7 @@
-import 'package:example/injector.dart';
+import 'injector.dart';
+import 'services/register_module.dart';
 
 void main(List<String> arguments) {
-  configureDependecies();
+  configureDependencies();
+  print(getIt<Client>().url);
 }

@@ -10,15 +10,20 @@ import 'dependency_config.dart';
 import 'generator/config_code_generator.dart';
 import 'utils.dart';
 
-const TypeChecker bindChecker = TypeChecker.fromRuntime(RegisterAs);
-
 class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
-  final injectableConfigFiles = Glob("**.injectable.json");
-
   @override
   dynamic generateForAnnotatedElement(
       Element element, ConstantReader annotation, BuildStep buildStep) async {
-    final List<Map> jsonData = [];
+    final generateForDir = annotation
+        .read('generateForDir')
+        .listValue
+        .map((e) => e.toStringValue());
+    final dirPattern = generateForDir.length > 1
+        ? '{${generateForDir.join(',')}}'
+        : '${generateForDir.first}';
+    final injectableConfigFiles = Glob("$dirPattern/**.injectable.json");
+
+    final jsonData = <Map>[];
     await for (final id in buildStep.findAssets(injectableConfigFiles)) {
       final json = jsonDecode(await buildStep.readAsString(id));
       jsonData.addAll([...json]);
