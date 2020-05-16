@@ -7,6 +7,7 @@
 - Change RegisterAs(Type) Annotation is now replaced with @Injectable(as:Type)
 - Change Singleton.Lazy() is replaced with @LazySingleton()
 - Add generateForDir property to @InjectableInt to specify what directories to generate for.
+- Fix imports issue when working with bin directory
 
  
 ## [0.3.0] Breaking Changes!
