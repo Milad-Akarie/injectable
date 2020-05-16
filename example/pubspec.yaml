@@ -7,8 +7,6 @@ environment:
   sdk: ">=2.5.0 <3.0.0"
 
 dependencies:
-  # flutter:
-  # sdk: flutter
   get_it: 4.0.0
   mockito: ^4.1.1
   injectable:

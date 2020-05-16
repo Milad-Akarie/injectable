@@ -86,7 +86,7 @@ packages:
     source: hosted
     version: "1.0.0"
   built_collection:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: built_collection
       url: "https://pub.dartlang.org"
@@ -114,7 +114,7 @@ packages:
     source: hosted
     version: "1.0.2"
   code_builder:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: code_builder
       url: "https://pub.dartlang.org"
@@ -214,10 +214,10 @@ packages:
   injectable:
     dependency: "direct main"
     description:
-      path: "../injectable"
-      relative: true
-    source: path
-    version: "0.3.0"
+      name: injectable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.0"
   io:
     dependency: transitive
     description:
@@ -386,13 +386,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.5"
-  source_gen_test:
-    dependency: "direct dev"
-    description:
-      name: source_gen_test
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.1"
   source_map_stack_trace:
     dependency: transitive
     description:

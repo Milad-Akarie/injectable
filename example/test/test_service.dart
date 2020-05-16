@@ -3,4 +3,4 @@ import 'package:injectable/injectable.dart';
 import 'package:mockito/mockito.dart';
 
 @injectable
-class TestService extends Mock implements LibService {}
+class TestService {}

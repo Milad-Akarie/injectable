@@ -6,5 +6,5 @@ import 'injector.iconfig.dart';
 
 final getIt = GetIt.instance;
 
-@InjectableInit(generateForDir: ['lib'])
-void configureDependencies() => $initGetIt(getIt, environment: Environment.dev);
+@InjectableInit()
+void configureDependencies() => $initGetIt(getIt);

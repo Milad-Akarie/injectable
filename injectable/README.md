@@ -444,7 +444,7 @@ abstract class RegisterModule {
   
   // url here will be injected 
   @lazySingleton
-  Dio get dio(@Named('BaseUrl) String url) => Dio(BaseOptions(baseUrl: url));
+  Dio dio(@Named('BaseUrl) String url) => Dio(BaseOptions(baseUrl: url));
  
   // same thing works for instances that's gotten asynchronous.
   // all you need to do is wrap your instance with a future and tell injectable how
