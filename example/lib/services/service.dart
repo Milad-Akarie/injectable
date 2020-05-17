@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 
+
 @Injectable(as: Service)
 class DemoService implements Service {
   @factoryMethod

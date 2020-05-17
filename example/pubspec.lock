@@ -207,17 +207,17 @@ packages:
   injectable:
     dependency: "direct main"
     description:
-      path: "../injectable"
-      relative: true
-    source: path
-    version: "0.3.0"
+      name: injectable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.0"
   injectable_generator:
     dependency: "direct dev"
     description:
-      path: "../injectable_generator"
-      relative: true
-    source: path
-    version: "0.3.5"
+      name: injectable_generator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.0"
   io:
     dependency: transitive
     description:
