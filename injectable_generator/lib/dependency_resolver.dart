@@ -98,7 +98,7 @@ class DependencyResolver {
   Future<DependencyConfig> _resolveActualType(
     ClassElement clazz, [
     String typeName,
-    ExecutableElement executbaleModuleMemeber,
+    ExecutableElement executableModuleMember,
   ]) async {
     _dep.type = typeName ?? clazz.name;
     _dep.typeImpl = typeName ?? clazz.name;
@@ -179,8 +179,8 @@ class DependencyResolver {
 
     ExecutableElement excutableInitilizer;
 
-    if (executbaleModuleMemeber != null) {
-      excutableInitilizer = executbaleModuleMemeber;
+    if (executableModuleMember != null) {
+      excutableInitilizer = executableModuleMember;
     } else if (!_dep.isFromModule || _dep.isAbstract) {
       final possibleFactories = <ExecutableElement>[
         ...clazz.methods.where((m) => m.isStatic),
