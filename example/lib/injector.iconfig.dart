@@ -4,8 +4,8 @@
 // InjectableConfigGenerator
 // **************************************************************************
 
-import 'services/service.dart';
-import 'services/register_module.dart';
+import 'package:example/services/service.dart';
+import 'package:example/services/register_module.dart';
 import 'package:get_it/get_it.dart';
 
 void $initGetIt(GetIt g, {String environment}) {
@@ -24,7 +24,7 @@ void $initGetIt(GetIt g, {String environment}) {
 
   //Register prod Dependencies --------
   if (environment == 'prod') {
-    g.registerFactory<String>(() => registerModule.ProdUrl,
+    g.registerFactory<String>(() => registerModule.prodUrl,
         instanceName: 'baseUrl');
   }
 }

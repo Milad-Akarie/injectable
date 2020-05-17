@@ -84,7 +84,10 @@ const dev = const Environment(Environment.dev);
 const prod = const Environment(Environment.prod);
 const test = const Environment(Environment.test);
 
-@Deprecated('Use @Injectable(as:...) instead')
+@Deprecated("Use @Injectable(as:...) or it's subs instead")
+// @Injectable(as: Type)
+// @Singleton(as: Type)
+// @LazySingleton(as: Type)
 class RegisterAs {
   // The type to bind your implementation to,
   // typically an abstract class which is implemented by the

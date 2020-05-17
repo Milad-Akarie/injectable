@@ -9,12 +9,12 @@ environment:
 dependencies:
   get_it: 4.0.0
   mockito: ^4.1.1
-  injectable:
-    path: ../injectable
+  injectable: 0.4.0
+#    path: ../injectable
 #  path: ^1.6.0
 
 dev_dependencies:
   pedantic: ^1.8.0
   build_runner:
-  injectable_generator:
-    path: ../injectable_generator
+  injectable_generator: 0.4.0
+#    path: ../injectable_generator

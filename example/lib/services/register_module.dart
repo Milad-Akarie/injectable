@@ -14,7 +14,7 @@ abstract class RegisterModule {
 
   @prod
   @Named('baseUrl')
-  String get ProdUrl => 'My prod url';
+  String get prodUrl => 'My prod url';
 }
 
 @Injectable(as: Client)
