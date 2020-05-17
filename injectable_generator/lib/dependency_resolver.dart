@@ -71,7 +71,7 @@ class DependencyResolver {
       } else {
         throwIf(
           executableElement.parameters.isNotEmpty,
-          'Abstract methods can not have injectable or factory paramters',
+          'Abstract methods can not have injectable or factory parameters',
           element: executableElement,
         );
       }
@@ -98,7 +98,7 @@ class DependencyResolver {
   Future<DependencyConfig> _resolveActualType(
     ClassElement clazz, [
     String typeName,
-    ExecutableElement executbaleModuleMemeber,
+    ExecutableElement executableModuleMember,
   ]) async {
     _dep.type = typeName ?? clazz.name;
     _dep.typeImpl = typeName ?? clazz.name;
@@ -179,8 +179,8 @@ class DependencyResolver {
 
     ExecutableElement excutableInitilizer;
 
-    if (executbaleModuleMemeber != null) {
-      excutableInitilizer = executbaleModuleMemeber;
+    if (executableModuleMember != null) {
+      excutableInitilizer = executableModuleMember;
     } else if (!_dep.isFromModule || _dep.isAbstract) {
       final possibleFactories = <ExecutableElement>[
         ...clazz.methods.where((m) => m.isStatic),
@@ -241,7 +241,7 @@ class DependencyResolver {
 
       throwIf(
         _dep.isAbstract && factoryParamsCount != 0,
-        'Module dependecies with factory params must have custom initilaizers',
+        'Module dependencies with factory params must have custom initializers',
         element: clazz,
       );
 
