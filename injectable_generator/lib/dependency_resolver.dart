@@ -71,7 +71,7 @@ class DependencyResolver {
       } else {
         throwIf(
           executableElement.parameters.isNotEmpty,
-          'Abstract methods can not have injectable or factory paramters',
+          'Abstract methods can not have injectable or factory parameters',
           element: executableElement,
         );
       }
@@ -241,7 +241,7 @@ class DependencyResolver {
 
       throwIf(
         _dep.isAbstract && factoryParamsCount != 0,
-        'Module dependecies with factory params must have custom initilaizers',
+        'Module dependencies with factory params must have custom initializers',
         element: clazz,
       );
 
