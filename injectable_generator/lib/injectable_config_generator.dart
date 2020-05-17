@@ -52,7 +52,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
 
     if (messages.isNotEmpty) {
       messages.add(
-          '\nDid you forget to annotate the above classe(s) or their implementation with @injectable?');
+          '\nDid you forget to annotate the above class(es) or their implementation with @injectable?');
       printBoxed(messages.join('\n'));
     }
   }
