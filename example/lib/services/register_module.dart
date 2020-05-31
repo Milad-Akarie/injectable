@@ -10,6 +10,7 @@ abstract class RegisterModule {
 
   @dev
   @Named('baseUrl')
+  @RegisterAs()
   String get devUrl => 'My dev url';
 
   @prod

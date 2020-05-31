@@ -239,11 +239,20 @@ g.registerFactoryParam<BackendService, String, dynamic>(
 ## Binding abstract classes to implementations
 
 ---
-Use the 'as' Property inside of Injectable(as:..) to pass an abstract type that's implemented by the registered dependency
+Use the 'as' Property inside of Injectable(as:..) or it's subs to pass an abstract type that's implemented by the registered dependency
 
 ```dart
-@Injectable(as: Service) //Singleton(as: Service) ..
+@Injectable(as: Service)
 class ServiceImpl implements Service {}
+
+// or 
+@Singleton(as: Service) 
+class ServiceImpl implements Service {}
+
+// or 
+@LazySingleton(as: Service) 
+class ServiceImpl implements Service {}
+
 ```
 
 Generated code for the Above example
@@ -438,9 +447,9 @@ In some cases you'd need to register instances that are asynchronous or singleto
 @module
 abstract class RegisterModule {
 
- // You can register named premetive types like follows
+ // You can register named preemptive types like follows
   @Named("BaseUrl")
-  String get baseUrl => 'My base url'
+  String get baseUrl => 'My base url';
   
   // url here will be injected 
   @lazySingleton
