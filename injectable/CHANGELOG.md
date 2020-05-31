@@ -1,5 +1,7 @@
 # ChangeLog
-
+## [0.4.0+1] 
+- Update README file
+- Add some comments
 ## [0.4.0] Breaking Changes!
 - Change Methods inside of register modules are treated as factory methods now,
   so all params are considered injected params unless annotated with @factoryParam.
