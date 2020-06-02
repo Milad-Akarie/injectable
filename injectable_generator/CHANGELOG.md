@@ -1,6 +1,11 @@
 # ChangeLog
 
+## [0.4.1]
+
+- Fix stack overflow issue #78
+
 ## [0.4.0] Breaking Changes!
+
 - Change Methods inside of register modules are treated as factory methods now,
   so all params are considered injected params unless annotated with @factoryParam.
 - Change registerModule is now replaced with @module
@@ -10,14 +15,17 @@
 - Fix imports issue when working with bin directory
 
 ## [0.3.5]
+
 - Fix non-primitive factory params aren't imported
 
 ## [0.3.4]
+
 - fix parameterized dependencies aren't resolved properly
 - minor fixes
 
 ## [0.3.3]
-- fix duplicate var names issue when pre-resolving multiple instances of the same type 
+
+- fix duplicate var names issue when pre-resolving multiple instances of the same type
 
 ## [0.3.2]
 

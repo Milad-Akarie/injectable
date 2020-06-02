@@ -135,6 +135,7 @@ class ConfigCodeGenerator {
     for (var dep in unSorted) {
       if (dep.dependencies.every(
         (iDep) =>
+            iDep.isFactoryParam ||
             sorted.map((d) => d.type).contains(iDep.type) ||
             !unSorted.map((d) => d.type).contains(iDep.type),
       )) {
