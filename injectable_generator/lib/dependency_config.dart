@@ -20,23 +20,23 @@ class DependencyConfig {
   String moduleName;
 
   DependencyConfig({
-                     this.type,
-                     this.imports,
-                     this.dependencies,
-                     this.injectableType,
-                     this.instanceName,
-                     this.signalsReady,
-                     this.typeImpl,
-                     this.environment,
-                     this.initializerName,
-                     this.constructorName = '',
-                     this.isAsync = false,
-                     this.dependsOn,
-                     this.preResolve = false,
-                     this.isAbstract = false,
-                     this.isModuleMethod,
-                     this.moduleName,
-                   }) {
+    this.type,
+    this.imports,
+    this.dependencies,
+    this.injectableType,
+    this.instanceName,
+    this.signalsReady,
+    this.typeImpl,
+    this.environment,
+    this.initializerName,
+    this.constructorName = '',
+    this.isAsync = false,
+    this.dependsOn,
+    this.preResolve = false,
+    this.isAbstract = false,
+    this.isModuleMethod,
+    this.moduleName,
+  }) {
     imports ??= [];
     dependencies ??= [];
     dependsOn ??= [];

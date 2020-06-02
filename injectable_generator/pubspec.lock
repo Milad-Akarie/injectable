@@ -217,7 +217,7 @@ packages:
       name: injectable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.0"
+    version: "0.4.0+1"
   io:
     dependency: transitive
     description:

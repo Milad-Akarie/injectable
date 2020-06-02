@@ -119,7 +119,7 @@ packages:
       name: collection
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.14.11"
+    version: "1.14.12"
   convert:
     dependency: transitive
     description:
@@ -207,16 +207,16 @@ packages:
   injectable:
     dependency: "direct main"
     description:
-      name: injectable
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.0"
+      path: "../injectable"
+      relative: true
+    source: path
+    version: "0.4.0+1"
   injectable_generator:
     dependency: "direct dev"
     description:
-      name: injectable_generator
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../injectable_generator"
+      relative: true
+    source: path
     version: "0.4.0"
   io:
     dependency: transitive

@@ -2,20 +2,10 @@ import 'package:injectable/injectable.dart';
 
 @module
 abstract class RegisterModule {
-
   Client apiClient(
     @factoryParam String url,
   ) =>
       ApiClient(url);
-
-  @dev
-  @Named('baseUrl')
-  @RegisterAs()
-  String get devUrl => 'My dev url';
-
-  @prod
-  @Named('baseUrl')
-  String get prodUrl => 'My prod url';
 }
 
 @Injectable(as: Client)

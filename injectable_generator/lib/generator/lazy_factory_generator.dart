@@ -7,7 +7,7 @@ class LazyFactoryGenerator extends RegisterFuncGenerator {
 
   LazyFactoryGenerator({this.isLazySingleton = false})
       : funcName =
-  isLazySingleton ? 'registerLazySingleton' : 'registerFactory';
+            isLazySingleton ? 'registerLazySingleton' : 'registerFactory';
 
   @override
   String generate(DependencyConfig dep) {

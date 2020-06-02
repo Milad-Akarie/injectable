@@ -1,6 +1,6 @@
 name: injectable_generator
 description: Injectable is a convenient code generator for [get_it](https://pub.dev/packages/get_it). Inspired by Angular DI, Guice DI and inject.dart.
-version: 0.4.0
+version: 0.4.1
 homepage: https://github.com/Milad-Akarie/injectable
 
 environment:
@@ -13,7 +13,7 @@ dependencies:
   analyzer: ">=0.39.2 <0.40.0"
   injectable:
     ^0.4.0
-#    path: ../injectable
+    # path: ../injectable
 
 dev_dependencies:
   build_runner: ^1.0.0

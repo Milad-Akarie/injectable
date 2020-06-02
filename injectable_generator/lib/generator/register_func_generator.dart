@@ -45,7 +45,7 @@ abstract class RegisterFuncGenerator {
       }
 
       final paramName =
-      (!injectedDep.isPositional) ? '${injectedDep.paramName}: ' : '';
+          (!injectedDep.isPositional) ? '${injectedDep.paramName}: ' : '';
 
       if (injectedDep.isFactoryParam) {
         return '$paramName${injectedDep.paramName}';
