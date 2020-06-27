@@ -74,9 +74,8 @@ void printBoxed(String message) {
 String stripGenericTypes(String type) => RegExp('^([^<]*)').stringMatch(type);
 
 Uri resolveAssetUri(Uri url) => url.scheme == 'asset' &&
-            url.pathSegments.isNotEmpty &&
-            url.pathSegments[1] == 'bin' ||
-        url.pathSegments[1] == 'test'
+        url.pathSegments.length >= 2 &&
+        (url.pathSegments[1] == 'bin' || url.pathSegments[1] == 'test')
     ? url.replace(
         scheme: '',
         pathSegments: url.pathSegments.skip(2),
