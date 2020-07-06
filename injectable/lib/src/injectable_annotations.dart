@@ -6,7 +6,7 @@ class InjectableInit {
       : assert(generateForDir != null);
 }
 
-const injectableInit = const InjectableInit();
+const injectableInit = InjectableInit();
 
 class Injectable {
   // The type to bind your implementation to,
@@ -21,7 +21,7 @@ class Injectable {
   const Injectable({this.as, this.env});
 }
 
-const injectable = const Injectable();
+const injectable = Injectable();
 
 /// Classes annotated with @Singleton
 /// will generate registerSingleton func
@@ -37,7 +37,7 @@ class Singleton extends Injectable {
   }) : super(as: as, env: env);
 }
 
-const singleton = const Singleton();
+const singleton = Singleton();
 
 /// Classes annotated with @LazySingleton
 /// will generate registerLazySingleton func
@@ -48,7 +48,7 @@ class LazySingleton extends Injectable {
   }) : super(as: as, env: env);
 }
 
-const lazySingleton = const LazySingleton();
+const lazySingleton = LazySingleton();
 
 // Used to annotate a constructor dependency
 // that's registered with an instance names;
@@ -66,7 +66,7 @@ class Named {
   const Named.from(this.type) : name = null;
 }
 
-const named = const Named("");
+const named = Named('');
 
 // used to annotate dependencies which are
 // registered under different environment
@@ -80,9 +80,9 @@ class Environment {
   static const test = 'test';
 }
 
-const dev = const Environment(Environment.dev);
-const prod = const Environment(Environment.prod);
-const test = const Environment(Environment.test);
+const dev = Environment(Environment.dev);
+const prod = Environment(Environment.prod);
+const test = Environment(Environment.test);
 
 @Deprecated("Use @Injectable(as:...) or it's subs instead")
 // @Injectable(as: Type)
@@ -108,7 +108,7 @@ class FactoryMethod {
   const FactoryMethod._();
 }
 
-const factoryMethod = const FactoryMethod._();
+const factoryMethod = FactoryMethod._();
 
 /// Marks a constructor param as
 /// factoryParam so it can be passed
@@ -117,7 +117,7 @@ class FactoryParam {
   const FactoryParam._();
 }
 
-const factoryParam = const FactoryParam._();
+const factoryParam = FactoryParam._();
 
 // marks a class as a register module where all
 // property accessors rerun types are considered factories
@@ -127,9 +127,9 @@ class RegisterModule {
 }
 
 @Deprecated('Use module instead')
-const registerModule = const RegisterModule._();
+const registerModule = RegisterModule._();
 
-const module = const RegisterModule._();
+const module = RegisterModule._();
 
 /// Futures annotated with [preResolv]
 /// will be pre-awaited before they're
@@ -138,4 +138,4 @@ class PreResolve {
   const PreResolve._();
 }
 
-const preResolve = const PreResolve._();
+const preResolve = PreResolve._();
