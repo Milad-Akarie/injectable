@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:injectable/injectable.dart';
+import 'package:injectable_generator/import_resolver.dart';
 import 'package:injectable_generator/utils.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -11,11 +12,12 @@ import 'dependency_config.dart';
 import 'dependency_resolver.dart';
 
 const TypeChecker typeChecker = TypeChecker.fromRuntime(Injectable);
-const TypeChecker moduleChecker = TypeChecker.fromRuntime(RegisterModule);
+const TypeChecker moduleChecker = TypeChecker.fromRuntime(Module);
 
 class InjectableGenerator implements Generator {
   RegExp _classNameMatcher, _fileNameMatcher;
   bool autoRegister;
+
   InjectableGenerator(Map options) {
     autoRegister = options['auto_register'] ?? false;
     if (autoRegister) {
@@ -45,21 +47,22 @@ class InjectableGenerator implements Generator {
         ];
         for (var annotatedElement in executables) {
           if (annotatedElement.isPrivate) continue;
-          allDepsInStep.add(await DependencyResolver(getResolver(buildStep))
-              .resolveModuleMember(clazz, annotatedElement));
+          allDepsInStep
+              .add(await DependencyResolver(getResolver(await buildStep.resolver.libraries.toList())).resolveModuleMember(clazz, annotatedElement));
         }
       } else if (_hasInjectable(clazz) ||
           (autoRegister && _hasConventionalMatch(clazz))) {
-        allDepsInStep.add(
-            await DependencyResolver(getResolver(buildStep)).resolve(clazz));
+        allDepsInStep.add(await DependencyResolver(
+            getResolver(await buildStep.resolver.libraries.toList()))
+            .resolve(clazz));
       }
     }
 
     return allDepsInStep.isNotEmpty ? json.encode(allDepsInStep) : null;
   }
 
-  Resolver getResolver(BuildStep buildStep) {
-    return buildStep.resolver;
+  ImportResolver getResolver(List<LibraryElement> libs) {
+    return ImportResolverImpl(libs);
   }
 
   bool _hasInjectable(ClassElement element) {

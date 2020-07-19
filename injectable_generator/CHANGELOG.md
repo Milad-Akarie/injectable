@@ -1,4 +1,11 @@
 # ChangeLog
+## [1.0.0] Breaking Change
+- Add support for multi environments (annotation & inlined)
+- Add generation-time check for duplicate dependencies under the same environment
+- Fix 3rd party imports from src instead of library file issue
+- Change generated file extension to .config.dart
+- Change generated file applies to most of effective dart rules including preferring relative imports
+- Clean up some code
 
 ## [0.4.1]
 
@@ -7,7 +14,7 @@
 ## [0.4.0] Breaking Changes!
 
 - Change Methods inside of register modules are treated as factory methods now,
-  so all params are considered injected params unless annotated with @factoryParam.
+so all params are considered injected params unless annotated with @factoryParam.
 - Change registerModule is now replaced with @module
 - Change RegisterAs(Type) Annotation is now replaced with @Injectable(as:Type)
 - Change Singleton.Lazy() is replaced with @LazySingleton()

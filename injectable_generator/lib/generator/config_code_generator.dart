@@ -4,21 +4,23 @@ import 'package:injectable_generator/dependency_config.dart';
 import 'package:injectable_generator/generator/factory_param_generator.dart';
 import 'package:injectable_generator/generator/module_factory_generator.dart';
 import 'package:injectable_generator/generator/singleton_generator.dart';
+import 'package:injectable_generator/import_resolver.dart';
 import 'package:injectable_generator/injectable_types.dart';
 import 'package:injectable_generator/utils.dart';
 
 import 'lazy_factory_generator.dart';
 
-// holds all used var names
-// to make sure we don't have duplicate var names
-// in the register function
+/// holds all used var names
+/// to make sure we don't have duplicate var names
+/// in the register function
 final Set<String> registeredVarNames = {};
 
 class ConfigCodeGenerator {
   final List<DependencyConfig> allDeps;
   final _buffer = StringBuffer();
+  final String targetFilePath;
 
-  ConfigCodeGenerator(this.allDeps);
+  ConfigCodeGenerator(this.allDeps, this.targetFilePath);
 
   _write(Object o) => _buffer.write(o);
 
@@ -28,6 +30,7 @@ class ConfigCodeGenerator {
   FutureOr<String> generate() async {
     // clear previously registered var names
     registeredVarNames.clear();
+    _generateImports(allDeps);
 
     // sort dependencies alphabetically
     allDeps.sort((a, b) => a.type.compareTo(b.type));
@@ -36,78 +39,38 @@ class ConfigCodeGenerator {
     final Set<DependencyConfig> sorted = {};
     _sortByDependents(allDeps.toSet(), sorted);
 
-    final modules =
-        sorted.where((d) => d.isFromModule).map((d) => d.moduleName).toSet();
+    final modules = sorted.where((d) => d.isFromModule).map((d) => d.moduleName).toSet();
 
-    final Set<DependencyConfig> eagerDeps = sorted
-        .where((d) => d.injectableType == InjectableType.singleton)
-        .toSet();
+    final environments = sorted.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
+    if (environments.isNotEmpty) {
+      _writeln("/// Environment names");
+      environments.forEach((env) => _writeln("const _$env = '$env';"));
+    }
+    final eagerDeps = sorted.where((d) => d.injectableType == InjectableType.singleton).toSet();
 
     final lazyDeps = sorted.difference(eagerDeps);
 
-    // generate import
-    final imports = sorted.fold<Set<String>>(
-        {}, (a, b) => a..addAll(b.imports.where((i) => i != null)));
-
-    // add getIt import statement
-    imports.add("package:get_it/get_it.dart");
-    // generate all imports
-    imports.forEach((import) => _writeln("import '$import';"));
+    _writeln('''
+      /// adds generated dependencies 
+      /// to the provided [GetIt] instance
+   ''');
 
     if (_hasAsync(sorted)) {
-      _writeln(
-          "Future<void> \$initGetIt(GetIt g, {String environment}) async {");
+      _writeln("Future<void> \$initGetIt(GetIt g, {String environment}) async {");
     } else {
       _writeln("void \$initGetIt(GetIt g, {String environment}) {");
     }
-
+    _writeln("final gh = GetItHelper(g, environment);");
     modules.forEach((m) {
-      final constParam = _getAbstractModuleDeps(sorted, m)
-              .any((d) => d.dependencies.isNotEmpty)
-          ? 'g'
-          : '';
+      final constParam = _getAbstractModuleDeps(sorted, m).any((d) => d.dependencies.isNotEmpty) ? 'g' : '';
       _writeln('final ${toCamelCase(m)} = _\$$m($constParam);');
     });
 
-    // generate common registering
-    _generateDeps(lazyDeps.where((dep) => dep.environment == null).toSet());
-
-    _writeln("");
-
-    lazyDeps
-        .map((dep) => dep.environment)
-        .toSet()
-        .where((env) => env != null)
-        .forEach((env) {
-      _writeln('\n\n  //Register $env Dependencies --------');
-      _writeln("if(environment == '$env'){");
-      final envDeps = sorted.where((dep) => dep.environment == env).toSet();
-      _generateDeps(envDeps);
-      _writeln('}');
-    });
+    _generateDeps(lazyDeps);
 
     if (eagerDeps.isNotEmpty) {
-      _writeln(
-          "\n\n  //Eager singletons must be registered in the right order");
-      var currentEnv;
-      final eagerList = eagerDeps.toList();
-
-      for (int i = 0; i < eagerList.length; i++) {
-        final dep = eagerList[i];
-        if (dep.environment == null) {
-          _writeln(SingletonGenerator().generate(dep));
-        } else {
-          if (dep.environment != currentEnv) {
-            _writeln("if(environment == '${dep.environment}'){");
-          }
-          _writeln(SingletonGenerator().generate(dep));
-          if (i == eagerList.length - 1 ||
-              eagerList[i + 1].environment != dep.environment) {
-            _writeln('}');
-          }
-        }
-        currentEnv = dep.environment;
-      }
+      _writeln("\n\n  // Eager singletons must be registered in the right order");
+      _generateDeps(eagerDeps);
     }
     _write('}');
 
@@ -116,16 +79,45 @@ class ConfigCodeGenerator {
     return _buffer.toString();
   }
 
-  void _generateDeps(Set<DependencyConfig> deps) {
+  void _generateImports(Iterable<DependencyConfig> deps) {
+    final imports = deps.fold<Set<String>>({}, (a, b) => a..addAll(b.imports.where((i) => i != null)));
+
+    // add getIt import statement
+    imports.add("package:get_it/get_it.dart");
+    imports.add("package:injectable/get_it_helper.dart");
+    // generate all imports
+    var relativeImports = imports.map((e) => ImportResolverImpl.relative(e, targetFilePath)).toSet();
+    var dartImports = relativeImports.where((element) => element.startsWith('dart')).toSet();
+    _sortAndGenerate(dartImports);
+    _writeln("");
+
+    var packageImports = relativeImports.where((element) => element.startsWith('package')).toSet();
+    _sortAndGenerate(packageImports);
+    _writeln("");
+
+    var rest = relativeImports.difference({...dartImports, ...packageImports});
+    _sortAndGenerate(rest);
+  }
+
+  void _sortAndGenerate(Set<String> imports) {
+    var sorted = imports.toList()..sort();
+    sorted.toList().forEach((import) => _writeln("import '$import';"));
+  }
+
+  void _generateDeps(Iterable<DependencyConfig> deps) {
     deps.forEach((dep) {
+      var prefix = 'gh.';
+      var suffix = ';';
       if (dep.injectableType == InjectableType.factory) {
         if (dep.dependencies.any((d) => d.isFactoryParam)) {
-          _writeln(FactoryParamGenerator().generate(dep));
+          _writeln(FactoryParamGenerator().generate(dep, prefix: prefix, suffix: suffix));
         } else {
-          _writeln(LazyFactoryGenerator().generate(dep));
+          _writeln(LazyFactoryGenerator().generate(dep, prefix: prefix, suffix: suffix));
         }
       } else if (dep.injectableType == InjectableType.lazySingleton) {
-        _writeln(LazyFactoryGenerator(isLazySingleton: true).generate(dep));
+        _writeln(LazyFactoryGenerator(isLazySingleton: true).generate(dep, prefix: prefix, suffix: suffix));
+      } else if (dep.injectableType == InjectableType.singleton) {
+        _writeln(SingletonGenerator().generate(dep, prefix: prefix, suffix: suffix));
       }
     });
   }

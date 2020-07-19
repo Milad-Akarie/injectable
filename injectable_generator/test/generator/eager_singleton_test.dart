@@ -10,7 +10,7 @@ void main() {
             type: 'Demo',
             typeImpl: 'Demo',
           )),
-          'g.registerSingleton<Demo>(Demo());');
+          'singleton<Demo>(Demo())');
     });
 
     test("Singleton generator abstract", () {
@@ -19,7 +19,7 @@ void main() {
           type: 'AbstractType',
           typeImpl: 'Demo',
         )),
-        'g.registerSingleton<AbstractType>(Demo());',
+        'singleton<AbstractType>(Demo())',
       );
     });
 
@@ -30,7 +30,7 @@ void main() {
           typeImpl: 'Demo',
           instanceName: 'MyDemo',
         )),
-        "g.registerSingleton<Demo>(Demo(), instanceName: 'MyDemo');",
+        "singleton<Demo>(Demo(), instanceName: 'MyDemo')",
       );
     });
 
@@ -41,7 +41,7 @@ void main() {
             typeImpl: 'Demo',
             isAsync: true,
           )),
-          'g.registerSingletonAsync<Demo>(()=> Demo());');
+          'singletonAsync<Demo>(()=> Demo())');
     });
 
     test("Singleton generator async with dependsOn", () {
@@ -52,7 +52,7 @@ void main() {
             isAsync: true,
             dependsOn: ['Storage', 'LocalRepo'],
           )),
-          "g.registerSingletonAsync<Demo>(()=> Demo(), dependsOn: [Storage, LocalRepo]);");
+          "singletonAsync<Demo>(()=> Demo(), dependsOn: [Storage, LocalRepo])");
     });
 
     test("Singleton generator with dependsOn", () {
@@ -63,7 +63,7 @@ void main() {
             isAsync: false,
             dependsOn: ['Storage', 'LocalRepo'],
           )),
-          'g.registerSingletonWithDependencies<Demo>(()=> Demo(), dependsOn: [Storage, LocalRepo]);');
+          'singletonWithDependencies<Demo>(()=> Demo(), dependsOn: [Storage, LocalRepo])');
     });
 
     test("Singleton generator with Positional dependencies", () {
@@ -80,7 +80,7 @@ void main() {
               )
             ],
           )),
-          'g.registerSingleton<Demo>(Demo(g<Storage>()));');
+          'singleton<Demo>(Demo(g<Storage>()))');
     });
 
     test("Singleton generator with named dependencies", () {
@@ -97,7 +97,7 @@ void main() {
               )
             ],
           )),
-          'g.registerSingleton<Demo>(Demo(storage: g<Storage>()));');
+          'singleton<Demo>(Demo(storage: g<Storage>()))');
     });
   });
 }

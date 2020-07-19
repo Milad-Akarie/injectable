@@ -1,6 +1,5 @@
 import 'package:injectable_generator/dependency_config.dart';
 import 'package:injectable_generator/generator/factory_param_generator.dart';
-import 'package:injectable_generator/generator/lazy_factory_generator.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -19,7 +18,7 @@ void main() {
               )
             ],
           )),
-          'g.registerFactoryParam<Demo,Storage,dynamic>((storage, _)=> Demo(storage));');
+          'factoryParam<Demo,Storage,dynamic>((storage, _)=> Demo(storage))');
     });
 
     test("Two factory param generator test", () {
@@ -42,7 +41,7 @@ void main() {
               )
             ],
           )),
-          'g.registerFactoryParam<Demo,Storage,Url>((storage, url)=> Demo(storage, url));');
+          'factoryParam<Demo,Storage,Url>((storage, url)=> Demo(storage, url))');
     });
 
     test("Two named factory param generator test", () {
@@ -65,7 +64,7 @@ void main() {
               )
             ],
           )),
-          'g.registerFactoryParam<Demo,Storage,Url>((storage, url)=> Demo(storage: storage, url: url));');
+          'factoryParam<Demo,Storage,Url>((storage, url)=> Demo(storage: storage, url: url))');
     });
 
     test("One factory param with injected dependencies test", () {
@@ -88,7 +87,7 @@ void main() {
               )
             ],
           )),
-          'g.registerFactoryParam<Demo,String,dynamic>((url, _)=> Demo(g<Storage>(), url));');
+          'factoryParam<Demo,String,dynamic>((url, _)=> Demo(g<Storage>(), url))');
     });
   });
 }

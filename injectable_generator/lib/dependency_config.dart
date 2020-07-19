@@ -9,7 +9,7 @@ class DependencyConfig {
   String instanceName;
   bool signalsReady;
   String typeImpl;
-  String environment;
+  List<String> environments;
   String initializerName;
   String constructorName;
   bool isAsync;
@@ -27,7 +27,7 @@ class DependencyConfig {
     this.instanceName,
     this.signalsReady,
     this.typeImpl,
-    this.environment,
+    this.environments,
     this.initializerName,
     this.constructorName = '',
     this.isAsync = false,
@@ -37,6 +37,7 @@ class DependencyConfig {
     this.isModuleMethod,
     this.moduleName,
   }) {
+    environments ??= [];
     imports ??= [];
     dependencies ??= [];
     dependsOn ??= [];
@@ -62,8 +63,7 @@ class DependencyConfig {
     }
 
     injectableType = json['injectableType'];
-    environment = json['environment'];
-
+    environments = json['environments']?.cast<String>() ?? [];
     isAbstract = json['isAbstract'] ?? false;
     isModuleMethod = json['isModuleMethod'] ?? false;
     moduleName = json['moduleName'];
@@ -73,7 +73,8 @@ class DependencyConfig {
 
   bool get registerAsInstance => isAsync && preResolve;
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "type": type,
         "typeImpl": typeImpl,
         "isAsync": isAsync,
@@ -81,10 +82,10 @@ class DependencyConfig {
         "injectableType": injectableType,
         "imports": imports.toSet().toList(),
         "dependsOn": dependsOn,
+        "environments": environments,
         "dependencies": dependencies.map((v) => v.toJson()).toList(),
         if (instanceName != null) "instanceName": instanceName,
         if (signalsReady != null) "signalsReady": signalsReady,
-        if (environment != null) "environment": environment,
         if (initializerName != null) "initializerName": initializerName,
         if (constructorName != null) "constructorName": constructorName,
         if (isAbstract != null) 'isAbstract': isAbstract,

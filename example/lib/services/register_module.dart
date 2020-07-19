@@ -1,21 +1,27 @@
+import 'package:example/services/service.dart';
 import 'package:injectable/injectable.dart';
+// ignore_for_file: public_member_api_docs
 
 @module
 abstract class RegisterModule {
-  Client apiClient(
-    @factoryParam String url,
-  ) =>
-      ApiClient(url);
+  @test
+  @Injectable(as: Client)
+  ApiClient get client;
 }
 
-@Injectable(as: Client)
+@prod
+@Singleton(as: Client)
 class ApiClient extends Client {
-  final String baseUrl;
-
-  ApiClient(@Named('baseUrl') this.baseUrl);
+  ApiClient(Service devService);
 
   @override
-  String get url => baseUrl;
+  String get url => 'Prod base url';
+}
+
+@Injectable(as: Client, env: [Environment.dev])
+class ApiClientMock extends Client {
+  @override
+  String get url => 'Dev base url';
 }
 
 abstract class Client {

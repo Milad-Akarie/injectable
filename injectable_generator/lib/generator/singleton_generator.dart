@@ -3,7 +3,7 @@ import 'package:injectable_generator/generator/register_func_generator.dart';
 
 class SingletonGenerator extends RegisterFuncGenerator {
   @override
-  String generate(DependencyConfig dep) {
+  String generate(DependencyConfig dep, {String prefix = '', String suffix = ''}) {
     final initializer = generateInitializer(dep);
 
     var constructor = initializer;
@@ -14,20 +14,20 @@ class SingletonGenerator extends RegisterFuncGenerator {
     final typeArg = '<${dep.type}>';
 
     if (dep.isAsync && !dep.preResolve) {
-      write('g.registerSingletonAsync$typeArg(()=> $constructor');
+      write('${prefix}singletonAsync$typeArg(()=> $constructor');
       if (dep.dependsOn.isNotEmpty) {
         write(', dependsOn: ${dep.dependsOn}');
       }
     } else {
       if (dep.dependsOn.isEmpty) {
-        write("g.registerSingleton$typeArg($constructor");
+        write("${prefix}singleton$typeArg($constructor");
       } else {
         write(
-            'g.registerSingletonWithDependencies$typeArg(()=> $constructor, dependsOn: ${dep.dependsOn}');
+            '${prefix}singletonWithDependencies$typeArg(()=> $constructor, dependsOn: ${dep.dependsOn}');
       }
     }
 
-    closeRegisterFunc(dep);
+    closeRegisterFunc(dep, suffix);
     return buffer.toString();
   }
 }
