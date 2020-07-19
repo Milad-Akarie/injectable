@@ -15,7 +15,7 @@ class ModuleFactoryGenerator extends RegisterFuncGenerator {
   }
 
   @override
-  String generate(DependencyConfig dep) {
+  String generate(DependencyConfig dep, {String prefix = '', String suffix = ''}) {
     final constructor = generateInitializer(dep, getIt: '_g');
     if (dep.isModuleMethod) {
       return '${dep.typeImpl} ${dep.initializerName}() => $constructor;';

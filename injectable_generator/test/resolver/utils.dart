@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
 import 'package:injectable_generator/dependency_resolver.dart';
+import 'package:injectable_generator/import_resolver.dart';
 import 'package:injectable_generator/injectable_generator.dart';
 import 'package:path/path.dart' as p;
 import 'package:source_gen/source_gen.dart';
@@ -36,7 +38,8 @@ void testRawSource(String label, {String source, Map output}) {
     final resolvedInput = await resolveRawSource('''
     import 'package:injectable/injectable.dart'
     $source''');
-    final generated = await DependencyResolver(resolvedInput.resolver).resolve(resolvedInput.library.classes.first);
+    final importsResolve = ImportResolverImpl(await resolvedInput.resolver.libraries.toList());
+    final generated = await DependencyResolver(importsResolve).resolve(resolvedInput.library.classes.first);
     expect(output, generated.toJson());
   });
 }
@@ -49,10 +52,10 @@ class ResolvedInput {
 }
 
 class InjectableGeneratorMock extends InjectableGenerator {
-  final Resolver resolver;
+  final ImportResolver resolver;
 
   InjectableGeneratorMock(this.resolver, [Map options = const {}]) : super(options);
 
   @override
-  Resolver getResolver(BuildStep buildStep) => this.resolver;
+  ImportResolver getResolver(List<LibraryElement> libs) => this.resolver;
 }

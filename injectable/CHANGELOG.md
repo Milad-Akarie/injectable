@@ -1,4 +1,12 @@
 # ChangeLog
+## [1.0.0] Breaking Change
+- Add support for multi environments (annotation & inlined)
+- Add generation-time check for duplicate dependencies under the same environment
+- Fix 3rd party imports from src instead of library file issue
+- Change generated file extension to .config.dart
+- Change generated file applies to most of effective dart rules including preferring relative imports
+- Clean up some code
+
 ## [0.4.0+1] 
 - Update README file
 - Add some comments

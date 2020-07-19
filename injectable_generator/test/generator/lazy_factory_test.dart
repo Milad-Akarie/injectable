@@ -11,7 +11,7 @@ void main() {
             type: 'Demo',
             typeImpl: 'Demo',
           )),
-          'g.registerFactory<Demo>(()=> Demo());');
+          'factory<Demo>(()=> Demo())');
     });
 
     test("Simple lazy singleton generator", () {
@@ -22,7 +22,7 @@ void main() {
                 typeImpl: 'Demo',
               ),
               isLazySingleton: true),
-          'g.registerLazySingleton<Demo>(()=> Demo());');
+          'lazySingleton<Demo>(()=> Demo())');
     });
 
     test("factory generator abstract", () {
@@ -31,7 +31,7 @@ void main() {
             type: 'AbstractType',
             typeImpl: 'Demo',
           )),
-          'g.registerFactory<AbstractType>(()=> Demo());');
+          'factory<AbstractType>(()=> Demo())');
     });
 
     test("factory generator async", () {
@@ -41,7 +41,7 @@ void main() {
             typeImpl: 'Demo',
             isAsync: true,
           )),
-          'g.registerFactoryAsync<Demo>(()=> Demo());');
+          'factoryAsync<Demo>(()=> Demo())');
     });
 
     test("factory generator with Positional dependencies", () {
@@ -58,7 +58,7 @@ void main() {
               )
             ],
           )),
-          'g.registerFactory<Demo>(()=> Demo(g<Storage>()));');
+          'factory<Demo>(()=> Demo(g<Storage>()))');
     });
 
     test("factory generator with named dependencies", () {
@@ -75,7 +75,7 @@ void main() {
               )
             ],
           )),
-          'g.registerFactory<Demo>(()=> Demo(storage: g<Storage>()));');
+          'factory<Demo>(()=> Demo(storage: g<Storage>()))');
     });
   });
 }

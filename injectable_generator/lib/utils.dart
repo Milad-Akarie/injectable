@@ -1,30 +1,6 @@
 // general utils
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/src/generated/source.dart';
 import 'package:source_gen/source_gen.dart';
-
-// Checks if source is from dart:core library
-bool isCoreDartType(Source source) {
-  return source.isInSystemLibrary && source.uri.path.startsWith('core/');
-}
-
-String getImport(Element element) {
-  // prefer library source, because otherwise "part of"-files will lead to
-  // compile errors due to bad imports in the generated code
-  final source = element.librarySource ?? element.source;
-
-  //return early if element has no source
-  if (source == null) {
-    return null;
-  }
-
-  // we don't need to import core dart types
-  if (!isCoreDartType(source)) {
-    final path = resolveAssetUri(source.uri).toString();
-    return path;
-  }
-  return null;
-}
 
 String capitalize(String s) {
   if (s.length < 2) {

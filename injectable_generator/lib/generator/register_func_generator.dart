@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 import 'package:injectable_generator/dependency_config.dart';
 import 'package:injectable_generator/generator/config_code_generator.dart';
 import 'package:injectable_generator/utils.dart';
@@ -7,8 +6,10 @@ abstract class RegisterFuncGenerator {
   final buffer = StringBuffer();
 
   write(Object o) => buffer.write(o);
+
   writeln(Object o) => buffer.writeln(o);
-  String generate(DependencyConfig dep);
+
+  String generate(DependencyConfig dep, {String prefix = '', String suffix = ''});
 
   String generateInitializer(DependencyConfig dep, {String getIt = 'g'}) {
     final flattenedParams = flattenParams(dep.dependencies, getIt);
@@ -72,13 +73,17 @@ abstract class RegisterFuncGenerator {
     return awaitedVar;
   }
 
-  void closeRegisterFunc(DependencyConfig dep) {
+  void closeRegisterFunc(DependencyConfig dep, String suffix) {
     if (dep.signalsReady != null) {
       write(', signalsReady: ${dep.signalsReady}');
     }
     if (dep.instanceName != null) {
       write(", instanceName: '${dep.instanceName}'");
     }
-    write(");");
+    if (dep.environments?.isNotEmpty == true) {
+      write(
+          ", registerFor: {${dep.environments.toSet().map((e) => "_$e").join(',')}}");
+    }
+    write(")${suffix}");
   }
 }

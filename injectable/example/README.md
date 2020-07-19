@@ -6,15 +6,14 @@ import 'package:injectable/injectable_annotations.dart';
 
 abstract class Service {}
 
-@RegisterAs(Service, env: 'dev')
-@injectable
+@named
+@prod
+@Injectable(as: Service)
 class ServiceImpl1 extends Service {}
 
-@RegisterAs(Service, env: 'prod')
-@injectable
-class ServiceImpl2 implements Service {
 
-}
+@Injectable(as: Service, env: [Envirnoment.dev])
+class ServiceImpl2 implements Service {}
 
 @injectable
 class MyRepository {

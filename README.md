@@ -1,6 +1,6 @@
 # injectable
 
-Injectable is a convenient code generator for [get_it](https://pub.dev/packages/get_it). Inspired by Angular DI, Guice DI and inject.dart.
+Injectable is a convenient code generator for get_it. Inspired by Angular DI, Guice DI and inject.dart.
 
 ---
 
@@ -47,7 +47,8 @@ final getIt = GetIt.instance;
 void configureDependencies() => $initGetIt(getIt);
 ```
 Note: you can tell injectable what directories to generate for using the generateForDir property inside of @injectableInit.
-The following example will only process files inside of the test folder
+The following example will only process files inside of the test folder.
+
 ```dart
 @InjectableInit(generateForDir: ['test'])
 void configureDependencies() => $initGetIt(getIt);
@@ -82,7 +83,7 @@ class ServiceB {
 
 ### Run the generator
 
-Use the [watch] flag to watch the files system for edits and rebuild as necessary.
+Use the [watch] flag to watch the files' system for edits and rebuild as necessary.
 
 ```terminal
 flutter packages pub run build_runner watch
@@ -101,9 +102,11 @@ Injectable will generate the needed register functions for you
 ```dart
 final getIt = GetIt.instance;
 
-void $initGetIt(GetIt g, {String environment}) {
-  g.registerFactory<ServiceA>(() => ServiceA());
-  g.registerFactory<ServiceB>(ServiceA(getIt<ServiceA>()));
+void $initGetIt(GetIt getIt, {String environment}) {
+ final getItHelper = GetItHelper(getIt, environment);
+   getItHelper
+  ..factory<ServiceA>(() => ServiceA())
+  ..factory<ServiceB>(ServiceA(getIt<ServiceA>()));
 }
 ```
 
@@ -155,12 +158,12 @@ injectable will automatically register it as an asynchronous factory because the
 Generated Code:
 
 ```dart
-g.registerFactoryAsync<ApiClient>(() => ApiClient.create());
+factoryAsync<ApiClient>(() => ApiClient.create());
 ```
 
 ### Using a register module (for third party dependencies)
 
-just wrap your instance with a future and you're good to go
+just wrap your instance with a future, and you're good to go
 
 ```dart
 @module
@@ -187,9 +190,10 @@ generated code
 
 ```dart
 Future<void> $initGetIt(GetIt g, {String environment}) async {
+  final getItHelper = GetItHelper(getIt, environment);
   final registerModule = _$RegisterModule();
   final sharedPreferences = await registerModule.prefs;
-  g.registerFactory<SharedPreferences>(() => sharedPreferences);
+  getItHelper.factory<SharedPreferences>(() => sharedPreferences);
   ...
   }
 ```
@@ -213,7 +217,7 @@ class BackendService {
 generated code
 
 ```dart
-g.registerFactoryParam<BackendService, String, dynamic>(
+factoryParam<BackendService, String, dynamic>(
     (url, _) => BackendService(url),
   );
 ```
@@ -232,14 +236,14 @@ abstract class RegisterModule {
 generated code
 
 ```dart
-g.registerFactoryParam<BackendService, String, dynamic>(
+factoryParam<BackendService, String, dynamic>(
       (url, _) => registerModule.getService(g<ApiClient>(), url));
 ```
 
 ## Binding abstract classes to implementations
 
 ---
-Use the 'as' Property inside of Injectable(as:..) or it's subs to pass an abstract type that's implemented by the registered dependency
+Use the 'as' Property inside of Injectable(as:..) to pass an abstract type that's implemented by the registered dependency
 
 ```dart
 @Injectable(as: Service)
@@ -258,7 +262,7 @@ class ServiceImpl implements Service {}
 Generated code for the Above example
 
 ```dart
-g.registerFactory<Service>(() => ServiceImpl())
+factory<Service>(() => ServiceImpl())
 ```
 
 ### Binding an abstract class to multiple implementations
@@ -289,10 +293,10 @@ class MyRepo {
 Generated code for the Above example
 
 ```dart
-g.registerFactory<Service>(() => ServiceImpl1(), instanceName: 'impl1')
-g.registerFactory<Service>(() => ServiceImpl2(), instanceName: 'impl2')
+factory<Service>(() => ServiceImpl1(), instanceName: 'impl1')
+factory<Service>(() => ServiceImpl2(), instanceName: 'impl2')
 
-g.registerFactory<MyRepo>(() => MyRepo(getIt('impl1'))
+factory<MyRepo>(() => MyRepo(getIt('impl1'))
 ```
 
 ### Auto Tagging
@@ -315,8 +319,8 @@ class MyRepo {
 Generated code for the Above example
 
 ```dart
-g.registerFactory<Service>(() => ServiceImpl1(), instanceName: 'ServiceImpl1')
-g.registerFactory<MyRepo>(() => MyRepo(getIt('ServiceImpl1'))
+factory<Service>(() => ServiceImpl1(), instanceName: 'ServiceImpl1')
+factory<MyRepo>(() => MyRepo(getIt('ServiceImpl1'))
 ```
 
 ## Register under different environments
@@ -332,60 +336,35 @@ in the below example ServiceA is now only registered if we pass the environment 
 class ServiceA {}
 ```
 
-Generated code for the Above example
-
-```dart
-void $initGetIt({String environment}) {
- // ... other deps
-  if (environment == 'dev') {
-    _registerDevDependencies();
-  }
-}
-```
 
 you could also create your own environment annotations by assigning the const constructor Environment("") to a global const var.
 
 ```dart
-const dev = const Environment('dev');
+const dev = Environment('dev');
 // then just use it to annotate your classes
 @dev
 @injectable
 class ServiceA {}
 ```
-
-Usually you would want to register a different implementation for the same abstract class under different environments.
-to do that pass your environment name to the env property inside of Injectable(env:..) annotation or use  @Environment("env") annotation.
-
+You can assign multiple environment names to the same class
 ```dart
+@test
 @dev
-@Injectable(as: Service)
-class MockServiceImpl implements Service {}
-// or
-@Injectable(as: Service, env: Environment.prod)
-class RealServiceImpl implements Service {}
+@injectable
+class ServiceA {}
 ```
-
-Generated code for the Above example
+Alternatively use the env property in injectable and subs to assign environment names to your dependencies 
 
 ```dart
-void $initGetIt(GetIt getIt, {String environment}) {
-// ..other deps
-   //Register dev Dependencies --------
-  if (environment == 'dev') {
-     g.registerFactory<Service>(() => FakeServiceImpl());
-  }
-   //Register prod Dependencies --------
-  if (environment == 'prod') {
-      g.registerFactory<Service>(() => RealServiceImpl());
-  }
-}
+@Injectable(as: Service, env: [Environment.dev, Environment.test])
+class RealServiceImpl implements Service {}
 ```
 
 ## Using named factories and static create functions
 
 ---
 
-By default injectable will use the default constructor to build your dependencies but, you can tell injectable to use named/factory constructors or static create functions by using the @factoryMethod annotation. .
+By default, injectable will use the default constructor to build your dependencies but, you can tell injectable to use named/factory constructors or static create functions by using the @factoryMethod annotation. .
 
 ```dart
 @injectable
@@ -398,7 +377,7 @@ class MyRepository {
 The constructor named "from" will be used when building MyRepository.
 
 ```dart
-g.registerFactory<MyRepository>(MyRepository.from(getIt<Service>()));
+factory<MyRepository>(MyRepository.from(getIt<Service>()))
 ```
 
 or annotate static create functions or factories inside of abstract classes with @factoryMethod
@@ -417,7 +396,7 @@ abstract class Service {
 Generated code.
 
 ```dart
-g.registerFactory<Service>(() => Service.create(getIt<ApiClient>()));
+factory<Service>(() => Service.create(getIt<ApiClient>()))
 ```
 
 ## Registering third party types
@@ -458,9 +437,9 @@ abstract class RegisterModule {
   // same thing works for instances that's gotten asynchronous.
   // all you need to do is wrap your instance with a future and tell injectable how
   // to initialize it
-  @preResolve // if you need to  pre resolve the value
+  @preResolve // if you need to pre resolve the value
   Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
-  // Also make sure you await for your configure function before running the App.
+  // Also, make sure you await for your configure function before running the App.
  
 }
 ```
@@ -473,7 +452,7 @@ if you're facing even a weirder scenario you can always register them manually i
 
 Instead of annotating every single injectable class you write, it is possible to use a [Convention Based Configuration](https://en.wikipedia.org/wiki/Convention_over_configuration) to auto register your injectable classes, especially if you follow a concise naming convention.
 
-for example you can tell the generator to auto-register any class that ends with Service, Repository or Bloc
+for example, you can tell the generator to auto-register any class that ends with Service, Repository or Bloc
 using a simple regex pattern
 class_name_pattern: 'Service$|Repository$|Bloc\$'
 To use auto-register create a file with the name **build.yaml** in the same directory as **pubspec.yaml** and add
@@ -485,10 +464,10 @@ targets:
       injectable_generator:injectable_builder:
         options:
           auto_register: true
-          # auto register any class with a name matches the given pattern
+          # auto registers any class with a name matches the given pattern
           class_name_pattern:
             "Service$|Repository$|Bloc$"
-            # auto register any class inside a file with a
+            # auto registers any class inside a file with a
             # name matches the given pattern
           file_name_pattern: "_service$|_repository$|_bloc$"
 ```
@@ -506,4 +485,4 @@ flutter packages pub run build_runner clean
 ## Support the Library
 
 - You can support the library by staring it on Github && liking it on pub or report any bugs you encounter.
-- also if you have a suggestion or think something can be implemented in a better way, open an issue and lets talk about it.
+- also, if you have a suggestion or think something can be implemented in a better way, open an issue and let's talk about it.

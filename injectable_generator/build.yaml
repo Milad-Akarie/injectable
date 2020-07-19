@@ -9,6 +9,6 @@ builders:
   injectable_config_builder:
     import: "package:injectable_generator/builder.dart"
     builder_factories: ["injectableConfigBuilder"]
-    build_extensions: { ".dart": [".iconfig.dart"] }
+    build_extensions: { ".dart": [".config.dart"] }
     auto_apply: dependents
     build_to: source
