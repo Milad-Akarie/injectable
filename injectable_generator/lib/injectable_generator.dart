@@ -47,13 +47,14 @@ class InjectableGenerator implements Generator {
         ];
         for (var annotatedElement in executables) {
           if (annotatedElement.isPrivate) continue;
-          allDepsInStep
-              .add(await DependencyResolver(getResolver(await buildStep.resolver.libraries.toList())).resolveModuleMember(clazz, annotatedElement));
+          allDepsInStep.add(await DependencyResolver(
+                  getResolver(await buildStep.resolver.libraries.toList()))
+              .resolveModuleMember(clazz, annotatedElement));
         }
       } else if (_hasInjectable(clazz) ||
           (autoRegister && _hasConventionalMatch(clazz))) {
         allDepsInStep.add(await DependencyResolver(
-            getResolver(await buildStep.resolver.libraries.toList()))
+                getResolver(await buildStep.resolver.libraries.toList()))
             .resolve(clazz));
       }
     }

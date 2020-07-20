@@ -1,4 +1,7 @@
 # ChangeLog
+## [1.0.1] Breaking Change
+- Fix relative imports issue in test folder
+- Change generateForDir property's default value to ['lib']
 ## [1.0.0] Breaking Change
 - Add support for multi environments (annotation & inlined)
 - Add generation-time check for duplicate dependencies under the same environment

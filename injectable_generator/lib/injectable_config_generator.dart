@@ -34,7 +34,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
 
     _reportMissingDependencies(deps);
     _reportDuplicateDependencies(deps);
-    return ConfigCodeGenerator(deps, element.source.uri.path).generate();
+    return ConfigCodeGenerator(deps, element.source.uri).generate();
   }
 
   void _reportMissingDependencies(List<DependencyConfig> deps) {
@@ -52,7 +52,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     });
 
     if (messages.isNotEmpty) {
-      messages.add('\nDid you forget to annotate the above classe(s) or their implementation with @injectable?');
+      messages.add(
+          '\nDid you forget to annotate the above classe(s) or their implementation with @injectable?');
       printBoxed(messages.join('\n'));
     }
   }
@@ -60,13 +61,18 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   void _reportDuplicateDependencies(List<DependencyConfig> deps) {
     final registeredDeps = <DependencyConfig>[];
     for (var dep in deps) {
-      var registered = registeredDeps.where((elm) => elm.type == dep.type && elm.instanceName == dep.instanceName);
+      var registered = registeredDeps.where((elm) =>
+          elm.type == dep.type && elm.instanceName == dep.instanceName);
       if (registered.isEmpty) {
         registeredDeps.add(dep);
       } else {
-        Set<String> registeredEnvironments = registered.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
-        if (registeredEnvironments.isEmpty || dep.environments.any((env) => registeredEnvironments.contains(env))) {
-          throwBoxed('${dep.typeImpl} [${dep.type}] env: ${dep.environments} \nis registered more than once under the same environment');
+        Set<String> registeredEnvironments = registered
+            .fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
+        if (registeredEnvironments.isEmpty ||
+            dep.environments
+                .any((env) => registeredEnvironments.contains(env))) {
+          throwBoxed(
+              '${dep.typeImpl} [${dep.type}] env: ${dep.environments} \nis registered more than once under the same environment');
         }
       }
     }

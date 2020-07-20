@@ -22,7 +22,8 @@ Future<void> $initGetIt(GetIt g, {String environment}) async {
   final gh = GetItHelper(g, environment);
   final registerModule = _$RegisterModule(g);
   gh.factory<Client>(() => ApiClientMock(), registerFor: {_dev});
-  gh.factoryParamAsync<Service, String, dynamic>((x, _) => DevService.init(x), registerFor: {_dev});
+  gh.factoryParamAsync<Service, String, dynamic>((x, _) => DevService.init(x),
+      registerFor: {_dev});
   final service = await ProdService.init();
   gh.factory<Service>(() => service, registerFor: {_prod});
   gh.factory<Client>(() => registerModule.client, registerFor: {_test});
@@ -33,9 +34,7 @@ Future<void> $initGetIt(GetIt g, {String environment}) async {
 
 class _$RegisterModule extends RegisterModule {
   final GetIt _g;
-
   _$RegisterModule(this._g);
-
   @override
   ApiClient get client => ApiClient(_g<Service>());
 }

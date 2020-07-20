@@ -73,8 +73,7 @@ class DependencyConfig {
 
   bool get registerAsInstance => isAsync && preResolve;
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         "type": type,
         "typeImpl": typeImpl,
         "isAsync": isAsync,

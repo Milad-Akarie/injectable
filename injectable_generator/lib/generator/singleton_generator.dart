@@ -3,7 +3,8 @@ import 'package:injectable_generator/generator/register_func_generator.dart';
 
 class SingletonGenerator extends RegisterFuncGenerator {
   @override
-  String generate(DependencyConfig dep, {String prefix = '', String suffix = ''}) {
+  String generate(DependencyConfig dep,
+      {String prefix = '', String suffix = ''}) {
     final initializer = generateInitializer(dep);
 
     var constructor = initializer;

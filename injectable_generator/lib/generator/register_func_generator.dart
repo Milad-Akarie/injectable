@@ -9,7 +9,8 @@ abstract class RegisterFuncGenerator {
 
   writeln(Object o) => buffer.writeln(o);
 
-  String generate(DependencyConfig dep, {String prefix = '', String suffix = ''});
+  String generate(DependencyConfig dep,
+      {String prefix = '', String suffix = ''});
 
   String generateInitializer(DependencyConfig dep, {String getIt = 'g'}) {
     final flattenedParams = flattenParams(dep.dependencies, getIt);

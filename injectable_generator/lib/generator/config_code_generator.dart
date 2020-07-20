@@ -18,9 +18,9 @@ final Set<String> registeredVarNames = {};
 class ConfigCodeGenerator {
   final List<DependencyConfig> allDeps;
   final _buffer = StringBuffer();
-  final String targetFilePath;
+  final Uri targetFile;
 
-  ConfigCodeGenerator(this.allDeps, this.targetFilePath);
+  ConfigCodeGenerator(this.allDeps, this.targetFile);
 
   _write(Object o) => _buffer.write(o);
 
@@ -39,14 +39,18 @@ class ConfigCodeGenerator {
     final Set<DependencyConfig> sorted = {};
     _sortByDependents(allDeps.toSet(), sorted);
 
-    final modules = sorted.where((d) => d.isFromModule).map((d) => d.moduleName).toSet();
+    final modules =
+        sorted.where((d) => d.isFromModule).map((d) => d.moduleName).toSet();
 
-    final environments = sorted.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
+    final environments =
+        sorted.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
     if (environments.isNotEmpty) {
       _writeln("/// Environment names");
       environments.forEach((env) => _writeln("const _$env = '$env';"));
     }
-    final eagerDeps = sorted.where((d) => d.injectableType == InjectableType.singleton).toSet();
+    final eagerDeps = sorted
+        .where((d) => d.injectableType == InjectableType.singleton)
+        .toSet();
 
     final lazyDeps = sorted.difference(eagerDeps);
 
@@ -56,20 +60,25 @@ class ConfigCodeGenerator {
    ''');
 
     if (_hasAsync(sorted)) {
-      _writeln("Future<void> \$initGetIt(GetIt g, {String environment}) async {");
+      _writeln(
+          "Future<void> \$initGetIt(GetIt g, {String environment}) async {");
     } else {
       _writeln("void \$initGetIt(GetIt g, {String environment}) {");
     }
     _writeln("final gh = GetItHelper(g, environment);");
     modules.forEach((m) {
-      final constParam = _getAbstractModuleDeps(sorted, m).any((d) => d.dependencies.isNotEmpty) ? 'g' : '';
+      final constParam = _getAbstractModuleDeps(sorted, m)
+              .any((d) => d.dependencies.isNotEmpty)
+          ? 'g'
+          : '';
       _writeln('final ${toCamelCase(m)} = _\$$m($constParam);');
     });
 
     _generateDeps(lazyDeps);
 
     if (eagerDeps.isNotEmpty) {
-      _writeln("\n\n  // Eager singletons must be registered in the right order");
+      _writeln(
+          "\n\n  // Eager singletons must be registered in the right order");
       _generateDeps(eagerDeps);
     }
     _write('}');
@@ -80,18 +89,23 @@ class ConfigCodeGenerator {
   }
 
   void _generateImports(Iterable<DependencyConfig> deps) {
-    final imports = deps.fold<Set<String>>({}, (a, b) => a..addAll(b.imports.where((i) => i != null)));
+    final imports = deps.fold<Set<String>>(
+        {}, (a, b) => a..addAll(b.imports.where((i) => i != null)));
 
     // add getIt import statement
     imports.add("package:get_it/get_it.dart");
     imports.add("package:injectable/get_it_helper.dart");
     // generate all imports
-    var relativeImports = imports.map((e) => ImportResolverImpl.relative(e, targetFilePath)).toSet();
-    var dartImports = relativeImports.where((element) => element.startsWith('dart')).toSet();
+    var relativeImports =
+        imports.map((e) => ImportResolverImpl.relative(e, targetFile)).toSet();
+    var dartImports =
+        relativeImports.where((element) => element.startsWith('dart')).toSet();
     _sortAndGenerate(dartImports);
     _writeln("");
 
-    var packageImports = relativeImports.where((element) => element.startsWith('package')).toSet();
+    var packageImports = relativeImports
+        .where((element) => element.startsWith('package'))
+        .toSet();
     _sortAndGenerate(packageImports);
     _writeln("");
 
@@ -110,14 +124,18 @@ class ConfigCodeGenerator {
       var suffix = ';';
       if (dep.injectableType == InjectableType.factory) {
         if (dep.dependencies.any((d) => d.isFactoryParam)) {
-          _writeln(FactoryParamGenerator().generate(dep, prefix: prefix, suffix: suffix));
+          _writeln(FactoryParamGenerator()
+              .generate(dep, prefix: prefix, suffix: suffix));
         } else {
-          _writeln(LazyFactoryGenerator().generate(dep, prefix: prefix, suffix: suffix));
+          _writeln(LazyFactoryGenerator()
+              .generate(dep, prefix: prefix, suffix: suffix));
         }
       } else if (dep.injectableType == InjectableType.lazySingleton) {
-        _writeln(LazyFactoryGenerator(isLazySingleton: true).generate(dep, prefix: prefix, suffix: suffix));
+        _writeln(LazyFactoryGenerator(isLazySingleton: true)
+            .generate(dep, prefix: prefix, suffix: suffix));
       } else if (dep.injectableType == InjectableType.singleton) {
-        _writeln(SingletonGenerator().generate(dep, prefix: prefix, suffix: suffix));
+        _writeln(
+            SingletonGenerator().generate(dep, prefix: prefix, suffix: suffix));
       }
     });
   }
