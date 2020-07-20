@@ -41,7 +41,8 @@ class DependencyResolver {
     if (returnType is ParameterizedType) {
       ClassElement element = returnType.element;
       for (int i = 0; i < element.typeParameters.length; i++) {
-        _typeArgsMap[element.typeParameters[i].name] = returnType.typeArguments[i].getDisplayString();
+        _typeArgsMap[element.typeParameters[i].name] =
+            returnType.typeArguments[i].getDisplayString();
       }
     }
 
@@ -92,9 +93,9 @@ class DependencyResolver {
 
   Future<DependencyConfig> _resolveActualType(
     ClassElement clazz, [
-        String typeName,
-        ExecutableElement excModuleMember,
-      ]) async {
+    String typeName,
+    ExecutableElement excModuleMember,
+  ]) async {
     _dep.type = typeName ?? clazz.name;
     _dep.typeImpl = typeName ?? clazz.name;
 
@@ -113,18 +114,14 @@ class DependencyResolver {
         _dep.injectableType = InjectableType.lazySingleton;
       } else if (injectable.instanceOf(TypeChecker.fromRuntime(Singleton))) {
         _dep.injectableType = InjectableType.singleton;
-        _dep.signalsReady = injectable
-            .peek('signalsReady')
-            ?.boolValue;
+        _dep.signalsReady = injectable.peek('signalsReady')?.boolValue;
         _dep.dependsOn = injectable
             .peek('dependsOn')
             ?.listValue
             ?.map<String>((v) => v.toTypeValue().getDisplayString())
             ?.toList();
       }
-      abstractType = injectable
-          .peek('as')
-          ?.typeValue;
+      abstractType = injectable.peek('as')?.typeValue;
       inlineEnv = injectable
           .peek('env')
           ?.listValue
@@ -180,7 +177,7 @@ class DependencyResolver {
       ];
 
       executableInitilizer = possibleFactories.firstWhere(
-              (m) => constructorChecker.hasAnnotationOfExact(m), orElse: () {
+          (m) => constructorChecker.hasAnnotationOfExact(m), orElse: () {
         throwIf(
           clazz.isAbstract,
           '''[${clazz.name}] is abstract and can not be registered directly!
@@ -197,9 +194,9 @@ class DependencyResolver {
       for (ParameterElement param in executableInitilizer.parameters) {
         final namedAnnotation = namedChecker.firstAnnotationOf(param);
         final instanceName = namedAnnotation
-            ?.getField('type')
-            ?.toTypeValue()
-            ?.getDisplayString() ??
+                ?.getField('type')
+                ?.toTypeValue()
+                ?.getDisplayString() ??
             namedAnnotation?.getField('name')?.toStringValue();
 
         _dep.imports.addAll(_importResolver.resolveAll(param.type));

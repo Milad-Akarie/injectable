@@ -1,4 +1,6 @@
 # ChangeLog
+## [1.0.0+1]
+- Fix some analysis warnings for pub points
 ## [1.0.0] Breaking Change
 - Add support for multi environments (annotation & inlined)
 - Add generation-time check for duplicate dependencies under the same environment

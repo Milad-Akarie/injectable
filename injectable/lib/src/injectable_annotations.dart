@@ -5,7 +5,7 @@ class InjectableInit {
   final List<String> generateForDir;
 
   /// default constructor
-  const InjectableInit({this.generateForDir = const ['lib', 'bin']})
+  const InjectableInit({this.generateForDir = const ['lib']})
       : assert(
           generateForDir != null,
         );
@@ -94,7 +94,7 @@ class Named {
 
 /// const instance of [Named]
 /// with default arguments
-const named = Named("");
+const named = Named('');
 
 /// Used to annotate dependencies which are
 /// registered under certain environments
