@@ -6,6 +6,33 @@ abstract class ImportResolver {
   String resolve(Element element);
 
   Set<String> resolveAll(DartType type);
+
+  static String relative(String path, Uri to) {
+    var fileUri = Uri.parse(path);
+    var libName = to.pathSegments.first;
+    if ((to.scheme == 'package' &&
+            fileUri.scheme == 'package' &&
+            fileUri.pathSegments.first == libName) ||
+        (to.scheme == 'asset' && fileUri.scheme != 'package')) {
+      if (fileUri.path == to.path) {
+        return fileUri.pathSegments.last;
+      } else {
+        return p.posix
+            .relative(fileUri.path, from: to.path)
+            .replaceFirst('../', '');
+      }
+    } else {
+      return path;
+    }
+  }
+
+  static String normalizeAssetImports(String path) {
+    var fileUri = Uri.parse(path);
+    if (fileUri.scheme == "asset") {
+      return "/${fileUri.path}";
+    }
+    return path;
+  }
 }
 
 class ImportResolverImpl extends ImportResolver {
@@ -27,21 +54,6 @@ class ImportResolverImpl extends ImportResolver {
       }
     }
     return null;
-  }
-
-  static String relative(String path, Uri to) {
-    var fileUri = Uri.parse(path);
-    var libName = to.pathSegments.first;
-    if ((to.scheme == 'package' &&
-            fileUri.scheme == 'package' &&
-            fileUri.pathSegments.first == libName) ||
-        (to.scheme == 'asset' && fileUri.scheme != 'package')) {
-      return p.posix
-          .relative(fileUri.path, from: to.path)
-          .replaceFirst('../', '');
-    } else {
-      return path;
-    }
   }
 
   bool _isCoreDartType(Element element) {

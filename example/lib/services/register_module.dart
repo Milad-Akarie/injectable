@@ -1,7 +1,7 @@
 import 'package:example/services/service.dart';
 import 'package:injectable/injectable.dart';
-// ignore_for_file: public_member_api_docs
 
+// ignore_for_file: public_member_api_docs
 @module
 abstract class RegisterModule {
   @test

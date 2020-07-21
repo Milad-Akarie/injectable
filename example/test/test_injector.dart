@@ -5,5 +5,8 @@ import 'test_injector.config.dart';
 
 final GetIt getIt = GetIt.instance;
 
-@InjectableInit(generateForDir: ['test', 'lib'])
+@InjectableInit(
+  generateForDir: ['test', 'lib'],
+  preferRelativeImports: false,
+)
 void configureTestDependencies() => $initGetIt(getIt);
