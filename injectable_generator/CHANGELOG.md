@@ -1,4 +1,6 @@
 # ChangeLog
+## [1.0.2]
+- Fix relative imports issue when file has the same path as target
 ## [1.0.1] Breaking Change
 - Fix relative imports issue in test folder
 - Change generateForDir property's default value to ['lib']

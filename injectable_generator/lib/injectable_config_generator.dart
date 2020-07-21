@@ -18,6 +18,12 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
         .read('generateForDir')
         .listValue
         .map((e) => e.toStringValue());
+
+    var targetFile;
+    if (annotation.peek("preferRelativeImports")?.boolValue ?? true == true) {
+      targetFile = element.source.uri;
+    }
+
     final dirPattern = generateForDir.length > 1
         ? '{${generateForDir.join(',')}}'
         : '${generateForDir.first}';
@@ -33,8 +39,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     jsonData.forEach((json) => deps.add(DependencyConfig.fromJson(json)));
 
     _reportMissingDependencies(deps);
-    _reportDuplicateDependencies(deps);
-    return ConfigCodeGenerator(deps, element.source.uri).generate();
+    _validateDuplicateDependencies(deps);
+    return ConfigCodeGenerator(deps, targetFile: targetFile).generate();
   }
 
   void _reportMissingDependencies(List<DependencyConfig> deps) {
@@ -58,7 +64,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     }
   }
 
-  void _reportDuplicateDependencies(List<DependencyConfig> deps) {
+  void _validateDuplicateDependencies(List<DependencyConfig> deps) {
     final registeredDeps = <DependencyConfig>[];
     for (var dep in deps) {
       var registered = registeredDeps.where((elm) =>

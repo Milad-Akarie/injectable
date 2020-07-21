@@ -20,7 +20,7 @@ class ConfigCodeGenerator {
   final _buffer = StringBuffer();
   final Uri targetFile;
 
-  ConfigCodeGenerator(this.allDeps, this.targetFile);
+  ConfigCodeGenerator(this.allDeps, {this.targetFile});
 
   _write(Object o) => _buffer.write(o);
 
@@ -95,21 +95,25 @@ class ConfigCodeGenerator {
     // add getIt import statement
     imports.add("package:get_it/get_it.dart");
     imports.add("package:injectable/get_it_helper.dart");
+
     // generate all imports
-    var relativeImports =
-        imports.map((e) => ImportResolverImpl.relative(e, targetFile)).toSet();
+    var resolvedImports = (targetFile == null
+            ? imports.map(ImportResolver.normalizeAssetImports)
+            : imports.map((e) => ImportResolver.relative(e, targetFile)))
+        .toSet();
+
     var dartImports =
-        relativeImports.where((element) => element.startsWith('dart')).toSet();
+        resolvedImports.where((element) => element.startsWith('dart')).toSet();
     _sortAndGenerate(dartImports);
     _writeln("");
 
-    var packageImports = relativeImports
+    var packageImports = resolvedImports
         .where((element) => element.startsWith('package'))
         .toSet();
     _sortAndGenerate(packageImports);
     _writeln("");
 
-    var rest = relativeImports.difference({...dartImports, ...packageImports});
+    var rest = resolvedImports.difference({...dartImports, ...packageImports});
     _sortAndGenerate(rest);
   }
 

@@ -4,13 +4,14 @@
 // InjectableConfigGenerator
 // **************************************************************************
 
+import 'package:example/injector/service.dart';
 import 'package:example/services/register_module.dart';
 import 'package:example/services/service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/get_it_helper.dart';
 
-import 'sub/sub_test_service.dart';
-import 'test_service.dart';
+import '/example/test/sub/sub_test_service.dart';
+import '/example/test/test_service.dart';
 
 /// Environment names
 const _dev = 'dev';
@@ -24,6 +25,7 @@ Future<void> $initGetIt(GetIt g, {String environment}) async {
   final gh = GetItHelper(g, environment);
   final registerModule = _$RegisterModule(g);
   gh.factory<Client>(() => ApiClientMock(), registerFor: {_dev});
+  gh.factory<SameFolderService>(() => SameFolderService());
   gh.factoryParamAsync<Service, String, dynamic>((x, _) => DevService.init(x),
       registerFor: {_dev});
   final service = await ProdService.init();
