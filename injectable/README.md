@@ -103,10 +103,9 @@ Injectable will generate the needed register functions for you
 final getIt = GetIt.instance;
 
 void $initGetIt(GetIt getIt, {String environment}) {
- final getItHelper = GetItHelper(getIt, environment);
-   getItHelper
-  ..factory<ServiceA>(() => ServiceA())
-  ..factory<ServiceB>(ServiceA(getIt<ServiceA>()));
+ final gh = GetItHelper(getIt, environment);
+  gh.factory<ServiceA>(() => ServiceA());
+  gh.factory<ServiceB>(ServiceA(getIt<ServiceA>()));
 }
 ```
 
@@ -190,10 +189,10 @@ generated code
 
 ```dart
 Future<void> $initGetIt(GetIt g, {String environment}) async {
-  final getItHelper = GetItHelper(getIt, environment);
+  final gh = GetItHelper(getIt, environment);
   final registerModule = _$RegisterModule();
   final sharedPreferences = await registerModule.prefs;
-  getItHelper.factory<SharedPreferences>(() => sharedPreferences);
+  gh.factory<SharedPreferences>(() => sharedPreferences);
   ...
   }
 ```

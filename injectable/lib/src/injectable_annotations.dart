@@ -4,11 +4,15 @@ class InjectableInit {
   /// Only files exist in provided directories will be processed
   final List<String> generateForDir;
 
+  /// if true relative imports will be used where possible
+  /// defaults to true
+  final bool preferRelativeImports;
+
   /// default constructor
-  const InjectableInit({this.generateForDir = const ['lib', 'bin']})
-      : assert(
-          generateForDir != null,
-        );
+  const InjectableInit({
+    this.generateForDir = const ['lib'],
+    this.preferRelativeImports,
+  }) : assert(generateForDir != null);
 }
 
 /// const instance of [InjectableInit]
@@ -94,7 +98,7 @@ class Named {
 
 /// const instance of [Named]
 /// with default arguments
-const named = Named("");
+const named = Named('');
 
 /// Used to annotate dependencies which are
 /// registered under certain environments
