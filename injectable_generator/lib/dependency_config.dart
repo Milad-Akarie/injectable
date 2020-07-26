@@ -2,13 +2,13 @@
 // to be used later when generating the register function
 
 class DependencyConfig {
-  String type;
-  List<String> imports;
+  ImportableType type;
+  ImportableType typeImpl;
+  List<ImportConfig> imports;
   List<InjectedDependency> dependencies;
   int injectableType;
   String instanceName;
   bool signalsReady;
-  String typeImpl;
   List<String> environments;
   String initializerName;
   String constructorName;
@@ -17,7 +17,7 @@ class DependencyConfig {
   bool preResolve;
   bool isAbstract = false;
   bool isModuleMethod = false;
-  String moduleName;
+  ImportableType module;
 
   DependencyConfig({
     this.type,
@@ -35,7 +35,7 @@ class DependencyConfig {
     this.preResolve = false,
     this.isAbstract = false,
     this.isModuleMethod,
-    this.moduleName,
+    this.module,
   }) {
     environments ??= [];
     imports ??= [];
@@ -43,17 +43,50 @@ class DependencyConfig {
     dependsOn ??= [];
   }
 
+  Set<ImportableType> get allImportableTypes {
+    var importableTypes = <ImportableType>{};
+    if (type.fold != null) {
+      importableTypes.addAll(type.fold);
+    }
+    if (typeImpl != null) {
+      importableTypes.addAll(typeImpl.fold);
+    }
+    if (module != null) {
+      importableTypes.addAll(module.fold);
+    }
+    if (dependencies?.isNotEmpty == true) {
+      dependencies.forEach((dep) => importableTypes.addAll(dep.type.fold));
+    }
+    return importableTypes;
+  }
+
   DependencyConfig.fromJson(Map<String, dynamic> json) {
-    type = json['type'];
-    typeImpl = json['typeImpl'];
+    if (json['type'] != null) {
+      type = ImportableType.fromJson(json['type']);
+    }
+
+    if (json['typeImpl'] != null) {
+      typeImpl = ImportableType.fromJson(json['typeImpl']);
+    }
+
+    if (json['module'] != null) {
+      module = ImportableType.fromJson(json['module']);
+    }
+
     instanceName = json['instanceName'];
     signalsReady = json['signalsReady'];
     initializerName = json['initializerName'] ?? '';
     constructorName = json['constructorName'] ?? '';
-
     isAsync = json['isAsync'] ?? false;
     preResolve = json['preResolve'] ?? preResolve;
-    imports = json['imports']?.cast<String>() ?? [];
+
+    if (json['imports'] != null) {
+      imports = [];
+      json['imports'].forEach((v) {
+        imports.add(ImportConfig.fromJson(v));
+      });
+    }
+
     dependsOn = json['dependsOn']?.cast<String>() ?? [];
     if (json['dependencies'] != null) {
       dependencies = [];
@@ -66,61 +99,141 @@ class DependencyConfig {
     environments = json['environments']?.cast<String>() ?? [];
     isAbstract = json['isAbstract'] ?? false;
     isModuleMethod = json['isModuleMethod'] ?? false;
-    moduleName = json['moduleName'];
   }
 
-  bool get isFromModule => moduleName != null;
+  bool get isFromModule => module != null;
 
   bool get registerAsInstance => isAsync && preResolve;
 
-  Map<String, dynamic> toJson() =>
-      {
-        "type": type,
-        "typeImpl": typeImpl,
+  Map<String, dynamic> toJson() => {
+        if (type != null) 'type': type.toJson(),
+        if (typeImpl != null) 'typeImpl': typeImpl.toJson(),
+        if (module != null) 'module': module.toJson(),
         "isAsync": isAsync,
         "preResolve": preResolve,
         "injectableType": injectableType,
-        "imports": imports.toSet().toList(),
         "dependsOn": dependsOn,
         "environments": environments,
         "dependencies": dependencies.map((v) => v.toJson()).toList(),
+        "imports": imports.map((v) => v.toJson()).toList(),
         if (instanceName != null) "instanceName": instanceName,
         if (signalsReady != null) "signalsReady": signalsReady,
         if (initializerName != null) "initializerName": initializerName,
         if (constructorName != null) "constructorName": constructorName,
         if (isAbstract != null) 'isAbstract': isAbstract,
         if (isModuleMethod != null) 'isModuleMethod': isModuleMethod,
-        if (moduleName != null) 'moduleName': moduleName,
       };
 }
 
 class InjectedDependency {
-  String type;
+  ImportableType type;
   String name;
   String paramName;
   bool isFactoryParam;
   bool isPositional;
 
-  InjectedDependency(
-      {this.type,
-      this.name,
-      this.paramName,
-      this.isFactoryParam,
-      this.isPositional});
+  InjectedDependency({this.type, this.name, this.paramName, this.isFactoryParam, this.isPositional});
 
   InjectedDependency.fromJson(Map<String, dynamic> json) {
     name = json['name'];
-    type = json['type'];
+
+    if (json['type'] != null) {
+      type = ImportableType.fromJson(json['type']);
+    }
     paramName = json['paramName'];
     isFactoryParam = json['isFactoryParam'];
     isPositional = json['isPositional'];
   }
 
-  Map<String, dynamic> toJson() => {
-        "type": type,
+  Map<String, dynamic> toJson() =>
+      {
         "isFactoryParam": isFactoryParam,
         "isPositional": isPositional,
+        if (type != null) 'type': type.toJson(),
         if (name != null) "name": name,
         if (paramName != null) "paramName": paramName,
+      };
+}
+
+class ImportConfig {
+  String import;
+  String type;
+
+  ImportConfig({this.import, this.type});
+
+  ImportConfig.fromJson(Map<String, dynamic> json) {
+    import = json['import'];
+    type = json['type'];
+  }
+
+  Map<String, dynamic> toJson() =>
+      {
+        "type": type,
+        "import": import,
+      };
+}
+
+class ImportableType {
+  String import;
+  String name;
+  List<ImportableType> typeArguments;
+  String prefix;
+
+  ImportableType({this.name, this.import, this.typeArguments, this.prefix});
+
+  List<ImportableType> get fold => typeArguments.fold([this], (all, e) => all..addAll(e.fold));
+
+  String get fullName {
+    var namePrefix = prefix != null ? '$prefix.' : '';
+    var typeArgs = (typeArguments?.isNotEmpty == true) ? "<${typeArguments.map((e) => e.name).join(',')}>" : '';
+    return "$namePrefix$name$typeArgs";
+  }
+
+  String getDisplayName(Set<ImportableType> prefixedTypes) {
+    return prefixedTypes
+        .lookup(this)
+        ?.fullName ?? fullName;
+  }
+
+
+  String get importName => "'$import' ${prefix != null ? 'as $prefix' : ''}";
+
+  ImportableType copyWith({String import, String prefix}) {
+    return ImportableType(
+      import: import ?? this.import,
+      prefix: prefix ?? this.prefix,
+      name: this.name,
+      typeArguments: this.typeArguments,
+    );
+  }
+
+  ImportableType.fromJson(Map<String, dynamic> json) {
+    import = json['import'];
+    name = json['name'];
+    if (json['typeArguments'] != null) {
+      typeArguments = [];
+      json['typeArguments'].forEach((v) {
+        typeArguments.add(ImportableType.fromJson(v));
+      });
+    }
+  }
+
+  @override
+  String toString() {
+    return name;
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is ImportableType && runtimeType == other.runtimeType && import == other.import && name == other.name;
+
+  @override
+  int get hashCode => import.hashCode ^ name.hashCode;
+
+  Map<String, dynamic> toJson() =>
+      {
+        "name": name,
+        "import": import,
+        "typeArguments": typeArguments.map((v) => v.toJson()).toList(),
       };
 }

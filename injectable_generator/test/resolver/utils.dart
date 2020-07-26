@@ -38,7 +38,7 @@ void testRawSource(String label, {String source, Map output}) {
     final resolvedInput = await resolveRawSource('''
     import 'package:injectable/injectable.dart'
     $source''');
-    final importsResolve = ImportResolverImpl(await resolvedInput.resolver.libraries.toList());
+    final importsResolve = TypeResolverImpl(await resolvedInput.resolver.libraries.toList());
     final generated = await DependencyResolver(importsResolve).resolve(resolvedInput.library.classes.first);
     expect(output, generated.toJson());
   });
@@ -52,10 +52,10 @@ class ResolvedInput {
 }
 
 class InjectableGeneratorMock extends InjectableGenerator {
-  final ImportResolver resolver;
+  final TypeResolver resolver;
 
   InjectableGeneratorMock(this.resolver, [Map options = const {}]) : super(options);
 
   @override
-  ImportResolver getResolver(List<LibraryElement> libs) => this.resolver;
+  TypeResolver getResolver(List<LibraryElement> libs) => this.resolver;
 }

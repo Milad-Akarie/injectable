@@ -217,14 +217,14 @@ packages:
       path: "../injectable"
       relative: true
     source: path
-    version: "1.0.0"
+    version: "1.0.2"
   injectable_generator:
     dependency: "direct dev"
     description:
       path: "../injectable_generator"
       relative: true
     source: path
-    version: "1.0.0"
+    version: "1.0.2"
   io:
     dependency: transitive
     description:

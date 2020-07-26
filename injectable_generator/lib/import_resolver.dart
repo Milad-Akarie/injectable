@@ -1,25 +1,24 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:injectable_generator/dependency_config.dart';
 import 'package:path/path.dart' as p;
 
-abstract class ImportResolver {
-  String resolve(Element element);
+abstract class TypeResolver {
+  String resolveImport(Element element);
 
-  Set<String> resolveAll(DartType type);
+  ImportableType resolveType(DartType type);
+
+//  factory TypeResolver(List<LibraryElement> libs) => TypeResolverImpl._(libs);
 
   static String relative(String path, Uri to) {
     var fileUri = Uri.parse(path);
     var libName = to.pathSegments.first;
-    if ((to.scheme == 'package' &&
-            fileUri.scheme == 'package' &&
-            fileUri.pathSegments.first == libName) ||
+    if ((to.scheme == 'package' && fileUri.scheme == 'package' && fileUri.pathSegments.first == libName) ||
         (to.scheme == 'asset' && fileUri.scheme != 'package')) {
       if (fileUri.path == to.path) {
         return fileUri.pathSegments.last;
       } else {
-        return p.posix
-            .relative(fileUri.path, from: to.path)
-            .replaceFirst('../', '');
+        return p.posix.relative(fileUri.path, from: to.path).replaceFirst('../', '');
       }
     } else {
       return path;
@@ -35,22 +34,20 @@ abstract class ImportResolver {
   }
 }
 
-class ImportResolverImpl extends ImportResolver {
+class TypeResolverImpl extends TypeResolver {
   final List<LibraryElement> libs;
 
-  ImportResolverImpl(this.libs);
+  TypeResolverImpl(this.libs);
 
-  String resolve(Element element) {
+  String resolveImport(Element element) {
     // return early if source is null or element is a core type
     if (element?.source == null || _isCoreDartType(element)) {
       return null;
     }
 
     for (var lib in libs) {
-      if (lib.source != null &&
-          !_isCoreDartType(lib) &&
-          lib.exportNamespace.definedNames.keys.contains(element.name)) {
-        return lib.source.uri.toString();
+      if (lib.source != null && !_isCoreDartType(lib) && lib.exportNamespace.definedNames.values.contains(element)) {
+        return lib.identifier;
       }
     }
     return null;
@@ -60,21 +57,26 @@ class ImportResolverImpl extends ImportResolver {
     return element.source.fullName == 'dart:core';
   }
 
-  Set<String> resolveAll(DartType type) {
-    final imports = <String>{};
-    imports.add(resolve(type.element));
-    imports.addAll(_checkForParameterizedTypes(type));
-    return imports..removeWhere((element) => element == null);
-  }
-
-  Set<String> _checkForParameterizedTypes(DartType typeToCheck) {
-    final imports = <String>{};
+  Iterable<ImportableType> _resolveTypeArguments(DartType typeToCheck) {
+    final importableTypes = <ImportableType>[];
     if (typeToCheck is ParameterizedType) {
       for (DartType type in typeToCheck.typeArguments) {
-        imports.add(resolve(type.element));
-        imports.addAll(_checkForParameterizedTypes(type));
+        importableTypes.add(ImportableType(
+          name: type.element.name,
+          import: resolveImport(type.element),
+          typeArguments: _resolveTypeArguments(type),
+        ));
       }
     }
-    return imports;
+    return importableTypes;
+  }
+
+  @override
+  ImportableType resolveType(DartType type) {
+    return ImportableType(
+      name: type.element.name,
+      import: resolveImport(type.element),
+      typeArguments: _resolveTypeArguments(type),
+    );
   }
 }

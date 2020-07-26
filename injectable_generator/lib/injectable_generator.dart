@@ -45,25 +45,23 @@ class InjectableGenerator implements Generator {
           ...clazz.accessors,
           ...clazz.methods,
         ];
-        for (var annotatedElement in executables) {
-          if (annotatedElement.isPrivate) continue;
-          allDepsInStep.add(await DependencyResolver(
-                  getResolver(await buildStep.resolver.libraries.toList()))
-              .resolveModuleMember(clazz, annotatedElement));
+        for (var element in executables) {
+          if (element.isPrivate) continue;
+          allDepsInStep.add(await DependencyResolver(getResolver(await buildStep.resolver.libraries.toList())).resolveModuleMember(clazz, element));
         }
       } else if (_hasInjectable(clazz) ||
           (autoRegister && _hasConventionalMatch(clazz))) {
         allDepsInStep.add(await DependencyResolver(
-                getResolver(await buildStep.resolver.libraries.toList()))
+            getResolver(await buildStep.resolver.libraries.toList()))
             .resolve(clazz));
       }
     }
-
+//     print(allDepsInStep.map((e) => e.toJson()));
     return allDepsInStep.isNotEmpty ? json.encode(allDepsInStep) : null;
   }
 
-  ImportResolver getResolver(List<LibraryElement> libs) {
-    return ImportResolverImpl(libs);
+  TypeResolver getResolver(List<LibraryElement> libs) {
+    return TypeResolverImpl(libs);
   }
 
   bool _hasInjectable(ClassElement element) {

@@ -4,19 +4,21 @@ import 'package:injectable_generator/utils.dart';
 
 abstract class RegisterFuncGenerator {
   final buffer = StringBuffer();
+  final Set<ImportableType> prefixedTypes;
+
+  RegisterFuncGenerator(this.prefixedTypes);
 
   write(Object o) => buffer.write(o);
 
   writeln(Object o) => buffer.writeln(o);
 
-  String generate(DependencyConfig dep,
-      {String prefix = '', String suffix = ''});
+  String generate(DependencyConfig dep);
 
   String generateInitializer(DependencyConfig dep, {String getIt = 'g'}) {
     final flattenedParams = flattenParams(dep.dependencies, getIt);
 
     if (dep.isFromModule) {
-      final moduleName = toCamelCase(dep.moduleName);
+      final moduleName = toCamelCase(dep.module.name);
       if (!dep.isModuleMethod) {
         return '$moduleName.${dep.initializerName}';
       } else {
@@ -28,26 +30,22 @@ abstract class RegisterFuncGenerator {
       }
     }
 
-    final typeName = stripGenericTypes(dep.typeImpl);
-    final constructorName =
-        dep.constructorName != null && dep.constructorName.isNotEmpty
-            ? '.${dep.constructorName}'
-            : '';
+    final typeName = dep.typeImpl.getDisplayName(prefixedTypes);
+    final constructorName = dep.constructorName != null && dep.constructorName.isNotEmpty ? '.${dep.constructorName}' : '';
 
     return '${typeName}$constructorName($flattenedParams)';
   }
 
   String flattenParams(List<InjectedDependency> deps, String getIt) {
     final params = deps.map((injectedDep) {
-      var type = injectedDep.type == 'dynamic' ? '' : '<${injectedDep.type}>';
+      var type = injectedDep.type.name == 'dynamic' ? '' : '<${injectedDep.type.getDisplayName(prefixedTypes)}>';
       var instanceName = '';
 
       if (injectedDep.name != null) {
         instanceName = "instanceName: '${injectedDep.name}'";
       }
 
-      final paramName =
-          (!injectedDep.isPositional) ? '${injectedDep.paramName}: ' : '';
+      final paramName = (!injectedDep.isPositional) ? '${injectedDep.paramName}: ' : '';
 
       if (injectedDep.isFactoryParam) {
         return '$paramName${injectedDep.paramName}';
@@ -63,10 +61,11 @@ abstract class RegisterFuncGenerator {
   }
 
   String generateAwaitSetup(DependencyConfig dep, String constructBody) {
-    var awaitedVar = toCamelCase(stripGenericTypes(dep.type));
+    var awaitedVar = toCamelCase(dep.type.name);
     if (registeredVarNames.contains(awaitedVar)) {
-      awaitedVar =
-          '$awaitedVar${registeredVarNames.where((i) => i.startsWith(awaitedVar)).length}';
+      awaitedVar = '$awaitedVar${registeredVarNames
+          .where((i) => i.startsWith(awaitedVar))
+          .length}';
     }
     registeredVarNames.add(awaitedVar);
 
@@ -74,7 +73,7 @@ abstract class RegisterFuncGenerator {
     return awaitedVar;
   }
 
-  void closeRegisterFunc(DependencyConfig dep, String suffix) {
+  void closeRegisterFunc(DependencyConfig dep) {
     if (dep.signalsReady != null) {
       write(', signalsReady: ${dep.signalsReady}');
     }
@@ -82,9 +81,8 @@ abstract class RegisterFuncGenerator {
       write(", instanceName: '${dep.instanceName}'");
     }
     if (dep.environments?.isNotEmpty == true) {
-      write(
-          ", registerFor: {${dep.environments.toSet().map((e) => "_$e").join(',')}}");
+      write(", registerFor: {${dep.environments.toSet().map((e) => "_$e").join(',')}}");
     }
-    write(")${suffix}");
+    write(");");
   }
 }

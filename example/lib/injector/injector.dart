@@ -8,5 +8,7 @@ import 'injector.config.dart';
 final GetIt getIt = GetIt.instance;
 
 /// entry point for injection
-@InjectableInit()
-void configureDependencies(String environment) => $initGetIt(getIt, environment: environment);
+@InjectableInit(generateForDir: ['lib'])
+void configureDependencies(String environment) {
+  return $initGetIt(getIt, environment: environment);
+}
