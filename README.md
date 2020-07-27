@@ -23,7 +23,7 @@ dependencies:
   # add injectable to your dependencies
   injectable:
   # add get_it
-  get_It:
+  get_it:
 
 dev_dependencies:
   # add the generator to your dev_dependencies
@@ -43,9 +43,10 @@ dev_dependencies:
 ```dart
 final getIt = GetIt.instance;
 
-@injectableInit 
+@injectableInit
 void configureDependencies() => $initGetIt(getIt);
 ```
+
 Note: you can tell injectable what directories to generate for using the generateForDir property inside of @injectableInit.
 The following example will only process files inside of the test folder.
 
@@ -53,7 +54,6 @@ The following example will only process files inside of the test folder.
 @InjectableInit(generateForDir: ['test'])
 void configureDependencies() => $initGetIt(getIt);
 ```
-
 
 .4 Call configureDependencies() in your main func before running the App
 
@@ -222,6 +222,7 @@ factoryParam<BackendService, String, dynamic>(
 ```
 
 ### Using a register module (for third party dependencies)
+
 if you declare a module member as a method instead of a simple accessor, injectable will treat it as a factory method, meaning it will inject it's parameters as it would with a regular constructor.
 The same way if you annotate an injected param with @factoryParam injectable will treat it as a factory param.
 
@@ -242,18 +243,19 @@ factoryParam<BackendService, String, dynamic>(
 ## Binding abstract classes to implementations
 
 ---
+
 Use the 'as' Property inside of Injectable(as:..) to pass an abstract type that's implemented by the registered dependency
 
 ```dart
 @Injectable(as: Service)
 class ServiceImpl implements Service {}
 
-// or 
-@Singleton(as: Service) 
+// or
+@Singleton(as: Service)
 class ServiceImpl implements Service {}
 
-// or 
-@LazySingleton(as: Service) 
+// or
+@LazySingleton(as: Service)
 class ServiceImpl implements Service {}
 
 ```
@@ -335,7 +337,6 @@ in the below example ServiceA is now only registered if we pass the environment 
 class ServiceA {}
 ```
 
-
 you could also create your own environment annotations by assigning the const constructor Environment("") to a global const var.
 
 ```dart
@@ -345,14 +346,17 @@ const dev = Environment('dev');
 @injectable
 class ServiceA {}
 ```
+
 You can assign multiple environment names to the same class
+
 ```dart
 @test
 @dev
 @injectable
 class ServiceA {}
 ```
-Alternatively use the env property in injectable and subs to assign environment names to your dependencies 
+
+Alternatively use the env property in injectable and subs to assign environment names to your dependencies
 
 ```dart
 @Injectable(as: Service, env: [Environment.dev, Environment.test])
@@ -413,7 +417,7 @@ abstract class RegisterModule {
   @prod
   @Injectable(as: ThirdPartyAbstract)
   ThirdPartyImpl get thirdPartyType;
- 
+
 }
 ```
 
@@ -428,18 +432,18 @@ abstract class RegisterModule {
  // You can register named preemptive types like follows
   @Named("BaseUrl")
   String get baseUrl => 'My base url';
-  
-  // url here will be injected 
+
+  // url here will be injected
   @lazySingleton
   Dio dio(@Named('BaseUrl) String url) => Dio(BaseOptions(baseUrl: url));
- 
+
   // same thing works for instances that's gotten asynchronous.
   // all you need to do is wrap your instance with a future and tell injectable how
   // to initialize it
   @preResolve // if you need to pre resolve the value
   Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
   // Also, make sure you await for your configure function before running the App.
- 
+
 }
 ```
 
