@@ -7,38 +7,38 @@ void main() {
     test("Simple empty constructor generator", () {
       expect(
           generate(DependencyConfig(
-            type: 'Demo',
-            typeImpl: 'Demo',
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
           )),
-          'singleton<Demo>(Demo())');
+          'gh.singleton<Demo>(Demo())');
     });
 
     test("Singleton generator abstract", () {
       expect(
         generate(DependencyConfig(
-          type: 'AbstractType',
-          typeImpl: 'Demo',
+          type: ImportableType(name: 'AbstractType'),
+          typeImpl: ImportableType(name: 'Demo'),
         )),
-        'singleton<AbstractType>(Demo())',
+        'gh.singleton<AbstractType>(Demo())',
       );
     });
 
     test("Singleton generator with instanceName", () {
       expect(
         generate(DependencyConfig(
-          type: 'Demo',
-          typeImpl: 'Demo',
+          type: ImportableType(name: 'Demo'),
+          typeImpl: ImportableType(name: 'Demo'),
           instanceName: 'MyDemo',
         )),
-        "singleton<Demo>(Demo(), instanceName: 'MyDemo')",
+        "gh.singleton<Demo>(Demo(), instanceName: 'MyDemo')",
       );
     });
 
     test("Singleton generator async", () {
       expect(
           generate(DependencyConfig(
-            type: 'Demo',
-            typeImpl: 'Demo',
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
             isAsync: true,
           )),
           'singletonAsync<Demo>(()=> Demo())');
@@ -47,8 +47,8 @@ void main() {
     test("Singleton generator async with dependsOn", () {
       expect(
           generate(DependencyConfig(
-            type: 'Demo',
-            typeImpl: 'Demo',
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
             isAsync: true,
             dependsOn: ['Storage', 'LocalRepo'],
           )),
@@ -58,50 +58,50 @@ void main() {
     test("Singleton generator with dependsOn", () {
       expect(
           generate(DependencyConfig(
-            type: 'Demo',
-            typeImpl: 'Demo',
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
             isAsync: false,
             dependsOn: ['Storage', 'LocalRepo'],
           )),
-          'singletonWithDependencies<Demo>(()=> Demo(), dependsOn: [Storage, LocalRepo])');
+          'gh.singletonWithDependencies<Demo>(()=> Demo(), dependsOn: [Storage, LocalRepo]);');
     });
 
     test("Singleton generator with Positional dependencies", () {
       expect(
           generate(DependencyConfig(
-            type: 'Demo',
-            typeImpl: 'Demo',
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
             dependencies: [
               InjectedDependency(
-                type: 'Storage',
+                type: ImportableType(name: 'Storage'),
                 paramName: 'storage',
                 isFactoryParam: false,
                 isPositional: true,
               )
             ],
           )),
-          'singleton<Demo>(Demo(g<Storage>()))');
+          'gh.singleton<Demo>(Demo(g<Storage>()));');
     });
 
     test("Singleton generator with named dependencies", () {
       expect(
           generate(DependencyConfig(
-            type: 'Demo',
-            typeImpl: 'Demo',
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
             dependencies: [
               InjectedDependency(
-                type: 'Storage',
+                type: ImportableType(name: 'Storage'),
                 paramName: 'storage',
                 isFactoryParam: false,
                 isPositional: false,
               )
             ],
           )),
-          'singleton<Demo>(Demo(storage: g<Storage>()))');
+          'gh.singleton<Demo>(Demo(storage: g<Storage>()));');
     });
   });
 }
 
 String generate(DependencyConfig input) {
-  return SingletonGenerator().generate(input);
+  return SingletonGenerator({}).generate(input);
 }

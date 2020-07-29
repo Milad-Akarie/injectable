@@ -10,12 +10,14 @@ class FactoryParamGenerator extends RegisterFuncGenerator {
 
     var asyncStr = dep.isAsync && !dep.preResolve ? 'Async' : '';
 
-    var typeArgs = dep.dependencies.where((d) => d.isFactoryParam).fold<Map>(<String, String>{}, (all, b) => all..[b.paramName] = b.type.name);
+    var typeArgs = dep.dependencies
+        .where((d) => d.isFactoryParam)
+        .fold<Map>(<String, String>{}, (all, b) => all..[b.paramName] = b.type.getDisplayName(prefixedTypes));
     if (typeArgs.length < 2) {
       typeArgs['_'] = 'dynamic';
     }
 
-    final argsDeclaration = '<${dep.type},${typeArgs.values.join(',')}>';
+    final argsDeclaration = '<${dep.type.getDisplayName(prefixedTypes)},${typeArgs.values.join(',')}>';
     final methodParams = typeArgs.keys.join(', ');
 
     write("gh.factoryParam$asyncStr$argsDeclaration(($methodParams)=> $initializer");

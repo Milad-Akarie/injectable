@@ -4,7 +4,6 @@
 class DependencyConfig {
   ImportableType type;
   ImportableType typeImpl;
-  List<ImportConfig> imports;
   List<InjectedDependency> dependencies;
   int injectableType;
   String instanceName;
@@ -21,7 +20,6 @@ class DependencyConfig {
 
   DependencyConfig({
     this.type,
-    this.imports,
     this.dependencies,
     this.injectableType,
     this.instanceName,
@@ -38,7 +36,6 @@ class DependencyConfig {
     this.module,
   }) {
     environments ??= [];
-    imports ??= [];
     dependencies ??= [];
     dependsOn ??= [];
   }
@@ -80,13 +77,6 @@ class DependencyConfig {
     isAsync = json['isAsync'] ?? false;
     preResolve = json['preResolve'] ?? preResolve;
 
-    if (json['imports'] != null) {
-      imports = [];
-      json['imports'].forEach((v) {
-        imports.add(ImportConfig.fromJson(v));
-      });
-    }
-
     dependsOn = json['dependsOn']?.cast<String>() ?? [];
     if (json['dependencies'] != null) {
       dependencies = [];
@@ -115,7 +105,6 @@ class DependencyConfig {
         "dependsOn": dependsOn,
         "environments": environments,
         "dependencies": dependencies.map((v) => v.toJson()).toList(),
-        "imports": imports.map((v) => v.toJson()).toList(),
         if (instanceName != null) "instanceName": instanceName,
         if (signalsReady != null) "signalsReady": signalsReady,
         if (initializerName != null) "initializerName": initializerName,
@@ -145,31 +134,12 @@ class InjectedDependency {
     isPositional = json['isPositional'];
   }
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         "isFactoryParam": isFactoryParam,
         "isPositional": isPositional,
         if (type != null) 'type': type.toJson(),
         if (name != null) "name": name,
         if (paramName != null) "paramName": paramName,
-      };
-}
-
-class ImportConfig {
-  String import;
-  String type;
-
-  ImportConfig({this.import, this.type});
-
-  ImportConfig.fromJson(Map<String, dynamic> json) {
-    import = json['import'];
-    type = json['type'];
-  }
-
-  Map<String, dynamic> toJson() =>
-      {
-        "type": type,
-        "import": import,
       };
 }
 
@@ -181,20 +151,26 @@ class ImportableType {
 
   ImportableType({this.name, this.import, this.typeArguments, this.prefix});
 
-  List<ImportableType> get fold => typeArguments.fold([this], (all, e) => all..addAll(e.fold));
+  List<ImportableType> get fold {
+    var list = [this];
+    typeArguments?.forEach((iType) {
+      list.addAll(iType.fold);
+    });
+    return list;
+  }
 
-  String get fullName {
+  String get identity => "$import#$name";
+
+  String fullName({bool withTypeArgs = true}) {
     var namePrefix = prefix != null ? '$prefix.' : '';
-    var typeArgs = (typeArguments?.isNotEmpty == true) ? "<${typeArguments.map((e) => e.name).join(',')}>" : '';
+    var typeArgs =
+        withTypeArgs && (typeArguments?.isNotEmpty == true) ? "<${typeArguments.map((e) => e.name).join(',')}>" : '';
     return "$namePrefix$name$typeArgs";
   }
 
-  String getDisplayName(Set<ImportableType> prefixedTypes) {
-    return prefixedTypes
-        .lookup(this)
-        ?.fullName ?? fullName;
+  String getDisplayName(Set<ImportableType> prefixedTypes, {bool withTypeArgs = true}) {
+    return prefixedTypes?.lookup(this)?.fullName(withTypeArgs: withTypeArgs) ?? fullName(withTypeArgs: withTypeArgs);
   }
-
 
   String get importName => "'$import' ${prefix != null ? 'as $prefix' : ''}";
 
@@ -225,15 +201,15 @@ class ImportableType {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is ImportableType && runtimeType == other.runtimeType && import == other.import && name == other.name;
+      identical(this, other) ||
+      other is ImportableType && runtimeType == other.runtimeType && identity == other.identity;
 
   @override
   int get hashCode => import.hashCode ^ name.hashCode;
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         "name": name,
         "import": import,
-        "typeArguments": typeArguments.map((v) => v.toJson()).toList(),
+        if (typeArguments?.isNotEmpty == true) "typeArguments": typeArguments.map((v) => v.toJson()).toList(),
       };
 }

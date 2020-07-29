@@ -42,12 +42,10 @@ void throwIf(bool condition, String message, {Element element}) {
   }
 }
 
-void printBoxed(String message) {
-  final pre = 'Injectable Generator ';
-  print("${pre.padRight(72, '-')}\n\n$message\n${''.padRight(72, '-')} \n");
+void printBoxed(String message, {String header = '--------------------------'}) {
+  final pre = header;
+  print("$pre\n$message\n${''.padRight(72, '-')} \n");
 }
-
-String stripGenericTypes(String type) => RegExp('^([^<]*)').stringMatch(type);
 
 Uri resolveAssetUri(Uri url) => url.scheme == 'asset' &&
         url.pathSegments.length >= 2 &&

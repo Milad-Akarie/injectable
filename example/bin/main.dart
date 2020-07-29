@@ -1,13 +1,8 @@
-import 'dart:convert';
+import 'package:example/injector/injector.config.dart';
+import 'package:get_it/get_it.dart';
 
-import 'package:example/injector/injector.dart';
-import 'package:example/services/register_module.dart';
-import 'package:injectable/injectable.dart';
+final GetIt getIt = GetIt.instance;
 
 void main(List<String> arguments) {
-//  configureDependencies(Environment.dev);
-
-  var set = {'one', 'two'};
-
-  print(set.lookup('one'));
+  $initGetIt(getIt, environment: 'environment');
 }

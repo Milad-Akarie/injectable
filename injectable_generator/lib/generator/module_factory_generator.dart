@@ -8,19 +8,19 @@ class ModuleFactoryGenerator extends RegisterFuncGenerator {
   String generateInitializer(DependencyConfig dep, {String getIt = 'g'}) {
     final flattenedParams = flattenParams(dep.dependencies, getIt);
 
-    final constructorName = dep.constructorName != null && dep.constructorName.isNotEmpty ? '.${dep.constructorName}' : '';
+    final constructorName =
+        dep.constructorName != null && dep.constructorName.isNotEmpty ? '.${dep.constructorName}' : '';
 
-    return '${dep.typeImpl}$constructorName($flattenedParams)';
+    return '${dep.typeImpl.getDisplayName(prefixedTypes, withTypeArgs: false)}$constructorName($flattenedParams)';
   }
 
   @override
-  String generate(DependencyConfig dep,
-      {Set<ImportableType> prefixedTypes}) {
+  String generate(DependencyConfig dep, {Set<ImportableType> prefixedTypes}) {
     final constructor = generateInitializer(dep, getIt: '_g');
     if (dep.isModuleMethod) {
-      return '${dep.typeImpl} ${dep.initializerName}() => $constructor;';
+      return '${dep.typeImpl.getDisplayName(prefixedTypes)} ${dep.initializerName}() => $constructor;';
     } else {
-      return '${dep.typeImpl} get ${dep.initializerName} => $constructor ;';
+      return '${dep.typeImpl.getDisplayName(prefixedTypes)} get ${dep.initializerName} => $constructor ;';
     }
   }
 }

@@ -13,7 +13,7 @@ class SingletonGenerator extends RegisterFuncGenerator {
       constructor = generateAwaitSetup(dep, initializer);
     }
 
-    final typeArg = '<${dep.type}>';
+    final typeArg = '<${dep.type.getDisplayName(prefixedTypes)}>';
 
     if (dep.isAsync && !dep.preResolve) {
       write('gh.singletonAsync$typeArg(()=> $constructor');

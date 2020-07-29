@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:injectable/injectable.dart';
-import 'package:injectable_generator/import_resolver.dart';
+import 'package:injectable_generator/type_resolver.dart';
 import 'package:injectable_generator/utils.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -33,7 +33,7 @@ class InjectableGenerator implements Generator {
   @override
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
     final allDepsInStep = <DependencyConfig>[];
-
+    print("Running injectable generator");
     for (var clazz in library.classes) {
       if (moduleChecker.hasAnnotationOfExact(clazz)) {
         throwIf(
@@ -47,17 +47,16 @@ class InjectableGenerator implements Generator {
         ];
         for (var element in executables) {
           if (element.isPrivate) continue;
-          allDepsInStep.add(await DependencyResolver(getResolver(await buildStep.resolver.libraries.toList())).resolveModuleMember(clazz, element));
+          allDepsInStep.add(await DependencyResolver(getResolver(await buildStep.resolver.libraries.toList()))
+              .resolveModuleMember(clazz, element));
         }
-      } else if (_hasInjectable(clazz) ||
-          (autoRegister && _hasConventionalMatch(clazz))) {
-        allDepsInStep.add(await DependencyResolver(
-            getResolver(await buildStep.resolver.libraries.toList()))
-            .resolve(clazz));
+      } else if (_hasInjectable(clazz) || (autoRegister && _hasConventionalMatch(clazz))) {
+        allDepsInStep
+            .add(await DependencyResolver(getResolver(await buildStep.resolver.libraries.toList())).resolve(clazz));
       }
     }
-//     print(allDepsInStep.map((e) => e.toJson()));
-    return allDepsInStep.isNotEmpty ? json.encode(allDepsInStep) : null;
+
+    return allDepsInStep.isNotEmpty ? jsonEncode(allDepsInStep) : null;
   }
 
   TypeResolver getResolver(List<LibraryElement> libs) {
@@ -73,8 +72,7 @@ class InjectableGenerator implements Generator {
       return false;
     }
     final fileName = clazz.source.shortName.replaceFirst('.dart', '');
-    return (_classNameMatcher != null &&
-            _classNameMatcher.hasMatch(clazz.name)) ||
+    return (_classNameMatcher != null && _classNameMatcher.hasMatch(clazz.name)) ||
         (_fileNameMatcher != null && _fileNameMatcher.hasMatch(fileName));
   }
 }

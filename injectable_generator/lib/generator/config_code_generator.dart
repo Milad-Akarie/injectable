@@ -7,6 +7,7 @@ import 'package:injectable_generator/generator/singleton_generator.dart';
 import 'package:injectable_generator/injectable_types.dart';
 import 'package:injectable_generator/utils.dart';
 
+import '../type_resolver.dart';
 import 'lazy_factory_generator.dart';
 
 /// holds all used var names
@@ -30,8 +31,8 @@ class ConfigCodeGenerator {
   FutureOr<String> generate() async {
     // clear previously registered var names
     registeredVarNames.clear();
-
-    _generateImports(_getImports(allDeps));
+    var imports = _getAndRegisterPrefixedImports(allDeps);
+    _generateImports(imports);
 
     // sort dependencies alphabetically
     allDeps.sort((a, b) => a.type.name.compareTo(b.type.name));
@@ -80,7 +81,7 @@ class ConfigCodeGenerator {
     return _buffer.toString();
   }
 
-  Set<ImportableType> _getImports(Iterable<DependencyConfig> deps) {
+  Set<ImportableType> _getAndRegisterPrefixedImports(Iterable<DependencyConfig> deps) {
     final importableTypes = deps.fold<List<ImportableType>>([], (a, b) => a..addAll(b.allImportableTypes));
 
     // add getIt import statement
@@ -95,34 +96,45 @@ class ConfigCodeGenerator {
       ),
     );
 
-    // generate all imports
-
     var validatedITypes = <ImportableType>{};
-    for (var iType in importableTypes.where((e) => e != null)) {
+    for (var iType in importableTypes.where((e) => e?.import != null)) {
+      var importToAdd = iType;
       if (validatedITypes.any((e) => e.name == iType.name)) {
-        var prefixed = iType.copyWith(prefix: 'p${prefixedTypes.length}');
+        var prefix = Uri.parse(iType.import).pathSegments.first;
+        var prefixesWithSameNameCount = prefixedTypes.where((e) => e.prefix.startsWith(prefix)).length;
+        prefix += (prefixesWithSameNameCount > 0 ? prefixesWithSameNameCount.toString() : '');
+        var prefixed = iType.copyWith(prefix: prefix);
         prefixedTypes.add(prefixed);
-        validatedITypes.add(prefixed);
-      } else {
-        validatedITypes.add(iType);
+        importToAdd = prefixed;
+      }
+
+      if (importToAdd != null) {
+        var existed =
+            validatedITypes.firstWhere((e) => e.import == importToAdd.import && e.prefix == null, orElse: () => null);
+        if (existed != null) {
+          validatedITypes.remove(existed);
+        }
+        validatedITypes.add(importToAdd);
       }
     }
     return validatedITypes;
   }
 
   void _generateImports(Set<ImportableType> imports) {
-//        (targetFile == null ? imports.map(TypeResolver.normalizeAssetImports)
-//            : imports.map((e) => TypeResolver.relative(e, targetFile))).toSet();
+    var finalizedImports = (targetFile == null
+            ? imports.map((e) => e.copyWith(import: TypeResolver.resolveAssetImports(e.import)))
+            : imports.map((e) => e.copyWith(import: TypeResolver.relative(e.import, targetFile))))
+        .toSet();
 
-    var dartImports = imports.where((e) => e.import.startsWith('dart')).toList();
+    var dartImports = finalizedImports.where((e) => e.import.startsWith('dart')).toList();
     _sortAndGenerate(dartImports);
     _writeln("");
 
-    var packageImports = imports.where((e) => e.import.startsWith('package')).toList();
+    var packageImports = finalizedImports.where((e) => e.import.startsWith('package')).toList();
     _sortAndGenerate(packageImports);
     _writeln("");
 
-    var rest = imports.difference({...dartImports, ...packageImports}).toList();
+    var rest = finalizedImports.difference({...dartImports, ...packageImports}).toList();
     _sortAndGenerate(rest);
   }
 
@@ -150,7 +162,10 @@ class ConfigCodeGenerator {
   void _sortByDependents(Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
     for (var dep in unSorted) {
       if (dep.dependencies.every(
-            (iDep) => iDep.isFactoryParam || sorted.map((d) => d.type).contains(iDep.type) || !unSorted.map((d) => d.type).contains(iDep.type),
+        (iDep) =>
+            iDep.isFactoryParam ||
+            sorted.map((d) => d.type).contains(iDep.type) ||
+            !unSorted.map((d) => d.type).contains(iDep.type),
       )) {
         sorted.add(dep);
       }

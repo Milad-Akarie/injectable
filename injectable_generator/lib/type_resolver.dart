@@ -8,8 +8,6 @@ abstract class TypeResolver {
 
   ImportableType resolveType(DartType type);
 
-//  factory TypeResolver(List<LibraryElement> libs) => TypeResolverImpl._(libs);
-
   static String relative(String path, Uri to) {
     var fileUri = Uri.parse(path);
     var libName = to.pathSegments.first;
@@ -25,7 +23,7 @@ abstract class TypeResolver {
     }
   }
 
-  static String normalizeAssetImports(String path) {
+  static String resolveAssetImports(String path) {
     var fileUri = Uri.parse(path);
     if (fileUri.scheme == "asset") {
       return "/${fileUri.path}";
@@ -61,11 +59,15 @@ class TypeResolverImpl extends TypeResolver {
     final importableTypes = <ImportableType>[];
     if (typeToCheck is ParameterizedType) {
       for (DartType type in typeToCheck.typeArguments) {
-        importableTypes.add(ImportableType(
-          name: type.element.name,
-          import: resolveImport(type.element),
-          typeArguments: _resolveTypeArguments(type),
-        ));
+        if (type.element is TypeParameterElement) {
+          importableTypes.add(ImportableType(name: 'dynamic'));
+        } else {
+          importableTypes.add(ImportableType(
+            name: type.element.name,
+            import: resolveImport(type.element),
+            typeArguments: _resolveTypeArguments(type),
+          ));
+        }
       }
     }
     return importableTypes;

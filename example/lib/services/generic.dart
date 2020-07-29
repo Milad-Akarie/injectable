@@ -1,1 +1,1 @@
-class GenericX<E> {}
+class GenericX<S> {}

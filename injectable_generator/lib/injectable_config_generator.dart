@@ -1,30 +1,22 @@
+import 'dart:async';
 import 'dart:convert';
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:glob/glob.dart';
-import 'package:injectable/injectable.dart';
-import 'package:source_gen/source_gen.dart';
 
 import 'dependency_config.dart';
 import 'generator/config_code_generator.dart';
 import 'utils.dart';
 
-class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
-  @override
-  dynamic generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) async {
-    final generateForDir = annotation.read('generateForDir').listValue.map((e) => e.toStringValue());
-
-    var targetFile;
-    if (annotation.peek("preferRelativeImports")?.boolValue ?? true == true) {
-      targetFile = element.source.uri;
-    }
-
-    final dirPattern = generateForDir.length > 1 ? '{${generateForDir.join(',')}}' : '${generateForDir.first}';
-    final injectableConfigFiles = Glob("$dirPattern/**.injectable.json");
-
+class InjectableConfigGenerator {
+  Future<String> generate(
+    Glob assetsGlob,
+    BuildStep buildStep,
+    Uri targetFile, {
+    bool preferRelativeImports = true,
+  }) async {
     final jsonData = <Map>[];
-    await for (final id in buildStep.findAssets(injectableConfigFiles)) {
+    await for (final id in buildStep.findAssets(assetsGlob)) {
       final json = jsonDecode(await buildStep.readAsString(id));
       jsonData.addAll([...json]);
     }
@@ -32,39 +24,42 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final deps = <DependencyConfig>[];
     jsonData.forEach((json) => deps.add(DependencyConfig.fromJson(json)));
 
-    _reportMissingDependencies(deps);
+    _reportMissingDependencies(deps, targetFile);
     _validateDuplicateDependencies(deps);
-    return ConfigCodeGenerator(deps, targetFile: targetFile).generate();
+    return ConfigCodeGenerator(deps, targetFile: preferRelativeImports ? targetFile : null).generate();
   }
 
-  void _reportMissingDependencies(List<DependencyConfig> deps) {
+  void _reportMissingDependencies(List<DependencyConfig> deps, Uri targetFile) {
     final messages = [];
-    final registeredDeps = deps.map((dep) => stripGenericTypes(dep.type.name)).toSet();
+    final registeredDeps = deps.map((dep) => dep.type.identity).toSet();
     deps.forEach((dep) {
       dep.dependencies.where((d) => !d.isFactoryParam).forEach((iDep) {
-        final typeName = iDep.type.name;
-        if (!registeredDeps.contains(typeName)) {
-          messages.add("[${dep.typeImpl}] depends on [$typeName] which is not injectable!");
+        final typeIdentity = iDep.type.identity;
+        if (!registeredDeps.contains(typeIdentity)) {
+          messages.add(
+              "- [${dep.typeImpl}] depends on [${iDep.type.name}] ${iDep.type.import == null ? '' : 'from ${iDep.type.import}\n   '}which is not injectable!");
         }
       });
     });
 
     if (messages.isNotEmpty) {
       messages.add('\nDid you forget to annotate the above classe(s) or their implementation with @injectable?');
-      printBoxed(messages.join('\n'));
+      printBoxed(messages.join('\n'), header: "Dependencies in ${targetFile.path}");
     }
   }
 
   void _validateDuplicateDependencies(List<DependencyConfig> deps) {
-    final registeredDeps = <DependencyConfig>[];
+    final validatedDeps = <DependencyConfig>[];
     for (var dep in deps) {
-      var registered = registeredDeps.where((elm) => elm.type.name == dep.type.name && elm.instanceName == dep.instanceName);
+      var registered =
+          validatedDeps.where((elm) => elm.type.identity == dep.type.identity && elm.instanceName == dep.instanceName);
       if (registered.isEmpty) {
-        registeredDeps.add(dep);
+        validatedDeps.add(dep);
       } else {
         Set<String> registeredEnvironments = registered.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
         if (registeredEnvironments.isEmpty || dep.environments.any((env) => registeredEnvironments.contains(env))) {
-          throwBoxed('${dep.typeImpl} [${dep.type}] env: ${dep.environments} \nis registered more than once under the same environment');
+          throwBoxed(
+              '${dep.typeImpl} [${dep.type}] env: ${dep.environments} \nis registered more than once under the same environment');
         }
       }
     }
