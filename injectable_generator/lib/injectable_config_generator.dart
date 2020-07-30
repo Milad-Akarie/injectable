@@ -16,8 +16,8 @@ class InjectableConfigGenerator {
     bool preferRelativeImports = true,
   }) async {
     final jsonData = <Map>[];
-    await for (final id in buildStep.findAssets(assetsGlob)) {
-      final json = jsonDecode(await buildStep.readAsString(id));
+    await for (final asset in buildStep.findAssets(assetsGlob)) {
+      final json = jsonDecode(await buildStep.readAsString(asset));
       jsonData.addAll([...json]);
     }
 
@@ -37,29 +37,27 @@ class InjectableConfigGenerator {
         final typeIdentity = iDep.type.identity;
         if (!registeredDeps.contains(typeIdentity)) {
           messages.add(
-              "- [${dep.typeImpl}] depends on [${iDep.type.name}] ${iDep.type.import == null ? '' : 'from ${iDep.type.import}\n   '}which is not injectable!");
+              "[${dep.typeImpl}] depends on unregistered type [${iDep.type.name}] ${iDep.type.import == null ? '' : 'from ${iDep.type.import}'}");
         }
       });
     });
 
     if (messages.isNotEmpty) {
       messages.add('\nDid you forget to annotate the above classe(s) or their implementation with @injectable?');
-      printBoxed(messages.join('\n'), header: "Dependencies in ${targetFile.path}");
+      printBoxed(messages.join('\n'), header: "Missing dependencies in ${targetFile.path}\n");
     }
   }
 
   void _validateDuplicateDependencies(List<DependencyConfig> deps) {
     final validatedDeps = <DependencyConfig>[];
     for (var dep in deps) {
-      var registered =
-          validatedDeps.where((elm) => elm.type.identity == dep.type.identity && elm.instanceName == dep.instanceName);
+      var registered = validatedDeps.where((elm) => elm.type.identity == dep.type.identity && elm.instanceName == dep.instanceName);
       if (registered.isEmpty) {
         validatedDeps.add(dep);
       } else {
         Set<String> registeredEnvironments = registered.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
         if (registeredEnvironments.isEmpty || dep.environments.any((env) => registeredEnvironments.contains(env))) {
-          throwBoxed(
-              '${dep.typeImpl} [${dep.type}] env: ${dep.environments} \nis registered more than once under the same environment');
+          throwBoxed('${dep.typeImpl} [${dep.type}] env: ${dep.environments} \nis registered more than once under the same environment');
         }
       }
     }

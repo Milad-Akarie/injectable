@@ -31,8 +31,11 @@ class ConfigCodeGenerator {
   FutureOr<String> generate() async {
     // clear previously registered var names
     registeredVarNames.clear();
-    var imports = _getAndRegisterPrefixedImports(allDeps);
-    _generateImports(imports);
+    var importsWithPrefixes = _addRequiredPrefixes(allDeps);
+
+    prefixedTypes.addAll(importsWithPrefixes.where((e) => e.prefix != null));
+    prefixedTypes.forEach((e) => print("${e.name} ${e.prefix}"));
+    _generateImports(importsWithPrefixes);
 
     // sort dependencies alphabetically
     allDeps.sort((a, b) => a.type.name.compareTo(b.type.name));
@@ -41,7 +44,7 @@ class ConfigCodeGenerator {
     final Set<DependencyConfig> sorted = {};
     _sortByDependents(allDeps.toSet(), sorted);
 
-    final modules = sorted.where((d) => d.isFromModule).map((d) => d.module.name).toSet();
+    final modules = sorted.where((d) => d.isFromModule).map((d) => d.module).toSet();
 
     final environments = sorted.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
     if (environments.isNotEmpty) {
@@ -65,7 +68,7 @@ class ConfigCodeGenerator {
     _writeln("final gh = GetItHelper(g, environment);");
     modules.forEach((m) {
       final constParam = _getAbstractModuleDeps(sorted, m).any((d) => d.dependencies.isNotEmpty) ? 'g' : '';
-      _writeln('final ${toCamelCase(m)} = _\$$m($constParam);');
+      _writeln('final ${toCamelCase(m.name)} = _\$$m($constParam);');
     });
 
     _generateDeps(lazyDeps);
@@ -81,7 +84,7 @@ class ConfigCodeGenerator {
     return _buffer.toString();
   }
 
-  Set<ImportableType> _getAndRegisterPrefixedImports(Iterable<DependencyConfig> deps) {
+  Set<ImportableType> _addRequiredPrefixes(Iterable<DependencyConfig> deps) {
     final importableTypes = deps.fold<List<ImportableType>>([], (a, b) => a..addAll(b.allImportableTypes));
 
     // add getIt import statement
@@ -96,34 +99,36 @@ class ConfigCodeGenerator {
       ),
     );
 
-    var validatedITypes = <ImportableType>{};
-    for (var iType in importableTypes.where((e) => e?.import != null)) {
-      var importToAdd = iType;
-      if (validatedITypes.any((e) => e.name == iType.name)) {
+    var importsWithPrefixes = <ImportableType>{};
+    for (var iType in importableTypes.where((e) => e?.import != null).toSet()) {
+      if (importsWithPrefixes.any((e) => e.name == iType.name)) {
+        print("${iType.name} in ${importsWithPrefixes.map((e) => e.name)}");
         var prefix = Uri.parse(iType.import).pathSegments.first;
-        var prefixesWithSameNameCount = prefixedTypes.where((e) => e.prefix.startsWith(prefix)).length;
+        var prefixesWithSameNameCount = importsWithPrefixes.where((e) => e.prefix?.startsWith(prefix) == true).length;
         prefix += (prefixesWithSameNameCount > 0 ? prefixesWithSameNameCount.toString() : '');
-        var prefixed = iType.copyWith(prefix: prefix);
-        prefixedTypes.add(prefixed);
-        importToAdd = prefixed;
-      }
-
-      if (importToAdd != null) {
-        var existed =
-            validatedITypes.firstWhere((e) => e.import == importToAdd.import && e.prefix == null, orElse: () => null);
-        if (existed != null) {
-          validatedITypes.remove(existed);
-        }
-        validatedITypes.add(importToAdd);
+        importsWithPrefixes.add(iType);
+        importsWithPrefixes = importsWithPrefixes.map((e) => e.import == iType.import ? e.copyWith(prefix: prefix) : e).toSet();
+      } else {
+        importsWithPrefixes.add(iType);
       }
     }
-    return validatedITypes;
+    return importsWithPrefixes;
   }
 
   void _generateImports(Set<ImportableType> imports) {
+    // prevent duplicated imports
+    var uniqueImports = <ImportableType>{};
+    imports.forEach((iType) {
+      if (uniqueImports
+          .where((e) => iType.import == e.import)
+          .isEmpty) {
+        uniqueImports.add(iType);
+      }
+    });
+
     var finalizedImports = (targetFile == null
-            ? imports.map((e) => e.copyWith(import: TypeResolver.resolveAssetImports(e.import)))
-            : imports.map((e) => e.copyWith(import: TypeResolver.relative(e.import, targetFile))))
+        ? uniqueImports.map((e) => e.copyWith(import: TypeResolver.resolveAssetImports(e.import)))
+        : uniqueImports.map((e) => e.copyWith(import: TypeResolver.relative(e.import, targetFile))))
         .toSet();
 
     var dartImports = finalizedImports.where((e) => e.import.startsWith('dart')).toList();
@@ -162,10 +167,7 @@ class ConfigCodeGenerator {
   void _sortByDependents(Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
     for (var dep in unSorted) {
       if (dep.dependencies.every(
-        (iDep) =>
-            iDep.isFactoryParam ||
-            sorted.map((d) => d.type).contains(iDep.type) ||
-            !unSorted.map((d) => d.type).contains(iDep.type),
+            (iDep) => iDep.isFactoryParam || sorted.map((d) => d.type).contains(iDep.type) || !unSorted.map((d) => d.type).contains(iDep.type),
       )) {
         sorted.add(dep);
       }
@@ -179,9 +181,9 @@ class ConfigCodeGenerator {
     return deps.any((d) => d.isAsync && d.preResolve);
   }
 
-  void _generateModules(Set<String> modules, Set<DependencyConfig> deps) {
+  void _generateModules(Set<ImportableType> modules, Set<DependencyConfig> deps) {
     modules.forEach((m) {
-      _writeln('class _\$$m extends $m{');
+      _writeln('class _\$$m extends ${m.getDisplayName(prefixedTypes)}{');
       final moduleDeps = _getAbstractModuleDeps(deps, m).toList();
       if (moduleDeps.any((d) => d.dependencies.isNotEmpty)) {
         _writeln("final GetIt _g;");
@@ -192,8 +194,8 @@ class ConfigCodeGenerator {
     });
   }
 
-  Iterable<DependencyConfig> _getAbstractModuleDeps(Set<DependencyConfig> deps, String m) {
-    return deps.where((d) => d.isFromModule && d.module.name == m && d.isAbstract);
+  Iterable<DependencyConfig> _getAbstractModuleDeps(Set<DependencyConfig> deps, ImportableType m) {
+    return deps.where((d) => d.isFromModule && d.module == m && d.isAbstract);
   }
 
   void _generateModuleItems(List<DependencyConfig> moduleDeps) {

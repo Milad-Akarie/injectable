@@ -33,7 +33,6 @@ class InjectableGenerator implements Generator {
   @override
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
     final allDepsInStep = <DependencyConfig>[];
-    print("Running injectable generator");
     for (var clazz in library.classes) {
       if (moduleChecker.hasAnnotationOfExact(clazz)) {
         throwIf(

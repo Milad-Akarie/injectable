@@ -2,7 +2,6 @@
 
 import 'package:injectable/injectable.dart';
 
-import 'client.dart';
 
 @module
 abstract class RegisterModule {
@@ -19,5 +18,7 @@ class ApiClient extends Client {
   ApiClient(Service service);
 }
 
-//@injectable
+@injectable
 class Service {}
+
+abstract class Client {}

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:build/build.dart';
-import 'package:dart_style/dart_style.dart';
+import 'package:dart_style/dart_style.dart' show DartFormatter;
 import 'package:glob/glob.dart';
 import 'package:source_gen/source_gen.dart';
 
