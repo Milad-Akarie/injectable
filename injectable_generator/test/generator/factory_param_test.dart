@@ -7,91 +7,94 @@ void main() {
     test("One factory param generator test", () {
       expect(
           generate(DependencyConfig(
-            type: 'Demo',
-            typeImpl: 'Demo',
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
             dependencies: [
               InjectedDependency(
-                type: 'Storage',
+                type: ImportableType(name: 'Storage'),
                 paramName: 'storage',
                 isFactoryParam: true,
                 isPositional: true,
               )
             ],
           )),
-          'factoryParam<Demo,Storage,dynamic>((storage, _)=> Demo(storage))');
+          'gh.factoryParam<Demo,Storage,dynamic>((storage, _)=> Demo(storage));');
     });
 
     test("Two factory param generator test", () {
       expect(
           generate(DependencyConfig(
-            type: 'Demo',
-            typeImpl: 'Demo',
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
             dependencies: [
               InjectedDependency(
-                type: 'Storage',
+                type: ImportableType(name: 'Storage'),
                 paramName: 'storage',
                 isFactoryParam: true,
                 isPositional: true,
               ),
               InjectedDependency(
-                type: 'Url',
+                type: ImportableType(name: 'Url'),
                 paramName: 'url',
                 isFactoryParam: true,
                 isPositional: true,
               )
             ],
           )),
-          'factoryParam<Demo,Storage,Url>((storage, url)=> Demo(storage, url))');
+          'gh.factoryParam<Demo,Storage,Url>((storage, url)=> Demo(storage, url));');
     });
 
     test("Two named factory param generator test", () {
       expect(
           generate(DependencyConfig(
-            type: 'Demo',
-            typeImpl: 'Demo',
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
             dependencies: [
               InjectedDependency(
-                type: 'Storage',
+                type: ImportableType(name: 'Storage'),
                 paramName: 'storage',
                 isFactoryParam: true,
                 isPositional: false,
               ),
               InjectedDependency(
-                type: 'Url',
+                type: ImportableType(name: 'Url'),
                 paramName: 'url',
                 isFactoryParam: true,
                 isPositional: false,
               )
             ],
           )),
-          'factoryParam<Demo,Storage,Url>((storage, url)=> Demo(storage: storage, url: url))');
+          'gh.factoryParam<Demo,Storage,Url>((storage, url)=> Demo(storage: storage, url: url));');
     });
 
     test("One factory param with injected dependencies test", () {
       expect(
           generate(DependencyConfig(
-            type: 'Demo',
-            typeImpl: 'Demo',
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
             dependencies: [
               InjectedDependency(
-                type: 'Storage',
+                type: ImportableType(name: 'Storage'),
                 paramName: 'storage',
                 isFactoryParam: false,
                 isPositional: true,
               ),
               InjectedDependency(
-                type: 'String',
+                type: ImportableType(name: 'String'),
                 paramName: 'url',
                 isFactoryParam: true,
                 isPositional: true,
               )
             ],
           )),
-          'factoryParam<Demo,String,dynamic>((url, _)=> Demo(g<Storage>(), url))');
+          'gh.factoryParam<Demo,String,dynamic>((url, _)=> Demo(g<Storage>(), url));');
     });
   });
 }
 
-String generate(DependencyConfig input) {
-  return FactoryParamGenerator().generate(input);
+String generate(
+  DependencyConfig input, {
+  Set<ImportableType> prefixedTypes = const {},
+}) {
+  return FactoryParamGenerator(prefixedTypes).generate(input);
 }

@@ -4,7 +4,7 @@ builders:
     builder_factories: ["injectableBuilder"]
     build_extensions: { ".dart": [".injectable.json"] }
     auto_apply: dependents
-    runs_before: [":injectable_config_builder"]
+    runs_before: ["injectable_generator|injectable_config_builder"]
     build_to: cache
   injectable_config_builder:
     import: "package:injectable_generator/builder.dart"

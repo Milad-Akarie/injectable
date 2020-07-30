@@ -1,4 +1,8 @@
 import 'package:injectable/injectable.dart';
 
 @injectable
-class TestService {}
+class TestService {
+  final String xd;
+
+  TestService(this.xd);
+}

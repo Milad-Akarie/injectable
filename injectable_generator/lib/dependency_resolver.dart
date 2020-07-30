@@ -1,7 +1,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:injectable/injectable.dart';
-import 'package:injectable_generator/import_resolver.dart';
+import 'package:injectable_generator/importable_type_resolver.dart';
 import 'package:injectable_generator/utils.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -20,14 +20,13 @@ const TypeChecker constructorChecker = TypeChecker.fromRuntime(FactoryMethod);
 class DependencyResolver {
   Element _annotatedElement;
   final _dep = DependencyConfig();
-  final ImportResolver _importResolver;
-  final Map<String, String> _typeArgsMap = {};
+  final ImportableTypeResolver _importResolver;
+  final Map<String, DartType> _typeArgsMap = {};
 
   DependencyResolver(this._importResolver);
 
   Future<DependencyConfig> resolve(Element element) {
     _annotatedElement = element;
-    _dep.imports.add(_importResolver.resolve(element));
     return _resolveActualType(_annotatedElement);
   }
 
@@ -37,12 +36,11 @@ class DependencyResolver {
   ) async {
     _annotatedElement = executableElement;
     final returnType = executableElement.returnType;
-    String typeName = returnType.getDisplayString();
+
     if (returnType is ParameterizedType) {
       ClassElement element = returnType.element;
       for (int i = 0; i < element.typeParameters.length; i++) {
-        _typeArgsMap[element.typeParameters[i].name] =
-            returnType.typeArguments[i].getDisplayString();
+        _typeArgsMap[element.typeParameters[i].name] = returnType.typeArguments[i];
       }
     }
 
@@ -52,11 +50,8 @@ class DependencyResolver {
       element: returnType.element,
     );
 
-    _dep.imports.addAll(_importResolver.resolveAll(returnType));
-
-    _dep.moduleName = moduleClazz.name;
+    _dep.module = _importResolver.resolveType(moduleClazz.thisType);
     _dep.initializerName = executableElement.name;
-    _dep.imports.add(_importResolver.resolve(moduleClazz));
 
     ExecutableElement executableModuleMember;
     if (executableElement is MethodElement) {
@@ -74,6 +69,7 @@ class DependencyResolver {
     }
 
     ClassElement clazz;
+    var type = returnType;
     if (executableElement.isAbstract) {
       clazz = returnType.element;
       _dep.isAbstract = true;
@@ -82,22 +78,22 @@ class DependencyResolver {
         final typeArg = returnType as ParameterizedType;
         clazz = typeArg.typeArguments.first.element;
         _dep.isAsync = true;
-        typeName = typeArg.typeArguments.first.getDisplayString();
+        type = typeArg.typeArguments.first;
       } else {
         clazz = returnType.element;
       }
     }
-    _dep.imports.add(_importResolver.resolve(clazz));
-    return _resolveActualType(clazz, typeName, executableModuleMember);
+
+    return _resolveActualType(clazz, type, executableModuleMember);
   }
 
   Future<DependencyConfig> _resolveActualType(
     ClassElement clazz, [
-    String typeName,
+    DartType type,
     ExecutableElement excModuleMember,
   ]) async {
-    _dep.type = typeName ?? clazz.name;
-    _dep.typeImpl = typeName ?? clazz.name;
+    _dep.type = _importResolver.resolveType(type ?? clazz.thisType);
+    _dep.typeImpl = _dep.type;
 
     final injectableAnnotation = injectableChecker
         .firstAnnotationOf(_annotatedElement, throwOnUnresolved: false);
@@ -114,14 +110,18 @@ class DependencyResolver {
         _dep.injectableType = InjectableType.lazySingleton;
       } else if (injectable.instanceOf(TypeChecker.fromRuntime(Singleton))) {
         _dep.injectableType = InjectableType.singleton;
-        _dep.signalsReady = injectable.peek('signalsReady')?.boolValue;
+        _dep.signalsReady = injectable
+            .peek('signalsReady')
+            ?.boolValue;
         _dep.dependsOn = injectable
             .peek('dependsOn')
             ?.listValue
             ?.map<String>((v) => v.toTypeValue().getDisplayString())
             ?.toList();
       }
-      abstractType = injectable.peek('as')?.typeValue;
+      abstractType = injectable
+          .peek('as')
+          ?.typeValue;
       inlineEnv = injectable
           .peek('env')
           ?.listValue
@@ -132,7 +132,7 @@ class DependencyResolver {
     if (abstractType != null) {
       final abstractChecker = TypeChecker.fromStatic(abstractType);
       final abstractSubtype = clazz.allSupertypes.firstWhere(
-          (type) => abstractChecker.isExactly(type.element), orElse: () {
+              (type) => abstractChecker.isExactly(type.element), orElse: () {
         throwError(
           '[${clazz.name}] is not a subtype of [${abstractType.getDisplayString()}]',
           element: clazz,
@@ -140,10 +140,7 @@ class DependencyResolver {
         return null;
       });
 
-      _dep.type = abstractSubtype.getDisplayString();
-
-      _dep.typeImpl = clazz.name;
-      _dep.imports.addAll(_importResolver.resolveAll(abstractSubtype));
+      _dep.type = _importResolver.resolveType(abstractSubtype);
     }
 
     _dep.environments = inlineEnv ??
@@ -177,7 +174,7 @@ class DependencyResolver {
       ];
 
       executableInitilizer = possibleFactories.firstWhere(
-          (m) => constructorChecker.hasAnnotationOfExact(m), orElse: () {
+              (m) => constructorChecker.hasAnnotationOfExact(m), orElse: () {
         throwIf(
           clazz.isAbstract,
           '''[${clazz.name}] is abstract and can not be registered directly!
@@ -194,25 +191,25 @@ class DependencyResolver {
       for (ParameterElement param in executableInitilizer.parameters) {
         final namedAnnotation = namedChecker.firstAnnotationOf(param);
         final instanceName = namedAnnotation
-                ?.getField('type')
-                ?.toTypeValue()
-                ?.getDisplayString() ??
+            ?.getField('type')
+            ?.toTypeValue()
+            ?.getDisplayString() ??
             namedAnnotation?.getField('name')?.toStringValue();
 
-        _dep.imports.addAll(_importResolver.resolveAll(param.type));
+        var paramType = param.type;
+        if (paramType is TypeParameterType) {
+          paramType = _typeArgsMap[paramType.getDisplayString()];
+        }
 
-        var typeName = param.type.getDisplayString();
-        if (param.type is TypeParameterType) {
-          typeName = _typeArgsMap[param.type.getDisplayString()];
-          throwIf(
-            typeName == null,
-            'Can not resolve dependency of type ${param.type.getDisplayString()}',
-            element: param,
-          );
+        ImportableType resolvedType;
+        if (paramType != null) {
+          resolvedType = _importResolver.resolveType(paramType);
+        } else {
+          resolvedType = ImportableType(name: 'dynamic');
         }
 
         _dep.dependencies.add(InjectedDependency(
-          type: typeName,
+          type: resolvedType,
           name: instanceName,
           isFactoryParam: factoryParamChecker.hasAnnotationOfExact(param),
           paramName: param.name,
@@ -220,7 +217,9 @@ class DependencyResolver {
         ));
       }
       final factoryParamsCount =
-          _dep.dependencies.where((d) => d.isFactoryParam).length;
+          _dep.dependencies
+              .where((d) => d.isFactoryParam)
+              .length;
 
       throwIf(
         _dep.preResolve && factoryParamsCount != 0,

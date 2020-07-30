@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:injectable/injectable.dart';
-import 'package:injectable_generator/import_resolver.dart';
+import 'package:injectable_generator/importable_type_resolver.dart';
 import 'package:injectable_generator/utils.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -33,7 +33,6 @@ class InjectableGenerator implements Generator {
   @override
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
     final allDepsInStep = <DependencyConfig>[];
-
     for (var clazz in library.classes) {
       if (moduleChecker.hasAnnotationOfExact(clazz)) {
         throwIf(
@@ -45,25 +44,20 @@ class InjectableGenerator implements Generator {
           ...clazz.accessors,
           ...clazz.methods,
         ];
-        for (var annotatedElement in executables) {
-          if (annotatedElement.isPrivate) continue;
-          allDepsInStep.add(await DependencyResolver(
-                  getResolver(await buildStep.resolver.libraries.toList()))
-              .resolveModuleMember(clazz, annotatedElement));
+        for (var element in executables) {
+          if (element.isPrivate) continue;
+          allDepsInStep.add(await DependencyResolver(getResolver(await buildStep.resolver.libraries.toList())).resolveModuleMember(clazz, element));
         }
-      } else if (_hasInjectable(clazz) ||
-          (autoRegister && _hasConventionalMatch(clazz))) {
-        allDepsInStep.add(await DependencyResolver(
-                getResolver(await buildStep.resolver.libraries.toList()))
-            .resolve(clazz));
+      } else if (_hasInjectable(clazz) || (autoRegister && _hasConventionalMatch(clazz))) {
+        allDepsInStep.add(await DependencyResolver(getResolver(await buildStep.resolver.libraries.toList())).resolve(clazz));
       }
     }
 
-    return allDepsInStep.isNotEmpty ? json.encode(allDepsInStep) : null;
+    return allDepsInStep.isNotEmpty ? jsonEncode(allDepsInStep) : null;
   }
 
-  ImportResolver getResolver(List<LibraryElement> libs) {
-    return ImportResolverImpl(libs);
+  ImportableTypeResolver getResolver(List<LibraryElement> libs) {
+    return ImportableTypeResolverImpl(libs);
   }
 
   bool _hasInjectable(ClassElement element) {
@@ -75,8 +69,6 @@ class InjectableGenerator implements Generator {
       return false;
     }
     final fileName = clazz.source.shortName.replaceFirst('.dart', '');
-    return (_classNameMatcher != null &&
-            _classNameMatcher.hasMatch(clazz.name)) ||
-        (_fileNameMatcher != null && _fileNameMatcher.hasMatch(fileName));
+    return (_classNameMatcher != null && _classNameMatcher.hasMatch(clazz.name)) || (_fileNameMatcher != null && _fileNameMatcher.hasMatch(fileName));
   }
 }

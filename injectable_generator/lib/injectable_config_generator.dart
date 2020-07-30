@@ -12,21 +12,13 @@ import 'utils.dart';
 
 class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   @override
-  dynamic generateForAnnotatedElement(
-      Element element, ConstantReader annotation, BuildStep buildStep) async {
-    final generateForDir = annotation
-        .read('generateForDir')
-        .listValue
-        .map((e) => e.toStringValue());
+  dynamic generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) async {
+    final generateForDir = annotation.read('generateForDir').listValue.map((e) => e.toStringValue());
 
-    var targetFile;
-    if (annotation.peek("preferRelativeImports")?.boolValue ?? true == true) {
-      targetFile = element.source.uri;
-    }
+    var targetFile = element.source.uri;
+    var preferRelativeImports = (annotation.peek("preferRelativeImports")?.boolValue ?? true == true);
 
-    final dirPattern = generateForDir.length > 1
-        ? '{${generateForDir.join(',')}}'
-        : '${generateForDir.first}';
+    final dirPattern = generateForDir.length > 1 ? '{${generateForDir.join(',')}}' : '${generateForDir.first}';
     final injectableConfigFiles = Glob("$dirPattern/**.injectable.json");
 
     final jsonData = <Map>[];
@@ -38,21 +30,20 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final deps = <DependencyConfig>[];
     jsonData.forEach((json) => deps.add(DependencyConfig.fromJson(json)));
 
-    _reportMissingDependencies(deps);
+    _reportMissingDependencies(deps, targetFile);
     _validateDuplicateDependencies(deps);
-    return ConfigCodeGenerator(deps, targetFile: targetFile).generate();
+    return ConfigCodeGenerator(deps, targetFile: preferRelativeImports ? targetFile : null).generate();
   }
 
-  void _reportMissingDependencies(List<DependencyConfig> deps) {
+  void _reportMissingDependencies(List<DependencyConfig> deps, Uri targetFile) {
     final messages = [];
-    final registeredDeps =
-        deps.map((dep) => stripGenericTypes(dep.type)).toSet();
+    final registeredDeps = deps.map((dep) => dep.type.identity).toSet();
     deps.forEach((dep) {
       dep.dependencies.where((d) => !d.isFactoryParam).forEach((iDep) {
-        final strippedClassName = stripGenericTypes(iDep.type);
-        if (!registeredDeps.contains(strippedClassName)) {
+        final typeIdentity = iDep.type.identity;
+        if (!registeredDeps.contains(typeIdentity)) {
           messages.add(
-              "[${dep.typeImpl}] depends on [$strippedClassName] which is not injectable!");
+              "[${dep.typeImpl}] depends on unregistered type [${iDep.type.name}] ${iDep.type.import == null ? '' : 'from ${iDep.type.import}'}");
         }
       });
     });
@@ -60,17 +51,19 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     if (messages.isNotEmpty) {
       messages.add(
           '\nDid you forget to annotate the above classe(s) or their implementation with @injectable?');
-      printBoxed(messages.join('\n'));
+      printBoxed(messages.join('\n'),
+          header: "Missing dependencies in ${targetFile.path}\n");
     }
   }
 
   void _validateDuplicateDependencies(List<DependencyConfig> deps) {
-    final registeredDeps = <DependencyConfig>[];
+    final validatedDeps = <DependencyConfig>[];
     for (var dep in deps) {
-      var registered = registeredDeps.where((elm) =>
-          elm.type == dep.type && elm.instanceName == dep.instanceName);
+      var registered = validatedDeps.where((elm) =>
+      elm.type.identity == dep.type.identity &&
+          elm.instanceName == dep.instanceName);
       if (registered.isEmpty) {
-        registeredDeps.add(dep);
+        validatedDeps.add(dep);
       } else {
         Set<String> registeredEnvironments = registered
             .fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));

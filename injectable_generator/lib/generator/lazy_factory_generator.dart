@@ -5,12 +5,12 @@ class LazyFactoryGenerator extends RegisterFuncGenerator {
   final isLazySingleton;
   final String funcName;
 
-  LazyFactoryGenerator({this.isLazySingleton = false})
-      : funcName = isLazySingleton ? 'lazySingleton' : 'factory';
+  LazyFactoryGenerator(Set<ImportableType> prefixedTypes, {this.isLazySingleton = false})
+      : funcName = isLazySingleton ? 'lazySingleton' : 'factory',
+        super(prefixedTypes);
 
   @override
-  String generate(DependencyConfig dep,
-      {String prefix = '', String suffix = ''}) {
+  String generate(DependencyConfig dep) {
     final initializer = generateInitializer(dep);
 
     var constructor = initializer;
@@ -20,9 +20,9 @@ class LazyFactoryGenerator extends RegisterFuncGenerator {
 
     final asyncStr = dep.isAsync && !dep.preResolve ? 'Async' : '';
 
-    write("$prefix$funcName$asyncStr<${dep.type}>(()=> $constructor");
+    write("gh.$funcName$asyncStr<${dep.type.getDisplayName(prefixedTypes)}>(()=> $constructor");
 
-    closeRegisterFunc(dep, suffix);
+    closeRegisterFunc(dep);
     return buffer.toString();
   }
 }

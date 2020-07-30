@@ -1,4 +1,8 @@
 # ChangeLog
+## [1.0.3]
+- Fix conflict when importing two different types with the same name.
+- Improve some warning messages
+
 ## [1.0.2]
 - Fix relative imports issue when file has the same path as target
 ## [1.0.1] Breaking Change

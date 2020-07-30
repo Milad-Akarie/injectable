@@ -10,5 +10,4 @@ dependencies:
   get_it: ^4.0.0
 
 dev_dependencies:
-  effective_dart: ^1.2.0
   pedantic: ^1.9.0
