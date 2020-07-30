@@ -163,13 +163,16 @@ class ImportableType {
 
   String fullName({bool withTypeArgs = true}) {
     var namePrefix = prefix != null ? '$prefix.' : '';
-    var typeArgs =
-        withTypeArgs && (typeArguments?.isNotEmpty == true) ? "<${typeArguments.map((e) => e.name).join(',')}>" : '';
+    var typeArgs = withTypeArgs && (typeArguments?.isNotEmpty == true)
+        ? "<${typeArguments.map((e) => e.fullName()).join(',')}>"
+        : '';
     return "$namePrefix$name$typeArgs";
   }
 
-  String getDisplayName(Set<ImportableType> prefixedTypes, {bool withTypeArgs = true}) {
-    return prefixedTypes?.lookup(this)?.fullName(withTypeArgs: withTypeArgs) ?? fullName(withTypeArgs: withTypeArgs);
+  String getDisplayName(Set<ImportableType> prefixedTypes,
+      {bool withTypeArgs = true}) {
+    return prefixedTypes?.lookup(this)?.fullName(withTypeArgs: withTypeArgs) ??
+        fullName(withTypeArgs: withTypeArgs);
   }
 
   String get importName => "'$import' ${prefix != null ? 'as $prefix' : ''}";
@@ -202,14 +205,18 @@ class ImportableType {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ImportableType && runtimeType == other.runtimeType && identity == other.identity;
+          other is ImportableType &&
+              runtimeType == other.runtimeType &&
+              identity == other.identity;
 
   @override
   int get hashCode => import.hashCode ^ name.hashCode;
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "name": name,
         "import": import,
-        if (typeArguments?.isNotEmpty == true) "typeArguments": typeArguments.map((v) => v.toJson()).toList(),
+        if (typeArguments?.isNotEmpty == true)
+          "typeArguments": typeArguments.map((v) => v.toJson()).toList(),
       };
 }

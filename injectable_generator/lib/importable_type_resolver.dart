@@ -3,10 +3,30 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:injectable_generator/dependency_config.dart';
 import 'package:path/path.dart' as p;
 
-abstract class TypeResolver {
+abstract class ImportableTypeResolver {
   String resolveImport(Element element);
 
   ImportableType resolveType(DartType type);
+
+  static Set<ImportableType> resolvePrefixes(Set<ImportableType> importableTypes) {
+    var registeredImports = <ImportableType>{};
+    var importsWithPrefixes = <String, ImportableType>{};
+    for (var iType in importableTypes.where((e) => e?.import != null)) {
+      if (registeredImports.any((e) => e.name == iType.name)) {
+        var prefix = Uri.parse(iType.import).pathSegments.first;
+        var prefixesWithSameNameCount = importsWithPrefixes.values.where((e) => e.prefix.startsWith(prefix)).length;
+        prefix += (prefixesWithSameNameCount > 0 ? prefixesWithSameNameCount.toString() : '');
+        importsWithPrefixes[iType.import] = iType.copyWith(prefix: prefix);
+        registeredImports.add(iType);
+      } else {
+        registeredImports.add(iType);
+      }
+    }
+    return importableTypes
+        .where((e) => e.import != null)
+        .map((e) => importsWithPrefixes[e.import] == null ? e : e.copyWith(prefix: importsWithPrefixes[e.import].prefix))
+        .toSet();
+  }
 
   static String relative(String path, Uri to) {
     var fileUri = Uri.parse(path);
@@ -32,10 +52,10 @@ abstract class TypeResolver {
   }
 }
 
-class TypeResolverImpl extends TypeResolver {
+class ImportableTypeResolverImpl extends ImportableTypeResolver {
   final List<LibraryElement> libs;
 
-  TypeResolverImpl(this.libs);
+  ImportableTypeResolverImpl(this.libs);
 
   String resolveImport(Element element) {
     // return early if source is null or element is a core type
@@ -44,7 +64,9 @@ class TypeResolverImpl extends TypeResolver {
     }
 
     for (var lib in libs) {
-      if (lib.source != null && !_isCoreDartType(lib) && lib.exportNamespace.definedNames.values.contains(element)) {
+      if (lib.source != null &&
+          !_isCoreDartType(lib) &&
+          lib.exportNamespace.definedNames.values.contains(element)) {
         return lib.identifier;
       }
     }

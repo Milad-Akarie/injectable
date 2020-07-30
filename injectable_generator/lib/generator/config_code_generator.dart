@@ -7,7 +7,7 @@ import 'package:injectable_generator/generator/singleton_generator.dart';
 import 'package:injectable_generator/injectable_types.dart';
 import 'package:injectable_generator/utils.dart';
 
-import '../type_resolver.dart';
+import '../importable_type_resolver.dart';
 import 'lazy_factory_generator.dart';
 
 /// holds all used var names
@@ -34,7 +34,6 @@ class ConfigCodeGenerator {
     var importsWithPrefixes = _addRequiredPrefixes(allDeps);
 
     prefixedTypes.addAll(importsWithPrefixes.where((e) => e.prefix != null));
-    prefixedTypes.forEach((e) => print("${e.name} ${e.prefix}"));
     _generateImports(importsWithPrefixes);
 
     // sort dependencies alphabetically
@@ -67,14 +66,18 @@ class ConfigCodeGenerator {
     }
     _writeln("final gh = GetItHelper(g, environment);");
     modules.forEach((m) {
-      final constParam = _getAbstractModuleDeps(sorted, m).any((d) => d.dependencies.isNotEmpty) ? 'g' : '';
+      final constParam = _getAbstractModuleDeps(sorted, m)
+          .any((d) => d.dependencies.isNotEmpty)
+          ? 'g'
+          : '';
       _writeln('final ${toCamelCase(m.name)} = _\$$m($constParam);');
     });
 
     _generateDeps(lazyDeps);
 
     if (eagerDeps.isNotEmpty) {
-      _writeln("\n\n  // Eager singletons must be registered in the right order");
+      _writeln(
+          "\n\n  // Eager singletons must be registered in the right order");
       _generateDeps(eagerDeps);
     }
     _write('}');
@@ -85,8 +88,8 @@ class ConfigCodeGenerator {
   }
 
   Set<ImportableType> _addRequiredPrefixes(Iterable<DependencyConfig> deps) {
-    final importableTypes = deps.fold<List<ImportableType>>([], (a, b) => a..addAll(b.allImportableTypes));
-
+    final importableTypes = deps.fold<List<ImportableType>>(
+        [], (a, b) => a..addAll(b.allImportableTypes));
     // add getIt import statement
     importableTypes.add(ImportableType(
       name: 'GetIt',
@@ -99,20 +102,7 @@ class ConfigCodeGenerator {
       ),
     );
 
-    var importsWithPrefixes = <ImportableType>{};
-    for (var iType in importableTypes.where((e) => e?.import != null).toSet()) {
-      if (importsWithPrefixes.any((e) => e.name == iType.name)) {
-        print("${iType.name} in ${importsWithPrefixes.map((e) => e.name)}");
-        var prefix = Uri.parse(iType.import).pathSegments.first;
-        var prefixesWithSameNameCount = importsWithPrefixes.where((e) => e.prefix?.startsWith(prefix) == true).length;
-        prefix += (prefixesWithSameNameCount > 0 ? prefixesWithSameNameCount.toString() : '');
-        importsWithPrefixes.add(iType);
-        importsWithPrefixes = importsWithPrefixes.map((e) => e.import == iType.import ? e.copyWith(prefix: prefix) : e).toSet();
-      } else {
-        importsWithPrefixes.add(iType);
-      }
-    }
-    return importsWithPrefixes;
+    return ImportableTypeResolver.resolvePrefixes(importableTypes.toSet());
   }
 
   void _generateImports(Set<ImportableType> imports) {
@@ -127,19 +117,30 @@ class ConfigCodeGenerator {
     });
 
     var finalizedImports = (targetFile == null
-        ? uniqueImports.map((e) => e.copyWith(import: TypeResolver.resolveAssetImports(e.import)))
-        : uniqueImports.map((e) => e.copyWith(import: TypeResolver.relative(e.import, targetFile))))
+        ? uniqueImports.map((e) =>
+        e.copyWith(
+            import: ImportableTypeResolver.resolveAssetImports(e.import)))
+        : uniqueImports.map((e) =>
+        e.copyWith(
+            import: ImportableTypeResolver.relative(e.import, targetFile))))
         .toSet();
 
-    var dartImports = finalizedImports.where((e) => e.import.startsWith('dart')).toList();
-    _sortAndGenerate(dartImports);
-    _writeln("");
+    var dartImports =
+    finalizedImports.where((e) => e.import.startsWith('dart')).toList();
+    if (dartImports.isNotEmpty) {
+      _sortAndGenerate(dartImports);
+      _writeln("");
+    }
 
-    var packageImports = finalizedImports.where((e) => e.import.startsWith('package')).toList();
-    _sortAndGenerate(packageImports);
-    _writeln("");
+    var packageImports =
+    finalizedImports.where((e) => e.import.startsWith('package')).toList();
+    if (packageImports.isNotEmpty) {
+      _sortAndGenerate(packageImports);
+      _writeln("");
+    }
 
-    var rest = finalizedImports.difference({...dartImports, ...packageImports}).toList();
+    var rest = finalizedImports
+        .difference({...dartImports, ...packageImports}).toList();
     _sortAndGenerate(rest);
   }
 
@@ -157,7 +158,8 @@ class ConfigCodeGenerator {
           _writeln(LazyFactoryGenerator(prefixedTypes).generate(dep));
         }
       } else if (dep.injectableType == InjectableType.lazySingleton) {
-        _writeln(LazyFactoryGenerator(prefixedTypes, isLazySingleton: true).generate(dep));
+        _writeln(LazyFactoryGenerator(prefixedTypes, isLazySingleton: true)
+            .generate(dep));
       } else if (dep.injectableType == InjectableType.singleton) {
         _writeln(SingletonGenerator(prefixedTypes).generate(dep));
       }
@@ -167,7 +169,10 @@ class ConfigCodeGenerator {
   void _sortByDependents(Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
     for (var dep in unSorted) {
       if (dep.dependencies.every(
-            (iDep) => iDep.isFactoryParam || sorted.map((d) => d.type).contains(iDep.type) || !unSorted.map((d) => d.type).contains(iDep.type),
+            (iDep) =>
+        iDep.isFactoryParam ||
+            sorted.map((d) => d.type).contains(iDep.type) ||
+            !unSorted.map((d) => d.type).contains(iDep.type),
       )) {
         sorted.add(dep);
       }

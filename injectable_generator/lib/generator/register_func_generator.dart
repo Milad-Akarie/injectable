@@ -38,14 +38,17 @@ abstract class RegisterFuncGenerator {
 
   String flattenParams(List<InjectedDependency> deps, String getIt) {
     final params = deps.map((injectedDep) {
-      var type = injectedDep.type.name == 'dynamic' ? '' : '<${injectedDep.type.getDisplayName(prefixedTypes)}>';
+      var type = injectedDep.type.name == 'dynamic'
+          ? ''
+          : '<${injectedDep.type.getDisplayName(prefixedTypes)}>';
       var instanceName = '';
 
       if (injectedDep.name != null) {
         instanceName = "instanceName: '${injectedDep.name}'";
       }
 
-      final paramName = (!injectedDep.isPositional) ? '${injectedDep.paramName}: ' : '';
+      final paramName =
+      (!injectedDep.isPositional) ? '${injectedDep.paramName}: ' : '';
 
       if (injectedDep.isFactoryParam) {
         return '$paramName${injectedDep.paramName}';
@@ -63,7 +66,8 @@ abstract class RegisterFuncGenerator {
   String generateAwaitSetup(DependencyConfig dep, String constructBody) {
     var awaitedVar = toCamelCase(dep.type.name);
     if (registeredVarNames.contains(awaitedVar)) {
-      awaitedVar = '$awaitedVar${registeredVarNames
+      awaitedVar =
+      '$awaitedVar${registeredVarNames
           .where((i) => i.startsWith(awaitedVar))
           .length}';
     }
@@ -81,7 +85,8 @@ abstract class RegisterFuncGenerator {
       write(", instanceName: '${dep.instanceName}'");
     }
     if (dep.environments?.isNotEmpty == true) {
-      write(", registerFor: {${dep.environments.toSet().map((e) => "_$e").join(',')}}");
+      write(
+          ", registerFor: {${dep.environments.toSet().map((e) => "_$e").join(',')}}");
     }
     write(");");
   }

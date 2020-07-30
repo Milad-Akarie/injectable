@@ -1,4 +1,6 @@
-import 'package:injectable/injectable.dart';
+import 'package:injectable/injectable.dart' as inj;
 
-@injectable
-class Singleton {}
+@inj.singleton
+class Singleton {
+  Singleton(inj.Singleton singleton);
+}

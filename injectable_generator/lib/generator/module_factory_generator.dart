@@ -8,8 +8,7 @@ class ModuleFactoryGenerator extends RegisterFuncGenerator {
   String generateInitializer(DependencyConfig dep, {String getIt = 'g'}) {
     final flattenedParams = flattenParams(dep.dependencies, getIt);
 
-    final constructorName =
-        dep.constructorName != null && dep.constructorName.isNotEmpty ? '.${dep.constructorName}' : '';
+    final constructorName = dep.constructorName != null && dep.constructorName.isNotEmpty ? '.${dep.constructorName}' : '';
 
     return '${dep.typeImpl.getDisplayName(prefixedTypes, withTypeArgs: false)}$constructorName($flattenedParams)';
   }
