@@ -1,5 +1,7 @@
 import 'package:get_it/get_it.dart';
 
+typedef EnvironmentFilter = bool Function(Set<String>);
+
 /// a helper class to handle conditional registering
 class GetItHelper {
   /// passed getIt instance
@@ -8,14 +10,20 @@ class GetItHelper {
   /// current work environment
   final String environment;
 
+  /// filter for whether to register for the given set of environments
+  final EnvironmentFilter environmentFilter;
+
   /// creates a new instance of GetItHelper
-  GetItHelper(this.getIt, [this.environment]) : assert(getIt != null);
+  GetItHelper(this.getIt, [this.environment, this.environmentFilter])
+      : assert(getIt != null),
+        assert(environmentFilter == null || environment == null);
 
   /// if a dependency is registered under certain environments
   /// one of theme needs to match the current [environment]
   /// to register
   bool _shouldRegister(Set<String> registerFor) {
-    return registerFor == null || registerFor.contains(environment);
+    return registerFor == null ||
+        environmentFilter?.call(registerFor) ?? registerFor.contains(environment);
   }
 
   /// a conditional wrapper method for getIt.registerFactory

@@ -60,11 +60,11 @@ class ConfigCodeGenerator {
    ''');
 
     if (_hasAsync(sorted)) {
-      _writeln("Future<void> \$initGetIt(GetIt g, {String environment}) async {");
+      _writeln("Future<void> \$initGetIt(GetIt g, {String environment, bool Function(Set<String>) environmentFilter}) async {");
     } else {
-      _writeln("void \$initGetIt(GetIt g, {String environment}) {");
+      _writeln("void \$initGetIt(GetIt g, {String environment, bool Function(Set<String>) environmentFilter}) {");
     }
-    _writeln("final gh = GetItHelper(g, environment);");
+    _writeln("final gh = GetItHelper(g, environment, environmentFilter);");
     modules.forEach((m) {
       final constParam = _getAbstractModuleDeps(sorted, m)
           .any((d) => d.dependencies.isNotEmpty)
