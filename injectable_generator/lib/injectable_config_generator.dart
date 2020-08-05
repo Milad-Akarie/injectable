@@ -30,20 +30,29 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final deps = <DependencyConfig>[];
     jsonData.forEach((json) => deps.add(DependencyConfig.fromJson(json)));
 
+    final initializerName = annotation.read('initializerName').stringValue;
+    final asExtension = annotation.read('asExtension').boolValue;
+
     _reportMissingDependencies(deps, targetFile);
     _validateDuplicateDependencies(deps);
-    return ConfigCodeGenerator(deps, targetFile: preferRelativeImports ? targetFile : null).generate();
+    return ConfigCodeGenerator(
+      deps,
+      targetFile: preferRelativeImports ? targetFile : null,
+      initializerName: initializerName,
+      asExtension: asExtension,
+    ).generate();
   }
 
   void _reportMissingDependencies(List<DependencyConfig> deps, Uri targetFile) {
     final messages = [];
-    final registeredDeps = deps.map((dep) => dep.type.identity).toSet();
+    final registeredDeps = deps.map((dep) => dep.type).toSet();
     deps.forEach((dep) {
-      dep.dependencies.where((d) => !d.isFactoryParam).forEach((iDep) {
-        final typeIdentity = iDep.type.identity;
-        if (!registeredDeps.contains(typeIdentity)) {
+      dep.dependencies
+          .where((d) => !d.isFactoryParam && d.name != kEnvironmentsName)
+          .forEach((iDep) {
+        if (!registeredDeps.contains(iDep.type)) {
           messages.add(
-              "[${dep.typeImpl}] depends on unregistered type [${iDep.type.name}] ${iDep.type.import == null ? '' : 'from ${iDep.type.import}'}");
+              "[${dep.typeImpl}] depends on unregistered type [${iDep.type}] ${iDep.type.import == null ? '' : 'from ${iDep.type.import}'}");
         }
       });
     });
@@ -60,8 +69,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final validatedDeps = <DependencyConfig>[];
     for (var dep in deps) {
       var registered = validatedDeps.where((elm) =>
-      elm.type.identity == dep.type.identity &&
-          elm.instanceName == dep.instanceName);
+      elm.type == dep.type && elm.instanceName == dep.instanceName);
       if (registered.isEmpty) {
         validatedDeps.add(dep);
       } else {

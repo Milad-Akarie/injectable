@@ -14,7 +14,7 @@ Injectable is a convenient code generator for get_it. Inspired by Angular DI, Gu
 - [Register under different environments](#register-under-different-environments)
 - [Using named factories and static create functions](#Using-named-factories-and-static-create-functions)
 - [Registering third party types](#Registering-third-party-types)
-- [Auto registering $Experimental$](#auto-registering-$experimental$)
+- [Auto registering](#auto-registering)
 
 ## Installation
 
@@ -23,7 +23,7 @@ dependencies:
   # add injectable to your dependencies
   injectable:
   # add get_it
-  get_it:
+  get_It:
 
 dev_dependencies:
   # add the generator to your dev_dependencies
@@ -36,17 +36,20 @@ dev_dependencies:
 
 ---
 
-.1 Create a new dart file and define a global var for your GetIt instance
-.2 Define a top-level function (lets call it configureDependencies) then annotate it with @injectableInit.
-.3 Call the **Generated** func \$initGetIt() inside your configure func and pass in the getIt instance.
+1. Create a new dart file and define a global var for your GetIt instance.
+2. Define a top-level function (lets call it configureDependencies) then annotate it with @injectableInit.
+3. Call the **Generated** func \$initGetIt(), or your custom initilizer name inside your configure func and pass in the getIt instance.
 
 ```dart
 final getIt = GetIt.instance;
 
-@injectableInit
+@InjectableInit(
+  initializerName: r'$initGetIt', // default
+  preferRelativeImports: true, // default
+  asExtension: false, // default
+)
 void configureDependencies() => $initGetIt(getIt);
 ```
-
 Note: you can tell injectable what directories to generate for using the generateForDir property inside of @injectableInit.
 The following example will only process files inside of the test folder.
 
@@ -55,7 +58,8 @@ The following example will only process files inside of the test folder.
 void configureDependencies() => $initGetIt(getIt);
 ```
 
-.4 Call configureDependencies() in your main func before running the App
+
+4. Call configureDependencies() in your main func before running the App.
 
 ```dart
 void main() {
@@ -63,6 +67,7 @@ void main() {
  runApp(MyApp());
 }
 ```
+
 
 ## Registering factories
 
@@ -102,7 +107,7 @@ Injectable will generate the needed register functions for you
 ```dart
 final getIt = GetIt.instance;
 
-void $initGetIt(GetIt getIt, {String environment}) {
+void $initGetIt(GetIt getIt,{String environment,EnvironmentFilter environmentFilter}) {
  final gh = GetItHelper(getIt, environment);
   gh.factory<ServiceA>(() => ServiceA());
   gh.factory<ServiceB>(ServiceA(getIt<ServiceA>()));
@@ -222,7 +227,6 @@ factoryParam<BackendService, String, dynamic>(
 ```
 
 ### Using a register module (for third party dependencies)
-
 if you declare a module member as a method instead of a simple accessor, injectable will treat it as a factory method, meaning it will inject it's parameters as it would with a regular constructor.
 The same way if you annotate an injected param with @factoryParam injectable will treat it as a factory param.
 
@@ -243,19 +247,18 @@ factoryParam<BackendService, String, dynamic>(
 ## Binding abstract classes to implementations
 
 ---
-
 Use the 'as' Property inside of Injectable(as:..) to pass an abstract type that's implemented by the registered dependency
 
 ```dart
 @Injectable(as: Service)
 class ServiceImpl implements Service {}
 
-// or
-@Singleton(as: Service)
+// or 
+@Singleton(as: Service) 
 class ServiceImpl implements Service {}
 
-// or
-@LazySingleton(as: Service)
+// or 
+@LazySingleton(as: Service) 
 class ServiceImpl implements Service {}
 
 ```
@@ -337,6 +340,7 @@ in the below example ServiceA is now only registered if we pass the environment 
 class ServiceA {}
 ```
 
+
 you could also create your own environment annotations by assigning the const constructor Environment("") to a global const var.
 
 ```dart
@@ -346,22 +350,25 @@ const dev = Environment('dev');
 @injectable
 class ServiceA {}
 ```
-
 You can assign multiple environment names to the same class
-
 ```dart
 @test
 @dev
 @injectable
 class ServiceA {}
 ```
-
-Alternatively use the env property in injectable and subs to assign environment names to your dependencies
+Alternatively use the env property in injectable and subs to assign environment names to your dependencies 
 
 ```dart
 @Injectable(as: Service, env: [Environment.dev, Environment.test])
 class RealServiceImpl implements Service {}
 ```
+
+Now passing your environment to $initGetIt function will create a simple environment filter that will only validate dependencies that have no environments or one of their environments matches the given environment.
+Alternatively, you can pass your own `EnvironmentFilter` to decide what dependencies to register based on their environment keys, or use one of the shipped ones
+* NoEnvOrContainsAll
+* NoEnvOrContainsAny
+* SimpleEnvironmentFilter
 
 ## Using named factories and static create functions
 
@@ -417,7 +424,7 @@ abstract class RegisterModule {
   @prod
   @Injectable(as: ThirdPartyAbstract)
   ThirdPartyImpl get thirdPartyType;
-
+ 
 }
 ```
 
@@ -432,24 +439,24 @@ abstract class RegisterModule {
  // You can register named preemptive types like follows
   @Named("BaseUrl")
   String get baseUrl => 'My base url';
-
-  // url here will be injected
+  
+  // url here will be injected 
   @lazySingleton
   Dio dio(@Named('BaseUrl) String url) => Dio(BaseOptions(baseUrl: url));
-
+ 
   // same thing works for instances that's gotten asynchronous.
   // all you need to do is wrap your instance with a future and tell injectable how
   // to initialize it
   @preResolve // if you need to pre resolve the value
   Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
   // Also, make sure you await for your configure function before running the App.
-
+ 
 }
 ```
 
 if you're facing even a weirder scenario you can always register them manually in the configure function.
 
-## Auto registering $Experimental$
+## Auto registering
 
 ---
 

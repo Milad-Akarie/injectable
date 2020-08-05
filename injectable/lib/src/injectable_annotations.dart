@@ -8,11 +8,26 @@ class InjectableInit {
   /// defaults to true
   final bool preferRelativeImports;
 
+  /// generated initializer name
+  /// defaults to $initGetIt
+  final String initializerName;
+
+  /// if true the init function
+  /// will be generated inside
+  /// of a [GetIi] extension
+  /// defaults to false
+  final bool asExtension;
+
   /// default constructor
   const InjectableInit({
     this.generateForDir = const ['lib'],
-    this.preferRelativeImports,
-  }) : assert(generateForDir != null);
+    this.preferRelativeImports = true,
+    this.initializerName = r'$initGetIt',
+    this.asExtension = false,
+  })  : assert(generateForDir != null),
+        assert(initializerName != null),
+        assert(preferRelativeImports != null),
+        assert(asExtension != null);
 }
 
 /// const instance of [InjectableInit]
@@ -118,6 +133,11 @@ class Environment {
   /// preset of common env name 'test'
   static const test = 'test';
 }
+
+/// instance name for the Set of environment
+/// keys that's registered internally inside of
+/// [GetItHelper]
+const kEnvironmentsName = '__environments__';
 
 /// preset instance of common env name
 const dev = Environment(Environment.dev);

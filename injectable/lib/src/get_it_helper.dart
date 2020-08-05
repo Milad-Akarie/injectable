@@ -1,6 +1,5 @@
 import 'package:get_it/get_it.dart';
-
-typedef EnvironmentFilter = bool Function(Set<String>);
+import 'package:injectable/injectable.dart';
 
 /// a helper class to handle conditional registering
 class GetItHelper {
@@ -11,53 +10,56 @@ class GetItHelper {
   final String environment;
 
   /// filter for whether to register for the given set of environments
-  final EnvironmentFilter environmentFilter;
+  final EnvironmentFilter _environmentFilter;
 
   /// creates a new instance of GetItHelper
-  GetItHelper(this.getIt, [this.environment, this.environmentFilter])
+  GetItHelper(this.getIt, [this.environment, EnvironmentFilter environmentFilter])
       : assert(getIt != null),
-        assert(environmentFilter == null || environment == null);
+        assert(environmentFilter == null || environment == null),
+        _environmentFilter = environmentFilter ?? NoEnvOrContains(environment) {
+    // register current Environments as lazy singleton
+    getIt.registerLazySingleton<Set<String>>(
+      () => _environmentFilter.environments,
+      instanceName: kEnvironmentsName,
+    );
+  }
 
-  /// if a dependency is registered under certain environments
-  /// one of theme needs to match the current [environment]
-  /// to register
-  bool _shouldRegister(Set<String> registerFor) {
-    return registerFor == null ||
-        environmentFilter?.call(registerFor) ?? registerFor.contains(environment);
+  bool _canRegister(Set<String> registerFor) {
+    return _environmentFilter.canRegister(registerFor ?? {});
   }
 
   /// a conditional wrapper method for getIt.registerFactory
-  /// it only registers if [_shouldRegister] returns true
+  /// it only registers if [_canRegister] returns true
   void factory<T>(
     FactoryFunc<T> factoryfunc, {
     String instanceName,
     Set<String> registerFor,
   }) {
-    if (_shouldRegister(registerFor)) {
+    if (_canRegister(registerFor)) {
       getIt.registerFactory<T>(factoryfunc, instanceName: instanceName);
     }
   }
 
   /// a conditional wrapper method for getIt.registerFactoryAsync
-  /// it only registers if [_shouldRegister] returns true
+  /// it only registers if [_canRegister] returns true
   void factoryAsync<T>(
     FactoryFuncAsync<T> factoryfunc, {
     String instanceName,
     Set<String> registerFor,
   }) {
-    if (_shouldRegister(registerFor)) {
+    if (_canRegister(registerFor)) {
       getIt.registerFactoryAsync<T>(factoryfunc, instanceName: instanceName);
     }
   }
 
   /// a conditional wrapper method for getIt.registerFactoryParam
-  /// it only registers if [_shouldRegister] returns true
+  /// it only registers if [_canRegister] returns true
   void factoryParam<T, P1, P2>(
     FactoryFuncParam<T, P1, P2> factoryfunc, {
     String instanceName,
     Set<String> registerFor,
   }) {
-    if (_shouldRegister(registerFor)) {
+    if (_canRegister(registerFor)) {
       getIt.registerFactoryParam<T, P1, P2>(
         factoryfunc,
         instanceName: instanceName,
@@ -66,13 +68,13 @@ class GetItHelper {
   }
 
   /// a conditional wrapper method for getIt.registerFactoryParamAsync
-  /// it only registers if [_shouldRegister] returns true
+  /// it only registers if [_canRegister] returns true
   void factoryParamAsync<T, P1, P2>(
     FactoryFuncParamAsync<T, P1, P2> factoryfunc, {
     String instanceName,
     Set<String> registerFor,
   }) {
-    if (_shouldRegister(registerFor)) {
+    if (_canRegister(registerFor)) {
       getIt.registerFactoryParamAsync<T, P1, P2>(
         factoryfunc,
         instanceName: instanceName,
@@ -81,13 +83,13 @@ class GetItHelper {
   }
 
   /// a conditional wrapper method for getIt.registerLazySingleton
-  /// it only registers if [_shouldRegister] returns true
+  /// it only registers if [_canRegister] returns true
   void lazySingleton<T>(
     FactoryFunc<T> factoryfunc, {
     String instanceName,
     Set<String> registerFor,
   }) {
-    if (_shouldRegister(registerFor)) {
+    if (_canRegister(registerFor)) {
       getIt.registerLazySingleton<T>(
         factoryfunc,
         instanceName: instanceName,
@@ -96,13 +98,13 @@ class GetItHelper {
   }
 
   /// a conditional wrapper method for getIt.registerLazySingletonAsync
-  /// it only registers if [_shouldRegister] returns true
+  /// it only registers if [_canRegister] returns true
   void lazySingletonAsync<T>(
     FactoryFuncAsync<T> factoryfunc, {
     String instanceName,
     Set<String> registerFor,
   }) {
-    if (_shouldRegister(registerFor)) {
+    if (_canRegister(registerFor)) {
       getIt.registerLazySingletonAsync<T>(
         factoryfunc,
         instanceName: instanceName,
@@ -111,14 +113,14 @@ class GetItHelper {
   }
 
   /// a conditional wrapper method for getIt.registerSingleton
-  /// it only registers if [_shouldRegister] returns true
+  /// it only registers if [_canRegister] returns true
   void singleton<T>(
     T instance, {
     String instanceName,
     bool signalsReady,
     Set<String> registerFor,
   }) {
-    if (_shouldRegister(registerFor)) {
+    if (_canRegister(registerFor)) {
       getIt.registerSingleton<T>(
         instance,
         instanceName: instanceName,
@@ -128,7 +130,7 @@ class GetItHelper {
   }
 
   /// a conditional wrapper method for getIt.registerSingletonAsync
-  /// it only registers if [_shouldRegister] returns true
+  /// it only registers if [_canRegister] returns true
   void singletonAsync<T>(
     FactoryFuncAsync<T> factoryfunc, {
     String instanceName,
@@ -136,7 +138,7 @@ class GetItHelper {
     Iterable<Type> dependsOn,
     Set<String> registerFor,
   }) {
-    if (_shouldRegister(registerFor)) {
+    if (_canRegister(registerFor)) {
       getIt.registerSingletonAsync<T>(
         factoryfunc,
         instanceName: instanceName,
@@ -147,7 +149,7 @@ class GetItHelper {
   }
 
   /// a conditional wrapper method for getIt.registerSingletonWithDependencies
-  /// it only registers if [_shouldRegister] returns true
+  /// it only registers if [_canRegister] returns true
   void singletonWithDependencies<T>(
     FactoryFunc<T> factoryfunc, {
     String instanceName,
@@ -155,7 +157,7 @@ class GetItHelper {
     Iterable<Type> dependsOn,
     Set<String> registerFor,
   }) {
-    if (_shouldRegister(registerFor)) {
+    if (_canRegister(registerFor)) {
       getIt.registerSingletonWithDependencies<T>(
         factoryfunc,
         instanceName: instanceName,

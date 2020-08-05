@@ -14,7 +14,7 @@ abstract class RegisterFuncGenerator {
 
   String generate(DependencyConfig dep);
 
-  String generateInitializer(DependencyConfig dep, {String getIt = 'g'}) {
+  String generateInitializer(DependencyConfig dep, {String getIt = 'get'}) {
     final flattenedParams = flattenParams(dep.dependencies, getIt);
 
     if (dep.isFromModule) {

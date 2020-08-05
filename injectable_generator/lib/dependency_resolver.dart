@@ -177,8 +177,8 @@ class DependencyResolver {
               (m) => constructorChecker.hasAnnotationOfExact(m), orElse: () {
         throwIf(
           clazz.isAbstract,
-          '''[${clazz.name}] is abstract and can not be registered directly!
-           if it has a factory or a create method annotate it with @factoryMethod''',
+          '''[${clazz
+              .name}] is abstract and can not be registered directly! \nif it has a factory or a create method annotate it with @factoryMethod''',
           element: clazz,
         );
         return clazz.unnamedConstructor;

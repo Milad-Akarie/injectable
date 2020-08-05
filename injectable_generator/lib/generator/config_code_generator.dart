@@ -20,8 +20,15 @@ class ConfigCodeGenerator {
   final Set<ImportableType> prefixedTypes = {};
   final _buffer = StringBuffer();
   final Uri targetFile;
+  final String initializerName;
+  final bool asExtension;
 
-  ConfigCodeGenerator(this.allDeps, {this.targetFile});
+  ConfigCodeGenerator(
+    this.allDeps, {
+    this.targetFile,
+    this.initializerName,
+    this.asExtension,
+  });
 
   _write(Object o) => _buffer.write(o);
 
@@ -43,14 +50,18 @@ class ConfigCodeGenerator {
     final Set<DependencyConfig> sorted = {};
     _sortByDependents(allDeps.toSet(), sorted);
 
-    final modules = sorted.where((d) => d.isFromModule).map((d) => d.module).toSet();
+    final modules =
+    sorted.where((d) => d.isFromModule).map((d) => d.module).toSet();
 
-    final environments = sorted.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
+    final environments =
+    sorted.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
     if (environments.isNotEmpty) {
       _writeln("/// Environment names");
       environments.forEach((env) => _writeln("const _$env = '$env';"));
     }
-    final eagerDeps = sorted.where((d) => d.injectableType == InjectableType.singleton).toSet();
+    final eagerDeps = sorted
+        .where((d) => d.injectableType == InjectableType.singleton)
+        .toSet();
 
     final lazyDeps = sorted.difference(eagerDeps);
 
@@ -59,16 +70,27 @@ class ConfigCodeGenerator {
       /// to the provided [GetIt] instance
    ''');
 
-    if (_hasAsync(sorted)) {
-      _writeln("Future<void> \$initGetIt(GetIt g, {String environment, bool Function(Set<String>) environmentFilter}) async {");
-    } else {
-      _writeln("void \$initGetIt(GetIt g, {String environment, bool Function(Set<String>) environmentFilter}) {");
+    var getItParam = 'GetIt get,';
+    var getOrThis = 'get';
+    if (asExtension) {
+      _writeln('extension GetItInjectableX on GetIt {');
+      getItParam = '';
+      getOrThis = "this";
     }
-    _writeln("final gh = GetItHelper(g, environment, environmentFilter);");
+
+    if (_hasAsync(sorted)) {
+      _writeln(
+          "Future<GetIt> $initializerName($getItParam {String environment, EnvironmentFilter environmentFilter,}) async {");
+    } else {
+      _writeln(
+          "GetIt $initializerName($getItParam {String environment, EnvironmentFilter environmentFilter,}) {");
+    }
+    _writeln(
+        "final gh = GetItHelper($getOrThis, environment, environmentFilter);");
     modules.forEach((m) {
       final constParam = _getAbstractModuleDeps(sorted, m)
           .any((d) => d.dependencies.isNotEmpty)
-          ? 'g'
+          ? getOrThis
           : '';
       _writeln('final ${toCamelCase(m.name)} = _\$$m($constParam);');
     });
@@ -80,7 +102,10 @@ class ConfigCodeGenerator {
           "\n\n  // Eager singletons must be registered in the right order");
       _generateDeps(eagerDeps);
     }
-    _write('}');
+    _write('return $getOrThis;\n}');
+    if (asExtension) {
+      _write('}');
+    }
 
     _generateModules(modules, sorted);
 
@@ -98,7 +123,7 @@ class ConfigCodeGenerator {
     importableTypes.add(
       ImportableType(
         name: 'GetItHelper',
-        import: 'package:injectable/get_it_helper.dart',
+        import: 'package:injectable/injectable.dart',
       ),
     );
 
@@ -191,8 +216,8 @@ class ConfigCodeGenerator {
       _writeln('class _\$$m extends ${m.getDisplayName(prefixedTypes)}{');
       final moduleDeps = _getAbstractModuleDeps(deps, m).toList();
       if (moduleDeps.any((d) => d.dependencies.isNotEmpty)) {
-        _writeln("final GetIt _g;");
-        _writeln('_\$$m(this._g);');
+        _writeln("final GetIt _get;");
+        _writeln('_\$$m(this._get);');
       }
       _generateModuleItems(moduleDeps);
       _writeln('}');
