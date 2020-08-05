@@ -1,4 +1,10 @@
 # ChangeLog
+## [1.0.4]
+- Add option to customize the initilizer function name
+- Add option to generate the initilizer function as an extension
+- Change initializer functions returns the passed get_it instance instead of void
+- Add Advanced environment filter that can be extended and customized
+- Fix Injectable generator not handling multiple instances of generic types #107
 ## [1.0.3]
 - Fix conflict when importing two different types with the same name.
 - Improve some warning messages

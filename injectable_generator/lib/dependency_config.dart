@@ -1,6 +1,8 @@
 // holds extracted data from annotation & element
 // to be used later when generating the register function
 
+import 'package:collection/collection.dart' show ListEquality;
+
 class DependencyConfig {
   ImportableType type;
   ImportableType typeImpl;
@@ -121,7 +123,13 @@ class InjectedDependency {
   bool isFactoryParam;
   bool isPositional;
 
-  InjectedDependency({this.type, this.name, this.paramName, this.isFactoryParam, this.isPositional});
+  InjectedDependency({
+    this.type,
+    this.name,
+    this.paramName,
+    this.isFactoryParam,
+    this.isPositional,
+  });
 
   InjectedDependency.fromJson(Map<String, dynamic> json) {
     name = json['name'];
@@ -152,7 +160,7 @@ class ImportableType {
   ImportableType({this.name, this.import, this.typeArguments, this.prefix});
 
   List<ImportableType> get fold {
-    var list = [this];
+    final list = [this];
     typeArguments?.forEach((iType) {
       list.addAll(iType.fold);
     });
@@ -161,18 +169,19 @@ class ImportableType {
 
   String get identity => "$import#$name";
 
-  String fullName({bool withTypeArgs = true}) {
-    var namePrefix = prefix != null ? '$prefix.' : '';
-    var typeArgs = withTypeArgs && (typeArguments?.isNotEmpty == true)
-        ? "<${typeArguments.map((e) => e.fullName()).join(',')}>"
+  String fullName({bool includeTypeArgs = true, bool includePrefix = true}) {
+    var namePrefix = includePrefix && prefix != null ? '$prefix.' : '';
+    var typeArgs = includeTypeArgs && (typeArguments?.isNotEmpty == true)
+        ? "<${typeArguments.map((e) => e.fullName(
+              includePrefix: includePrefix,
+              includeTypeArgs: includePrefix,
+            )).join(',')}>"
         : '';
     return "$namePrefix$name$typeArgs";
   }
 
-  String getDisplayName(Set<ImportableType> prefixedTypes,
-      {bool withTypeArgs = true}) {
-    return prefixedTypes?.lookup(this)?.fullName(withTypeArgs: withTypeArgs) ??
-        fullName(withTypeArgs: withTypeArgs);
+  String getDisplayName(Set<ImportableType> prefixedTypes, {bool includeTypeArgs = true}) {
+    return prefixedTypes?.lookup(this)?.fullName(includeTypeArgs: includeTypeArgs) ?? fullName(includeTypeArgs: includeTypeArgs);
   }
 
   String get importName => "'$import' ${prefix != null ? 'as $prefix' : ''}";
@@ -198,19 +207,19 @@ class ImportableType {
   }
 
   @override
-  String toString() {
-    return name;
-  }
+  String toString() => fullName(includePrefix: false);
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
           other is ImportableType &&
               runtimeType == other.runtimeType &&
-              identity == other.identity;
+              identity == other.identity &&
+              ListEquality().equals(typeArguments, other.typeArguments);
 
   @override
-  int get hashCode => import.hashCode ^ name.hashCode;
+  int get hashCode =>
+      import.hashCode ^ name.hashCode ^ ListEquality().hash(typeArguments);
 
   Map<String, dynamic> toJson() =>
       {

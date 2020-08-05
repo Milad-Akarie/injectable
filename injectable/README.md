@@ -14,7 +14,7 @@ Injectable is a convenient code generator for get_it. Inspired by Angular DI, Gu
 - [Register under different environments](#register-under-different-environments)
 - [Using named factories and static create functions](#Using-named-factories-and-static-create-functions)
 - [Registering third party types](#Registering-third-party-types)
-- [Auto registering $Experimental$](#auto-registering-$experimental$)
+- [Auto registering](#auto-registering)
 
 ## Installation
 
@@ -36,14 +36,18 @@ dev_dependencies:
 
 ---
 
-.1 Create a new dart file and define a global var for your GetIt instance
-.2 Define a top-level function (lets call it configureDependencies) then annotate it with @injectableInit.
-.3 Call the **Generated** func \$initGetIt() inside your configure func and pass in the getIt instance.
+1. Create a new dart file and define a global var for your GetIt instance.
+2. Define a top-level function (lets call it configureDependencies) then annotate it with @injectableInit.
+3. Call the **Generated** func \$initGetIt(), or your custom initilizer name inside your configure func and pass in the getIt instance.
 
 ```dart
 final getIt = GetIt.instance;
 
-@injectableInit 
+@InjectableInit(
+  initializerName: r'$initGetIt', // default
+  preferRelativeImports: true, // default
+  asExtension: false, // default
+)
 void configureDependencies() => $initGetIt(getIt);
 ```
 Note: you can tell injectable what directories to generate for using the generateForDir property inside of @injectableInit.
@@ -55,7 +59,7 @@ void configureDependencies() => $initGetIt(getIt);
 ```
 
 
-.4 Call configureDependencies() in your main func before running the App
+4. Call configureDependencies() in your main func before running the App.
 
 ```dart
 void main() {
@@ -63,6 +67,7 @@ void main() {
  runApp(MyApp());
 }
 ```
+
 
 ## Registering factories
 
@@ -102,7 +107,7 @@ Injectable will generate the needed register functions for you
 ```dart
 final getIt = GetIt.instance;
 
-void $initGetIt(GetIt getIt, {String environment}) {
+void $initGetIt(GetIt getIt,{String environment,EnvironmentFilter environmentFilter}) {
  final gh = GetItHelper(getIt, environment);
   gh.factory<ServiceA>(() => ServiceA());
   gh.factory<ServiceB>(ServiceA(getIt<ServiceA>()));
@@ -359,6 +364,12 @@ Alternatively use the env property in injectable and subs to assign environment 
 class RealServiceImpl implements Service {}
 ```
 
+Now passing your environment to $initGetIt function will create a simple environment filter that will only validate dependencies that have no environments or one of their environments matches the given environment.
+Alternatively, you can pass your own `EnvironmentFilter` to decide what dependencies to register based on their environment keys, or use one of the shipped ones
+* NoEnvOrContainsAll
+* NoEnvOrContainsAny
+* SimpleEnvironmentFilter
+
 ## Using named factories and static create functions
 
 ---
@@ -445,7 +456,7 @@ abstract class RegisterModule {
 
 if you're facing even a weirder scenario you can always register them manually in the configure function.
 
-## Auto registering $Experimental$
+## Auto registering
 
 ---
 

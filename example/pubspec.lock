@@ -114,7 +114,7 @@ packages:
     source: hosted
     version: "0.1.4"
   code_builder:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: code_builder
       url: "https://pub.dartlang.org"
@@ -224,7 +224,7 @@ packages:
       path: "../injectable"
       relative: true
     source: path
-    version: "2.0.0"
+    version: "1.0.2"
   injectable_generator:
     dependency: "direct dev"
     description:

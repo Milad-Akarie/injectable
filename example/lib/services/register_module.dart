@@ -1,26 +1,21 @@
 // ignore_for_file: public_member_api_docs
 
-import 'package:example/services/client.dart';
+import 'package:example/injector/Service.dart';
+import 'package:example/injector/injector.dart';
 import 'package:injectable/injectable.dart';
 
 @module
 abstract class RegisterModule {
-  @dev
-  @Injectable(as: Client)
-  ApiClient client(Service service) {
-    return ApiClient(service);
-  }
+  List<String> get strings => ["One", "Tow"];
 
-  @dev
-  @preResolve
-  Future<Service> get service => Service.init();
+  @prod
+  @platformMobile
+  @Injectable(as: Repo)
+  RepoImpl get repo;
 }
 
-class ApiClient extends Client {
-  ApiClient(Service service);
-}
+abstract class Repo {}
 
-class Service {
-  static Future init() async => Service();
+class RepoImpl extends Repo {
+  RepoImpl(Service service);
 }
-

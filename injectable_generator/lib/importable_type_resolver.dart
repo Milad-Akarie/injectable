@@ -24,19 +24,26 @@ abstract class ImportableTypeResolver {
     }
     return importableTypes
         .where((e) => e.import != null)
-        .map((e) => importsWithPrefixes[e.import] == null ? e : e.copyWith(prefix: importsWithPrefixes[e.import].prefix))
+        .map((e) =>
+    importsWithPrefixes[e.import] == null
+        ? e
+        : e.copyWith(prefix: importsWithPrefixes[e.import].prefix))
         .toSet();
   }
 
   static String relative(String path, Uri to) {
     var fileUri = Uri.parse(path);
     var libName = to.pathSegments.first;
-    if ((to.scheme == 'package' && fileUri.scheme == 'package' && fileUri.pathSegments.first == libName) ||
+    if ((to.scheme == 'package' &&
+        fileUri.scheme == 'package' &&
+        fileUri.pathSegments.first == libName) ||
         (to.scheme == 'asset' && fileUri.scheme != 'package')) {
       if (fileUri.path == to.path) {
         return fileUri.pathSegments.last;
       } else {
-        return p.posix.relative(fileUri.path, from: to.path).replaceFirst('../', '');
+        return p.posix
+            .relative(fileUri.path, from: to.path)
+            .replaceFirst('../', '');
       }
     } else {
       return path;

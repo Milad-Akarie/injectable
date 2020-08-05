@@ -128,7 +128,7 @@ packages:
     source: hosted
     version: "3.2.1"
   collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: collection
       url: "https://pub.dartlang.org"
@@ -231,7 +231,7 @@ packages:
       path: "../injectable"
       relative: true
     source: path
-    version: "2.0.0"
+    version: "1.0.2"
   io:
     dependency: transitive
     description:
