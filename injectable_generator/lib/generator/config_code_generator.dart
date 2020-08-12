@@ -80,13 +80,13 @@ class ConfigCodeGenerator {
 
     if (_hasAsync(sorted)) {
       _writeln(
-          "Future<GetIt> $initializerName($getItParam {String environment, EnvironmentFilter environmentFilter,}) async {");
+          "Future<GetItHelper> $initializerName($getItParam {String environment, EnvironmentFilter environmentFilter, GetItHelper getItHelper,}) async {");
     } else {
       _writeln(
-          "GetIt $initializerName($getItParam {String environment, EnvironmentFilter environmentFilter,}) {");
+          "GetItHelper $initializerName($getItParam {String environment, EnvironmentFilter environmentFilter, GetItHelper getItHelper,}) {");
     }
     _writeln(
-        "final gh = GetItHelper($getOrThis, environment, environmentFilter);");
+        "final gh = getItHelper ?? GetItHelper($getOrThis, environment, environmentFilter);");
     modules.forEach((m) {
       final constParam = _getAbstractModuleDeps(sorted, m)
           .any((d) => d.dependencies.isNotEmpty)
@@ -102,7 +102,7 @@ class ConfigCodeGenerator {
           "\n\n  // Eager singletons must be registered in the right order");
       _generateDeps(eagerDeps);
     }
-    _write('return $getOrThis;\n}');
+    _write('return gh;\n}');
     if (asExtension) {
       _write('}');
     }
