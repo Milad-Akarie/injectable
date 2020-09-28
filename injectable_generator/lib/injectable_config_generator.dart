@@ -4,11 +4,14 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:glob/glob.dart';
 import 'package:injectable/injectable.dart';
+import 'package:path/path.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'dependency_config.dart';
 import 'generator/config_code_generator.dart';
 import 'utils.dart';
+
+final _microPackageRootInit = const TypeChecker.fromRuntime(MicroPackageRootInit);
 
 class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   @override
@@ -17,6 +20,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
 
     var targetFile = element.source.uri;
     var preferRelativeImports = (annotation.peek("preferRelativeImports")?.boolValue ?? true == true);
+    var isMicroPackageRoot = annotation.instanceOf(_microPackageRootInit);
+
 
     final dirPattern = generateForDir.length > 1 ? '{${generateForDir.join(',')}}' : '${generateForDir.first}';
     final injectableConfigFiles = Glob("$dirPattern/**.injectable.json");
@@ -40,6 +45,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       targetFile: preferRelativeImports ? targetFile : null,
       initializerName: initializerName,
       asExtension: asExtension,
+      isMicroPackageRoot: isMicroPackageRoot
     ).generate();
   }
 

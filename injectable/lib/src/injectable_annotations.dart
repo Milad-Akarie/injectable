@@ -1,3 +1,5 @@
+import 'package:get_it/get_it.dart';
+
 /// Marks a top-level function as an initializer function
 /// for configuring Get_it
 class InjectableInit {
@@ -23,16 +25,38 @@ class InjectableInit {
     this.generateForDir = const ['lib'],
     this.preferRelativeImports = true,
     this.initializerName = r'$initGetIt',
-    this.asExtension = false,
+    this.asExtension = false
   })  : assert(generateForDir != null),
         assert(initializerName != null),
         assert(preferRelativeImports != null),
         assert(asExtension != null);
+
+
 }
 
 /// const instance of [InjectableInit]
 /// with default arguments
 const injectableInit = InjectableInit();
+
+/// If used the generation will assume
+/// that current library is the 'root', or
+/// actually the application that encloses
+/// multiple micro libraries
+/// The goal is to register those libraries
+/// and enable injectable approach inside those as well
+class MicroPackageRootInit extends InjectableInit{
+  const MicroPackageRootInit({
+    var generateForDir = const ['lib'],
+    var preferRelativeImports = true,
+    var initializerName = r'$initGetIt',
+    var asExtension = false
+  }): super(generateForDir: generateForDir,
+      preferRelativeImports: preferRelativeImports,
+      initializerName: initializerName,
+      asExtension: asExtension);
+}
+
+
 
 /// Marks a class as an injectable
 /// dependency and generates
@@ -180,6 +204,11 @@ class Module {
 /// const instance of [Module]
 /// with default arguments
 const module = Module._();
+
+class MicroPackage{
+  const MicroPackage._();
+}
+const microPackage = MicroPackage._();
 
 /// Futures annotated with [preResolve]
 /// will be pre-awaited before they're
