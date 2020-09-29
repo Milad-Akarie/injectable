@@ -15,6 +15,7 @@ Injectable is a convenient code generator for get_it. Inspired by Angular DI, Gu
 - [Using named factories and static create functions](#Using-named-factories-and-static-create-functions)
 - [Registering third party types](#Registering-third-party-types)
 - [Auto registering](#auto-registering)
+- [Micropackages support](#support-for-micro-packages)
 
 ## Installation
 
@@ -482,6 +483,66 @@ targets:
           file_name_pattern: "_service$|_repository$|_bloc$"
 ```
 
+## Support for micro packages 
+
+Micropackage architecture ( here for more info ) is supported.
+Since micro packages are actually "sub"-packages of the main source, code generation can be used to register those dependencies so they can be shared across all the projects.
+
+Code generation works in 2 stages:
+1. Inside micro package
+2. In the root package
+
+### Step 1 - Declaring a micro package module
+
+To declare a micropackage module the following class should be created  
+mymodule.dart:
+```dart 
+///@Micropackage annotation allows generator to be aware of the module
+@MicroPackage("myModule")
+class MyModule{
+  //method name is not important, it should only be the 1st method and be static
+  static void registerModuleDependencies(GetIt get){
+    //just calls code in injection.dart, following the practice described above
+    configureInjection();
+  }
+}
+```
+Example of injection.dart(this you should already have by now):
+```dart
+final getIt = GetIt.instance;
+@InjectableInit(
+  generateForDir: ['lib'],
+  initializerName: 'registerMyModuleDependencies',
+  asExtension: true
+)
+/// for local ( internal library dependency injection
+void configureInjection() {
+  getIt.registerMyModuleDependencies();
+}
+``` 
+
+### Step 2 - Defining the root as MicroPackage
+
+To enable micro package mode, use @MicroPackageRootInit instead of @InjectableInit in your injection.dart file.  
+Also be aware that your pubspec.yaml file will have to contain your micro packages as dependency. Failing do to soo will result in an invalid injection.config.micropackage.dart file, since it will contain imports for packages not included in your dependencies.   
+
+### Outcome
+
+Inside the micropackage module a <module>.micropackage.json file will appear. This file should not be deleted since the root package will try to find it. 
+Inside the root module  
+Created files:
+1. `micro_packages.json` containing the aggregation of all the found micropackage.json
+1. `injection.config.micropackage.dart` contains the generated code  
+
+Edited files:  
+`injection.config.dart` => a call to MicroPackagesConfig.registerMicroModules(get) will be added 
+
+
+
+
+
+    
+ 
 ## Problems with the generation?
 
 ---
