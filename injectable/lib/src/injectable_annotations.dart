@@ -206,9 +206,10 @@ class Module {
 const module = Module._();
 
 class MicroPackage{
-  const MicroPackage._();
+  final String moduleName;
+  const MicroPackage(this.moduleName);
 }
-const microPackage = MicroPackage._();
+
 
 /// Futures annotated with [preResolve]
 /// will be pre-awaited before they're

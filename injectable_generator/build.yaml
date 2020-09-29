@@ -1,21 +1,34 @@
 builders:
   injectable_builder:
     import: "package:injectable_generator/builder.dart"
-    builder_factories: ["injectableBuilder"]
-    build_extensions: { ".dart": [".injectable.json"] }
+    builder_factories: [ "injectableBuilder" ]
+    build_extensions: { ".dart": [ ".injectable.json" ] }
     auto_apply: dependents
-    runs_before: ["injectable_generator|injectable_config_builder|micro_packages_scout"]
+    runs_before: [ "injectable_generator|injectable_config_builder"]
     build_to: cache
   injectable_config_builder:
     import: "package:injectable_generator/builder.dart"
-    builder_factories: ["injectableConfigBuilder"]
-    build_extensions: { ".dart": [".config.dart"] }
-    runs_before: [ "micro_packages_scout" ]
+    builder_factories: [ "injectableConfigBuilder" ]
+    build_extensions: { ".dart": [ ".config.dart" ] }
     auto_apply: dependents
+    build_to: source
+  micro_packages_module_scout:
+      import: "package:injectable_generator/micro_packages/builder.dart"
+      builder_factories: [ "microPackagesModuleScout" ]
+      build_extensions: { ".dart": [ ".micropackage.json" ] }
+      auto_apply: dependents
+      build_to: source
+  micro_packages_config_aggregator:
+    import: "package:injectable_generator/micro_packages/builder.dart"
+    builder_factories: ["microPackagesConfigAggregator"]
+    build_extensions: { ".dart": [ ".micro_packages.json" ] }
+    auto_apply: dependents
+    runs_before: [ "injectable_generator|micro_packages_builder" ]
     build_to: source
   micro_packages_builder:
-    import: "package:injectable_generator/builder.dart"
-    builder_factories: ["microPackagesBuilder"]
-    build_extensions: { ".dart": [ ".micropackage.config.part" ] }
+    import: "package:injectable_generator/micro_packages/builder.dart"
+    builder_factories: [ "microPackagesBuilder" ]
+    build_extensions: { ".dart": [ ".config.micropackage.dart" ] }
     auto_apply: dependents
     build_to: source
+

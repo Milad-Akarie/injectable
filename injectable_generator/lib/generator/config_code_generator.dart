@@ -39,10 +39,9 @@ class ConfigCodeGenerator {
     // clear previously registered var names
     registeredVarNames.clear();
 
-    // add library
-    // TODO Check condition if(microMicroPackage)
+    // add import for micro package config file
     if (isMicroPackageRoot) {
-      _writeln("library injection.config.dart;");
+      _writeln("import 'injection.config.micropackage.dart';");
     }
 
     var importsWithPrefixes = _addRequiredPrefixes(allDeps);
@@ -72,12 +71,7 @@ class ConfigCodeGenerator {
 
     final lazyDeps = sorted.difference(eagerDeps);
 
-    if (isMicroPackageRoot) {
-      _writeln('''
-      /// adds micro package part file 
-      part 'injection.micropackage.config.part'; 
-   ''');
-    }
+
 
     _writeln('''
       /// adds generated dependencies 
@@ -118,7 +112,7 @@ class ConfigCodeGenerator {
     }
     //Call to register micro packages
     if (isMicroPackageRoot) {
-      _writeln("registerMicroModules(get);");
+      _writeln("MicroPackagesConfig.registerMicroModules(get);");
     }
     _write('return $getOrThis;\n}');
     if (asExtension) {
