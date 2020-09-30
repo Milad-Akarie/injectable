@@ -1,5 +1,3 @@
-import 'package:get_it/get_it.dart';
-
 /// Marks a top-level function as an initializer function
 /// for configuring Get_it
 class InjectableInit {
@@ -21,42 +19,39 @@ class InjectableInit {
   final bool asExtension;
 
   /// default constructor
-  const InjectableInit({
-    this.generateForDir = const ['lib'],
-    this.preferRelativeImports = true,
-    this.initializerName = r'$initGetIt',
-    this.asExtension = false
-  })  : assert(generateForDir != null),
+  const InjectableInit(
+      {this.generateForDir = const ['lib'],
+      this.preferRelativeImports = true,
+      this.initializerName = r'$initGetIt',
+      this.asExtension = false})
+      : assert(generateForDir != null),
         assert(initializerName != null),
         assert(preferRelativeImports != null),
         assert(asExtension != null);
-
-
 }
 
 /// const instance of [InjectableInit]
 /// with default arguments
 const injectableInit = InjectableInit();
 
-/// If used the generation will assume
+/// If used, micropackage support is enabled.
+/// The generation will assume
 /// that current library is the 'root', or
-/// actually the application that encloses
-/// multiple micro libraries
-/// The goal is to register those libraries
-/// and enable injectable approach inside those as well
-class MicroPackageRootInit extends InjectableInit{
+/// actually the application that encloses multiple micro libraries.
+/// This annotation extends InjectableInit,
+/// therefore only one of them should be used
+class MicroPackageRootInit extends InjectableInit {
   const MicroPackageRootInit({
     var generateForDir = const ['lib'],
     var preferRelativeImports = true,
     var initializerName = r'$initGetIt',
-    var asExtension = false
-  }): super(generateForDir: generateForDir,
-      preferRelativeImports: preferRelativeImports,
-      initializerName: initializerName,
-      asExtension: asExtension);
+    var asExtension = false,
+  }) : super(
+            generateForDir: generateForDir,
+            preferRelativeImports: preferRelativeImports,
+            initializerName: initializerName,
+            asExtension: asExtension);
 }
-
-
 
 /// Marks a class as an injectable
 /// dependency and generates
@@ -205,11 +200,13 @@ class Module {
 /// with default arguments
 const module = Module._();
 
-class MicroPackage{
+/// Annotation that flags the existence of a micropackage module
+class MicroPackage {
+  /// The micropackage module/feature name.
   final String moduleName;
+
   const MicroPackage(this.moduleName);
 }
-
 
 /// Futures annotated with [preResolve]
 /// will be pre-awaited before they're

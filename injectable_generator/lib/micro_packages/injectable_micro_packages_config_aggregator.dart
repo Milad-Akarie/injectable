@@ -10,10 +10,11 @@ import 'package:injectable_generator/model/micro_package_model.dart';
 /// that exist in /features folder
 /// The json file should be compliant with [MicroPackageModuleModel] structure
 /// TODO make 'features' folder configurable
-/// TODO make outputFileName configurable
 class InjectableMicroPackagesConfigAggregator implements Builder {
   static const generatedOutputFileName = "micro_packages.json";
 
+  /// Worker method that accomplishes builder goals
+  /// as described in class header
   @override
   FutureOr<void> build(BuildStep buildStep) async {
     log.fine('Starting build w/ buildStep ${buildStep}');
@@ -29,15 +30,14 @@ class InjectableMicroPackagesConfigAggregator implements Builder {
                 _getExtension(file.path, dept: 2) == 'micropackage.json')
             .map((file) async => await _toMicroPackageModuleModel(file))
             .toList());
-
-    log.warning(
+    log.fine(
         "Found ${featureUriSet.length} micro packages with micropackage.json file");
-
     return await buildStep.writeAsString(
         AssetId(buildStep.inputId.package, 'lib/${generatedOutputFileName}'),
         jsonEncode(featureUriSet));
   }
 
+  /// see [Builder.buildExtensions]
   @override
   Map<String, List<String>> get buildExtensions => const {
         r'$lib$': [generatedOutputFileName],
@@ -62,6 +62,8 @@ class InjectableMicroPackagesConfigAggregator implements Builder {
     return path.substring(lastIndex);
   }
 
+  /// Reads a file as string and converts it to MicroPackageModuleModel
+  /// if possible
   Future<MicroPackageModuleModel> _toMicroPackageModuleModel(
       FileSystemEntity file) async {
     var jsonString = await new File(file.path).readAsString();

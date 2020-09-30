@@ -486,7 +486,8 @@ targets:
 ## Support for micro packages 
 
 Micropackage architecture ( here for more info ) is supported.
-Since micro packages are actually "sub"-packages of the main source, code generation can be used to register those dependencies so they can be shared across all the projects.
+Since micro packages are actually "sub"-packages of the main source, code generation can be used to register those dependencies so they can be shared across all the projects.  
+By default, is assumed, that the micropackages will be contained in /features.
 
 Code generation works in 2 stages:
 1. Inside micro package
