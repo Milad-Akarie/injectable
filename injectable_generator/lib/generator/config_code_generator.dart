@@ -23,6 +23,7 @@ class ConfigCodeGenerator {
   final String initializerName;
   final bool asExtension;
   final bool isMicroPackageRoot;
+  static String microPackageConfigFileName = 'injector.config.micropackage.dart';
 
   ConfigCodeGenerator(this.allDeps,
       {this.targetFile,
@@ -41,7 +42,7 @@ class ConfigCodeGenerator {
 
     // add import for micro package config file
     if (isMicroPackageRoot) {
-      _writeln("import 'injection.config.micropackage.dart';");
+      _writeln("import '$microPackageConfigFileName';");
     }
 
     var importsWithPrefixes = _addRequiredPrefixes(allDeps);
@@ -112,7 +113,7 @@ class ConfigCodeGenerator {
     }
     //Call to register micro packages
     if (isMicroPackageRoot) {
-      _writeln("MicroPackagesConfig.registerMicroModules(get);");
+      _writeln("MicroPackagesConfig.registerMicroModules(this);");
     }
     _write('return $getOrThis;\n}');
     if (asExtension) {

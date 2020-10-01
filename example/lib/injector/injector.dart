@@ -8,11 +8,11 @@ const platformWeb = Environment("platformWeb");
 
 GetIt getIt = GetIt.instance;
 
-@InjectableInit(
+@MicroPackageRootInit(
   initializerName: r'$initGetIt',
   preferRelativeImports: true,
-  asExtension: false,
+  asExtension: true,
 )
 void configInjector({String env, EnvironmentFilter environmentFilter}) {
-  getIt.init(environmentFilter: environmentFilter);
+  getIt.$initGetIt(environmentFilter: environmentFilter);
 }

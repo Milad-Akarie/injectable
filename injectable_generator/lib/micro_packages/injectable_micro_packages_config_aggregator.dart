@@ -17,6 +17,8 @@ class InjectableMicroPackagesConfigAggregator implements Builder {
   /// as described in class header
   @override
   FutureOr<void> build(BuildStep buildStep) async {
+
+
     log.fine('Starting build w/ buildStep ${buildStep}');
 
     if (!await Directory(Directory.current.path + '/features').exists()) {
@@ -29,7 +31,7 @@ class InjectableMicroPackagesConfigAggregator implements Builder {
             .where((file) =>
                 _getExtension(file.path, dept: 2) == 'micropackage.json')
             .map((file) async => await _toMicroPackageModuleModel(file))
-            .toList());
+            .toSet());
     log.fine(
         "Found ${featureUriSet.length} micro packages with micropackage.json file");
     return await buildStep.writeAsString(
