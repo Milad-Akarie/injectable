@@ -9,6 +9,8 @@ environment:
 dependencies:
   get_it: 4.0.0
   mockito: ^4.1.1
+  example_micro_package:
+    path: ./features/example_micro_package
   injectable:
     # 1.0.3
     path: ../injectable
