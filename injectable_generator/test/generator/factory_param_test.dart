@@ -87,7 +87,7 @@ void main() {
               )
             ],
           )),
-          'gh.factoryParam<Demo,String,dynamic>((url, _)=> Demo(g<Storage>(), url));');
+          'gh.factoryParam<Demo,String,dynamic>((url, _)=> Demo(get<Storage>(), url));');
     });
   });
 }
