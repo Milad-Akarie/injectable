@@ -6,6 +6,7 @@ import 'package:injectable_generator/model/micro_package_model.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:path/path.dart' as path;
 
 
 /// Aggregate builder
@@ -21,9 +22,9 @@ class InjectableMicroPackagesGenerator
   @override
   generateForAnnotatedElement(
       Element element, ConstantReader annotation, BuildStep buildStep) async {
-    log.warning("generateForAnnotatedElement");
-   // var microPackageNames = await _getMicroPackageLibraries(buildStep.resolver);
-    var microPackageNames = await _getMicroPackageConfig("lib/micro_packages.json", buildStep);
+    log.fine("generateForAnnotatedElement");
+
+    var microPackageNames = await _getMicroPackageConfig(path.join("lib","micro_packages.json"), buildStep);
     var generatedCode = '';
 
     for (var package in microPackageNames) {

@@ -8,6 +8,12 @@ const platformWeb = Environment("platformWeb");
 
 GetIt getIt = GetIt.instance;
 
+
+/// Micropackages root init should be used when the project uses
+/// a micro package folder structure
+/// If this is not the case, then fallback to InjectableInit annotation.
+/// MicroPackageRootInit assumes that a folder named features exist and that is
+/// the place where you place your micro packages projects
 @MicroPackageRootInit(
   initializerName: r'$initGetIt',
   preferRelativeImports: true,

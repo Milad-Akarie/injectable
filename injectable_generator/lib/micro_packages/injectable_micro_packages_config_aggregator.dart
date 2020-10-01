@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:path/path.dart' as path;
 
 import 'package:build/build.dart';
 import 'package:build/src/builder/build_step.dart';
@@ -11,22 +12,25 @@ import 'package:injectable_generator/model/micro_package_model.dart';
 /// The json file should be compliant with [MicroPackageModuleModel] structure
 /// TODO make 'features' folder configurable
 class InjectableMicroPackagesConfigAggregator implements Builder {
-  static const generatedOutputFileName = "micro_packages.json";
-
+  static const generatedOutputFileName = 'micro_packages.json';
+  static const microPackagesRootFolder = 'features';
   /// Worker method that accomplishes builder goals
   /// as described in class header
   @override
   FutureOr<void> build(BuildStep buildStep) async {
-
-
     log.fine('Starting build w/ buildStep ${buildStep}');
+    String microPackagesCurrentFolder =
+        path.join(Directory.current.path,
+            microPackagesRootFolder
+        );
 
-    if (!await Directory(Directory.current.path + '/features').exists()) {
+
+    if (!await Directory(microPackagesCurrentFolder).exists()) {
       //if the folder doesn't exist we are not supporting micropackages or maybe we are inside one... just leave
       return;
     }
     var featureUriSet = await Future.wait(
-        await Directory(Directory.current.path + '/features')
+        await Directory(microPackagesCurrentFolder)
             .list(recursive: true)
             .where((file) =>
                 _getExtension(file.path, dept: 2) == 'micropackage.json')
@@ -35,7 +39,7 @@ class InjectableMicroPackagesConfigAggregator implements Builder {
     log.fine(
         "Found ${featureUriSet.length} micro packages with micropackage.json file");
     return await buildStep.writeAsString(
-        AssetId(buildStep.inputId.package, 'lib/${generatedOutputFileName}'),
+        AssetId(buildStep.inputId.package, path.join('lib',generatedOutputFileName)),
         jsonEncode(featureUriSet));
   }
 
