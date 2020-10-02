@@ -58,7 +58,7 @@ void main() {
               )
             ],
           )),
-          'gh.factory<Demo>(()=> Demo(g<Storage>()));');
+          'gh.factory<Demo>(()=> Demo(get<Storage>()));');
     });
 
     test("factory generator with named dependencies", () {
@@ -75,7 +75,7 @@ void main() {
                   name: "storageImpl")
             ],
           )),
-          "gh.factory<Demo>(()=> Demo(storage: g<Storage>(instanceName: 'storageImpl')));");
+          "gh.factory<Demo>(()=> Demo(storage: get<Storage>(instanceName: 'storageImpl')));");
     });
 
     test("factory generator with parameterized type", () {
@@ -94,7 +94,7 @@ void main() {
               )
             ],
           )),
-          "gh.factory<Demo<String>>(()=> Demo(storage: g<Storage>()));");
+          "gh.factory<Demo<String>>(()=> Demo(storage: get<Storage>()));");
     });
 
     test("factory generator with prefixed types", () {
@@ -114,7 +114,7 @@ void main() {
                 ],
               ),
               prefixedTypes: {demo.copyWith(prefix: 'prefix')}),
-          "gh.factory<prefix.Demo>(()=> prefix.Demo(storage: g<Storage>()));");
+          "gh.factory<prefix.Demo>(()=> prefix.Demo(storage: get<Storage>()));");
     });
   });
 }
