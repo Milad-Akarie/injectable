@@ -18,6 +18,7 @@ class InjectableMicroPackagesGenerator
   /// The goal is to add a part file to the root injection.config.dart file
   /// This part file will call the registration of micro module dependencies.
   /// It searches for micro.json files, which are the work of InjectableMicroPackagesScout
+  /// This generator will fail if a micro_packages.json file is not found in the lib/ folder
   /// TODO: this script only works if injection.dart has the imports for the modules... this doesn't make much sense.
   @override
   generateForAnnotatedElement(

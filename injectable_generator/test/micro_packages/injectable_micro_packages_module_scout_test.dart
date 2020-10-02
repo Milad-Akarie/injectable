@@ -12,16 +12,17 @@ main() {
               generated.replaceAll(RegExp(r'//.*|\s'), ''),
           generatedExtension: '.json');
       await testBuilder(
-          builder,
-          {
-            'injectable|lib/injectable.dart': _annotations,
-            'injectable|lib/src/injectable_annotations.dart': _annotationsBase,
-            'injectable_generator|lib/example_module.dart': _inputDartFile,
-          },
-          outputs: {
-            'injectable_generator|lib/example_module.json': _expectedOutput
-          },
-          rootPackage: 'injectable_generator');
+        builder,
+        {
+          'injectable|lib/injectable.dart': _annotations,
+          'injectable|lib/src/injectable_annotations.dart': _annotationsBase,
+          'injectable_generator|lib/example_module.dart': _inputDartFile,
+        },
+        outputs: {
+          'injectable_generator|lib/example_module.json': _expectedOutput
+        },
+        rootPackage: 'injectable_generator',
+      );
     });
   });
 }
@@ -43,4 +44,5 @@ const String _inputDartFile = r'''
       static void registerModuleDependencies(){}
     }
     ''';
-final _expectedOutput = r'''{"moduleFileLocation":"package:injectable_generator/example_module.dart","moduleName":"exampleModule","moduleClassName":"ExampleModule","methodName":"registerModuleDependencies"}''';
+final _expectedOutput =
+    r'''{"moduleFileLocation":"package:injectable_generator/example_module.dart","moduleName":"exampleModule","moduleClassName":"ExampleModule","methodName":"registerModuleDependencies"}''';
