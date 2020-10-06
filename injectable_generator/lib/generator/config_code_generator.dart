@@ -23,7 +23,7 @@ class ConfigCodeGenerator {
   final String initializerName;
   final bool asExtension;
   final bool isMicroPackageRoot;
-  static String microPackageConfigFileName = 'injector.config.micropackage.dart';
+  static String microPackageConfigFileName = 'injection.config.micropackage.dart';
 
   ConfigCodeGenerator(this.allDeps,
       {this.targetFile,
