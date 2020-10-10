@@ -1,4 +1,6 @@
 # ChangeLog
+## [1.0.6]
+- Support build_runner v1.10.3
 ## [1.0.5]
 - Add support for get_it ^5.0
 - Fix analyzer compatibility issues
