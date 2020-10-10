@@ -50,18 +50,14 @@ class ConfigCodeGenerator {
     final Set<DependencyConfig> sorted = {};
     _sortByDependents(allDeps.toSet(), sorted);
 
-    final modules =
-    sorted.where((d) => d.isFromModule).map((d) => d.module).toSet();
+    final modules = sorted.where((d) => d.isFromModule).map((d) => d.module).toSet();
 
-    final environments =
-    sorted.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
+    final environments = sorted.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
     if (environments.isNotEmpty) {
       _writeln("/// Environment names");
       environments.forEach((env) => _writeln("const _$env = '$env';"));
     }
-    final eagerDeps = sorted
-        .where((d) => d.injectableType == InjectableType.singleton)
-        .toSet();
+    final eagerDeps = sorted.where((d) => d.injectableType == InjectableType.singleton).toSet();
 
     final lazyDeps = sorted.difference(eagerDeps);
 
