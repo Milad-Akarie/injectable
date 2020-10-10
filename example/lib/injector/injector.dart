@@ -9,9 +9,9 @@ const platformWeb = Environment("platformWeb");
 GetIt getIt = GetIt.instance;
 
 @InjectableInit(
-  initializerName: r'$initGetIt',
+  initializerName: 'init',
   preferRelativeImports: true,
-  asExtension: false,
+  asExtension: true,
 )
 void configInjector({String env, EnvironmentFilter environmentFilter}) {
   getIt.init(environmentFilter: environmentFilter);
