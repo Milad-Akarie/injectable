@@ -1,4 +1,6 @@
 # ChangeLog
+## [1.0.7]
+Added micropackages support
 ## [1.0.6]
 - Support build_runner v1.10.3
 ## [1.0.5]
