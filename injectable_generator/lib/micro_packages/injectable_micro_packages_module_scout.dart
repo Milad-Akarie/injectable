@@ -27,7 +27,7 @@ class InjectableMicroPackagesModuleScout extends GeneratorForAnnotation<MicroPac
     String moduleClassName = LibraryReader(element.library).classes.first.name;
     String methodName = LibraryReader(element.library).classes.first.methods.first.name;
     */
-    String moduleClassName = visitor.className.getDisplayString();
+    String moduleClassName = visitor.className.getDisplayString(withNullability: false);
     String location = visitor.location;
     String methodName = visitor.methodNames.first;
 

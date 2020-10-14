@@ -18,8 +18,6 @@ dependencies:
      path: ../injectable
   collection: ^1.14.8
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
   test:
   build_runner: ^1.0.0
   build_test:
