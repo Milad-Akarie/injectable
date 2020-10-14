@@ -46,7 +46,7 @@ class DependencyResolver {
 
     throwIf(
       returnType.element is! ClassElement,
-      '${returnType.getDisplayString()} is not a class element',
+      '${returnType.getDisplayString(withNullability: false)} is not a class element',
       element: returnType.element,
     );
 
@@ -116,7 +116,8 @@ class DependencyResolver {
         _dep.dependsOn = injectable
             .peek('dependsOn')
             ?.listValue
-            ?.map<String>((v) => v.toTypeValue().getDisplayString())
+            ?.map<String>(
+                (v) => v.toTypeValue().getDisplayString(withNullability: false))
             ?.toList();
       }
       abstractType = injectable
@@ -193,12 +194,13 @@ class DependencyResolver {
         final instanceName = namedAnnotation
             ?.getField('type')
             ?.toTypeValue()
-            ?.getDisplayString() ??
+            ?.getDisplayString(withNullability: false) ??
             namedAnnotation?.getField('name')?.toStringValue();
 
         var paramType = param.type;
         if (paramType is TypeParameterType) {
-          paramType = _typeArgsMap[paramType.getDisplayString()];
+          paramType =
+          _typeArgsMap[paramType.getDisplayString(withNullability: false)];
         }
 
         ImportableType resolvedType;
