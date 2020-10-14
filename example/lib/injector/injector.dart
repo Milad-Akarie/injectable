@@ -15,7 +15,7 @@ GetIt getIt = GetIt.instance;
 /// MicroPackageRootInit assumes that a folder named features exist and that is
 /// the place where you place your micro packages projects
 @MicroPackageRootInit(
-  initializerName: r'$initGetIt',
+  initializerName: 'init',
   preferRelativeImports: true,
   asExtension: true,
 )

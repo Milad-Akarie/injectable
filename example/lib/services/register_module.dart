@@ -6,7 +6,6 @@ import 'package:injectable/injectable.dart';
 
 @module
 abstract class RegisterModule {
-  List<String> get strings => ["One", "Tow"];
 
   @prod
   @platformMobile
