@@ -4,9 +4,9 @@
 // InjectableConfigGenerator
 // **************************************************************************
 
-import 'injection.config.micropackage.dart';
+import 'injector.config.micropackage.dart';
 import 'package:get_it/get_it.dart';
-import 'package:injectable/injectable_micropackages.dart';
+import 'package:injectable_micropackages/injectable_micropackages.dart';
 
 import 'Service_impl.dart';
 import '../services/register_module.dart';

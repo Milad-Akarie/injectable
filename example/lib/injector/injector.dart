@@ -20,5 +20,5 @@ GetIt getIt = GetIt.instance;
   asExtension: true,
 )
 void configInjector({String env, EnvironmentFilter environmentFilter}) {
-  getIt.$initGetIt(environmentFilter: environmentFilter);
+  getIt.init(environmentFilter: environmentFilter);
 }
