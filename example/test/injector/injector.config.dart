@@ -5,7 +5,7 @@
 // **************************************************************************
 
 import 'package:get_it/get_it.dart';
-import 'package:injectable/injectable.dart';
+import 'package:injectable/injectable_micropackages.dart';
 
 import '../sub/sub_test_service.dart';
 import '../test_service.dart';

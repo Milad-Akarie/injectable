@@ -4,9 +4,9 @@
 // InjectableConfigGenerator
 // **************************************************************************
 
-import 'injector.config.micropackage.dart';
+import 'injection.config.micropackage.dart';
 import 'package:get_it/get_it.dart';
-import 'package:injectable/injectable.dart';
+import 'package:injectable/injectable_micropackages.dart';
 
 import 'Service_impl.dart';
 import '../services/register_module.dart';
@@ -21,13 +21,12 @@ const _prod = 'prod';
 /// to the provided [GetIt] instance
 
 extension GetItInjectableX on GetIt {
-  GetIt $initGetIt({
+  GetIt init({
     String environment,
     EnvironmentFilter environmentFilter,
   }) {
     final gh = GetItHelper(this, environment, environmentFilter);
     final registerModule = _$RegisterModule(this);
-    gh.factory<List<String>>(() => registerModule.strings);
     gh.factory<Service>(
         () => MobileService(get<Set<String>>(instanceName: '__environments__')),
         registerFor: {_platformMobile});

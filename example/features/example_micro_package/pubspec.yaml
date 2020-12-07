@@ -10,17 +10,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  injectable:
+  injectable_micropackages:
     # 1.0.5
-    path: ../../../injectable
-  get_it: ^4.0.0
+    path: ../../../injectable_micropackages
+  get_it: ^5.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner:
-  injectable_generator:
-    path: ../../../injectable_generator
+  injectable_generator_micropackages:
+    path: ../../../injectable_generator_micropackages
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

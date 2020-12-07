@@ -11,15 +11,15 @@ dependencies:
   mockito: ^4.1.1
   example_micro_package:
     path: ./features/example_micro_package
-  injectable:
+  injectable_micropackages:
     # 1.0.3
-    path: ../injectable
+    path: ../injectable_micropackages
 
 
 dev_dependencies:
   pedantic: ^1.8.0
   build_runner:
   effective_dart: ^1.2.0
-  injectable_generator:
+  injectable_generator_micropackages:
     #  1.0.3
-    path: ../injectable_generator
+    path: ../injectable_generator_micropackages

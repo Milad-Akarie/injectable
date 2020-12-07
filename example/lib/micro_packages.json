@@ -1,8 +1,1 @@
-[
-  {
-    "moduleFileLocation": "package:example_micro_package/example_module.dart",
-    "moduleName": "exampleModule",
-    "moduleClassName": "ExampleModule",
-    "methodName": "registerModuleDependencies"
-  }
-]
+[{"moduleFileLocation":"package:example_micro_package/example_module.dart","moduleName":"exampleModule","moduleClassName":"ExampleModule","methodName":"registerModuleDependencies"}]

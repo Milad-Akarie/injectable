@@ -2,7 +2,7 @@
 
 import 'package:example/injector/Service.dart';
 import 'package:example/injector/injector.dart';
-import 'package:injectable/injectable.dart';
+import 'package:injectable_micropackages/injectable_micropackages.dart';
 
 @module
 abstract class RegisterModule {
