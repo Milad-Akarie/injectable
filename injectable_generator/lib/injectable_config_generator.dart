@@ -12,13 +12,20 @@ import 'utils.dart';
 
 class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   @override
-  dynamic generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) async {
-    final generateForDir = annotation.read('generateForDir').listValue.map((e) => e.toStringValue());
+  dynamic generateForAnnotatedElement(
+      Element element, ConstantReader annotation, BuildStep buildStep) async {
+    final generateForDir = annotation
+        .read('generateForDir')
+        .listValue
+        .map((e) => e.toStringValue());
 
     var targetFile = element.source.uri;
-    var preferRelativeImports = (annotation.peek("preferRelativeImports")?.boolValue ?? true == true);
+    var preferRelativeImports =
+        (annotation.peek("preferRelativeImports")?.boolValue ?? true == true);
 
-    final dirPattern = generateForDir.length > 1 ? '{${generateForDir.join(',')}}' : '${generateForDir.first}';
+    final dirPattern = generateForDir.length > 1
+        ? '{${generateForDir.join(',')}}'
+        : '${generateForDir.first}';
     final injectableConfigFiles = Glob("$dirPattern/**.injectable.json");
 
     final jsonData = <Map>[];
@@ -69,7 +76,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final validatedDeps = <DependencyConfig>[];
     for (var dep in deps) {
       var registered = validatedDeps.where((elm) =>
-      elm.type == dep.type && elm.instanceName == dep.instanceName);
+          elm.type == dep.type && elm.instanceName == dep.instanceName);
       if (registered.isEmpty) {
         validatedDeps.add(dep);
       } else {

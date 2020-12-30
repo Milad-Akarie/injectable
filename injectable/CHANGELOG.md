@@ -1,4 +1,8 @@
 # ChangeLog
+## [1.0.7]
+- Fix pre-resolved primitives naming issue #161
+- Fix some types in readme file
+- Fix environments is already registered issue.
 ## [1.0.5]
 - Add support for get_it ^5.0
 - Fix analyzer compatibility issues

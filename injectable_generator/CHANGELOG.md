@@ -1,4 +1,8 @@
 # ChangeLog
+## [1.0.7]
+- Fix pre-resolved primitives naming issue #161
+- Fix some types in readme file
+- Fix environments is already registered issue.
 ## [1.0.6]
 - Support build_runner v1.10.3
 ## [1.0.5]

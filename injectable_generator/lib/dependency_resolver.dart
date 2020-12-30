@@ -40,7 +40,8 @@ class DependencyResolver {
     if (returnType is ParameterizedType) {
       ClassElement element = returnType.element;
       for (int i = 0; i < element.typeParameters.length; i++) {
-        _typeArgsMap[element.typeParameters[i].name] = returnType.typeArguments[i];
+        _typeArgsMap[element.typeParameters[i].name] =
+            returnType.typeArguments[i];
       }
     }
 
@@ -110,9 +111,7 @@ class DependencyResolver {
         _dep.injectableType = InjectableType.lazySingleton;
       } else if (injectable.instanceOf(TypeChecker.fromRuntime(Singleton))) {
         _dep.injectableType = InjectableType.singleton;
-        _dep.signalsReady = injectable
-            .peek('signalsReady')
-            ?.boolValue;
+        _dep.signalsReady = injectable.peek('signalsReady')?.boolValue;
         _dep.dependsOn = injectable
             .peek('dependsOn')
             ?.listValue
@@ -120,9 +119,7 @@ class DependencyResolver {
                 (v) => v.toTypeValue().getDisplayString(withNullability: false))
             ?.toList();
       }
-      abstractType = injectable
-          .peek('as')
-          ?.typeValue;
+      abstractType = injectable.peek('as')?.typeValue;
       inlineEnv = injectable
           .peek('env')
           ?.listValue
@@ -133,7 +130,7 @@ class DependencyResolver {
     if (abstractType != null) {
       final abstractChecker = TypeChecker.fromStatic(abstractType);
       final abstractSubtype = clazz.allSupertypes.firstWhere(
-              (type) => abstractChecker.isExactly(type.element), orElse: () {
+          (type) => abstractChecker.isExactly(type.element), orElse: () {
         throwError(
           '[${clazz.name}] is not a subtype of [${abstractType.getDisplayString()}]',
           element: clazz,
@@ -175,11 +172,10 @@ class DependencyResolver {
       ];
 
       executableInitilizer = possibleFactories.firstWhere(
-              (m) => constructorChecker.hasAnnotationOfExact(m), orElse: () {
+          (m) => constructorChecker.hasAnnotationOfExact(m), orElse: () {
         throwIf(
           clazz.isAbstract,
-          '''[${clazz
-              .name}] is abstract and can not be registered directly! \nif it has a factory or a create method annotate it with @factoryMethod''',
+          '''[${clazz.name}] is abstract and can not be registered directly! \nif it has a factory or a create method annotate it with @factoryMethod''',
           element: clazz,
         );
         return clazz.unnamedConstructor;
@@ -192,15 +188,15 @@ class DependencyResolver {
       for (ParameterElement param in executableInitilizer.parameters) {
         final namedAnnotation = namedChecker.firstAnnotationOf(param);
         final instanceName = namedAnnotation
-            ?.getField('type')
-            ?.toTypeValue()
-            ?.getDisplayString(withNullability: false) ??
+                ?.getField('type')
+                ?.toTypeValue()
+                ?.getDisplayString(withNullability: false) ??
             namedAnnotation?.getField('name')?.toStringValue();
 
         var paramType = param.type;
         if (paramType is TypeParameterType) {
           paramType =
-          _typeArgsMap[paramType.getDisplayString(withNullability: false)];
+              _typeArgsMap[paramType.getDisplayString(withNullability: false)];
         }
 
         ImportableType resolvedType;
@@ -219,9 +215,7 @@ class DependencyResolver {
         ));
       }
       final factoryParamsCount =
-          _dep.dependencies
-              .where((d) => d.isFactoryParam)
-              .length;
+          _dep.dependencies.where((d) => d.isFactoryParam).length;
 
       throwIf(
         _dep.preResolve && factoryParamsCount != 0,

@@ -50,14 +50,18 @@ class ConfigCodeGenerator {
     final Set<DependencyConfig> sorted = {};
     _sortByDependents(allDeps.toSet(), sorted);
 
-    final modules = sorted.where((d) => d.isFromModule).map((d) => d.module).toSet();
+    final modules =
+        sorted.where((d) => d.isFromModule).map((d) => d.module).toSet();
 
-    final environments = sorted.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
+    final environments =
+        sorted.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
     if (environments.isNotEmpty) {
       _writeln("/// Environment names");
       environments.forEach((env) => _writeln("const _$env = '$env';"));
     }
-    final eagerDeps = sorted.where((d) => d.injectableType == InjectableType.singleton).toSet();
+    final eagerDeps = sorted
+        .where((d) => d.injectableType == InjectableType.singleton)
+        .toSet();
 
     final lazyDeps = sorted.difference(eagerDeps);
 
@@ -85,7 +89,7 @@ class ConfigCodeGenerator {
         "final gh = GetItHelper($getOrThis, environment, environmentFilter);");
     modules.forEach((m) {
       final constParam = _getAbstractModuleDeps(sorted, m)
-          .any((d) => d.dependencies.isNotEmpty)
+              .any((d) => d.dependencies.isNotEmpty)
           ? getOrThis
           : '';
       _writeln('final ${toCamelCase(m.name)} = _\$$m($constParam);');
@@ -130,31 +134,27 @@ class ConfigCodeGenerator {
     // prevent duplicated imports
     var uniqueImports = <ImportableType>{};
     imports.forEach((iType) {
-      if (uniqueImports
-          .where((e) => iType.import == e.import)
-          .isEmpty) {
+      if (uniqueImports.where((e) => iType.import == e.import).isEmpty) {
         uniqueImports.add(iType);
       }
     });
 
     var finalizedImports = (targetFile == null
-        ? uniqueImports.map((e) =>
-        e.copyWith(
-            import: ImportableTypeResolver.resolveAssetImports(e.import)))
-        : uniqueImports.map((e) =>
-        e.copyWith(
-            import: ImportableTypeResolver.relative(e.import, targetFile))))
+            ? uniqueImports.map((e) => e.copyWith(
+                import: ImportableTypeResolver.resolveAssetImports(e.import)))
+            : uniqueImports.map((e) => e.copyWith(
+                import: ImportableTypeResolver.relative(e.import, targetFile))))
         .toSet();
 
     var dartImports =
-    finalizedImports.where((e) => e.import.startsWith('dart')).toList();
+        finalizedImports.where((e) => e.import.startsWith('dart')).toList();
     if (dartImports.isNotEmpty) {
       _sortAndGenerate(dartImports);
       _writeln("");
     }
 
     var packageImports =
-    finalizedImports.where((e) => e.import.startsWith('package')).toList();
+        finalizedImports.where((e) => e.import.startsWith('package')).toList();
     if (packageImports.isNotEmpty) {
       _sortAndGenerate(packageImports);
       _writeln("");
@@ -187,11 +187,12 @@ class ConfigCodeGenerator {
     });
   }
 
-  void _sortByDependents(Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
+  void _sortByDependents(
+      Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
     for (var dep in unSorted) {
       if (dep.dependencies.every(
-            (iDep) =>
-        iDep.isFactoryParam ||
+        (iDep) =>
+            iDep.isFactoryParam ||
             sorted.map((d) => d.type).contains(iDep.type) ||
             !unSorted.map((d) => d.type).contains(iDep.type),
       )) {
@@ -207,7 +208,8 @@ class ConfigCodeGenerator {
     return deps.any((d) => d.isAsync && d.preResolve);
   }
 
-  void _generateModules(Set<ImportableType> modules, Set<DependencyConfig> deps) {
+  void _generateModules(
+      Set<ImportableType> modules, Set<DependencyConfig> deps) {
     modules.forEach((m) {
       _writeln('class _\$$m extends ${m.getDisplayName(prefixedTypes)}{');
       final moduleDeps = _getAbstractModuleDeps(deps, m).toList();
@@ -220,7 +222,8 @@ class ConfigCodeGenerator {
     });
   }
 
-  Iterable<DependencyConfig> _getAbstractModuleDeps(Set<DependencyConfig> deps, ImportableType m) {
+  Iterable<DependencyConfig> _getAbstractModuleDeps(
+      Set<DependencyConfig> deps, ImportableType m) {
     return deps.where((d) => d.isFromModule && d.module == m && d.isAbstract);
   }
 
