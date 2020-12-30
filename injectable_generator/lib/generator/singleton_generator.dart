@@ -24,7 +24,8 @@ class SingletonGenerator extends RegisterFuncGenerator {
       if (dep.dependsOn.isEmpty) {
         write("gh.singleton$typeArg($constructor");
       } else {
-        write('gh.singletonWithDependencies$typeArg(()=> $constructor, dependsOn: ${dep.dependsOn}');
+        write(
+            'gh.singletonWithDependencies$typeArg(()=> $constructor, dependsOn: ${dep.dependsOn}');
       }
     }
 

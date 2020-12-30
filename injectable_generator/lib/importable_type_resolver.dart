@@ -8,14 +8,19 @@ abstract class ImportableTypeResolver {
 
   ImportableType resolveType(DartType type);
 
-  static Set<ImportableType> resolvePrefixes(Set<ImportableType> importableTypes) {
+  static Set<ImportableType> resolvePrefixes(
+      Set<ImportableType> importableTypes) {
     var registeredImports = <ImportableType>{};
     var importsWithPrefixes = <String, ImportableType>{};
     for (var iType in importableTypes.where((e) => e?.import != null)) {
       if (registeredImports.any((e) => e.name == iType.name)) {
         var prefix = Uri.parse(iType.import).pathSegments.first;
-        var prefixesWithSameNameCount = importsWithPrefixes.values.where((e) => e.prefix.startsWith(prefix)).length;
-        prefix += (prefixesWithSameNameCount > 0 ? prefixesWithSameNameCount.toString() : '');
+        var prefixesWithSameNameCount = importsWithPrefixes.values
+            .where((e) => e.prefix.startsWith(prefix))
+            .length;
+        prefix += (prefixesWithSameNameCount > 0
+            ? prefixesWithSameNameCount.toString()
+            : '');
         importsWithPrefixes[iType.import] = iType.copyWith(prefix: prefix);
         registeredImports.add(iType);
       } else {
@@ -24,10 +29,9 @@ abstract class ImportableTypeResolver {
     }
     return importableTypes
         .where((e) => e.import != null)
-        .map((e) =>
-    importsWithPrefixes[e.import] == null
-        ? e
-        : e.copyWith(prefix: importsWithPrefixes[e.import].prefix))
+        .map((e) => importsWithPrefixes[e.import] == null
+            ? e
+            : e.copyWith(prefix: importsWithPrefixes[e.import].prefix))
         .toSet();
   }
 
@@ -35,8 +39,8 @@ abstract class ImportableTypeResolver {
     var fileUri = Uri.parse(path);
     var libName = to.pathSegments.first;
     if ((to.scheme == 'package' &&
-        fileUri.scheme == 'package' &&
-        fileUri.pathSegments.first == libName) ||
+            fileUri.scheme == 'package' &&
+            fileUri.pathSegments.first == libName) ||
         (to.scheme == 'asset' && fileUri.scheme != 'package')) {
       if (fileUri.path == to.path) {
         return fileUri.pathSegments.last;

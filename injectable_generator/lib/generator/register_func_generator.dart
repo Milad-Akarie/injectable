@@ -31,7 +31,10 @@ abstract class RegisterFuncGenerator {
     }
 
     final typeName = dep.typeImpl.getDisplayName(prefixedTypes);
-    final constructorName = dep.constructorName != null && dep.constructorName.isNotEmpty ? '.${dep.constructorName}' : '';
+    final constructorName =
+        dep.constructorName != null && dep.constructorName.isNotEmpty
+            ? '.${dep.constructorName}'
+            : '';
 
     return '${typeName}$constructorName($flattenedParams)';
   }
@@ -48,7 +51,7 @@ abstract class RegisterFuncGenerator {
       }
 
       final paramName =
-      (!injectedDep.isPositional) ? '${injectedDep.paramName}: ' : '';
+          (!injectedDep.isPositional) ? '${injectedDep.paramName}: ' : '';
 
       if (injectedDep.isFactoryParam) {
         return '$paramName${injectedDep.paramName}';
@@ -64,12 +67,10 @@ abstract class RegisterFuncGenerator {
   }
 
   String generateAwaitSetup(DependencyConfig dep, String constructBody) {
-    var awaitedVar = toCamelCase(dep.type.name);
+    var awaitedVar = 'resolved${capitalize(dep.type.name)}';
     if (registeredVarNames.contains(awaitedVar)) {
       awaitedVar =
-      '$awaitedVar${registeredVarNames
-          .where((i) => i.startsWith(awaitedVar))
-          .length}';
+          '$awaitedVar${registeredVarNames.where((i) => i.startsWith(awaitedVar)).length}';
     }
     registeredVarNames.add(awaitedVar);
 

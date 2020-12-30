@@ -24,7 +24,9 @@ abstract class EnvironmentFilter {
 class SimpleEnvironmentFilter extends EnvironmentFilter {
   final EnvironmentFilterFunc filter;
 
-  const SimpleEnvironmentFilter({this.filter, Set<String> environments = const {}}) : super(environments);
+  const SimpleEnvironmentFilter(
+      {this.filter, Set<String> environments = const {}})
+      : super(environments);
 
   @override
   bool canRegister(Set<String> depEnvironments) => filter(depEnvironments);
@@ -62,8 +64,6 @@ class NoEnvOrContainsAny extends EnvironmentFilter {
   @override
   bool canRegister(Set<String> depEnvironments) {
     return (depEnvironments.isEmpty) ||
-        depEnvironments
-            .intersection(environments)
-            .isNotEmpty;
+        depEnvironments.intersection(environments).isNotEmpty;
   }
 }
