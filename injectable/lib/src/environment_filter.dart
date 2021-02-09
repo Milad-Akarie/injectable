@@ -25,7 +25,7 @@ class SimpleEnvironmentFilter extends EnvironmentFilter {
   final EnvironmentFilterFunc filter;
 
   const SimpleEnvironmentFilter(
-      {this.filter, Set<String> environments = const {}})
+      {required this.filter, Set<String> environments = const {}})
       : super(environments);
 
   @override

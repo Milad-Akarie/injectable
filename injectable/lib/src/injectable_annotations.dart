@@ -40,14 +40,14 @@ class Injectable {
   /// The type to bind your implementation to,
   /// typically, an abstract class which is implemented by the
   /// annotated class.
-  final Type as;
+  final Type? as;
 
   /// an alternative way to pass env keys instead
   /// of annotating the element with @Environment
   final List<String> env;
 
   /// default constructor
-  const Injectable({this.as, this.env});
+  const Injectable({this.as, this.env = const <String>[]});
 }
 
 /// const instance of [Injectable]
@@ -59,18 +59,18 @@ const injectable = Injectable();
 class Singleton extends Injectable {
   /// passed to singlesReady property
   /// in registerSingleton function
-  final bool signalsReady;
+  final bool? signalsReady;
 
   /// passed to dependsOn property
   /// in registerSingleton function
-  final List<Type> dependsOn;
+  final List<Type>? dependsOn;
 
   /// default constructor
   const Singleton({
     this.signalsReady,
     this.dependsOn,
-    Type as,
-    List<String> env,
+    Type? as,
+    List<String> env = const <String>[],
   }) : super(as: as, env: env);
 }
 
@@ -83,8 +83,8 @@ const singleton = Singleton();
 class LazySingleton extends Injectable {
   /// default constructor
   const LazySingleton({
-    Type as,
-    List<String> env,
+    Type? as,
+    List<String> env = const <String>[],
   }) : super(as: as, env: env);
 }
 
@@ -97,7 +97,7 @@ const lazySingleton = LazySingleton();
 /// named injected dependencies in constructors
 class Named {
   /// The name in which an instance is registered
-  final String name;
+  final String? name;
 
   /// default constructor
   const Named(this.name) : type = null;
@@ -105,7 +105,7 @@ class Named {
   /// instead of providing a literal name
   /// you can pass a type, and its name will be extracted
   /// in during generation
-  final Type type;
+  final Type? type;
 
   /// A named constrictor to extract name for type
   const Named.from(this.type) : name = null;
