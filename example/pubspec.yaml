@@ -7,8 +7,7 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  get_it: 5.0.0
-  mockito: ^4.1.1
+  get_it: ^6.0.0-nullsafety
   injectable:
     # 1.0.3
     path: ../injectable
@@ -20,3 +19,9 @@ dev_dependencies:
   injectable_generator:
     #  1.0.3
     path: ../injectable_generator
+
+dependency_overrides:
+  # injectable_generator always depends on the hosted version of injectable
+  # however we want to depend on the local version in this example app.
+  injectable:
+    path: ../injectable
