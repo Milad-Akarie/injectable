@@ -15,7 +15,8 @@ class GetItHelper {
   /// creates a new instance of GetItHelper
   GetItHelper(this.getIt,
       [this.environment, EnvironmentFilter? environmentFilter])
-      : assert(environmentFilter == null || environment == null),
+      : assert(getIt != null),
+        assert(environmentFilter == null || environment == null),
         _environmentFilter =
             environmentFilter ?? NoEnvOrContains(environment!) {
     // register current Environments as lazy singleton
