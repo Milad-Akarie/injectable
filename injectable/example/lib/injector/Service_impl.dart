@@ -1,7 +1,7 @@
-import 'package:example/injector/injector.dart';
 import 'package:injectable/injectable.dart';
 
 import 'Service.dart';
+import 'injector.dart';
 
 @platformMobile
 @Injectable(as: Service)

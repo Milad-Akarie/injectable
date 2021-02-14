@@ -4,7 +4,7 @@ version: 1.0.7
 homepage: https://github.com/Milad-Akarie/injectable
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.10.0 <3.0.0"
 
 dependencies:
   get_it: ">=4.0.0 <6.0.0"

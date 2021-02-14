@@ -1,7 +1,10 @@
 // holds extracted data from annotation & element
 // to be used later when generating the register function
 
+import 'package:code_builder/code_builder.dart';
 import 'package:collection/collection.dart' show ListEquality;
+
+import 'importable_type_resolver.dart';
 
 class DependencyConfig {
   ImportableType type;
@@ -97,6 +100,10 @@ class DependencyConfig {
 
   bool get registerAsInstance => isAsync && preResolve;
 
+  List<InjectedDependency> get positionalDeps => dependencies.where((d) => d.isPositional).toList();
+
+  List<InjectedDependency> get namedDeps => dependencies.where((d) => !d.isPositional).toList();
+
   Map<String, dynamic> toJson() => {
         if (type != null) 'type': type.toJson(),
         if (typeImpl != null) 'typeImpl': typeImpl.toJson(),
@@ -154,10 +161,17 @@ class InjectedDependency {
 class ImportableType {
   String import;
   String name;
+  bool isNullable = false;
   List<ImportableType> typeArguments;
   String prefix;
 
-  ImportableType({this.name, this.import, this.typeArguments, this.prefix});
+  ImportableType({
+    this.name,
+    this.import,
+    this.typeArguments,
+    this.prefix,
+    this.isNullable,
+  });
 
   List<ImportableType> get fold {
     final list = [this];
@@ -180,28 +194,46 @@ class ImportableType {
     return "$namePrefix$name$typeArgs";
   }
 
-  String getDisplayName(Set<ImportableType> prefixedTypes,
-      {bool includeTypeArgs = true}) {
-    return prefixedTypes
-            ?.lookup(this)
-            ?.fullName(includeTypeArgs: includeTypeArgs) ??
+  String getDisplayName(Set<ImportableType> prefixedTypes, {bool includeTypeArgs = true}) {
+    return prefixedTypes?.lookup(this)?.fullName(includeTypeArgs: includeTypeArgs) ??
         fullName(includeTypeArgs: includeTypeArgs);
   }
 
   String get importName => "'$import' ${prefix != null ? 'as $prefix' : ''}";
 
-  ImportableType copyWith({String import, String prefix}) {
+  ImportableType copyWith({String import, String prefix, bool isNullable}) {
     return ImportableType(
       import: import ?? this.import,
       prefix: prefix ?? this.prefix,
+      isNullable: isNullable ?? this.isNullable,
       name: this.name,
       typeArguments: this.typeArguments,
     );
   }
 
+  Reference refer([Uri targetFile]) {
+    final relativeImport = targetFile == null
+        ? ImportableTypeResolver.resolveAssetImports(import)
+        : ImportableTypeResolver.relative(import, targetFile);
+
+    return TypeReference((b) {
+      b
+        ..symbol = name
+        ..url = relativeImport
+        ..isNullable = isNullable;
+      if (isParametrized) {
+        b.types.addAll(typeArguments?.map((e) => e.refer(targetFile)));
+      }
+      return b;
+    });
+  }
+
+  bool get isParametrized => typeArguments?.isNotEmpty == true;
+
   ImportableType.fromJson(Map<String, dynamic> json) {
     import = json['import'];
     name = json['name'];
+    isNullable = json['isNullable'];
     if (json['typeArguments'] != null) {
       typeArguments = [];
       json['typeArguments'].forEach((v) {
@@ -219,16 +251,21 @@ class ImportableType {
       other is ImportableType &&
           runtimeType == other.runtimeType &&
           identity == other.identity &&
+          isNullable == other.isNullable &&
           ListEquality().equals(typeArguments, other.typeArguments);
 
   @override
-  int get hashCode =>
-      import.hashCode ^ name.hashCode ^ ListEquality().hash(typeArguments);
+  int get hashCode => import.hashCode ^ isNullable.hashCode ^ name.hashCode ^ ListEquality().hash(typeArguments);
 
   Map<String, dynamic> toJson() => {
-        "name": name,
-        "import": import,
-        if (typeArguments?.isNotEmpty == true)
-          "typeArguments": typeArguments.map((v) => v.toJson()).toList(),
+        'name': name,
+        'import': import,
+        'isNullable': isNullable,
+        if (isParametrized)
+          "typeArguments": typeArguments
+              .map(
+                (v) => v.toJson(),
+              )
+              .toList(),
       };
 }
