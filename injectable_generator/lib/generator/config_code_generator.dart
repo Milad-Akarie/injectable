@@ -130,7 +130,7 @@ class ConfigCodeGenerator {
     });
 
     var finalizedImports = (targetFile == null
-            ? uniqueImports.map((e) => e.copyWith(import: ImportableTypeResolver.resolveAssetImports(e.import)))
+            ? uniqueImports.map((e) => e.copyWith(import: ImportableTypeResolver.resolveAssetImport(e.import)))
             : uniqueImports.map((e) => e.copyWith(import: ImportableTypeResolver.relative(e.import, targetFile))))
         .toSet();
 

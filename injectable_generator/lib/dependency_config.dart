@@ -100,9 +100,21 @@ class DependencyConfig {
 
   bool get registerAsInstance => isAsync && preResolve;
 
-  List<InjectedDependency> get positionalDeps => dependencies.where((d) => d.isPositional).toList();
+  List<InjectedDependency> get positionalDeps =>
+      dependencies
+          ?.where(
+            (d) => d.isPositional,
+          )
+          ?.toList() ??
+      const [];
 
-  List<InjectedDependency> get namedDeps => dependencies.where((d) => !d.isPositional).toList();
+  List<InjectedDependency> get namedDeps =>
+      dependencies
+          ?.where(
+            (d) => !d.isPositional,
+          )
+          ?.toList() ??
+      const [];
 
   Map<String, dynamic> toJson() => {
         if (type != null) 'type': type.toJson(),
@@ -212,10 +224,11 @@ class ImportableType {
   }
 
   Reference refer([Uri targetFile]) {
-    final relativeImport = targetFile == null
-        ? ImportableTypeResolver.resolveAssetImports(import)
+    final relativeImport = import;
+    targetFile == null
+        ? ImportableTypeResolver.resolveAssetImport(import)
         : ImportableTypeResolver.relative(import, targetFile);
-
+    print(ImportableTypeResolver.relative(import, targetFile));
     return TypeReference((b) {
       b
         ..symbol = name

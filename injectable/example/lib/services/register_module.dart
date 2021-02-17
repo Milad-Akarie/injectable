@@ -17,12 +17,19 @@ abstract class RegisterModule {
   @prod
   @preResolve
   Future<Service> get resolvedService => RepoImpl.asyncService;
+
+  @dev
+  RepoImpl baseRepo() => RepoImpl.from(null);
+
+  @platformMobile
+  RepoImpl baseRepoWithParam(Service service) => RepoImpl.from(service);
 }
 
 abstract class Repo {}
 
 class RepoImpl extends Repo {
-  RepoImpl(Service service);
+  @factoryMethod
+  RepoImpl.from(Service service);
 
   static Future<int> get asyncValue async {
     await Future.delayed(Duration(seconds: 2));

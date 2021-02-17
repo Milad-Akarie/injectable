@@ -1,5 +1,8 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:injectable_generator/generator/generator_utils.dart';
+import 'package:injectable_generator/utils.dart';
+import 'package:meta/meta.dart';
 
 import '../dependency_config.dart';
 import '../injectable_types.dart';
@@ -21,18 +24,28 @@ String generateLibrary({
 
   // sort dependencies by their register order
   final Set<DependencyConfig> sorted = {};
-  _sortByDependents(allDeps.toSet(), sorted);
+  GeneratorUtils.sortByDependents(allDeps.toSet(), sorted);
 
   // if true use an awaited initializer
-  final hasAsync = _hasAsync(sorted);
+  final hasPreResolvedDeps = GeneratorUtils.hasPreResolvedDeps(sorted);
 
   // eager singleton instances are registered at the end
-  final eagerDeps = sorted.where((d) => d.injectableType == InjectableType.singleton).toSet();
+  final eagerDeps = sorted
+      .where(
+        (d) => d.injectableType == InjectableType.singleton,
+      )
+      .toSet();
 
   final lazyDeps = sorted.difference(eagerDeps);
-  // final gh = GetItHelper(this, environment, environmentFilter);
   // all environment keys used
-  final environments = sorted.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
+  final environments = sorted.fold(
+    <String>{},
+    (prev, elm) => prev..addAll(elm.environments),
+  );
+
+  // all register modules
+  final modules = sorted.where((d) => d.isFromModule).map((d) => d.module).toSet();
+
   final library = Library(
     (b) => b
       ..body.addAll(
@@ -41,7 +54,7 @@ String generateLibrary({
                 (b) => b
                   ..name = '_$env'
                   ..type = refer('String')
-                  ..assignment = literal(env).code
+                  ..assignment = literalString(env).code
                   ..modifier = FieldModifier.constant,
               )),
           Extension(
@@ -50,13 +63,13 @@ String generateLibrary({
               ..on = getItRefer
               ..methods.add(Method(
                 (b) => b
-                  ..returns = hasAsync
+                  ..returns = hasPreResolvedDeps
                       ? TypeReference((b) => b
                         ..symbol = 'Future'
                         ..types.add(getItRefer))
                       : getItRefer
                   ..name = initializerName
-                  ..modifier = hasAsync ? MethodModifier.async : null
+                  ..modifier = hasPreResolvedDeps ? MethodModifier.async : null
                   ..optionalParameters.addAll([
                     Parameter((b) => b
                       ..named = true
@@ -79,11 +92,23 @@ String generateLibrary({
                           )
                           .assignFinal('gh')
                           .statement,
-                      ...lazyDeps.map((d) => _factory(d, targetFile)),
+                      ...modules.map((module) => refer('_\$${module.name}')
+                          .call([refer('this')])
+                          .assignFinal(toCamelCase(module.name))
+                          .statement),
+                      ...lazyDeps.map((dep) => _buildLazyRegisterFun(dep, targetFile)),
                       refer('this').returned.statement,
                     ]),
                   ),
               )),
+          ),
+          // build modules
+          ...modules.map(
+            (module) => _buildModule(
+              module,
+              sorted.where((e) => e.module == module),
+              targetFile,
+            ),
           )
         ],
       ),
@@ -95,52 +120,140 @@ String generateLibrary({
   return DartFormatter().format(library.accept(emitter).toString());
 }
 
-Code _factory(DependencyConfig dep, [Uri targetFile]) {
-  return gh.property('factory').call([
+Class _buildModule(ImportableType module, Iterable<DependencyConfig> deps, [Uri targetFile]) {
+  final abstractDeps = deps.where((d) => d.isAbstract);
+  return Class((clazz) {
+    clazz
+      ..name = '_\$${module.name}'
+      ..extend = module.refer(targetFile);
+    // check weather we should have a getIt field inside of our module
+    if (abstractDeps.any((d) => d.dependencies?.isNotEmpty == true)) {
+      clazz.fields.add(Field(
+        (b) => b
+          ..name = '_getIt'
+          ..type = getItRefer
+          ..modifier = FieldModifier.final$,
+      ));
+      clazz.constructors.add(
+        Constructor(
+          (b) => b
+            ..requiredParameters.add(
+              Parameter(
+                (b) => b
+                  ..name = '_getIt'
+                  ..toThis = true,
+              ),
+            ),
+        ),
+      );
+    }
+    clazz.methods.addAll(abstractDeps.map(
+      (dep) => Method(
+        (b) => b
+          ..annotations.add(refer('override'))
+          ..name = dep.initializerName
+          ..returns = dep.typeImpl.refer(targetFile)
+          ..type = dep.isModuleMethod ? null : MethodType.getter
+          ..body = _buildInstance(dep, targetFile, getReferName: '_getIt'),
+      ),
+    ));
+    return clazz;
+  });
+}
+
+Code _buildLazyRegisterFun(
+  DependencyConfig dep, [
+  Uri targetFile,
+]) {
+  var funcReferName;
+  if (dep.injectableType == InjectableType.factory) {
+    funcReferName = dep.isAsync ? 'factoryAsync' : 'factory';
+  } else if (dep.injectableType == InjectableType.lazySingleton) {
+    funcReferName = dep.isAsync ? 'lazySingletonAsync' : 'lazySingleton';
+  }
+  throwIf(funcReferName == null, 'Injectable type is not supported');
+
+  final registerExpression = gh.property(funcReferName).call([
     Method(
       (b) => b
         ..lambda = true
-        ..body = _buildInstance(dep, targetFile),
+        ..body = dep.isFromModule ? _buildInstanceForModule(dep, targetFile) : _buildInstance(dep, targetFile),
     ).closure
-  ], {}, [
+  ], {
+    if (dep.environments?.isNotEmpty == true)
+      'registerFor': literalSet(
+        dep.environments.map((e) => refer('_$e')),
+      ),
+    if (dep.preResolve == true) 'preResolve': literalBool(true)
+  }, [
     dep.type.refer(targetFile)
-  ]).statement;
+  ]);
+  return dep.preResolve ? registerExpression.awaited.statement : registerExpression.statement;
 }
 
-Code _buildInstance(DependencyConfig dep, Uri targetFile) {
-  return dep.typeImpl
-      .refer(targetFile)
-      .newInstance(
-          dep.positionalDeps.map(
-            (iDep) => get.call([], {}, [iDep.type.refer(targetFile)]),
-          ),
-          Map.fromEntries(
-            dep.namedDeps.map(
-              (iDep) => MapEntry(
-                iDep.name,
-                get.call([], {}, [iDep.type.refer(targetFile)]),
-              ),
+Code _buildInstance(
+  DependencyConfig dep,
+  Uri targetFile, {
+  String getReferName = 'get',
+}) {
+  final positionalParams = dep.positionalDeps.map(
+    (iDep) => _buildResolver(iDep, targetFile, name: getReferName),
+  );
+
+  final namedParams = Map.fromEntries(
+    dep.namedDeps.map(
+      (iDep) => MapEntry(
+        iDep.name,
+        _buildResolver(iDep, targetFile, name: getReferName),
+      ),
+    ),
+  );
+
+  final ref = dep.typeImpl.refer(targetFile);
+  if (dep.constructorName?.isNotEmpty == true) {
+    return ref
+        .newInstanceNamed(
+          dep.constructorName,
+          positionalParams,
+          namedParams,
+        )
+        .code;
+  } else {
+    return ref.newInstance(positionalParams, namedParams).code;
+  }
+}
+
+Code _buildInstanceForModule(DependencyConfig dep, Uri targetFile) {
+  if (!dep.isModuleMethod) {
+    return refer(toCamelCase(dep.module.name)).property(dep.initializerName).code;
+  }
+
+  return refer(toCamelCase(dep.module.name))
+      .newInstanceNamed(
+        dep.initializerName,
+        dep.positionalDeps.map(
+          (iDep) => _buildResolver(iDep, targetFile, name: 'get'),
+        ),
+        Map.fromEntries(
+          dep.namedDeps.map(
+            (iDep) => MapEntry(
+              iDep.name,
+              _buildResolver(iDep, targetFile, name: 'get'),
             ),
-          ))
+          ),
+        ),
+      )
       .code;
 }
 
-void _sortByDependents(Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
-  for (var dep in unSorted) {
-    if (dep.dependencies.every(
-      (iDep) =>
-          iDep.isFactoryParam ||
-          sorted.map((d) => d.type).contains(iDep.type) ||
-          !unSorted.map((d) => d.type).contains(iDep.type),
-    )) {
-      sorted.add(dep);
-    }
-  }
-  if (unSorted.isNotEmpty) {
-    _sortByDependents(unSorted.difference(sorted), sorted);
-  }
-}
-
-bool _hasAsync(Set<DependencyConfig> deps) {
-  return deps.any((d) => d.isAsync && d.preResolve);
+Expression _buildResolver(
+  InjectedDependency iDep,
+  Uri targetFile, {
+  @required String name,
+}) {
+  return refer(name).call([], {
+    if (iDep.name != null) 'instanceName': literalString(iDep.name),
+  }, [
+    iDep.type.refer(targetFile),
+  ]);
 }

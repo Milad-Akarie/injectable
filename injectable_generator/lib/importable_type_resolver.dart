@@ -31,6 +31,9 @@ abstract class ImportableTypeResolver {
   }
 
   static String relative(String path, Uri to) {
+    if (path == null || to == null) {
+      return null;
+    }
     var fileUri = Uri.parse(path);
     var libName = to.pathSegments.first;
     if ((to.scheme == 'package' && fileUri.scheme == 'package' && fileUri.pathSegments.first == libName) ||
@@ -45,7 +48,10 @@ abstract class ImportableTypeResolver {
     }
   }
 
-  static String resolveAssetImports(String path) {
+  static String resolveAssetImport(String path) {
+    if (path == null) {
+      return null;
+    }
     var fileUri = Uri.parse(path);
     if (fileUri.scheme == "asset") {
       return "/${fileUri.path}";

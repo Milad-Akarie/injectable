@@ -25,6 +25,7 @@ extension GetItInjectableX on GetIt {
     EnvironmentFilter environmentFilter,
   }) async {
     final gh = GetItHelper(this, environment, environmentFilter);
+
     final registerModule = _$RegisterModule(this);
     // final resolvedService = await registerModule.resolvedService;
     // gh.factory<Service>(() => resolvedService, registerFor: {_prod});

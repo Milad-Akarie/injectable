@@ -13,7 +13,7 @@ class MobileService extends Service {
 }
 
 @platformWeb
-@Injectable(as: Service)
+@LazySingleton(as: Service)
 class WebService extends Service {
   @override
   final Set<String> environments;
