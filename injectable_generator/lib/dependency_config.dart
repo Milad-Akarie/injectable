@@ -17,7 +17,7 @@ class DependencyConfig {
   String initializerName;
   String constructorName;
   bool isAsync;
-  List<String> dependsOn;
+  List<ImportableType> dependsOn;
   bool preResolve;
   bool isAbstract = false;
   bool isModuleMethod = false;
@@ -80,16 +80,20 @@ class DependencyConfig {
     initializerName = json['initializerName'] ?? '';
     constructorName = json['constructorName'] ?? '';
     isAsync = json['isAsync'] ?? false;
-    preResolve = json['preResolve'] ?? preResolve;
+    preResolve = json['preResolve'] ?? false;
 
-    dependsOn = json['dependsOn']?.cast<String>() ?? [];
+    if (json['dependsOn'] != null) {
+      dependsOn = [];
+      json['dependsOn'].forEach((v) {
+        dependsOn.add(ImportableType.fromJson(v));
+      });
+    }
     if (json['dependencies'] != null) {
       dependencies = [];
       json['dependencies'].forEach((v) {
         dependencies.add(InjectedDependency.fromJson(v));
       });
     }
-
     injectableType = json['injectableType'];
     environments = json['environments']?.cast<String>() ?? [];
     isAbstract = json['isAbstract'] ?? false;
@@ -100,32 +104,20 @@ class DependencyConfig {
 
   bool get registerAsInstance => isAsync && preResolve;
 
-  List<InjectedDependency> get positionalDeps =>
-      dependencies
-          ?.where(
-            (d) => d.isPositional,
-          )
-          ?.toList() ??
-      const [];
+  List<InjectedDependency> get positionalDeps => dependencies?.where((d) => d.isPositional)?.toList() ?? const [];
 
-  List<InjectedDependency> get namedDeps =>
-      dependencies
-          ?.where(
-            (d) => !d.isPositional,
-          )
-          ?.toList() ??
-      const [];
+  List<InjectedDependency> get namedDeps => dependencies?.where((d) => !d.isPositional)?.toList() ?? const [];
 
   Map<String, dynamic> toJson() => {
-        if (type != null) 'type': type.toJson(),
-        if (typeImpl != null) 'typeImpl': typeImpl.toJson(),
-        if (module != null) 'module': module.toJson(),
+        'type': type?.toJson(),
+        'typeImpl': typeImpl?.toJson(),
+        'module': module?.toJson(),
         "isAsync": isAsync,
         "preResolve": preResolve,
         "injectableType": injectableType,
-        "dependsOn": dependsOn,
-        "environments": environments,
-        "dependencies": dependencies.map((v) => v.toJson()).toList(),
+        if (dependsOn != null) "dependsOn": dependsOn.map((v) => v.toJson()).toList(),
+        if (environments != null) "environments": environments,
+        if (dependencies != null) "dependencies": dependencies.map((v) => v.toJson()).toList(),
         if (instanceName != null) "instanceName": instanceName,
         if (signalsReady != null) "signalsReady": signalsReady,
         if (initializerName != null) "initializerName": initializerName,
@@ -228,7 +220,6 @@ class ImportableType {
     targetFile == null
         ? ImportableTypeResolver.resolveAssetImport(import)
         : ImportableTypeResolver.relative(import, targetFile);
-    print(ImportableTypeResolver.relative(import, targetFile));
     return TypeReference((b) {
       b
         ..symbol = name

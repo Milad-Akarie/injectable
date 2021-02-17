@@ -97,6 +97,7 @@ String generateLibrary({
                           .assignFinal(toCamelCase(module.name))
                           .statement),
                       ...lazyDeps.map((dep) => _buildLazyRegisterFun(dep, targetFile)),
+                      ...eagerDeps.map((dep) => _buildSingletonRegisterFun(dep, targetFile)),
                       refer('this').returned.statement,
                     ]),
                   ),
@@ -154,7 +155,7 @@ Class _buildModule(ImportableType module, Iterable<DependencyConfig> deps, [Uri 
           ..name = dep.initializerName
           ..returns = dep.typeImpl.refer(targetFile)
           ..type = dep.isModuleMethod ? null : MethodType.getter
-          ..body = _buildInstance(dep, targetFile, getReferName: '_getIt'),
+          ..body = _buildInstance(dep, targetFile, getReferName: '_getIt').code,
       ),
     ));
     return clazz;
@@ -177,9 +178,11 @@ Code _buildLazyRegisterFun(
     Method(
       (b) => b
         ..lambda = true
-        ..body = dep.isFromModule ? _buildInstanceForModule(dep, targetFile) : _buildInstance(dep, targetFile),
+        ..body =
+            dep.isFromModule ? _buildInstanceForModule(dep, targetFile).code : _buildInstance(dep, targetFile).code,
     ).closure
   ], {
+    if (dep.instanceName != null) 'instanceName': literalString(dep.instanceName),
     if (dep.environments?.isNotEmpty == true)
       'registerFor': literalSet(
         dep.environments.map((e) => refer('_$e')),
@@ -191,7 +194,49 @@ Code _buildLazyRegisterFun(
   return dep.preResolve ? registerExpression.awaited.statement : registerExpression.statement;
 }
 
-Code _buildInstance(
+Code _buildSingletonRegisterFun(
+  DependencyConfig dep, [
+  Uri targetFile,
+]) {
+  var funcReferName;
+  var asFactory = true;
+  if (dep.isAsync) {
+    funcReferName = 'singletonAsync';
+  } else if (dep.dependsOn?.isNotEmpty == true) {
+    funcReferName = 'singletonWithDependencies';
+  } else {
+    asFactory = false;
+    funcReferName = 'singleton';
+  }
+
+  final instanceBuilder = dep.isFromModule ? _buildInstanceForModule(dep, targetFile) : _buildInstance(dep, targetFile);
+  final registerExpression = gh.property(funcReferName).call([
+    asFactory
+        ? Method((b) => b
+          ..lambda = true
+          ..body = instanceBuilder.code).closure
+        : instanceBuilder
+  ], {
+    if (dep.instanceName != null) 'instanceName': literalString(dep.instanceName),
+    if (dep.dependsOn?.isNotEmpty == true)
+      'dependsOn': literalList(
+        dep.dependsOn.map(
+          (e) => e.refer(targetFile),
+        ),
+      ),
+    if (dep.environments?.isNotEmpty == true)
+      'registerFor': literalSet(
+        dep.environments.map((e) => refer('_$e')),
+      ),
+    if (dep.signalsReady != null) 'signalsReady': literalBool(dep.signalsReady),
+    if (dep.preResolve == true) 'preResolve': literalBool(true)
+  }, [
+    dep.type.refer(targetFile)
+  ]);
+  return dep.preResolve ? registerExpression.awaited.statement : registerExpression.statement;
+}
+
+Expression _buildInstance(
   DependencyConfig dep,
   Uri targetFile, {
   String getReferName = 'get',
@@ -217,15 +262,17 @@ Code _buildInstance(
           positionalParams,
           namedParams,
         )
-        .code;
+        .expression;
   } else {
-    return ref.newInstance(positionalParams, namedParams).code;
+    return ref.newInstance(positionalParams, namedParams).expression;
   }
 }
 
-Code _buildInstanceForModule(DependencyConfig dep, Uri targetFile) {
+Expression _buildInstanceForModule(DependencyConfig dep, Uri targetFile) {
   if (!dep.isModuleMethod) {
-    return refer(toCamelCase(dep.module.name)).property(dep.initializerName).code;
+    return refer(
+      toCamelCase(dep.module.name),
+    ).property(dep.initializerName).expression;
   }
 
   return refer(toCamelCase(dep.module.name))
@@ -243,7 +290,7 @@ Code _buildInstanceForModule(DependencyConfig dep, Uri targetFile) {
           ),
         ),
       )
-      .code;
+      .expression;
 }
 
 Expression _buildResolver(

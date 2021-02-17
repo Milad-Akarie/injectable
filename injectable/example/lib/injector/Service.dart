@@ -1,3 +1,4 @@
+import 'package:example/services/register_module.dart';
 import 'package:injectable/injectable.dart';
 
 abstract class Service {
@@ -20,10 +21,19 @@ class AsyncFactoryInstance {
 
 @dev
 @preResolve
-@singleton
+@Singleton(dependsOn: [Service, String], signalsReady: false)
 class AsyncLazySingletonInstance {
   @factoryMethod
   static Future<AsyncLazySingletonInstance> init() {
     return Future.value(AsyncLazySingletonInstance());
   }
+}
+
+@Singleton(dependsOn: [Repo])
+class SingletonInstance {
+  SingletonInstance(Service service);
+  // @factoryMethod
+  // static Future<AsyncLazySingletonInstance> init() {
+  //   return Future.value(AsyncLazySingletonInstance());
+  // }
 }
