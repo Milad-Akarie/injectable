@@ -15,11 +15,10 @@ abstract class RegisterModule {
   Future<int> get asyncValue => RepoImpl.asyncValue;
 
   @prod
-  @preResolve
-  Future<Service> get resolvedService => RepoImpl.asyncService;
+  Future<Service> resolvedService(@factoryParam String param) => RepoImpl.asyncService;
 
   @dev
-  RepoImpl baseRepo() => RepoImpl.from(null);
+  RepoImpl baseRepo(@factoryParam String param) => RepoImpl.from(null);
 
   @platformMobile
   RepoImpl baseRepoWithParam(Service service) => RepoImpl.from(service);

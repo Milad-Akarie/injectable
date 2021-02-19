@@ -1,5 +1,5 @@
 import 'package:example/injector/Service.dart';
-import 'package:example/services/register_module.dart';
+import 'package:example/module/register_module.dart';
 import 'package:injectable/injectable.dart';
 
 import '../lib/injector/injector.dart';

@@ -8,7 +8,6 @@ import 'package:injectable_generator/generator/library_builder.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'dependency_config.dart';
-import 'generator/config_code_generator.dart';
 import 'utils.dart';
 
 class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
@@ -32,7 +31,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     jsonData.forEach((json) => deps.add(DependencyConfig.fromJson(json)));
 
     final initializerName = annotation.read('initializerName').stringValue;
-    // final asExtension = annotation.read('asExtension').boolValue;
+    final asExtension = annotation.read('asExtension').boolValue;
 
     _reportMissingDependencies(deps, targetFile);
     _validateDuplicateDependencies(deps);
@@ -40,20 +39,15 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       allDeps: deps,
       targetFile: preferRelativeImports ? targetFile : null,
       initializerName: initializerName,
+      asExtension: asExtension,
     );
-    // return ConfigCodeGenerator(
-    //   deps,
-    //   targetFile: preferRelativeImports ? targetFile : null,
-    //   initializerName: initializerName,
-    //   asExtension: asExtension,
-    // ).generate();
   }
 
   void _reportMissingDependencies(List<DependencyConfig> deps, Uri targetFile) {
     final messages = [];
     final registeredDeps = deps.map((dep) => dep.type).toSet();
     deps.forEach((dep) {
-      dep.dependencies.where((d) => !d.isFactoryParam && d.name != kEnvironmentsName).forEach((iDep) {
+      dep.dependencies.where((d) => !d.isFactoryParam && d.instanceName != kEnvironmentsName).forEach((iDep) {
         if (!registeredDeps.contains(iDep.type)) {
           messages.add(
               "[${dep.typeImpl}] depends on unregistered type [${iDep.type}] ${iDep.type.import == null ? '' : 'from ${iDep.type.import}'}");
@@ -62,7 +56,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     });
 
     if (messages.isNotEmpty) {
-      messages.add('\nDid you forget to annotate the above classe(s) or their implementation with @injectable?');
+      messages.add('\nDid you forget to annotate the above class(s) or their implementation with @injectable?');
       printBoxed(messages.join('\n'), header: "Missing dependencies in ${targetFile.path}\n");
     }
   }

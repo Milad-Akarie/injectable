@@ -45,23 +45,6 @@ class DependencyConfig {
     dependsOn ??= [];
   }
 
-  Set<ImportableType> get allImportableTypes {
-    var importableTypes = <ImportableType>{};
-    if (type.fold != null) {
-      importableTypes.addAll(type.fold);
-    }
-    if (typeImpl != null) {
-      importableTypes.addAll(typeImpl.fold);
-    }
-    if (module != null) {
-      importableTypes.addAll(module.fold);
-    }
-    if (dependencies?.isNotEmpty == true) {
-      dependencies.forEach((dep) => importableTypes.addAll(dep.type.fold));
-    }
-    return importableTypes;
-  }
-
   DependencyConfig.fromJson(Map<String, dynamic> json) {
     if (json['type'] != null) {
       type = ImportableType.fromJson(json['type']);
@@ -102,8 +85,6 @@ class DependencyConfig {
 
   bool get isFromModule => module != null;
 
-  bool get registerAsInstance => isAsync && preResolve;
-
   List<InjectedDependency> get positionalDeps => dependencies?.where((d) => d.isPositional)?.toList() ?? const [];
 
   List<InjectedDependency> get namedDeps => dependencies?.where((d) => !d.isPositional)?.toList() ?? const [];
@@ -129,22 +110,21 @@ class DependencyConfig {
 
 class InjectedDependency {
   ImportableType type;
-  String name;
+  String instanceName;
   String paramName;
   bool isFactoryParam;
   bool isPositional;
 
   InjectedDependency({
     this.type,
-    this.name,
+    this.instanceName,
     this.paramName,
     this.isFactoryParam,
     this.isPositional,
   });
 
   InjectedDependency.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-
+    instanceName = json['instanceName'];
     if (json['type'] != null) {
       type = ImportableType.fromJson(json['type']);
     }
@@ -157,7 +137,7 @@ class InjectedDependency {
         "isFactoryParam": isFactoryParam,
         "isPositional": isPositional,
         if (type != null) 'type': type.toJson(),
-        if (name != null) "name": name,
+        if (instanceName != null) "instanceName": instanceName,
         if (paramName != null) "paramName": paramName,
       };
 }
@@ -177,47 +157,10 @@ class ImportableType {
     this.isNullable,
   });
 
-  List<ImportableType> get fold {
-    final list = [this];
-    typeArguments?.forEach((iType) {
-      list.addAll(iType.fold);
-    });
-    return list;
-  }
-
   String get identity => "$import#$name";
 
-  String fullName({bool includeTypeArgs = true, bool includePrefix = true}) {
-    var namePrefix = includePrefix && prefix != null ? '$prefix.' : '';
-    var typeArgs = includeTypeArgs && (typeArguments?.isNotEmpty == true)
-        ? "<${typeArguments.map((e) => e.fullName(
-              includePrefix: includePrefix,
-              includeTypeArgs: includePrefix,
-            )).join(',')}>"
-        : '';
-    return "$namePrefix$name$typeArgs";
-  }
-
-  String getDisplayName(Set<ImportableType> prefixedTypes, {bool includeTypeArgs = true}) {
-    return prefixedTypes?.lookup(this)?.fullName(includeTypeArgs: includeTypeArgs) ??
-        fullName(includeTypeArgs: includeTypeArgs);
-  }
-
-  String get importName => "'$import' ${prefix != null ? 'as $prefix' : ''}";
-
-  ImportableType copyWith({String import, String prefix, bool isNullable}) {
-    return ImportableType(
-      import: import ?? this.import,
-      prefix: prefix ?? this.prefix,
-      isNullable: isNullable ?? this.isNullable,
-      name: this.name,
-      typeArguments: this.typeArguments,
-    );
-  }
-
   Reference refer([Uri targetFile]) {
-    final relativeImport = import;
-    targetFile == null
+    final relativeImport = targetFile == null
         ? ImportableTypeResolver.resolveAssetImport(import)
         : ImportableTypeResolver.relative(import, targetFile);
     return TypeReference((b) {
@@ -226,7 +169,9 @@ class ImportableType {
         ..url = relativeImport
         ..isNullable = isNullable;
       if (isParametrized) {
-        b.types.addAll(typeArguments?.map((e) => e.refer(targetFile)));
+        b.types.addAll(
+          typeArguments?.map((e) => e.refer(targetFile)),
+        );
       }
       return b;
     });
@@ -245,9 +190,6 @@ class ImportableType {
       });
     }
   }
-
-  @override
-  String toString() => fullName(includePrefix: false);
 
   @override
   bool operator ==(Object other) =>

@@ -16,11 +16,11 @@ const TypeChecker moduleChecker = TypeChecker.fromRuntime(Module);
 
 class InjectableGenerator implements Generator {
   RegExp _classNameMatcher, _fileNameMatcher;
-  bool autoRegister;
+  bool _autoRegister;
 
   InjectableGenerator(Map options) {
-    autoRegister = options['auto_register'] ?? false;
-    if (autoRegister) {
+    _autoRegister = options['auto_register'] ?? false;
+    if (_autoRegister) {
       if (options['class_name_pattern'] != null) {
         _classNameMatcher = RegExp(options['class_name_pattern']);
       }
@@ -46,15 +46,12 @@ class InjectableGenerator implements Generator {
         ];
         for (var element in executables) {
           if (element.isPrivate) continue;
-          allDepsInStep.add(await DependencyResolver(
-                  getResolver(await buildStep.resolver.libraries.toList()))
+          allDepsInStep.add(await DependencyResolver(getResolver(await buildStep.resolver.libraries.toList()))
               .resolveModuleMember(clazz, element));
         }
-      } else if (_hasInjectable(clazz) ||
-          (autoRegister && _hasConventionalMatch(clazz))) {
-        allDepsInStep.add(await DependencyResolver(
-                getResolver(await buildStep.resolver.libraries.toList()))
-            .resolve(clazz));
+      } else if (_hasInjectable(clazz) || (_autoRegister && _hasConventionalMatch(clazz))) {
+        allDepsInStep
+            .add(await DependencyResolver(getResolver(await buildStep.resolver.libraries.toList())).resolve(clazz));
       }
     }
 
@@ -74,8 +71,7 @@ class InjectableGenerator implements Generator {
       return false;
     }
     final fileName = clazz.source.shortName.replaceFirst('.dart', '');
-    return (_classNameMatcher != null &&
-            _classNameMatcher.hasMatch(clazz.name)) ||
+    return (_classNameMatcher != null && _classNameMatcher.hasMatch(clazz.name)) ||
         (_fileNameMatcher != null && _fileNameMatcher.hasMatch(fileName));
   }
 }

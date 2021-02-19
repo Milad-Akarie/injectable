@@ -1,5 +1,7 @@
+import 'package:code_builder/code_builder.dart';
 import 'package:injectable_generator/dependency_config.dart';
-import 'package:injectable_generator/generator/factory_param_generator.dart';
+import 'package:injectable_generator/generator/library_builder.dart';
+import 'package:injectable_generator/injectable_types.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -7,6 +9,7 @@ void main() {
     test("One factory param generator test", () {
       expect(
           generate(DependencyConfig(
+            injectableType: InjectableType.factory,
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
             dependencies: [
@@ -18,12 +21,13 @@ void main() {
               )
             ],
           )),
-          'gh.factoryParam<Demo,Storage,dynamic>((storage, _)=> Demo(storage));');
+          'gh.factoryParam<Demo, Storage, dynamic>((storage, _) => Demo(storage));');
     });
 
     test("Two factory param generator test", () {
       expect(
           generate(DependencyConfig(
+            injectableType: InjectableType.factory,
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
             dependencies: [
@@ -41,12 +45,13 @@ void main() {
               )
             ],
           )),
-          'gh.factoryParam<Demo,Storage,Url>((storage, url)=> Demo(storage, url));');
+          'gh.factoryParam<Demo, Storage, Url>((storage, url) => Demo(storage, url));');
     });
 
     test("Two named factory param generator test", () {
       expect(
           generate(DependencyConfig(
+            injectableType: InjectableType.factory,
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
             dependencies: [
@@ -64,12 +69,13 @@ void main() {
               )
             ],
           )),
-          'gh.factoryParam<Demo,Storage,Url>((storage, url)=> Demo(storage: storage, url: url));');
+          'gh.factoryParam<Demo, Storage, Url>((storage, url) => Demo(storage: storage, url: url));');
     });
 
     test("One factory param with injected dependencies test", () {
       expect(
           generate(DependencyConfig(
+            injectableType: InjectableType.factory,
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
             dependencies: [
@@ -87,14 +93,13 @@ void main() {
               )
             ],
           )),
-          'gh.factoryParam<Demo,String,dynamic>((url, _)=> Demo(g<Storage>(), url));');
+          'gh.factoryParam<Demo, String, dynamic>((url, _) => Demo(get<Storage>(), url));');
     });
   });
 }
 
-String generate(
-  DependencyConfig input, {
-  Set<ImportableType> prefixedTypes = const {},
-}) {
-  return FactoryParamGenerator(prefixedTypes).generate(input);
+String generate(DependencyConfig input) {
+  final statement = buildLazyRegisterFun(input);
+  final emitter = DartEmitter(Allocator.none, true, true);
+  return statement.accept(emitter).toString();
 }

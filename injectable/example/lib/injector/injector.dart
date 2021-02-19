@@ -11,7 +11,7 @@ GetIt getIt = GetIt.instance;
 @InjectableInit(
   initializerName: 'init',
   preferRelativeImports: true,
-  asExtension: true,
+  asExtension: false,
 )
 void configInjector({String env, EnvironmentFilter environmentFilter}) {
   // getIt.init(environmentFilter: environmentFilter);

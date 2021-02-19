@@ -12,12 +12,24 @@ const getItImport = 'package:get_it/get_it.dart';
 
 const getItRefer = Reference('GetIt', getItImport);
 const gh = Reference('gh');
-const get = Reference('get');
+
+TypeReference typeRefer(
+  String symbol, {
+  String url,
+  bool nullable = false,
+}) =>
+    TypeReference(
+      (b) => b
+        ..symbol = symbol
+        ..url = url
+        ..isNullable = nullable,
+    );
 
 String generateLibrary({
   List<DependencyConfig> allDeps,
   Uri targetFile,
   String initializerName,
+  bool asExtension = false,
 }) {
   // sort dependencies alphabetically
   allDeps.sort((a, b) => a.type.name.compareTo(b.type.name));
@@ -45,6 +57,69 @@ String generateLibrary({
 
   // all register modules
   final modules = sorted.where((d) => d.isFromModule).map((d) => d.module).toSet();
+  final ignoreForFileComments = [
+    '// ignore_for_file: unnecessary_lambdas',
+    '// ignore_for_file: lines_longer_than_80_chars'
+  ];
+  final getInstanceRefer = refer(asExtension ? 'this' : 'get');
+  final intiMethod = Method(
+    (b) => b
+      ..docs.addAll([
+        if (!asExtension) ...ignoreForFileComments,
+        '/// initializes the registration of provided dependencies inside of [GetIt]'
+      ])
+      ..returns = hasPreResolvedDeps
+          ? TypeReference((b) => b
+            ..symbol = 'Future'
+            ..types.add(getItRefer))
+          : getItRefer
+      ..name = initializerName
+      ..modifier = hasPreResolvedDeps ? MethodModifier.async : null
+      ..requiredParameters.addAll([
+        if (!asExtension)
+          Parameter(
+            (b) => b
+              ..name = 'get'
+              ..type = getItRefer,
+          )
+      ])
+      ..optionalParameters.addAll([
+        Parameter((b) => b
+          ..named = true
+          ..name = 'environment'
+          ..type = typeRefer(
+            'String',
+            nullable: true,
+          )),
+        Parameter((b) => b
+          ..named = true
+          ..name = 'environmentFilter'
+          ..type = typeRefer(
+            'EnvironmentFilter',
+            url: injectableImport,
+            nullable: true,
+          ))
+      ])
+      ..body = Block(
+        (b) => b.statements.addAll([
+          refer('GetItHelper', injectableImport)
+              .newInstance(
+                [
+                  getInstanceRefer,
+                  refer('environment'),
+                  refer('environmentFilter'),
+                ],
+              )
+              .assignFinal('gh')
+              .statement,
+          ...modules.map((module) =>
+              refer('_\$${module.name}').call([getInstanceRefer]).assignFinal(toCamelCase(module.name)).statement),
+          ...lazyDeps.map((dep) => buildLazyRegisterFun(dep, targetFile)),
+          ...eagerDeps.map((dep) => buildSingletonRegisterFun(dep, targetFile)),
+          getInstanceRefer.returned.statement,
+        ]),
+      ),
+  );
 
   final library = Library(
     (b) => b
@@ -57,52 +132,19 @@ String generateLibrary({
                   ..assignment = literalString(env).code
                   ..modifier = FieldModifier.constant,
               )),
-          Extension(
-            (b) => b
-              ..name = 'GetItInjectableX'
-              ..on = getItRefer
-              ..methods.add(Method(
-                (b) => b
-                  ..returns = hasPreResolvedDeps
-                      ? TypeReference((b) => b
-                        ..symbol = 'Future'
-                        ..types.add(getItRefer))
-                      : getItRefer
-                  ..name = initializerName
-                  ..modifier = hasPreResolvedDeps ? MethodModifier.async : null
-                  ..optionalParameters.addAll([
-                    Parameter((b) => b
-                      ..named = true
-                      ..name = 'environment'
-                      ..type = refer('String')),
-                    Parameter((b) => b
-                      ..named = true
-                      ..name = 'environmentFilter'
-                      ..type = refer('EnvironmentFilter', injectableImport))
-                  ])
-                  ..body = Block(
-                    (b) => b.statements.addAll([
-                      refer('GetItHelper', injectableImport)
-                          .newInstance(
-                            [
-                              refer('this'),
-                              refer('environment'),
-                              refer('environmentFilter'),
-                            ],
-                          )
-                          .assignFinal('gh')
-                          .statement,
-                      ...modules.map((module) => refer('_\$${module.name}')
-                          .call([refer('this')])
-                          .assignFinal(toCamelCase(module.name))
-                          .statement),
-                      ...lazyDeps.map((dep) => _buildLazyRegisterFun(dep, targetFile)),
-                      ...eagerDeps.map((dep) => _buildSingletonRegisterFun(dep, targetFile)),
-                      refer('this').returned.statement,
-                    ]),
-                  ),
-              )),
-          ),
+
+          asExtension
+              ? Extension(
+                  (b) => b
+                    ..docs.addAll([
+                      if (asExtension) ...ignoreForFileComments,
+                      '/// an extension to register the provided dependencies inside of [GetIt]',
+                    ])
+                    ..name = 'GetItInjectableX'
+                    ..on = getItRefer
+                    ..methods.add(intiMethod),
+                )
+              : intiMethod,
           // build modules
           ...modules.map(
             (module) => _buildModule(
@@ -115,9 +157,7 @@ String generateLibrary({
       ),
   );
 
-  // gh.factory<Service>(() => resolvedService, registerFor: {_prod});
-  final emitter = DartEmitter(Allocator.simplePrefixing(), true, true);
-  print(DartFormatter().format(library.accept(emitter).toString()));
+  final emitter = DartEmitter(Allocator.simplePrefixing(), true, false);
   return DartFormatter().format(library.accept(emitter).toString());
 }
 
@@ -162,13 +202,20 @@ Class _buildModule(ImportableType module, Iterable<DependencyConfig> deps, [Uri 
   });
 }
 
-Code _buildLazyRegisterFun(
+Code buildLazyRegisterFun(
   DependencyConfig dep, [
   Uri targetFile,
 ]) {
   var funcReferName;
+  Map<String, Reference> factoryParams = {};
   if (dep.injectableType == InjectableType.factory) {
-    funcReferName = dep.isAsync ? 'factoryAsync' : 'factory';
+    final hasFactoryParams = dep.dependencies.any((d) => d.isFactoryParam);
+    if (hasFactoryParams) {
+      funcReferName = dep.isAsync ? 'factoryParamAsync' : 'factoryParam';
+      factoryParams.addAll(_resolveFactoryParams(dep, targetFile));
+    } else {
+      funcReferName = dep.isAsync ? 'factoryAsync' : 'factory';
+    }
   } else if (dep.injectableType == InjectableType.lazySingleton) {
     funcReferName = dep.isAsync ? 'lazySingletonAsync' : 'lazySingleton';
   }
@@ -178,6 +225,11 @@ Code _buildLazyRegisterFun(
     Method(
       (b) => b
         ..lambda = true
+        ..requiredParameters.addAll(
+          factoryParams.keys.map(
+            (name) => Parameter((b) => b.name = name),
+          ),
+        )
         ..body =
             dep.isFromModule ? _buildInstanceForModule(dep, targetFile).code : _buildInstance(dep, targetFile).code,
     ).closure
@@ -189,12 +241,24 @@ Code _buildLazyRegisterFun(
       ),
     if (dep.preResolve == true) 'preResolve': literalBool(true)
   }, [
-    dep.type.refer(targetFile)
+    dep.type.refer(targetFile),
+    ...factoryParams.values.map((p) => p.type)
   ]);
   return dep.preResolve ? registerExpression.awaited.statement : registerExpression.statement;
 }
 
-Code _buildSingletonRegisterFun(
+Map<String, Reference> _resolveFactoryParams(DependencyConfig dep, [Uri targetFile]) {
+  final params = <String, Reference>{};
+  dep.dependencies.where((d) => d.isFactoryParam).forEach((d) {
+    params[d.paramName] = d.type.refer(targetFile);
+  });
+  if (params.length < 2) {
+    params['_'] = refer('dynamic');
+  }
+  return params;
+}
+
+Code buildSingletonRegisterFun(
   DependencyConfig dep, [
   Uri targetFile,
 ]) {
@@ -233,6 +297,7 @@ Code _buildSingletonRegisterFun(
   }, [
     dep.type.refer(targetFile)
   ]);
+
   return dep.preResolve ? registerExpression.awaited.statement : registerExpression.statement;
 }
 
@@ -242,14 +307,14 @@ Expression _buildInstance(
   String getReferName = 'get',
 }) {
   final positionalParams = dep.positionalDeps.map(
-    (iDep) => _buildResolver(iDep, targetFile, name: getReferName),
+    (iDep) => _buildParamAssignment(iDep, targetFile, name: getReferName),
   );
 
   final namedParams = Map.fromEntries(
     dep.namedDeps.map(
       (iDep) => MapEntry(
-        iDep.name,
-        _buildResolver(iDep, targetFile, name: getReferName),
+        iDep.paramName,
+        _buildParamAssignment(iDep, targetFile, name: getReferName),
       ),
     ),
   );
@@ -279,13 +344,13 @@ Expression _buildInstanceForModule(DependencyConfig dep, Uri targetFile) {
       .newInstanceNamed(
         dep.initializerName,
         dep.positionalDeps.map(
-          (iDep) => _buildResolver(iDep, targetFile, name: 'get'),
+          (iDep) => _buildParamAssignment(iDep, targetFile, name: 'get'),
         ),
         Map.fromEntries(
           dep.namedDeps.map(
             (iDep) => MapEntry(
-              iDep.name,
-              _buildResolver(iDep, targetFile, name: 'get'),
+              iDep.paramName,
+              _buildParamAssignment(iDep, targetFile, name: 'get'),
             ),
           ),
         ),
@@ -293,13 +358,16 @@ Expression _buildInstanceForModule(DependencyConfig dep, Uri targetFile) {
       .expression;
 }
 
-Expression _buildResolver(
+Expression _buildParamAssignment(
   InjectedDependency iDep,
   Uri targetFile, {
   @required String name,
 }) {
+  if (iDep.isFactoryParam) {
+    return refer(iDep.paramName);
+  }
   return refer(name).call([], {
-    if (iDep.name != null) 'instanceName': literalString(iDep.name),
+    if (iDep.instanceName != null) 'instanceName': literalString(iDep.instanceName),
   }, [
     iDep.type.refer(targetFile),
   ]);

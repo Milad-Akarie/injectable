@@ -192,7 +192,7 @@ class DependencyResolver {
 
         _dep.dependencies.add(InjectedDependency(
           type: resolvedType,
-          name: instanceName,
+          instanceName: instanceName,
           isFactoryParam: factoryParamChecker.hasAnnotationOfExact(param),
           paramName: param.name,
           isPositional: param.isPositional,

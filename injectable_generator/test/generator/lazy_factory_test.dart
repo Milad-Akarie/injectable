@@ -1,5 +1,7 @@
+import 'package:code_builder/code_builder.dart';
 import 'package:injectable_generator/dependency_config.dart';
-import 'package:injectable_generator/generator/lazy_factory_generator.dart';
+import 'package:injectable_generator/generator/library_builder.dart';
+import 'package:injectable_generator/injectable_types.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -8,45 +10,50 @@ void main() {
     test("Simple empty constructor generator", () {
       expect(
           generate(DependencyConfig(
+            injectableType: InjectableType.factory,
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
           )),
-          'gh.factory<Demo>(()=> Demo());');
+          'gh.factory<Demo>(() => Demo());');
     });
 
     test("Simple lazy singleton generator", () {
       expect(
           generate(
-              DependencyConfig(
-                type: ImportableType(name: 'Demo'),
-                typeImpl: ImportableType(name: 'Demo'),
-              ),
-              isLazySingleton: true),
-          'gh.lazySingleton<Demo>(()=> Demo());');
+            DependencyConfig(
+              injectableType: InjectableType.lazySingleton,
+              type: ImportableType(name: 'Demo'),
+              typeImpl: ImportableType(name: 'Demo'),
+            ),
+          ),
+          'gh.lazySingleton<Demo>(() => Demo());');
     });
 
-    test("factory generator abstract", () {
+    test("factory generator abstract type != implementation", () {
       expect(
           generate(DependencyConfig(
+            injectableType: InjectableType.factory,
             type: ImportableType(name: 'AbstractType'),
             typeImpl: ImportableType(name: 'Demo'),
           )),
-          'gh.factory<AbstractType>(()=> Demo());');
+          'gh.factory<AbstractType>(() => Demo());');
     });
 
     test("factory generator async", () {
       expect(
           generate(DependencyConfig(
+            injectableType: InjectableType.factory,
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
             isAsync: true,
           )),
-          'gh.factoryAsync<Demo>(()=> Demo());');
+          'gh.factoryAsync<Demo>(() => Demo());');
     });
 
     test("factory generator with Positional dependencies", () {
       expect(
           generate(DependencyConfig(
+            injectableType: InjectableType.factory,
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
             dependencies: [
@@ -58,7 +65,7 @@ void main() {
               )
             ],
           )),
-          'gh.factory<Demo>(()=> Demo(g<Storage>()));');
+          'gh.factory<Demo>(() => Demo(get<Storage>()));');
     });
 
     test("factory generator with named dependencies", () {
@@ -66,21 +73,23 @@ void main() {
           generate(DependencyConfig(
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
+            injectableType: InjectableType.factory,
             dependencies: [
               InjectedDependency(
                   type: ImportableType(name: 'Storage'),
                   paramName: 'storage',
                   isFactoryParam: false,
                   isPositional: false,
-                  name: "storageImpl")
+                  instanceName: "storageImpl")
             ],
           )),
-          "gh.factory<Demo>(()=> Demo(storage: g<Storage>(instanceName: 'storageImpl')));");
+          "gh.factory<Demo>(() => Demo(storage: get<Storage>(instanceName: 'storageImpl')));");
     });
 
     test("factory generator with parameterized type", () {
       expect(
           generate(DependencyConfig(
+            injectableType: InjectableType.factory,
             type: ImportableType(name: 'Demo', typeArguments: [
               ImportableType(name: 'String'),
             ]),
@@ -94,35 +103,13 @@ void main() {
               )
             ],
           )),
-          "gh.factory<Demo<String>>(()=> Demo(storage: g<Storage>()));");
-    });
-
-    test("factory generator with prefixed types", () {
-      var demo = ImportableType(name: 'Demo');
-      expect(
-          generate(
-              DependencyConfig(
-                type: demo,
-                typeImpl: demo,
-                dependencies: [
-                  InjectedDependency(
-                    type: ImportableType(name: 'Storage'),
-                    paramName: 'storage',
-                    isFactoryParam: false,
-                    isPositional: false,
-                  )
-                ],
-              ),
-              prefixedTypes: {demo.copyWith(prefix: 'prefix')}),
-          "gh.factory<prefix.Demo>(()=> prefix.Demo(storage: g<Storage>()));");
+          "gh.factory<Demo<String>>(() => Demo(storage: get<Storage>()));");
     });
   });
 }
 
-String generate(
-  DependencyConfig input, {
-  bool isLazySingleton = false,
-  Set<ImportableType> prefixedTypes = const {},
-}) {
-  return LazyFactoryGenerator(prefixedTypes, isLazySingleton: isLazySingleton).generate(input);
+String generate(DependencyConfig input) {
+  final statement = buildLazyRegisterFun(input);
+  final emitter = DartEmitter(Allocator.none, true, true);
+  return statement.accept(emitter).toString();
 }
