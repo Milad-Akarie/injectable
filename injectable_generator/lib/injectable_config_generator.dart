@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
+import 'package:code_builder/code_builder.dart';
+import 'package:dart_style/dart_style.dart';
 import 'package:glob/glob.dart';
 import 'package:injectable/injectable.dart';
 import 'package:injectable_generator/generator/library_builder.dart';
@@ -35,12 +37,14 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
 
     _reportMissingDependencies(deps, targetFile);
     _validateDuplicateDependencies(deps);
-    return generateLibrary(
-      allDeps: deps,
+    final generatedLib = generateLibrary(
+      dependencies: deps,
       targetFile: preferRelativeImports ? targetFile : null,
       initializerName: initializerName,
       asExtension: asExtension,
     );
+    final emitter = DartEmitter(Allocator.simplePrefixing(), true, false);
+    return DartFormatter().format(generatedLib.accept(emitter).toString());
   }
 
   void _reportMissingDependencies(List<DependencyConfig> deps, Uri targetFile) {

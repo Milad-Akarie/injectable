@@ -1,5 +1,4 @@
 import 'package:code_builder/code_builder.dart';
-import 'package:dart_style/dart_style.dart';
 import 'package:injectable_generator/generator/generator_utils.dart';
 import 'package:injectable_generator/utils.dart';
 import 'package:meta/meta.dart';
@@ -7,39 +6,25 @@ import 'package:meta/meta.dart';
 import '../dependency_config.dart';
 import '../injectable_types.dart';
 
-const injectableImport = 'package:injectable/injectable.dart';
-const getItImport = 'package:get_it/get_it.dart';
+const _injectableImport = 'package:injectable/injectable.dart';
+const _getItRefer = Reference('GetIt', 'package:get_it/get_it.dart');
+const _ghRefer = Reference('gh');
 
-const getItRefer = Reference('GetIt', getItImport);
-const gh = Reference('gh');
-
-TypeReference typeRefer(
-  String symbol, {
-  String url,
-  bool nullable = false,
-}) =>
-    TypeReference(
-      (b) => b
-        ..symbol = symbol
-        ..url = url
-        ..isNullable = nullable,
-    );
-
-String generateLibrary({
-  List<DependencyConfig> allDeps,
+Library generateLibrary({
+  List<DependencyConfig> dependencies,
   Uri targetFile,
   String initializerName,
   bool asExtension = false,
 }) {
   // sort dependencies alphabetically
-  allDeps.sort((a, b) => a.type.name.compareTo(b.type.name));
+  dependencies.sort((a, b) => a.type.name.compareTo(b.type.name));
 
   // sort dependencies by their register order
   final Set<DependencyConfig> sorted = {};
-  GeneratorUtils.sortByDependents(allDeps.toSet(), sorted);
+  sortByDependents(dependencies.toSet(), sorted);
 
   // if true use an awaited initializer
-  final hasPreResolvedDeps = GeneratorUtils.hasPreResolvedDeps(sorted);
+  final hasPreResolvedDeps = hasPreResolvedDependencies(sorted);
 
   // eager singleton instances are registered at the end
   final eagerDeps = sorted
@@ -71,8 +56,8 @@ String generateLibrary({
       ..returns = hasPreResolvedDeps
           ? TypeReference((b) => b
             ..symbol = 'Future'
-            ..types.add(getItRefer))
-          : getItRefer
+            ..types.add(_getItRefer))
+          : _getItRefer
       ..name = initializerName
       ..modifier = hasPreResolvedDeps ? MethodModifier.async : null
       ..requiredParameters.addAll([
@@ -80,7 +65,7 @@ String generateLibrary({
           Parameter(
             (b) => b
               ..name = 'get'
-              ..type = getItRefer,
+              ..type = _getItRefer,
           )
       ])
       ..optionalParameters.addAll([
@@ -96,13 +81,13 @@ String generateLibrary({
           ..name = 'environmentFilter'
           ..type = typeRefer(
             'EnvironmentFilter',
-            url: injectableImport,
+            url: _injectableImport,
             nullable: true,
           ))
       ])
       ..body = Block(
         (b) => b.statements.addAll([
-          refer('GetItHelper', injectableImport)
+          refer('GetItHelper', _injectableImport)
               .newInstance(
                 [
                   getInstanceRefer,
@@ -121,7 +106,7 @@ String generateLibrary({
       ),
   );
 
-  final library = Library(
+  return Library(
     (b) => b
       ..body.addAll(
         [
@@ -141,7 +126,7 @@ String generateLibrary({
                       '/// an extension to register the provided dependencies inside of [GetIt]',
                     ])
                     ..name = 'GetItInjectableX'
-                    ..on = getItRefer
+                    ..on = _getItRefer
                     ..methods.add(intiMethod),
                 )
               : intiMethod,
@@ -156,9 +141,6 @@ String generateLibrary({
         ],
       ),
   );
-
-  final emitter = DartEmitter(Allocator.simplePrefixing(), true, false);
-  return DartFormatter().format(library.accept(emitter).toString());
 }
 
 Class _buildModule(ImportableType module, Iterable<DependencyConfig> deps, [Uri targetFile]) {
@@ -172,7 +154,7 @@ Class _buildModule(ImportableType module, Iterable<DependencyConfig> deps, [Uri 
       clazz.fields.add(Field(
         (b) => b
           ..name = '_getIt'
-          ..type = getItRefer
+          ..type = _getItRefer
           ..modifier = FieldModifier.final$,
       ));
       clazz.constructors.add(
@@ -221,7 +203,7 @@ Code buildLazyRegisterFun(
   }
   throwIf(funcReferName == null, 'Injectable type is not supported');
 
-  final registerExpression = gh.property(funcReferName).call([
+  final registerExpression = _ghRefer.property(funcReferName).call([
     Method(
       (b) => b
         ..lambda = true
@@ -274,7 +256,7 @@ Code buildSingletonRegisterFun(
   }
 
   final instanceBuilder = dep.isFromModule ? _buildInstanceForModule(dep, targetFile) : _buildInstance(dep, targetFile);
-  final registerExpression = gh.property(funcReferName).call([
+  final registerExpression = _ghRefer.property(funcReferName).call([
     asFactory
         ? Method((b) => b
           ..lambda = true

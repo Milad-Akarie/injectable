@@ -1,18 +1,22 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
-// import 'injector.config.dart';
+import 'injector.config.dart';
 
 const platformMobile = Environment('platformMobile');
 const platformWeb = Environment('platformWeb');
 
-GetIt getIt = GetIt.instance;
-
 @InjectableInit(
   initializerName: 'init',
-  preferRelativeImports: true,
-  asExtension: false,
+  asExtension: true,
 )
-void configInjector({String env, EnvironmentFilter environmentFilter}) {
-  // getIt.init(environmentFilter: environmentFilter);
+Future<GetIt> configInjector(
+  GetIt getIt, {
+  String env,
+  EnvironmentFilter environmentFilter,
+}) {
+  return getIt.init(
+    environmentFilter: environmentFilter,
+    environment: env,
+  );
 }

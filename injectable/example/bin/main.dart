@@ -1,13 +1,13 @@
 import 'package:example/injector/Service.dart';
-import 'package:example/module/register_module.dart';
+import 'package:example/injector/injector.dart';
+import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
-import '../lib/injector/injector.dart';
+GetIt getIt = GetIt.instance;
 
-Future main(List<String> arguments) async {
-  final gh = GetItHelper(getIt, null, NoEnvOrContains(platformMobile.name));
-  await gh.factoryAsync<Service>(() => RepoImpl.asyncService, preResolve: true);
-  // configInjector(environmentFilter: NoEnvOrContains(platformMobile.name));
-
-  print(getIt<Service>());
+void main() async {
+  await configInjector(getIt, env: platformWeb.name);
+  print("working");
+  print(getIt<Set<String>>(instanceName: kEnvironmentsName));
+  print(getIt<AbstractService>());
 }

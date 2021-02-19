@@ -6,14 +6,11 @@ class GetItHelper {
   /// passed getIt instance
   final GetIt getIt;
 
-  /// current work environment
-  final String environment;
-
   /// filter for whether to register for the given set of environments
   final EnvironmentFilter _environmentFilter;
 
   /// creates a new instance of GetItHelper
-  GetItHelper(this.getIt, [this.environment, EnvironmentFilter environmentFilter])
+  GetItHelper(this.getIt, [String environment, EnvironmentFilter environmentFilter])
       : assert(getIt != null),
         assert(environmentFilter == null || environment == null),
         _environmentFilter = environmentFilter ?? NoEnvOrContains(environment) {
@@ -121,7 +118,7 @@ class GetItHelper {
   Future<void> lazySingletonAsync<T>(
     FactoryFuncAsync<T> factoryfunc, {
     String instanceName,
-    bool preResolve,
+    bool preResolve = false,
     Set<String> registerFor,
   }) {
     if (_canRegister(registerFor)) {
@@ -165,7 +162,7 @@ class GetItHelper {
     FactoryFuncAsync<T> factoryfunc, {
     String instanceName,
     bool signalsReady,
-    bool preResolve,
+    bool preResolve = false,
     Iterable<Type> dependsOn,
     Set<String> registerFor,
   }) {

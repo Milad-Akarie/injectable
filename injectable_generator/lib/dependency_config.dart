@@ -192,6 +192,11 @@ class ImportableType {
   }
 
   @override
+  String toString() {
+    return refer().accept(DartEmitter()).toString();
+  }
+
+  @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ImportableType &&
