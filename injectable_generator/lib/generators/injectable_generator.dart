@@ -4,15 +4,14 @@ import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:injectable/injectable.dart';
-import 'package:injectable_generator/importable_type_resolver.dart';
+import 'package:injectable_generator/models/dependency_config.dart';
+import 'package:injectable_generator/resolvers/dependency_resolver.dart';
+import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
 import 'package:injectable_generator/utils.dart';
 import 'package:source_gen/source_gen.dart';
 
-import 'dependency_config.dart';
-import 'dependency_resolver.dart';
-
-const TypeChecker typeChecker = TypeChecker.fromRuntime(Injectable);
-const TypeChecker moduleChecker = TypeChecker.fromRuntime(Module);
+const TypeChecker _typeChecker = TypeChecker.fromRuntime(Injectable);
+const TypeChecker _moduleChecker = TypeChecker.fromRuntime(Module);
 
 class InjectableGenerator implements Generator {
   RegExp _classNameMatcher, _fileNameMatcher;
@@ -34,7 +33,7 @@ class InjectableGenerator implements Generator {
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
     final allDepsInStep = <DependencyConfig>[];
     for (var clazz in library.classes) {
-      if (moduleChecker.hasAnnotationOfExact(clazz)) {
+      if (_moduleChecker.hasAnnotationOfExact(clazz)) {
         throwIf(
           !clazz.isAbstract,
           '[${clazz.name}] must be an abstract class!',
@@ -46,12 +45,16 @@ class InjectableGenerator implements Generator {
         ];
         for (var element in executables) {
           if (element.isPrivate) continue;
-          allDepsInStep.add(await DependencyResolver(getResolver(await buildStep.resolver.libraries.toList()))
-              .resolveModuleMember(clazz, element));
+          allDepsInStep.add(
+            DependencyResolver(
+              getResolver(await buildStep.resolver.libraries.toList()),
+            ).resolveModuleMember(clazz, element),
+          );
         }
       } else if (_hasInjectable(clazz) || (_autoRegister && _hasConventionalMatch(clazz))) {
-        allDepsInStep
-            .add(await DependencyResolver(getResolver(await buildStep.resolver.libraries.toList())).resolve(clazz));
+        allDepsInStep.add(DependencyResolver(
+          getResolver(await buildStep.resolver.libraries.toList()),
+        ).resolve(clazz));
       }
     }
 
@@ -63,7 +66,7 @@ class InjectableGenerator implements Generator {
   }
 
   bool _hasInjectable(ClassElement element) {
-    return typeChecker.hasAnnotationOf(element);
+    return _typeChecker.hasAnnotationOf(element);
   }
 
   bool _hasConventionalMatch(ClassElement clazz) {

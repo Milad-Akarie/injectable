@@ -9,8 +9,9 @@ const platformWeb = Environment('platformWeb');
 @InjectableInit(
   initializerName: 'init',
   asExtension: true,
+  usesNullSafety: false,
 )
-Future<GetIt> configInjector(
+configInjector(
   GetIt getIt, {
   String env,
   EnvironmentFilter environmentFilter,

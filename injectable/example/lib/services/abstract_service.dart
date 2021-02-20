@@ -1,24 +1,27 @@
-import 'package:example/injector/Service.dart';
+import 'package:example/injector/injector.dart';
 import 'package:injectable/injectable.dart';
 
-import 'injector.dart';
+abstract class AbstractService {
+  Set<String> get environments;
+}
 
 @platformMobile
 @Injectable(as: AbstractService)
 class MobileService extends AbstractService {
   @override
   final Set<String> environments;
-
-  MobileService(@Named(kEnvironmentsName) this.environments) {}
+  @factoryMethod
+  MobileService.fromService(@Named(kEnvironmentsName) this.environments);
 }
 
+@named
 @platformWeb
 @LazySingleton(as: AbstractService)
 class WebService extends AbstractService {
   @override
   final Set<String> environments;
 
-  WebService(@Named(kEnvironmentsName) this.environments) {}
+  WebService(@Named(kEnvironmentsName) this.environments);
 }
 
 @dev
@@ -28,7 +31,7 @@ class AsyncService extends AbstractService {
   @override
   final Set<String> environments;
 
-  AsyncService(this.environments);
+  AsyncService(@Named(kEnvironmentsName) this.environments);
 
   @factoryMethod
   static Future<AsyncService> create(
@@ -36,3 +39,8 @@ class AsyncService extends AbstractService {
   ) =>
       Future.value(AsyncService(envs));
 }
+
+abstract class LazyService {}
+
+@Injectable(as: LazyService)
+class LazyServiceImpl extends LazyService {}

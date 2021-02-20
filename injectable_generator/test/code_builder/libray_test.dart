@@ -1,8 +1,9 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:injectable_generator/dependency_config.dart';
-import 'package:injectable_generator/generator/library_builder.dart';
+import 'package:injectable_generator/code_builder/library_builder.dart';
 import 'package:injectable_generator/injectable_types.dart';
+import 'package:injectable_generator/models/dependency_config.dart';
+import 'package:injectable_generator/models/importable_type.dart';
 import 'package:test/test.dart';
 
 void main() {

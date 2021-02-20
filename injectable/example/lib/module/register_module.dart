@@ -1,7 +1,6 @@
+import 'package:example/services/abstract_service.dart';
 import 'package:injectable/injectable.dart';
 
-import '../injector/Service.dart';
-import '../injector/Service_impl.dart';
 import '../injector/injector.dart';
 
 @module
@@ -11,24 +10,24 @@ abstract class RegisterModule {
   @Injectable(as: Repo)
   RepoImpl get repo;
 
-  @prod
-  Future<AbstractService> resolvedService(@factoryParam String param) => RepoImpl.asyncService;
-
+  @Named("Repo")
   @dev
-  RepoImpl baseRepo(@factoryParam String param) => RepoImpl.from(null);
-
-  @platformMobile
-  RepoImpl baseRepoWithParam(AbstractService service) => RepoImpl.from(service);
+  @preResolve
+  Future<Repo> getRepo(LazyService service) {
+    return Repo.asyncRepo(service);
+  }
 }
 
-abstract class Repo {}
+abstract class Repo {
+  @factoryMethod
+  static Future<RepoImpl> asyncRepo(LazyService service) async {
+    await Future.delayed(Duration(seconds: 1));
+    return RepoImpl(service);
+  }
+}
 
 class RepoImpl extends Repo {
-  @factoryMethod
-  RepoImpl.from(AbstractService service);
+  final LazyService service;
 
-  static Future<AbstractService> get asyncService async {
-    await Future.delayed(Duration(seconds: 1));
-    return WebService(null);
-  }
+  RepoImpl(this.service);
 }

@@ -1,9 +1,11 @@
 import 'package:code_builder/code_builder.dart';
-import 'package:injectable_generator/generator/generator_utils.dart';
+import 'package:injectable_generator/code_builder/builder_utils.dart';
+import 'package:injectable_generator/models/dependency_config.dart';
+import 'package:injectable_generator/models/injected_dependency.dart';
+import 'package:injectable_generator/models/module_config.dart';
 import 'package:injectable_generator/utils.dart';
 import 'package:meta/meta.dart';
 
-import '../dependency_config.dart';
 import '../injectable_types.dart';
 
 const _injectableImport = 'package:injectable/injectable.dart';
@@ -16,12 +18,7 @@ Library generateLibrary({
   String initializerName,
   bool asExtension = false,
 }) {
-  // sort dependencies alphabetically
-  dependencies.sort((a, b) => a.type.name.compareTo(b.type.name));
-
-  // sort dependencies by their register order
-  final Set<DependencyConfig> sorted = {};
-  sortByDependents(dependencies.toSet(), sorted);
+  final sorted = sortDependencies(dependencies);
 
   // if true use an awaited initializer
   final hasPreResolvedDeps = hasPreResolvedDependencies(sorted);
@@ -41,7 +38,8 @@ Library generateLibrary({
   );
 
   // all register modules
-  final modules = sorted.where((d) => d.isFromModule).map((d) => d.module).toSet();
+  final modules = sorted.where((d) => d.isFromModule).map((d) => d.moduleConfig).toSet();
+
   final ignoreForFileComments = [
     '// ignore_for_file: unnecessary_lambdas',
     '// ignore_for_file: lines_longer_than_80_chars'
@@ -72,14 +70,14 @@ Library generateLibrary({
         Parameter((b) => b
           ..named = true
           ..name = 'environment'
-          ..type = typeRefer(
+          ..type = nullableRefer(
             'String',
             nullable: true,
           )),
         Parameter((b) => b
           ..named = true
           ..name = 'environmentFilter'
-          ..type = typeRefer(
+          ..type = nullableRefer(
             'EnvironmentFilter',
             url: _injectableImport,
             nullable: true,
@@ -97,8 +95,15 @@ Library generateLibrary({
               )
               .assignFinal('gh')
               .statement,
-          ...modules.map((module) =>
-              refer('_\$${module.name}').call([getInstanceRefer]).assignFinal(toCamelCase(module.name)).statement),
+          ...modules.map((module) => refer('_\$${module.type.name}')
+              .call([
+                if (moduleHasOverrides(
+                  sorted.where((e) => e.moduleConfig == module),
+                ))
+                  getInstanceRefer
+              ])
+              .assignFinal(toCamelCase(module.type.name))
+              .statement),
           ...lazyDeps.map((dep) => buildLazyRegisterFun(dep, targetFile)),
           ...eagerDeps.map((dep) => buildSingletonRegisterFun(dep, targetFile)),
           getInstanceRefer.returned.statement,
@@ -134,7 +139,7 @@ Library generateLibrary({
           ...modules.map(
             (module) => _buildModule(
               module,
-              sorted.where((e) => e.module == module),
+              sorted.where((e) => e.moduleConfig == module),
               targetFile,
             ),
           )
@@ -143,14 +148,14 @@ Library generateLibrary({
   );
 }
 
-Class _buildModule(ImportableType module, Iterable<DependencyConfig> deps, [Uri targetFile]) {
-  final abstractDeps = deps.where((d) => d.isAbstract);
+Class _buildModule(ModuleConfig module, Iterable<DependencyConfig> deps, [Uri targetFile]) {
+  final abstractDeps = deps.where((d) => d.moduleConfig.isAbstract);
   return Class((clazz) {
     clazz
-      ..name = '_\$${module.name}'
-      ..extend = module.refer(targetFile);
+      ..name = '_\$${module.type.name}'
+      ..extend = typeRefer(module.type, targetFile);
     // check weather we should have a getIt field inside of our module
-    if (abstractDeps.any((d) => d.dependencies?.isNotEmpty == true)) {
+    if (moduleHasOverrides(abstractDeps)) {
       clazz.fields.add(Field(
         (b) => b
           ..name = '_getIt'
@@ -174,9 +179,9 @@ Class _buildModule(ImportableType module, Iterable<DependencyConfig> deps, [Uri 
       (dep) => Method(
         (b) => b
           ..annotations.add(refer('override'))
-          ..name = dep.initializerName
-          ..returns = dep.typeImpl.refer(targetFile)
-          ..type = dep.isModuleMethod ? null : MethodType.getter
+          ..name = dep.moduleConfig.initializerName
+          ..returns = typeRefer(dep.typeImpl, targetFile)
+          ..type = dep.moduleConfig.isMethod ? null : MethodType.getter
           ..body = _buildInstance(dep, targetFile, getReferName: '_getIt').code,
       ),
     ));
@@ -223,7 +228,7 @@ Code buildLazyRegisterFun(
       ),
     if (dep.preResolve == true) 'preResolve': literalBool(true)
   }, [
-    dep.type.refer(targetFile),
+    typeRefer(dep.type, targetFile),
     ...factoryParams.values.map((p) => p.type)
   ]);
   return dep.preResolve ? registerExpression.awaited.statement : registerExpression.statement;
@@ -232,7 +237,7 @@ Code buildLazyRegisterFun(
 Map<String, Reference> _resolveFactoryParams(DependencyConfig dep, [Uri targetFile]) {
   final params = <String, Reference>{};
   dep.dependencies.where((d) => d.isFactoryParam).forEach((d) {
-    params[d.paramName] = d.type.refer(targetFile);
+    params[d.paramName] = typeRefer(d.type, targetFile);
   });
   if (params.length < 2) {
     params['_'] = refer('dynamic');
@@ -267,7 +272,7 @@ Code buildSingletonRegisterFun(
     if (dep.dependsOn?.isNotEmpty == true)
       'dependsOn': literalList(
         dep.dependsOn.map(
-          (e) => e.refer(targetFile),
+          (e) => typeRefer(e, targetFile),
         ),
       ),
     if (dep.environments?.isNotEmpty == true)
@@ -277,7 +282,7 @@ Code buildSingletonRegisterFun(
     if (dep.signalsReady != null) 'signalsReady': literalBool(dep.signalsReady),
     if (dep.preResolve == true) 'preResolve': literalBool(true)
   }, [
-    dep.type.refer(targetFile)
+    typeRefer(dep.type, targetFile)
   ]);
 
   return dep.preResolve ? registerExpression.awaited.statement : registerExpression.statement;
@@ -288,12 +293,12 @@ Expression _buildInstance(
   Uri targetFile, {
   String getReferName = 'get',
 }) {
-  final positionalParams = dep.positionalDeps.map(
+  final positionalParams = dep.positionalDependencies.map(
     (iDep) => _buildParamAssignment(iDep, targetFile, name: getReferName),
   );
 
   final namedParams = Map.fromEntries(
-    dep.namedDeps.map(
+    dep.namedDependencies.map(
       (iDep) => MapEntry(
         iDep.paramName,
         _buildParamAssignment(iDep, targetFile, name: getReferName),
@@ -301,7 +306,7 @@ Expression _buildInstance(
     ),
   );
 
-  final ref = dep.typeImpl.refer(targetFile);
+  final ref = typeRefer(dep.typeImpl, targetFile);
   if (dep.constructorName?.isNotEmpty == true) {
     return ref
         .newInstanceNamed(
@@ -316,20 +321,21 @@ Expression _buildInstance(
 }
 
 Expression _buildInstanceForModule(DependencyConfig dep, Uri targetFile) {
-  if (!dep.isModuleMethod) {
+  final module = dep.moduleConfig;
+  if (!module.isMethod) {
     return refer(
-      toCamelCase(dep.module.name),
-    ).property(dep.initializerName).expression;
+      toCamelCase(module.type.name),
+    ).property(module.initializerName).expression;
   }
 
-  return refer(toCamelCase(dep.module.name))
+  return refer(toCamelCase(module.type.name))
       .newInstanceNamed(
-        dep.initializerName,
-        dep.positionalDeps.map(
+        module.initializerName,
+        dep.positionalDependencies.map(
           (iDep) => _buildParamAssignment(iDep, targetFile, name: 'get'),
         ),
         Map.fromEntries(
-          dep.namedDeps.map(
+          dep.namedDependencies.map(
             (iDep) => MapEntry(
               iDep.paramName,
               _buildParamAssignment(iDep, targetFile, name: 'get'),
@@ -351,6 +357,12 @@ Expression _buildParamAssignment(
   return refer(name).call([], {
     if (iDep.instanceName != null) 'instanceName': literalString(iDep.instanceName),
   }, [
-    iDep.type.refer(targetFile),
+    typeRefer(iDep.type, targetFile),
   ]);
+}
+
+bool moduleHasOverrides(Iterable<DependencyConfig> deps) {
+  return deps.where((d) => d.moduleConfig?.isAbstract == true).any(
+        (d) => d.dependencies?.isNotEmpty == true,
+      );
 }

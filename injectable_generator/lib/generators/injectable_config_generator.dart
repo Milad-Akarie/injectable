@@ -6,17 +6,18 @@ import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:glob/glob.dart';
 import 'package:injectable/injectable.dart';
-import 'package:injectable_generator/generator/library_builder.dart';
+import 'package:injectable_generator/code_builder/library_builder.dart';
+import 'package:injectable_generator/models/dependency_config.dart';
 import 'package:source_gen/source_gen.dart';
 
-import 'dependency_config.dart';
-import 'utils.dart';
+import '../utils.dart';
 
 class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   @override
   dynamic generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) async {
     final generateForDir = annotation.read('generateForDir').listValue.map((e) => e.toStringValue());
 
+    final usesNullSafety = annotation.read('usesNullSafety').boolValue ?? false;
     var targetFile = element.source.uri;
     var preferRelativeImports = (annotation.peek("preferRelativeImports")?.boolValue ?? true == true);
 
@@ -43,7 +44,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       initializerName: initializerName,
       asExtension: asExtension,
     );
-    final emitter = DartEmitter(Allocator.simplePrefixing(), true, false);
+    final emitter = DartEmitter(Allocator.simplePrefixing(), true, usesNullSafety);
     return DartFormatter().format(generatedLib.accept(emitter).toString());
   }
 
