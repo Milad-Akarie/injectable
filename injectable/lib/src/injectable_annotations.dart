@@ -18,12 +18,17 @@ class InjectableInit {
   /// defaults to false
   final bool asExtension;
 
+  /// weather to include null-safety
+  /// suffixes to the generated code;
+  final bool usesNullSafety;
+
   /// default constructor
   const InjectableInit({
     this.generateForDir = const ['lib'],
     this.preferRelativeImports = true,
     this.initializerName = r'$initGetIt',
     this.asExtension = false,
+    this.usesNullSafety = false,
   })  : assert(generateForDir != null),
         assert(initializerName != null),
         assert(preferRelativeImports != null),

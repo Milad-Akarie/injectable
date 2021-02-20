@@ -47,12 +47,3 @@ void printBoxed(String message,
   final pre = header;
   print("$pre\n$message\n${''.padRight(72, '-')} \n");
 }
-
-Uri resolveAssetUri(Uri url) => url.scheme == 'asset' &&
-        url.pathSegments.length >= 2 &&
-        (url.pathSegments[1] == 'bin' || url.pathSegments[1] == 'test')
-    ? url.replace(
-        scheme: '',
-        pathSegments: url.pathSegments.skip(2),
-      )
-    : url;
