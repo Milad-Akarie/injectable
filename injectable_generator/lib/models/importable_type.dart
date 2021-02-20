@@ -27,7 +27,8 @@ class ImportableType {
     if ((import == null || identical(import, this.import)) &&
         (name == null || identical(name, this.name)) &&
         (isNullable == null || identical(isNullable, this.isNullable)) &&
-        (typeArguments == null || identical(typeArguments, this.typeArguments))) {
+        (typeArguments == null ||
+            identical(typeArguments, this.typeArguments))) {
       return this;
     }
 
@@ -59,7 +60,11 @@ class ImportableType {
           ListEquality().equals(typeArguments, other.typeArguments));
 
   @override
-  int get hashCode => import.hashCode ^ name.hashCode ^ isNullable.hashCode ^ ListEquality().hash(typeArguments);
+  int get hashCode =>
+      import.hashCode ^
+      name.hashCode ^
+      isNullable.hashCode ^
+      ListEquality().hash(typeArguments);
 
   factory ImportableType.fromJson(Map<String, dynamic> json) {
     List<ImportableType> typeArguments;
@@ -83,7 +88,8 @@ class ImportableType {
       'import': this.import,
       'name': this.name,
       'isNullable': this.isNullable,
-      if (isParametrized) "typeArguments": typeArguments.map((v) => v.toJson()).toList(),
+      if (isParametrized)
+        "typeArguments": typeArguments.map((v) => v.toJson()).toList(),
     } as Map<String, dynamic>;
   }
 }

@@ -14,14 +14,21 @@ import '../utils.dart';
 
 class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   @override
-  dynamic generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) async {
-    final generateForDir = annotation.read('generateForDir').listValue.map((e) => e.toStringValue());
+  dynamic generateForAnnotatedElement(
+      Element element, ConstantReader annotation, BuildStep buildStep) async {
+    final generateForDir = annotation
+        .read('generateForDir')
+        .listValue
+        .map((e) => e.toStringValue());
 
     final usesNullSafety = annotation.read('usesNullSafety').boolValue ?? false;
     var targetFile = element.source.uri;
-    var preferRelativeImports = (annotation.peek("preferRelativeImports")?.boolValue ?? true == true);
+    var preferRelativeImports =
+        (annotation.peek("preferRelativeImports")?.boolValue ?? true == true);
 
-    final dirPattern = generateForDir.length > 1 ? '{${generateForDir.join(',')}}' : '${generateForDir.first}';
+    final dirPattern = generateForDir.length > 1
+        ? '{${generateForDir.join(',')}}'
+        : '${generateForDir.first}';
     final injectableConfigFiles = Glob("$dirPattern/**.injectable.json");
 
     final jsonData = <Map>[];
@@ -44,7 +51,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       initializerName: initializerName,
       asExtension: asExtension,
     );
-    final emitter = DartEmitter(Allocator.simplePrefixing(), true, usesNullSafety);
+    final emitter =
+        DartEmitter(Allocator.simplePrefixing(), true, usesNullSafety);
     return DartFormatter().format(generatedLib.accept(emitter).toString());
   }
 
@@ -52,7 +60,10 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final messages = [];
     final registeredDeps = deps.map((dep) => dep.type).toSet();
     deps.forEach((dep) {
-      dep.dependencies.where((d) => !d.isFactoryParam && d.instanceName != kEnvironmentsName).forEach((iDep) {
+      dep.dependencies
+          .where(
+              (d) => !d.isFactoryParam && d.instanceName != kEnvironmentsName)
+          .forEach((iDep) {
         if (!registeredDeps.contains(iDep.type)) {
           messages.add(
               "[${dep.typeImpl}] depends on unregistered type [${iDep.type}] ${iDep.type.import == null ? '' : 'from ${iDep.type.import}'}");
@@ -61,20 +72,26 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     });
 
     if (messages.isNotEmpty) {
-      messages.add('\nDid you forget to annotate the above class(s) or their implementation with @injectable?');
-      printBoxed(messages.join('\n'), header: "Missing dependencies in ${targetFile.path}\n");
+      messages.add(
+          '\nDid you forget to annotate the above class(s) or their implementation with @injectable?');
+      printBoxed(messages.join('\n'),
+          header: "Missing dependencies in ${targetFile.path}\n");
     }
   }
 
   void _validateDuplicateDependencies(List<DependencyConfig> deps) {
     final validatedDeps = <DependencyConfig>[];
     for (var dep in deps) {
-      var registered = validatedDeps.where((elm) => elm.type == dep.type && elm.instanceName == dep.instanceName);
+      var registered = validatedDeps.where((elm) =>
+          elm.type == dep.type && elm.instanceName == dep.instanceName);
       if (registered.isEmpty) {
         validatedDeps.add(dep);
       } else {
-        Set<String> registeredEnvironments = registered.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
-        if (registeredEnvironments.isEmpty || dep.environments.any((env) => registeredEnvironments.contains(env))) {
+        Set<String> registeredEnvironments = registered
+            .fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
+        if (registeredEnvironments.isEmpty ||
+            dep.environments
+                .any((env) => registeredEnvironments.contains(env))) {
           throwBoxed(
               '${dep.typeImpl} [${dep.type}] env: ${dep.environments} \nis registered more than once under the same environment');
         }

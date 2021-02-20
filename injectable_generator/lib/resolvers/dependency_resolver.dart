@@ -17,7 +17,8 @@ const TypeChecker _injectableChecker = TypeChecker.fromRuntime(Injectable);
 const TypeChecker _envChecker = TypeChecker.fromRuntime(Environment);
 const TypeChecker _preResolveChecker = TypeChecker.fromRuntime(PreResolve);
 const TypeChecker _factoryParamChecker = TypeChecker.fromRuntime(FactoryParam);
-const TypeChecker _factoryMethodChecker = TypeChecker.fromRuntime(FactoryMethod);
+const TypeChecker _factoryMethodChecker =
+    TypeChecker.fromRuntime(FactoryMethod);
 
 class DependencyResolver {
   final ImportableTypeResolver _typeResolver;
@@ -55,7 +56,8 @@ class DependencyResolver {
     if (returnType is ParameterizedType) {
       ClassElement element = returnType.element;
       for (int i = 0; i < element.typeParameters.length; i++) {
-        _typeArgsMap[element.typeParameters[i].name] = returnType.typeArguments[i];
+        _typeArgsMap[element.typeParameters[i].name] =
+            returnType.typeArguments[i];
       }
     }
 
@@ -119,17 +121,22 @@ class DependencyResolver {
         _dependsOn = injectable
             .peek('dependsOn')
             ?.listValue
-            ?.map<ImportableType>((type) => _typeResolver.resolveType(type.toTypeValue()))
+            ?.map<ImportableType>(
+                (type) => _typeResolver.resolveType(type.toTypeValue()))
             ?.toList();
       }
       abstractType = injectable.peek('as')?.typeValue;
-      inlineEnv = injectable.peek('env')?.listValue?.map((e) => e.toStringValue())?.toList();
+      inlineEnv = injectable
+          .peek('env')
+          ?.listValue
+          ?.map((e) => e.toStringValue())
+          ?.toList();
     }
 
     if (abstractType != null) {
       final abstractChecker = TypeChecker.fromStatic(abstractType);
-      final abstractSubtype =
-          clazz.allSupertypes.firstWhere((type) => abstractChecker.isExactly(type.element), orElse: () {
+      final abstractSubtype = clazz.allSupertypes.firstWhere(
+          (type) => abstractChecker.isExactly(type.element), orElse: () {
         throwError(
           '[${clazz.name}] is not a subtype of [${abstractType.getDisplayString()}]',
           element: clazz,
@@ -149,7 +156,10 @@ class DependencyResolver {
 
     _preResolve = _preResolveChecker.hasAnnotationOfExact(annotatedElement);
 
-    final name = _namedChecker.firstAnnotationOfExact(annotatedElement)?.getField('name')?.toStringValue();
+    final name = _namedChecker
+        .firstAnnotationOfExact(annotatedElement)
+        ?.getField('name')
+        ?.toStringValue();
     if (name != null) {
       if (name.isNotEmpty) {
         _instanceName = name;
@@ -189,12 +199,16 @@ class DependencyResolver {
     _constructorName = executableInitializer.name;
     for (ParameterElement param in executableInitializer.parameters) {
       final namedAnnotation = _namedChecker.firstAnnotationOf(param);
-      final instanceName = namedAnnotation?.getField('type')?.toTypeValue()?.getDisplayString(withNullability: false) ??
+      final instanceName = namedAnnotation
+              ?.getField('type')
+              ?.toTypeValue()
+              ?.getDisplayString(withNullability: false) ??
           namedAnnotation?.getField('name')?.toStringValue();
 
       var paramType = param.type;
       if (paramType is TypeParameterType) {
-        paramType = _typeArgsMap[paramType.getDisplayString(withNullability: false)];
+        paramType =
+            _typeArgsMap[paramType.getDisplayString(withNullability: false)];
       }
 
       ImportableType resolvedType;
@@ -212,7 +226,8 @@ class DependencyResolver {
         isPositional: param.isPositional,
       ));
     }
-    final factoryParamsCount = _dependencies.where((d) => d.isFactoryParam).length;
+    final factoryParamsCount =
+        _dependencies.where((d) => d.isFactoryParam).length;
 
     throwIf(
       _preResolve && factoryParamsCount != 0,

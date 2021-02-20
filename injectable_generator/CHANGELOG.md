@@ -1,4 +1,8 @@
 # ChangeLog
+## [1.1.0]
+- Refactor code to support null-safety
+- Fix preResolved instances conditional registration
+- Add option to generate null-safety compatible code to injectableInit
 ## [1.0.7]
 - Fix pre-resolved primitives naming issue #161
 - Fix some types in readme file

@@ -13,7 +13,8 @@ Set<DependencyConfig> sortDependencies(List<DependencyConfig> deps) {
   return sorted;
 }
 
-void _sortByDependents(Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
+void _sortByDependents(
+    Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
   for (var dep in unSorted) {
     if (dep.dependencies.every(
       (iDep) =>
