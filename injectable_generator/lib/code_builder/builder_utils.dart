@@ -13,8 +13,7 @@ Set<DependencyConfig> sortDependencies(List<DependencyConfig> deps) {
   return sorted;
 }
 
-void _sortByDependents(
-    Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
+void _sortByDependents(Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
   for (var dep in unSorted) {
     if (dep.dependencies.every(
       (iDep) =>
@@ -36,7 +35,7 @@ bool hasPreResolvedDependencies(Set<DependencyConfig> deps) {
 
 TypeReference nullableRefer(
   String symbol, {
-  String url,
+  String? url,
   bool nullable = false,
 }) =>
     TypeReference((b) => b
@@ -44,20 +43,19 @@ TypeReference nullableRefer(
       ..url = url
       ..isNullable = nullable);
 
-Reference typeRefer(ImportableType type, [Uri targetFile]) {
+Reference typeRefer(ImportableType type, [Uri? targetFile, bool withNullabilitySuffix = true]) {
   final relativeImport = targetFile == null
       ? ImportableTypeResolver.resolveAssetImport(type.import)
       : ImportableTypeResolver.relative(type.import, targetFile);
-  return TypeReference((b) {
-    b
+  return TypeReference((reference) {
+    reference
       ..symbol = type.name
       ..url = relativeImport
-      ..isNullable = type.isNullable;
-    if (type.isParametrized) {
-      b.types.addAll(
-        type.typeArguments?.map((e) => typeRefer(e, targetFile)),
+      ..isNullable = withNullabilitySuffix && type.isNullable;
+    if (type.typeArguments.isNotEmpty) {
+      reference.types.addAll(
+        type.typeArguments.map((e) => typeRefer(e, targetFile)),
       );
     }
-    return b;
   });
 }

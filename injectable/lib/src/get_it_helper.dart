@@ -10,30 +10,28 @@ class GetItHelper {
   final EnvironmentFilter _environmentFilter;
 
   /// creates a new instance of GetItHelper
-  GetItHelper(this.getIt,
-      [String environment, EnvironmentFilter environmentFilter])
-      : assert(getIt != null),
-        assert(environmentFilter == null || environment == null),
+  GetItHelper(this.getIt, [String? environment, EnvironmentFilter? environmentFilter])
+      : assert(environmentFilter == null || environment == null),
         _environmentFilter = environmentFilter ?? NoEnvOrContains(environment) {
     // register current Environments as lazy singleton
     if (!getIt.isRegistered<Set<String>>(instanceName: kEnvironmentsName)) {
-      getIt.registerLazySingleton<Set<String>>(
+      getIt.registerLazySingleton<Set<String?>>(
         () => _environmentFilter.environments,
         instanceName: kEnvironmentsName,
       );
     }
   }
 
-  bool _canRegister(Set<String> registerFor) {
+  bool _canRegister(Set<String>? registerFor) {
     return _environmentFilter.canRegister(registerFor ?? {});
   }
 
   /// a conditional wrapper method for getIt.registerFactory
   /// it only registers if [_canRegister] returns true
-  void factory<T>(
+  void factory<T extends Object>(
     FactoryFunc<T> factoryfunc, {
-    String instanceName,
-    Set<String> registerFor,
+    String? instanceName,
+    Set<String>? registerFor,
   }) {
     if (_canRegister(registerFor)) {
       getIt.registerFactory<T>(
@@ -45,11 +43,11 @@ class GetItHelper {
 
   /// a conditional wrapper method for getIt.registerFactoryAsync
   /// it only registers if [_canRegister] returns true
-  Future<void> factoryAsync<T>(
+  Future<void> factoryAsync<T extends Object>(
     FactoryFuncAsync<T> factoryfunc, {
-    String instanceName,
+    String? instanceName,
     bool preResolve = false,
-    Set<String> registerFor,
+    Set<String>? registerFor,
   }) {
     if (_canRegister(registerFor)) {
       if (preResolve) {
@@ -71,10 +69,10 @@ class GetItHelper {
 
   /// a conditional wrapper method for getIt.registerFactoryParam
   /// it only registers if [_canRegister] returns true
-  void factoryParam<T, P1, P2>(
-    FactoryFuncParam<T, P1, P2> factoryfunc, {
-    String instanceName,
-    Set<String> registerFor,
+  void factoryParam<T extends Object, P1, P2>(
+    FactoryFuncParam<T, P1?, P2?> factoryfunc, {
+    String? instanceName,
+    Set<String>? registerFor,
   }) {
     if (_canRegister(registerFor)) {
       getIt.registerFactoryParam<T, P1, P2>(
@@ -86,10 +84,10 @@ class GetItHelper {
 
   /// a conditional wrapper method for getIt.registerFactoryParamAsync
   /// it only registers if [_canRegister] returns true
-  void factoryParamAsync<T, P1, P2>(
-    FactoryFuncParamAsync<T, P1, P2> factoryfunc, {
-    String instanceName,
-    Set<String> registerFor,
+  void factoryParamAsync<T extends Object, P1, P2>(
+    FactoryFuncParamAsync<T, P1?, P2?> factoryfunc, {
+    String? instanceName,
+    Set<String>? registerFor,
   }) {
     if (_canRegister(registerFor)) {
       getIt.registerFactoryParamAsync<T, P1, P2>(
@@ -101,10 +99,10 @@ class GetItHelper {
 
   /// a conditional wrapper method for getIt.registerLazySingleton
   /// it only registers if [_canRegister] returns true
-  void lazySingleton<T>(
+  void lazySingleton<T extends Object>(
     FactoryFunc<T> factoryfunc, {
-    String instanceName,
-    Set<String> registerFor,
+    String? instanceName,
+    Set<String>? registerFor,
   }) {
     if (_canRegister(registerFor)) {
       getIt.registerLazySingleton<T>(
@@ -116,11 +114,11 @@ class GetItHelper {
 
   /// a conditional wrapper method for getIt.registerLazySingletonAsync
   /// it only registers if [_canRegister] returns true
-  Future<void> lazySingletonAsync<T>(
+  Future<void> lazySingletonAsync<T extends Object>(
     FactoryFuncAsync<T> factoryfunc, {
-    String instanceName,
+    String? instanceName,
     bool preResolve = false,
-    Set<String> registerFor,
+    Set<String>? registerFor,
   }) {
     if (_canRegister(registerFor)) {
       if (preResolve) {
@@ -142,11 +140,11 @@ class GetItHelper {
 
   /// a conditional wrapper method for getIt.registerSingleton
   /// it only registers if [_canRegister] returns true
-  void singleton<T>(
+  void singleton<T extends Object>(
     T instance, {
-    String instanceName,
-    bool signalsReady,
-    Set<String> registerFor,
+    String? instanceName,
+    bool? signalsReady,
+    Set<String>? registerFor,
   }) {
     if (_canRegister(registerFor)) {
       getIt.registerSingleton<T>(
@@ -159,13 +157,13 @@ class GetItHelper {
 
   /// a conditional wrapper method for getIt.registerSingletonAsync
   /// it only registers if [_canRegister] returns true
-  Future<void> singletonAsync<T>(
+  Future<void> singletonAsync<T extends Object>(
     FactoryFuncAsync<T> factoryfunc, {
-    String instanceName,
-    bool signalsReady,
+    String? instanceName,
+    bool? signalsReady,
     bool preResolve = false,
-    Iterable<Type> dependsOn,
-    Set<String> registerFor,
+    Iterable<Type>? dependsOn,
+    Set<String>? registerFor,
   }) {
     if (_canRegister(registerFor)) {
       if (preResolve) {
@@ -190,12 +188,12 @@ class GetItHelper {
 
   /// a conditional wrapper method for getIt.registerSingletonWithDependencies
   /// it only registers if [_canRegister] returns true
-  void singletonWithDependencies<T>(
+  void singletonWithDependencies<T extends Object>(
     FactoryFunc<T> factoryfunc, {
-    String instanceName,
-    bool signalsReady,
-    Iterable<Type> dependsOn,
-    Set<String> registerFor,
+    String? instanceName,
+    bool? signalsReady,
+    Iterable<Type>? dependsOn,
+    Set<String>? registerFor,
   }) {
     if (_canRegister(registerFor)) {
       getIt.registerSingletonWithDependencies<T>(

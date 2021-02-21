@@ -4,17 +4,17 @@ import 'importable_type.dart';
 
 class InjectedDependency {
   ImportableType type;
-  String instanceName;
+  String? instanceName;
   String paramName;
   bool isFactoryParam;
   bool isPositional;
 
   InjectedDependency({
-    @required this.type,
+    required this.type,
     this.instanceName,
-    @required this.paramName,
-    @required this.isFactoryParam,
-    @required this.isPositional,
+    required this.paramName,
+    required this.isFactoryParam,
+    required this.isPositional,
   });
 
   @override
@@ -35,11 +35,7 @@ class InjectedDependency {
 
   @override
   int get hashCode =>
-      type.hashCode ^
-      instanceName.hashCode ^
-      paramName.hashCode ^
-      isFactoryParam.hashCode ^
-      isPositional.hashCode;
+      type.hashCode ^ instanceName.hashCode ^ paramName.hashCode ^ isFactoryParam.hashCode ^ isPositional.hashCode;
 
   factory InjectedDependency.fromJson(Map<String, dynamic> json) {
     var type;

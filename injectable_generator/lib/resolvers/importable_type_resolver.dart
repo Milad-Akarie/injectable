@@ -5,33 +5,29 @@ import 'package:injectable_generator/models/importable_type.dart';
 import 'package:path/path.dart' as p;
 
 abstract class ImportableTypeResolver {
-  String resolveImport(Element element);
+  String? resolveImport(Element element);
 
   ImportableType resolveType(DartType type);
 
-  static String relative(String path, Uri to) {
+  static String? relative(String? path, Uri? to) {
     if (path == null || to == null) {
       return null;
     }
     var fileUri = Uri.parse(path);
     var libName = to.pathSegments.first;
-    if ((to.scheme == 'package' &&
-            fileUri.scheme == 'package' &&
-            fileUri.pathSegments.first == libName) ||
+    if ((to.scheme == 'package' && fileUri.scheme == 'package' && fileUri.pathSegments.first == libName) ||
         (to.scheme == 'asset' && fileUri.scheme != 'package')) {
       if (fileUri.path == to.path) {
         return fileUri.pathSegments.last;
       } else {
-        return p.posix
-            .relative(fileUri.path, from: to.path)
-            .replaceFirst('../', '');
+        return p.posix.relative(fileUri.path, from: to.path).replaceFirst('../', '');
       }
     } else {
       return path;
     }
   }
 
-  static String resolveAssetImport(String path) {
+  static String? resolveAssetImport(String? path) {
     if (path == null) {
       return null;
     }
@@ -48,24 +44,22 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
 
   ImportableTypeResolverImpl(this.libs);
 
-  String resolveImport(Element element) {
+  String? resolveImport(Element? element) {
     // return early if source is null or element is a core type
     if (element?.source == null || _isCoreDartType(element)) {
       return null;
     }
 
     for (var lib in libs) {
-      if (lib.source != null &&
-          !_isCoreDartType(lib) &&
-          lib.exportNamespace.definedNames.values.contains(element)) {
+      if (!_isCoreDartType(lib) && lib.exportNamespace.definedNames.values.contains(element)) {
         return lib.identifier;
       }
     }
     return null;
   }
 
-  bool _isCoreDartType(Element element) {
-    return element.source.fullName == 'dart:core';
+  bool _isCoreDartType(Element? element) {
+    return element?.source?.fullName == 'dart:core';
   }
 
   // ImportableType resolveImportableFunctionType(ExecutableElement function) {
@@ -83,7 +77,7 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
   //   );
   // }
 
-  Iterable<ImportableType> _resolveTypeArguments(DartType typeToCheck) {
+  List<ImportableType> _resolveTypeArguments(DartType typeToCheck) {
     final importableTypes = <ImportableType>[];
     if (typeToCheck is ParameterizedType) {
       for (DartType type in typeToCheck.typeArguments) {
@@ -91,8 +85,9 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
           importableTypes.add(ImportableType(name: 'dynamic'));
         } else {
           importableTypes.add(ImportableType(
-            name: type.element.name,
+            name: type.element?.name ?? type.getDisplayString(withNullability: false),
             import: resolveImport(type.element),
+            isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
             typeArguments: _resolveTypeArguments(type),
           ));
         }

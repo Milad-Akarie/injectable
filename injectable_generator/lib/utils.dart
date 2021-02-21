@@ -26,15 +26,15 @@ void throwSourceError(String message) {
   throw ("\n${pre.padRight(72, '-')}\n$message\n${''.padRight(72, '-')} \n");
 }
 
-void throwError(String message, {Element element}) {
+void throwError(String message, {Element? element}) {
   throw InvalidGenerationSourceError(
     message,
     element: element,
   );
 }
 
-void throwIf(bool condition, String message, {Element element}) {
-  if (condition == true) {
+void throwIf(bool condition, String message, {Element? element}) {
+  if (condition) {
     throw InvalidGenerationSourceError(
       message,
       element: element,
@@ -42,8 +42,18 @@ void throwIf(bool condition, String message, {Element element}) {
   }
 }
 
-void printBoxed(String message,
-    {String header = '--------------------------'}) {
+void printBoxed(String message, {String header = '--------------------------'}) {
   final pre = header;
   print("$pre\n$message\n${''.padRight(72, '-')} \n");
+}
+
+extension IterableExtenstion<E> on Iterable<E> {
+  E? firstOrNull(bool test(E element)) {
+    for (var e in this) {
+      if (test(e)) {
+        return e;
+      }
+    }
+    return null;
+  }
 }

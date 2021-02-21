@@ -4,7 +4,6 @@ import 'package:injectable_generator/models/dependency_config.dart';
 import 'package:injectable_generator/models/injected_dependency.dart';
 import 'package:injectable_generator/models/module_config.dart';
 import 'package:injectable_generator/utils.dart';
-import 'package:meta/meta.dart';
 
 import '../injectable_types.dart';
 
@@ -13,9 +12,9 @@ const _getItRefer = Reference('GetIt', 'package:get_it/get_it.dart');
 const _ghRefer = Reference('gh');
 
 Library generateLibrary({
-  List<DependencyConfig> dependencies,
-  Uri targetFile,
-  String initializerName,
+  required List<DependencyConfig> dependencies,
+  required String initializerName,
+  Uri? targetFile,
   bool asExtension = false,
 }) {
   final sorted = sortDependencies(dependencies);
@@ -24,22 +23,24 @@ Library generateLibrary({
   final hasPreResolvedDeps = hasPreResolvedDependencies(sorted);
 
   // eager singleton instances are registered at the end
-  final eagerDeps = sorted
-      .where(
-        (d) => d.injectableType == InjectableType.singleton,
-      )
-      .toSet();
-
-  final lazyDeps = sorted.difference(eagerDeps);
+  final eagerDeps = <DependencyConfig>{};
+  final lazyDeps = <DependencyConfig>{};
   // all environment keys used
-  final environments = sorted.fold(
-    <String>{},
-    (prev, elm) => prev..addAll(elm.environments),
-  );
-
+  final environments = <String>{};
   // all register modules
-  final modules =
-      sorted.where((d) => d.isFromModule).map((d) => d.moduleConfig).toSet();
+  final modules = <ModuleConfig>{};
+  sorted.forEach((dep) {
+    environments.addAll(dep.environments);
+
+    if (dep.injectableType == InjectableType.singleton) {
+      eagerDeps.add(dep);
+    } else {
+      lazyDeps.add(dep);
+    }
+    if (dep.moduleConfig != null) {
+      modules.add(dep.moduleConfig!);
+    }
+  });
 
   final ignoreForFileComments = [
     '// ignore_for_file: unnecessary_lambdas',
@@ -124,18 +125,18 @@ Library generateLibrary({
                   ..modifier = FieldModifier.constant,
               )),
 
-          asExtension
-              ? Extension(
-                  (b) => b
-                    ..docs.addAll([
-                      if (asExtension) ...ignoreForFileComments,
-                      '/// an extension to register the provided dependencies inside of [GetIt]',
-                    ])
-                    ..name = 'GetItInjectableX'
-                    ..on = _getItRefer
-                    ..methods.add(intiMethod),
-                )
-              : intiMethod,
+          if (asExtension)
+            Extension(
+              (b) => b
+                ..docs.addAll([
+                  ...ignoreForFileComments,
+                  '/// an extension to register the provided dependencies inside of [GetIt]',
+                ])
+                ..name = 'GetItInjectableX'
+                ..on = _getItRefer
+                ..methods.add(intiMethod),
+            ),
+          if (!asExtension) intiMethod,
           // build modules
           ...modules.map(
             (module) => _buildModule(
@@ -149,9 +150,8 @@ Library generateLibrary({
   );
 }
 
-Class _buildModule(ModuleConfig module, Iterable<DependencyConfig> deps,
-    [Uri targetFile]) {
-  final abstractDeps = deps.where((d) => d.moduleConfig.isAbstract);
+Class _buildModule(ModuleConfig module, Iterable<DependencyConfig> deps, [Uri? targetFile]) {
+  final abstractDeps = deps.where((d) => d.moduleConfig!.isAbstract);
   return Class((clazz) {
     clazz
       ..name = '_\$${module.type.name}'
@@ -181,19 +181,18 @@ Class _buildModule(ModuleConfig module, Iterable<DependencyConfig> deps,
       (dep) => Method(
         (b) => b
           ..annotations.add(refer('override'))
-          ..name = dep.moduleConfig.initializerName
+          ..name = dep.moduleConfig!.initializerName
           ..returns = typeRefer(dep.typeImpl, targetFile)
-          ..type = dep.moduleConfig.isMethod ? null : MethodType.getter
+          ..type = dep.moduleConfig!.isMethod ? null : MethodType.getter
           ..body = _buildInstance(dep, targetFile, getReferName: '_getIt').code,
       ),
     ));
-    return clazz;
   });
 }
 
 Code buildLazyRegisterFun(
   DependencyConfig dep, [
-  Uri targetFile,
+  Uri? targetFile,
 ]) {
   var funcReferName;
   Map<String, Reference> factoryParams = {};
@@ -219,14 +218,12 @@ Code buildLazyRegisterFun(
             (name) => Parameter((b) => b.name = name),
           ),
         )
-        ..body = dep.isFromModule
-            ? _buildInstanceForModule(dep, targetFile).code
-            : _buildInstance(dep, targetFile).code,
+        ..body =
+            dep.isFromModule ? _buildInstanceForModule(dep, targetFile).code : _buildInstance(dep, targetFile).code,
     ).closure
   ], {
-    if (dep.instanceName != null)
-      'instanceName': literalString(dep.instanceName),
-    if (dep.environments?.isNotEmpty == true)
+    if (dep.instanceName != null) 'instanceName': literalString(dep.instanceName),
+    if (dep.environments.isNotEmpty == true)
       'registerFor': literalSet(
         dep.environments.map((e) => refer('_$e')),
       ),
@@ -235,13 +232,10 @@ Code buildLazyRegisterFun(
     typeRefer(dep.type, targetFile),
     ...factoryParams.values.map((p) => p.type)
   ]);
-  return dep.preResolve
-      ? registerExpression.awaited.statement
-      : registerExpression.statement;
+  return dep.preResolve ? registerExpression.awaited.statement : registerExpression.statement;
 }
 
-Map<String, Reference> _resolveFactoryParams(DependencyConfig dep,
-    [Uri targetFile]) {
+Map<String, Reference> _resolveFactoryParams(DependencyConfig dep, [Uri? targetFile]) {
   final params = <String, Reference>{};
   dep.dependencies.where((d) => d.isFactoryParam).forEach((d) {
     params[d.paramName] = typeRefer(d.type, targetFile);
@@ -254,7 +248,7 @@ Map<String, Reference> _resolveFactoryParams(DependencyConfig dep,
 
 Code buildSingletonRegisterFun(
   DependencyConfig dep, [
-  Uri targetFile,
+  Uri? targetFile,
 ]) {
   var funcReferName;
   var asFactory = true;
@@ -267,9 +261,7 @@ Code buildSingletonRegisterFun(
     funcReferName = 'singleton';
   }
 
-  final instanceBuilder = dep.isFromModule
-      ? _buildInstanceForModule(dep, targetFile)
-      : _buildInstance(dep, targetFile);
+  final instanceBuilder = dep.isFromModule ? _buildInstanceForModule(dep, targetFile) : _buildInstance(dep, targetFile);
   final registerExpression = _ghRefer.property(funcReferName).call([
     asFactory
         ? Method((b) => b
@@ -277,15 +269,14 @@ Code buildSingletonRegisterFun(
           ..body = instanceBuilder.code).closure
         : instanceBuilder
   ], {
-    if (dep.instanceName != null)
-      'instanceName': literalString(dep.instanceName),
-    if (dep.dependsOn?.isNotEmpty == true)
+    if (dep.instanceName != null) 'instanceName': literalString(dep.instanceName),
+    if (dep.dependsOn != null)
       'dependsOn': literalList(
-        dep.dependsOn.map(
+        dep.dependsOn!.map(
           (e) => typeRefer(e, targetFile),
         ),
       ),
-    if (dep.environments?.isNotEmpty == true)
+    if (dep.environments.isNotEmpty == true)
       'registerFor': literalSet(
         dep.environments.map((e) => refer('_$e')),
       ),
@@ -295,14 +286,12 @@ Code buildSingletonRegisterFun(
     typeRefer(dep.type, targetFile)
   ]);
 
-  return dep.preResolve
-      ? registerExpression.awaited.statement
-      : registerExpression.statement;
+  return dep.preResolve ? registerExpression.awaited.statement : registerExpression.statement;
 }
 
 Expression _buildInstance(
   DependencyConfig dep,
-  Uri targetFile, {
+  Uri? targetFile, {
   String getReferName = 'get',
 }) {
   final positionalParams = dep.positionalDependencies.map(
@@ -332,8 +321,8 @@ Expression _buildInstance(
   }
 }
 
-Expression _buildInstanceForModule(DependencyConfig dep, Uri targetFile) {
-  final module = dep.moduleConfig;
+Expression _buildInstanceForModule(DependencyConfig dep, Uri? targetFile) {
+  final module = dep.moduleConfig!;
   if (!module.isMethod) {
     return refer(
       toCamelCase(module.type.name),
@@ -360,22 +349,21 @@ Expression _buildInstanceForModule(DependencyConfig dep, Uri targetFile) {
 
 Expression _buildParamAssignment(
   InjectedDependency iDep,
-  Uri targetFile, {
-  @required String name,
+  Uri? targetFile, {
+  required String name,
 }) {
   if (iDep.isFactoryParam) {
     return refer(iDep.paramName);
   }
   return refer(name).call([], {
-    if (iDep.instanceName != null)
-      'instanceName': literalString(iDep.instanceName),
+    if (iDep.instanceName != null) 'instanceName': literalString(iDep.instanceName),
   }, [
-    typeRefer(iDep.type, targetFile),
+    typeRefer(iDep.type, targetFile, false),
   ]);
 }
 
 bool moduleHasOverrides(Iterable<DependencyConfig> deps) {
   return deps.where((d) => d.moduleConfig?.isAbstract == true).any(
-        (d) => d.dependencies?.isNotEmpty == true,
+        (d) => d.dependencies.isNotEmpty == true,
       );
 }

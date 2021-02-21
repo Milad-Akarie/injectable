@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 import 'importable_type.dart';
 
 class ModuleConfig {
@@ -9,23 +7,22 @@ class ModuleConfig {
   final String initializerName;
 
   const ModuleConfig({
-    @required this.isAbstract,
-    @required this.isMethod,
-    @required this.type,
-    @required this.initializerName,
+    required this.isAbstract,
+    required this.isMethod,
+    required this.type,
+    required this.initializerName,
   });
 
   ModuleConfig copyWith({
-    bool isAbstract,
-    bool isModuleMethod,
-    ImportableType module,
-    String initializerName,
+    bool? isAbstract,
+    bool? isModuleMethod,
+    ImportableType? module,
+    String? initializerName,
   }) {
     if ((isAbstract == null || identical(isAbstract, this.isAbstract)) &&
         (isModuleMethod == null || identical(isModuleMethod, this.isMethod)) &&
         (module == null || identical(module, this.type)) &&
-        (initializerName == null ||
-            identical(initializerName, this.initializerName))) {
+        (initializerName == null || identical(initializerName, this.initializerName))) {
       return this;
     }
 
@@ -44,23 +41,16 @@ class ModuleConfig {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is ModuleConfig &&
-          runtimeType == other.runtimeType &&
-          type == other.type);
+      identical(this, other) || (other is ModuleConfig && runtimeType == other.runtimeType && type == other.type);
 
   @override
   int get hashCode => type.hashCode;
 
   factory ModuleConfig.fromJson(Map<String, dynamic> json) {
-    ImportableType type;
-    if (json['type'] != null) {
-      type = ImportableType.fromJson(json['type']);
-    }
     return ModuleConfig(
       isAbstract: json['isAbstract'] as bool,
       isMethod: json['isMethod'] as bool,
-      type: type,
+      type: ImportableType.fromJson(json['type']),
       initializerName: json['initializerName'] as String,
     );
   }
