@@ -1,4 +1,6 @@
 # ChangeLog
+## [1.1.1]
+- Fix module injectable annotations are ignored #176, #177
 ## [1.1.0]
 - Refactor code to support null-safety
 - Fix preResolved instances conditional registration

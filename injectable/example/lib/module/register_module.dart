@@ -6,16 +6,15 @@ import '../injector/injector.dart';
 @module
 abstract class RegisterModule {
   @prod
-  @platformMobile
-  @Injectable(as: Repo)
+  @LazySingleton(as: Repo)
   RepoImpl get repo;
 
-  @Named("Repo")
   @dev
-  @preResolve
   Future<Repo> getRepo(LazyService service) {
     return Repo.asyncRepo(service);
   }
+
+  List get strings => ['strings'];
 }
 
 abstract class Repo {
