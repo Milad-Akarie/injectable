@@ -22,7 +22,6 @@ const TypeChecker _factoryMethodChecker =
 
 class DependencyResolver {
   final ImportableTypeResolver _typeResolver;
-  final Map<String, DartType> _typeArgsMap = {};
 
   ImportableType _type;
   ImportableType _typeImpl;
@@ -48,18 +47,10 @@ class DependencyResolver {
     ClassElement moduleClazz,
     ExecutableElement executableElement,
   ) {
-    var moduleType = _typeResolver.resolveType(moduleClazz.thisType);
-    var initializerName = executableElement.name;
-    var isAbstract = false;
-
+    final moduleType = _typeResolver.resolveType(moduleClazz.thisType);
+    final initializerName = executableElement.name;
     final returnType = executableElement.returnType;
-    if (returnType is ParameterizedType) {
-      ClassElement element = returnType.element;
-      for (int i = 0; i < element.typeParameters.length; i++) {
-        _typeArgsMap[element.typeParameters[i].name] =
-            returnType.typeArguments[i];
-      }
-    }
+    var isAbstract = false;
 
     throwIf(
       returnType.element is! ClassElement,
@@ -104,11 +95,11 @@ class DependencyResolver {
     final annotatedElement = excModuleMember ?? clazz;
     _typeImpl = _type;
     final injectableAnnotation = _injectableChecker.firstAnnotationOf(
-      clazz,
+      annotatedElement,
       throwOnUnresolved: false,
     );
 
-    var abstractType;
+    var asType;
     var inlineEnv;
 
     if (injectableAnnotation != null) {
@@ -125,7 +116,7 @@ class DependencyResolver {
                 (type) => _typeResolver.resolveType(type.toTypeValue()))
             ?.toList();
       }
-      abstractType = injectable.peek('as')?.typeValue;
+      asType = injectable.peek('as')?.typeValue;
       inlineEnv = injectable
           .peek('env')
           ?.listValue
@@ -133,12 +124,12 @@ class DependencyResolver {
           ?.toList();
     }
 
-    if (abstractType != null) {
-      final abstractChecker = TypeChecker.fromStatic(abstractType);
+    if (asType != null) {
+      final abstractChecker = TypeChecker.fromStatic(asType);
       final abstractSubtype = clazz.allSupertypes.firstWhere(
           (type) => abstractChecker.isExactly(type.element), orElse: () {
         throwError(
-          '[${clazz.name}] is not a subtype of [${abstractType.getDisplayString()}]',
+          '[${clazz.name}] is not a subtype of [${asType.getDisplayString()}]',
           element: clazz,
         );
         return null;
@@ -206,20 +197,8 @@ class DependencyResolver {
           namedAnnotation?.getField('name')?.toStringValue();
 
       var paramType = param.type;
-      if (paramType is TypeParameterType) {
-        paramType =
-            _typeArgsMap[paramType.getDisplayString(withNullability: false)];
-      }
-
-      ImportableType resolvedType;
-      if (paramType != null) {
-        resolvedType = _typeResolver.resolveType(paramType);
-      } else {
-        resolvedType = ImportableType(name: 'dynamic');
-      }
-
       _dependencies.add(InjectedDependency(
-        type: resolvedType,
+        type: _typeResolver.resolveType(paramType),
         instanceName: instanceName,
         isFactoryParam: _factoryParamChecker.hasAnnotationOfExact(param),
         paramName: param.name,

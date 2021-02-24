@@ -40,7 +40,7 @@ class AsyncService extends AbstractService {
       Future.value(AsyncService(envs));
 }
 
-abstract class LazyService {}
+abstract class LazyService<T> {}
 
 @Injectable(as: LazyService)
-class LazyServiceImpl extends LazyService {}
+class LazyServiceImpl extends LazyService<String> {}
