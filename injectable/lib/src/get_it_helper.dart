@@ -10,8 +10,7 @@ class GetItHelper {
   final EnvironmentFilter _environmentFilter;
 
   /// creates a new instance of GetItHelper
-  GetItHelper(this.getIt,
-      [String environment, EnvironmentFilter environmentFilter])
+  GetItHelper(this.getIt, [String environment, EnvironmentFilter environmentFilter])
       : assert(getIt != null),
         assert(environmentFilter == null || environment == null),
         _environmentFilter = environmentFilter ?? NoEnvOrContains(environment) {
@@ -105,11 +104,13 @@ class GetItHelper {
     FactoryFunc<T> factoryfunc, {
     String instanceName,
     Set<String> registerFor,
+    DisposingFunc<T> dispose,
   }) {
     if (_canRegister(registerFor)) {
       getIt.registerLazySingleton<T>(
         factoryfunc,
         instanceName: instanceName,
+        dispose: dispose,
       );
     }
   }
@@ -121,6 +122,7 @@ class GetItHelper {
     String instanceName,
     bool preResolve = false,
     Set<String> registerFor,
+    DisposingFunc<T> dispose,
   }) {
     if (_canRegister(registerFor)) {
       if (preResolve) {
@@ -128,12 +130,14 @@ class GetItHelper {
           (instance) => lazySingleton(
             () => instance,
             instanceName: instanceName,
+            dispose: dispose,
           ),
         );
       } else {
         getIt.registerLazySingletonAsync<T>(
           factoryfunc,
           instanceName: instanceName,
+          dispose: dispose,
         );
       }
     }
@@ -147,12 +151,14 @@ class GetItHelper {
     String instanceName,
     bool signalsReady,
     Set<String> registerFor,
+    DisposingFunc<T> dispose,
   }) {
     if (_canRegister(registerFor)) {
       getIt.registerSingleton<T>(
         instance,
         instanceName: instanceName,
         signalsReady: signalsReady,
+        dispose: dispose,
       );
     }
   }
@@ -166,6 +172,7 @@ class GetItHelper {
     bool preResolve = false,
     Iterable<Type> dependsOn,
     Set<String> registerFor,
+    DisposingFunc<T> dispose,
   }) {
     if (_canRegister(registerFor)) {
       if (preResolve) {
@@ -174,6 +181,7 @@ class GetItHelper {
             instance,
             instanceName: instanceName,
             signalsReady: signalsReady,
+            dispose: dispose,
           ),
         );
       } else {
@@ -182,6 +190,7 @@ class GetItHelper {
           instanceName: instanceName,
           dependsOn: dependsOn,
           signalsReady: signalsReady,
+          dispose: dispose,
         );
       }
     }
@@ -196,6 +205,7 @@ class GetItHelper {
     bool signalsReady,
     Iterable<Type> dependsOn,
     Set<String> registerFor,
+    DisposingFunc<T> dispose,
   }) {
     if (_canRegister(registerFor)) {
       getIt.registerSingletonWithDependencies<T>(
@@ -203,6 +213,7 @@ class GetItHelper {
         instanceName: instanceName,
         dependsOn: dependsOn,
         signalsReady: signalsReady,
+        dispose: dispose,
       );
     }
   }

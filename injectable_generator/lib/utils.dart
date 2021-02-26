@@ -42,8 +42,18 @@ void throwIf(bool condition, String message, {Element element}) {
   }
 }
 
-void printBoxed(String message,
-    {String header = '--------------------------'}) {
+void printBoxed(String message, {String header = '--------------------------'}) {
   final pre = header;
   print("$pre\n$message\n${''.padRight(72, '-')} \n");
+}
+
+extension IterableExtenstion<E> on Iterable<E> {
+  E firstOrNull(bool test(E element)) {
+    for (var e in this) {
+      if (test(e)) {
+        return e;
+      }
+    }
+    return null;
+  }
 }

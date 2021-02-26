@@ -1,6 +1,8 @@
 // holds extracted data from annotation & element
 // to be used later when generating the register function
 
+import 'package:injectable/injectable.dart';
+import 'package:injectable_generator/models/dispose_function_config.dart';
 import 'package:injectable_generator/models/module_config.dart';
 import 'package:meta/meta.dart';
 
@@ -20,6 +22,7 @@ class DependencyConfig {
   final List<ImportableType> dependsOn;
   final bool preResolve;
   final ModuleConfig moduleConfig;
+  final DisposeFunctionConfig disposeFunction;
 
   const DependencyConfig({
     @required this.type,
@@ -34,6 +37,7 @@ class DependencyConfig {
     this.dependsOn = const [],
     this.preResolve = false,
     this.moduleConfig,
+    this.disposeFunction,
   });
 
   @override
@@ -57,6 +61,7 @@ class DependencyConfig {
           isAsync == other.isAsync &&
           dependsOn == other.dependsOn &&
           preResolve == other.preResolve &&
+          disposeFunction == other.disposeFunction &&
           moduleConfig == other.moduleConfig);
 
   @override
@@ -72,12 +77,14 @@ class DependencyConfig {
       isAsync.hashCode ^
       dependsOn.hashCode ^
       preResolve.hashCode ^
+      disposeFunction.hashCode ^
       moduleConfig.hashCode;
 
   factory DependencyConfig.fromJson(Map<String, dynamic> json) {
     ImportableType type;
     ImportableType typeImpl;
     ModuleConfig moduleConfig;
+    DisposeFunctionConfig disposeFunction;
     List<ImportableType> dependsOn = [];
     List<InjectedDependency> dependencies = [];
 
@@ -90,6 +97,11 @@ class DependencyConfig {
     if (json['moduleConfig'] != null) {
       moduleConfig = ModuleConfig.fromJson(json['moduleConfig']);
     }
+
+    if (json['disposeFunction'] != null) {
+      disposeFunction = DisposeFunctionConfig.fromJson(json['disposeFunction']);
+    }
+
     if (json['dependencies'] != null) {
       json['dependencies'].forEach((v) {
         dependencies.add(InjectedDependency.fromJson(v));
@@ -106,6 +118,7 @@ class DependencyConfig {
       type: type,
       typeImpl: typeImpl,
       dependencies: dependencies,
+      disposeFunction: disposeFunction,
       injectableType: json['injectableType'] as int,
       instanceName: json['instanceName'] as String,
       signalsReady: json['signalsReady'] as bool,
@@ -139,15 +152,14 @@ class DependencyConfig {
   Map<String, dynamic> toJson() => {
         'type': type.toJson(),
         'typeImpl': typeImpl.toJson(),
+        if (disposeFunction != null) 'disposeFunction': disposeFunction.toJson(),
         "isAsync": isAsync,
         "preResolve": preResolve,
         "injectableType": injectableType,
         if (moduleConfig != null) 'moduleConfig': moduleConfig.toJson(),
-        if (dependsOn != null)
-          "dependsOn": dependsOn.map((v) => v.toJson()).toList(),
+        if (dependsOn != null) "dependsOn": dependsOn.map((v) => v.toJson()).toList(),
         if (environments != null) "environments": environments,
-        if (dependencies != null)
-          "dependencies": dependencies.map((v) => v.toJson()).toList(),
+        if (dependencies != null) "dependencies": dependencies.map((v) => v.toJson()).toList(),
         if (instanceName != null) "instanceName": instanceName,
         if (signalsReady != null) "signalsReady": signalsReady,
         if (constructorName != null) "constructorName": constructorName,
@@ -155,9 +167,7 @@ class DependencyConfig {
 
   bool get isFromModule => moduleConfig != null;
 
-  List<InjectedDependency> get positionalDependencies =>
-      dependencies.where((d) => d.isPositional).toList();
+  List<InjectedDependency> get positionalDependencies => dependencies.where((d) => d.isPositional).toList();
 
-  List<InjectedDependency> get namedDependencies =>
-      dependencies.where((d) => !d.isPositional).toList();
+  List<InjectedDependency> get namedDependencies => dependencies.where((d) => !d.isPositional).toList();
 }
