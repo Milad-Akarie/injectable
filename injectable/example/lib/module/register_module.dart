@@ -1,12 +1,12 @@
+import 'dart:async';
+
 import 'package:example/services/abstract_service.dart';
 import 'package:injectable/injectable.dart';
-
-import '../injector/injector.dart';
 
 @module
 abstract class RegisterModule {
   @prod
-  @LazySingleton(as: Repo)
+  @LazySingleton(as: Repo, dispose: disposeRepo)
   RepoImpl get repo;
 
   @dev
@@ -14,7 +14,12 @@ abstract class RegisterModule {
     return Repo.asyncRepo(service);
   }
 
+  @Named("StringsList")
   List get strings => ['strings'];
+}
+
+FutureOr disposeRepo(Repo instance) {
+  instance.dispose();
 }
 
 abstract class Repo {
@@ -23,10 +28,17 @@ abstract class Repo {
     await Future.delayed(Duration(seconds: 1));
     return RepoImpl(service);
   }
+
+  void dispose();
 }
 
 class RepoImpl extends Repo {
   final LazyService service;
 
   RepoImpl(this.service);
+
+  @override
+  void dispose() {
+    print("Disposing RepoImpl");
+  }
 }

@@ -8,7 +8,7 @@ abstract class ImportableTypeResolver {
   String resolveImport(Element element);
 
   ImportableType resolveType(DartType type);
-
+  ImportableType resolveFunctionType(ExecutableElement function);
   static String relative(String path, Uri to) {
     if (path == null || to == null) {
       return null;
@@ -68,20 +68,20 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
     return element.source.fullName == 'dart:core';
   }
 
-  // ImportableType resolveImportableFunctionType(ExecutableElement function) {
-  //   assert(function != null);
-  //   final displayName = function.displayName.replaceFirst(RegExp('^_'), '');
-  //   var functionName = displayName;
-  //   Element elementToImport = function;
-  //   if (function.enclosingElement is ClassElement) {
-  //     functionName = '${function.enclosingElement.displayName}.$displayName';
-  //     elementToImport = function.enclosingElement;
-  //   }
-  //   return ImportableType(
-  //     name: functionName,
-  //     import: resolveImport(elementToImport),
-  //   );
-  // }
+  @override
+  ImportableType resolveFunctionType(ExecutableElement function) {
+    final displayName = function.displayName;
+    var functionName = displayName;
+    Element elementToImport = function;
+    if (function.enclosingElement is ClassElement) {
+      functionName = '${function.enclosingElement.displayName}.$displayName';
+      elementToImport = function.enclosingElement;
+    }
+    return ImportableType(
+      name: functionName,
+      import: resolveImport(elementToImport),
+    );
+  }
 
   Iterable<ImportableType> _resolveTypeArguments(DartType typeToCheck) {
     final importableTypes = <ImportableType>[];

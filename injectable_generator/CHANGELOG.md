@@ -1,4 +1,8 @@
 # ChangeLog
+## [1.1.2]
+- Add support for disposing of singletons.
+- change min version constraint of GetIt to 5.0.0
+- update readme file
 ## [1.1.1]
 - Fix module injectable annotations are ignored #176, #177
 ## [1.1.0]

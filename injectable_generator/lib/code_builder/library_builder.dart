@@ -1,6 +1,7 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:injectable_generator/code_builder/builder_utils.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
+import 'package:injectable_generator/models/dispose_function_config.dart';
 import 'package:injectable_generator/models/injected_dependency.dart';
 import 'package:injectable_generator/models/module_config.dart';
 import 'package:injectable_generator/utils.dart';
@@ -230,7 +231,9 @@ Code buildLazyRegisterFun(
       'registerFor': literalSet(
         dep.environments.map((e) => refer('_$e')),
       ),
-    if (dep.preResolve == true) 'preResolve': literalBool(true)
+    if (dep.preResolve == true) 'preResolve': literalBool(true),
+    if (dep.disposeFunction != null)
+      'dispose': _getDisposeFunctionAssignment(dep.disposeFunction, targetFile)
   }, [
     typeRefer(dep.type, targetFile),
     ...factoryParams.values.map((p) => p.type)
@@ -290,7 +293,12 @@ Code buildSingletonRegisterFun(
         dep.environments.map((e) => refer('_$e')),
       ),
     if (dep.signalsReady != null) 'signalsReady': literalBool(dep.signalsReady),
-    if (dep.preResolve == true) 'preResolve': literalBool(true)
+    if (dep.preResolve == true) 'preResolve': literalBool(true),
+    if (dep.disposeFunction != null)
+      'dispose': _getDisposeFunctionAssignment(
+        dep.disposeFunction,
+        targetFile,
+      )
   }, [
     typeRefer(dep.type, targetFile)
   ]);
@@ -298,6 +306,17 @@ Code buildSingletonRegisterFun(
   return dep.preResolve
       ? registerExpression.awaited.statement
       : registerExpression.statement;
+}
+
+Expression _getDisposeFunctionAssignment(DisposeFunctionConfig disposeFunction,
+    [Uri targetFile]) {
+  if (disposeFunction.isInstance) {
+    return Method((b) => b
+      ..requiredParameters.add(Parameter((b) => b.name = 'i'))
+      ..body = refer('i').property(disposeFunction.name).call([]).code).closure;
+  } else {
+    return typeRefer(disposeFunction.importableType, targetFile);
+  }
 }
 
 Expression _buildInstance(

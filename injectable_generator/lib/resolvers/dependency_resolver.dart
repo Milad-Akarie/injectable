@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:injectable/injectable.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
+import 'package:injectable_generator/models/dispose_function_config.dart';
 import 'package:injectable_generator/models/importable_type.dart';
 import 'package:injectable_generator/models/injected_dependency.dart';
 import 'package:injectable_generator/models/module_config.dart';
@@ -20,6 +21,9 @@ const TypeChecker _factoryParamChecker = TypeChecker.fromRuntime(FactoryParam);
 const TypeChecker _factoryMethodChecker =
     TypeChecker.fromRuntime(FactoryMethod);
 
+const TypeChecker _disposeMethodChecker =
+    TypeChecker.fromRuntime(DisposeMethod);
+
 class DependencyResolver {
   final ImportableTypeResolver _typeResolver;
 
@@ -35,6 +39,7 @@ class DependencyResolver {
   String _constructorName;
   List<InjectedDependency> _dependencies = [];
   ModuleConfig _moduleConfig;
+  DisposeFunctionConfig _disposeFunctionConfig;
 
   DependencyResolver(this._typeResolver);
 
@@ -101,14 +106,19 @@ class DependencyResolver {
 
     var asType;
     var inlineEnv;
+    ExecutableElement disposeFuncFromAnnotation;
 
     if (injectableAnnotation != null) {
       final injectable = ConstantReader(injectableAnnotation);
       if (injectable.instanceOf(TypeChecker.fromRuntime(LazySingleton))) {
         _injectableType = InjectableType.lazySingleton;
+        disposeFuncFromAnnotation =
+            injectable.peek('dispose')?.objectValue?.toFunctionValue();
       } else if (injectable.instanceOf(TypeChecker.fromRuntime(Singleton))) {
         _injectableType = InjectableType.singleton;
         _signalsReady = injectable.peek('signalsReady')?.boolValue;
+        disposeFuncFromAnnotation =
+            injectable.peek('dispose')?.objectValue?.toFunctionValue();
         _dependsOn = injectable
             .peek('dependsOn')
             ?.listValue
@@ -157,6 +167,38 @@ class DependencyResolver {
       } else {
         _instanceName = clazz.name;
       }
+    }
+
+    var disposeMethod = clazz.methods
+        .firstOrNull((m) => _disposeMethodChecker.hasAnnotationOfExact(m));
+    if (disposeMethod != null) {
+      throwIf(
+        _injectableType == InjectableType.factory,
+        'Factory types can not have a dispose method',
+        element: clazz,
+      );
+      throwIf(
+        disposeMethod.parameters.any((p) =>
+            p.isRequiredNamed || p.isRequiredPositional || p.hasRequired),
+        'Dispose method must not take any required arguments',
+        element: disposeMethod,
+      );
+      _disposeFunctionConfig = DisposeFunctionConfig(
+        isInstance: true,
+        name: disposeMethod.name,
+      );
+    } else if (disposeFuncFromAnnotation != null) {
+      final params = disposeFuncFromAnnotation.parameters;
+      throwIf(
+          params.length != 1 ||
+              _typeResolver.resolveType(params.first.type) != _type,
+          'Dispose function for $_type must have the same signature as FutureOr Function($_type instance)',
+          element: disposeFuncFromAnnotation);
+      _disposeFunctionConfig = DisposeFunctionConfig(
+        name: disposeFuncFromAnnotation.name,
+        importableType:
+            _typeResolver.resolveFunctionType(disposeFuncFromAnnotation),
+      );
     }
 
     ExecutableElement executableInitializer;
@@ -235,6 +277,7 @@ class DependencyResolver {
       type: _type,
       typeImpl: _typeImpl,
       injectableType: _injectableType,
+      disposeFunction: _disposeFunctionConfig,
       dependencies: _dependencies,
       dependsOn: _dependsOn,
       environments: _environments,
