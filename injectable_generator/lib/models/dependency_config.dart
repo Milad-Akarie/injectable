@@ -3,6 +3,7 @@
 
 import 'package:injectable_generator/models/module_config.dart';
 
+import 'dispose_function_config.dart';
 import 'importable_type.dart';
 import 'injected_dependency.dart';
 
@@ -20,6 +21,7 @@ class DependencyConfig {
   final List<ImportableType>? dependsOn;
   final bool preResolve;
   final ModuleConfig? moduleConfig;
+  final DisposeFunctionConfig? disposeFunction;
 
   const DependencyConfig({
     required this.type,
@@ -34,6 +36,7 @@ class DependencyConfig {
     this.dependsOn = const [],
     this.preResolve = false,
     this.moduleConfig,
+    this.disposeFunction,
   });
 
   @override
@@ -57,6 +60,7 @@ class DependencyConfig {
           isAsync == other.isAsync &&
           dependsOn == other.dependsOn &&
           preResolve == other.preResolve &&
+          disposeFunction == other.disposeFunction &&
           moduleConfig == other.moduleConfig);
 
   @override
@@ -72,16 +76,24 @@ class DependencyConfig {
       isAsync.hashCode ^
       dependsOn.hashCode ^
       preResolve.hashCode ^
+      disposeFunction.hashCode ^
       moduleConfig.hashCode;
 
   factory DependencyConfig.fromJson(Map<dynamic, dynamic> json) {
     ModuleConfig? moduleConfig;
+    DisposeFunctionConfig? disposeFunction;
+
     List<ImportableType> dependsOn = [];
     List<InjectedDependency> dependencies = [];
 
     if (json['moduleConfig'] != null) {
       moduleConfig = ModuleConfig.fromJson(json['moduleConfig']);
     }
+
+    if (json['disposeFunction'] != null) {
+      disposeFunction = DisposeFunctionConfig.fromJson(json['disposeFunction']);
+    }
+
     if (json['dependencies'] != null) {
       json['dependencies'].forEach((v) {
         dependencies.add(InjectedDependency.fromJson(v));
@@ -107,6 +119,7 @@ class DependencyConfig {
       dependsOn: dependsOn,
       preResolve: json['preResolve'] as bool,
       moduleConfig: moduleConfig,
+      disposeFunction: disposeFunction,
     );
   }
 
@@ -117,7 +130,10 @@ class DependencyConfig {
         "preResolve": preResolve,
         "injectableType": injectableType,
         if (moduleConfig != null) 'moduleConfig': moduleConfig!.toJson(),
-        if (dependsOn != null) "dependsOn": dependsOn!.map((v) => v.toJson()).toList(),
+        if (disposeFunction != null)
+          'disposeFunction': disposeFunction!.toJson(),
+        if (dependsOn != null)
+          "dependsOn": dependsOn!.map((v) => v.toJson()).toList(),
         "environments": environments,
         "dependencies": dependencies.map((v) => v.toJson()).toList(),
         if (instanceName != null) "instanceName": instanceName,
@@ -127,7 +143,9 @@ class DependencyConfig {
 
   bool get isFromModule => moduleConfig != null;
 
-  List<InjectedDependency> get positionalDependencies => dependencies.where((d) => d.isPositional).toList();
+  List<InjectedDependency> get positionalDependencies =>
+      dependencies.where((d) => d.isPositional).toList();
 
-  List<InjectedDependency> get namedDependencies => dependencies.where((d) => !d.isPositional).toList();
+  List<InjectedDependency> get namedDependencies =>
+      dependencies.where((d) => !d.isPositional).toList();
 }

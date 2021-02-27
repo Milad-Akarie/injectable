@@ -22,7 +22,8 @@ class ModuleConfig {
     if ((isAbstract == null || identical(isAbstract, this.isAbstract)) &&
         (isModuleMethod == null || identical(isModuleMethod, this.isMethod)) &&
         (module == null || identical(module, this.type)) &&
-        (initializerName == null || identical(initializerName, this.initializerName))) {
+        (initializerName == null ||
+            identical(initializerName, this.initializerName))) {
       return this;
     }
 
@@ -41,7 +42,10 @@ class ModuleConfig {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || (other is ModuleConfig && runtimeType == other.runtimeType && type == other.type);
+      identical(this, other) ||
+      (other is ModuleConfig &&
+          runtimeType == other.runtimeType &&
+          type == other.type);
 
   @override
   int get hashCode => type.hashCode;

@@ -35,7 +35,11 @@ class ImportableType {
           ListEquality().equals(typeArguments, other.typeArguments));
 
   @override
-  int get hashCode => import.hashCode ^ name.hashCode ^ isNullable.hashCode ^ ListEquality().hash(typeArguments);
+  int get hashCode =>
+      import.hashCode ^
+      name.hashCode ^
+      isNullable.hashCode ^
+      ListEquality().hash(typeArguments);
 
   factory ImportableType.fromJson(Map<String, dynamic> json) {
     List<ImportableType> typeArguments = [];
@@ -58,7 +62,8 @@ class ImportableType {
       'import': this.import,
       'name': this.name,
       'isNullable': this.isNullable,
-      if (typeArguments.isNotEmpty) "typeArguments": typeArguments.map((v) => v.toJson()).toList(),
+      if (typeArguments.isNotEmpty)
+        "typeArguments": typeArguments.map((v) => v.toJson()).toList(),
     } as Map<String, dynamic>;
   }
 }

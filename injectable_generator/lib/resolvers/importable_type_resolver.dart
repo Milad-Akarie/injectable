@@ -8,6 +8,7 @@ abstract class ImportableTypeResolver {
   String? resolveImport(Element element);
 
   ImportableType resolveType(DartType type);
+  ImportableType resolveFunctionType(ExecutableElement function);
 
   static String? relative(String? path, Uri? to) {
     if (path == null || to == null) {
@@ -15,12 +16,16 @@ abstract class ImportableTypeResolver {
     }
     var fileUri = Uri.parse(path);
     var libName = to.pathSegments.first;
-    if ((to.scheme == 'package' && fileUri.scheme == 'package' && fileUri.pathSegments.first == libName) ||
+    if ((to.scheme == 'package' &&
+            fileUri.scheme == 'package' &&
+            fileUri.pathSegments.first == libName) ||
         (to.scheme == 'asset' && fileUri.scheme != 'package')) {
       if (fileUri.path == to.path) {
         return fileUri.pathSegments.last;
       } else {
-        return p.posix.relative(fileUri.path, from: to.path).replaceFirst('../', '');
+        return p.posix
+            .relative(fileUri.path, from: to.path)
+            .replaceFirst('../', '');
       }
     } else {
       return path;
@@ -51,7 +56,8 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
     }
 
     for (var lib in libs) {
-      if (!_isCoreDartType(lib) && lib.exportNamespace.definedNames.values.contains(element)) {
+      if (!_isCoreDartType(lib) &&
+          lib.exportNamespace.definedNames.values.contains(element)) {
         return lib.identifier;
       }
     }
@@ -62,20 +68,20 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
     return element?.source?.fullName == 'dart:core';
   }
 
-  // ImportableType resolveImportableFunctionType(ExecutableElement function) {
-  //   assert(function != null);
-  //   final displayName = function.displayName.replaceFirst(RegExp('^_'), '');
-  //   var functionName = displayName;
-  //   Element elementToImport = function;
-  //   if (function.enclosingElement is ClassElement) {
-  //     functionName = '${function.enclosingElement.displayName}.$displayName';
-  //     elementToImport = function.enclosingElement;
-  //   }
-  //   return ImportableType(
-  //     name: functionName,
-  //     import: resolveImport(elementToImport),
-  //   );
-  // }
+  @override
+  ImportableType resolveFunctionType(ExecutableElement function) {
+    final displayName = function.displayName;
+    var functionName = displayName;
+    Element elementToImport = function;
+    if (function.enclosingElement is ClassElement) {
+      functionName = '${function.enclosingElement.displayName}.$displayName';
+      elementToImport = function.enclosingElement;
+    }
+    return ImportableType(
+      name: functionName,
+      import: resolveImport(elementToImport),
+    );
+  }
 
   List<ImportableType> _resolveTypeArguments(DartType typeToCheck) {
     final importableTypes = <ImportableType>[];
@@ -85,7 +91,8 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
           importableTypes.add(ImportableType(name: 'dynamic'));
         } else {
           importableTypes.add(ImportableType(
-            name: type.element?.name ?? type.getDisplayString(withNullability: false),
+            name: type.element?.name ??
+                type.getDisplayString(withNullability: false),
             import: resolveImport(type.element),
             isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
             typeArguments: _resolveTypeArguments(type),

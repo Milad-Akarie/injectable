@@ -13,7 +13,8 @@ Set<DependencyConfig> sortDependencies(List<DependencyConfig> deps) {
   return sorted;
 }
 
-void _sortByDependents(Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
+void _sortByDependents(
+    Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
   for (var dep in unSorted) {
     if (dep.dependencies.every(
       (iDep) =>
@@ -43,7 +44,8 @@ TypeReference nullableRefer(
       ..url = url
       ..isNullable = nullable);
 
-Reference typeRefer(ImportableType type, [Uri? targetFile, bool withNullabilitySuffix = true]) {
+Reference typeRefer(ImportableType type,
+    [Uri? targetFile, bool withNullabilitySuffix = true]) {
   final relativeImport = targetFile == null
       ? ImportableTypeResolver.resolveAssetImport(type.import)
       : ImportableTypeResolver.relative(type.import, targetFile);

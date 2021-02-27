@@ -67,10 +67,16 @@ class Singleton extends Injectable {
   /// in registerSingleton function
   final List<Type>? dependsOn;
 
+  /// a dispose callback function to be
+  /// passed to [GetIt]
+  /// the signature must match FutureOr dispose(T)
+  final Function? dispose;
+
   /// default constructor
   const Singleton({
     this.signalsReady,
     this.dependsOn,
+    this.dispose,
     Type? as,
     List<String>? env,
   }) : super(as: as, env: env);
@@ -87,7 +93,13 @@ class LazySingleton extends Injectable {
   const LazySingleton({
     Type? as,
     List<String>? env,
+    this.dispose,
   }) : super(as: as, env: env);
+
+  /// a dispose callback function to be
+  /// passed to [GetIt]
+  /// the signature must match FutureOr dispose(T)
+  final Function? dispose;
 }
 
 /// const instance of [LazySingleton]
@@ -193,3 +205,13 @@ class PreResolve {
 /// const instance of [PreResolve]
 /// with default arguments
 const preResolve = PreResolve._();
+
+/// marks an instance method as a dispose
+/// call back to be passed to [GetIt]
+class DisposeMethod {
+  const DisposeMethod._();
+}
+
+/// const instance of [DisposeMethod]
+/// with default arguments
+const disposeMethod = DisposeMethod._();

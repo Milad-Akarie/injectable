@@ -13,10 +13,13 @@ abstract class RegisterModule {
   @Named("Repo")
   @dev
   @preResolve
+  @LazySingleton(dispose: disposeRepo)
   Future<Repo> getRepo(LazyService service) {
     return Repo.asyncRepo(service);
   }
 }
+
+void disposeRepo(Repo repo) {}
 
 abstract class Repo {
   @factoryMethod
@@ -30,4 +33,10 @@ class RepoImpl extends Repo {
   final LazyService service;
 
   RepoImpl(this.service);
+}
+
+@singleton
+class DisposableSingleton {
+  @disposeMethod
+  void dispose() {}
 }

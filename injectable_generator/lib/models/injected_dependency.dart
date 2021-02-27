@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 import 'importable_type.dart';
 
 class InjectedDependency {

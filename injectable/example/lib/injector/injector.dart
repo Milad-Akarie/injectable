@@ -7,7 +7,6 @@ const platformMobile = Environment('platformMobile');
 const platformWeb = Environment('platformWeb');
 
 @InjectableInit(
-  usesNullSafety: true,
   asExtension: true,
   initializerName: 'init',
 )
