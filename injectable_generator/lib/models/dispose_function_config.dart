@@ -19,7 +19,8 @@ class DisposeFunctionConfig {
   }) {
     if ((isInstance == null || identical(isInstance, this.isInstance)) &&
         (name == null || identical(name, this.name)) &&
-        (importableType == null || identical(importableType, this.importableType))) {
+        (importableType == null ||
+            identical(importableType, this.importableType))) {
       return this;
     }
 
@@ -45,7 +46,8 @@ class DisposeFunctionConfig {
           importableType == other.importableType);
 
   @override
-  int get hashCode => isInstance.hashCode ^ name.hashCode ^ importableType.hashCode;
+  int get hashCode =>
+      isInstance.hashCode ^ name.hashCode ^ importableType.hashCode;
 
   factory DisposeFunctionConfig.fromJson(Map<String, dynamic> json) {
     ImportableType disposeFunction;
@@ -65,7 +67,8 @@ class DisposeFunctionConfig {
     return {
       'isInstance': this.isInstance,
       'name': this.name,
-      if (importableType != null) 'importableType': this.importableType.toJson(),
+      if (importableType != null)
+        'importableType': this.importableType.toJson(),
     } as Map<String, dynamic>;
   }
 }

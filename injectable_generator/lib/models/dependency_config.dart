@@ -152,14 +152,17 @@ class DependencyConfig {
   Map<String, dynamic> toJson() => {
         'type': type.toJson(),
         'typeImpl': typeImpl.toJson(),
-        if (disposeFunction != null) 'disposeFunction': disposeFunction.toJson(),
+        if (disposeFunction != null)
+          'disposeFunction': disposeFunction.toJson(),
         "isAsync": isAsync,
         "preResolve": preResolve,
         "injectableType": injectableType,
         if (moduleConfig != null) 'moduleConfig': moduleConfig.toJson(),
-        if (dependsOn != null) "dependsOn": dependsOn.map((v) => v.toJson()).toList(),
+        if (dependsOn != null)
+          "dependsOn": dependsOn.map((v) => v.toJson()).toList(),
         if (environments != null) "environments": environments,
-        if (dependencies != null) "dependencies": dependencies.map((v) => v.toJson()).toList(),
+        if (dependencies != null)
+          "dependencies": dependencies.map((v) => v.toJson()).toList(),
         if (instanceName != null) "instanceName": instanceName,
         if (signalsReady != null) "signalsReady": signalsReady,
         if (constructorName != null) "constructorName": constructorName,
@@ -167,7 +170,9 @@ class DependencyConfig {
 
   bool get isFromModule => moduleConfig != null;
 
-  List<InjectedDependency> get positionalDependencies => dependencies.where((d) => d.isPositional).toList();
+  List<InjectedDependency> get positionalDependencies =>
+      dependencies.where((d) => d.isPositional).toList();
 
-  List<InjectedDependency> get namedDependencies => dependencies.where((d) => !d.isPositional).toList();
+  List<InjectedDependency> get namedDependencies =>
+      dependencies.where((d) => !d.isPositional).toList();
 }

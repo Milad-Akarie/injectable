@@ -39,7 +39,8 @@ Library generateLibrary({
   );
 
   // all register modules
-  final modules = sorted.where((d) => d.isFromModule).map((d) => d.moduleConfig).toSet();
+  final modules =
+      sorted.where((d) => d.isFromModule).map((d) => d.moduleConfig).toSet();
 
   final ignoreForFileComments = [
     '// ignore_for_file: unnecessary_lambdas',
@@ -149,7 +150,8 @@ Library generateLibrary({
   );
 }
 
-Class _buildModule(ModuleConfig module, Iterable<DependencyConfig> deps, [Uri targetFile]) {
+Class _buildModule(ModuleConfig module, Iterable<DependencyConfig> deps,
+    [Uri targetFile]) {
   final abstractDeps = deps.where((d) => d.moduleConfig.isAbstract);
   return Class((clazz) {
     clazz
@@ -218,25 +220,31 @@ Code buildLazyRegisterFun(
             (name) => Parameter((b) => b.name = name),
           ),
         )
-        ..body =
-            dep.isFromModule ? _buildInstanceForModule(dep, targetFile).code : _buildInstance(dep, targetFile).code,
+        ..body = dep.isFromModule
+            ? _buildInstanceForModule(dep, targetFile).code
+            : _buildInstance(dep, targetFile).code,
     ).closure
   ], {
-    if (dep.instanceName != null) 'instanceName': literalString(dep.instanceName),
+    if (dep.instanceName != null)
+      'instanceName': literalString(dep.instanceName),
     if (dep.environments?.isNotEmpty == true)
       'registerFor': literalSet(
         dep.environments.map((e) => refer('_$e')),
       ),
     if (dep.preResolve == true) 'preResolve': literalBool(true),
-    if (dep.disposeFunction != null) 'dispose': _getDisposeFunctionAssignment(dep.disposeFunction, targetFile)
+    if (dep.disposeFunction != null)
+      'dispose': _getDisposeFunctionAssignment(dep.disposeFunction, targetFile)
   }, [
     typeRefer(dep.type, targetFile),
     ...factoryParams.values.map((p) => p.type)
   ]);
-  return dep.preResolve ? registerExpression.awaited.statement : registerExpression.statement;
+  return dep.preResolve
+      ? registerExpression.awaited.statement
+      : registerExpression.statement;
 }
 
-Map<String, Reference> _resolveFactoryParams(DependencyConfig dep, [Uri targetFile]) {
+Map<String, Reference> _resolveFactoryParams(DependencyConfig dep,
+    [Uri targetFile]) {
   final params = <String, Reference>{};
   dep.dependencies.where((d) => d.isFactoryParam).forEach((d) {
     params[d.paramName] = typeRefer(d.type, targetFile);
@@ -262,7 +270,9 @@ Code buildSingletonRegisterFun(
     funcReferName = 'singleton';
   }
 
-  final instanceBuilder = dep.isFromModule ? _buildInstanceForModule(dep, targetFile) : _buildInstance(dep, targetFile);
+  final instanceBuilder = dep.isFromModule
+      ? _buildInstanceForModule(dep, targetFile)
+      : _buildInstance(dep, targetFile);
   final registerExpression = _ghRefer.property(funcReferName).call([
     asFactory
         ? Method((b) => b
@@ -270,7 +280,8 @@ Code buildSingletonRegisterFun(
           ..body = instanceBuilder.code).closure
         : instanceBuilder
   ], {
-    if (dep.instanceName != null) 'instanceName': literalString(dep.instanceName),
+    if (dep.instanceName != null)
+      'instanceName': literalString(dep.instanceName),
     if (dep.dependsOn?.isNotEmpty == true)
       'dependsOn': literalList(
         dep.dependsOn.map(
@@ -292,10 +303,13 @@ Code buildSingletonRegisterFun(
     typeRefer(dep.type, targetFile)
   ]);
 
-  return dep.preResolve ? registerExpression.awaited.statement : registerExpression.statement;
+  return dep.preResolve
+      ? registerExpression.awaited.statement
+      : registerExpression.statement;
 }
 
-Expression _getDisposeFunctionAssignment(DisposeFunctionConfig disposeFunction, [Uri targetFile]) {
+Expression _getDisposeFunctionAssignment(DisposeFunctionConfig disposeFunction,
+    [Uri targetFile]) {
   if (disposeFunction.isInstance) {
     return Method((b) => b
       ..requiredParameters.add(Parameter((b) => b.name = 'i'))
@@ -372,7 +386,8 @@ Expression _buildParamAssignment(
     return refer(iDep.paramName);
   }
   return refer(name).call([], {
-    if (iDep.instanceName != null) 'instanceName': literalString(iDep.instanceName),
+    if (iDep.instanceName != null)
+      'instanceName': literalString(iDep.instanceName),
   }, [
     typeRefer(iDep.type, targetFile),
   ]);

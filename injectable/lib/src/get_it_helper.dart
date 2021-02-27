@@ -10,7 +10,8 @@ class GetItHelper {
   final EnvironmentFilter _environmentFilter;
 
   /// creates a new instance of GetItHelper
-  GetItHelper(this.getIt, [String environment, EnvironmentFilter environmentFilter])
+  GetItHelper(this.getIt,
+      [String environment, EnvironmentFilter environmentFilter])
       : assert(getIt != null),
         assert(environmentFilter == null || environment == null),
         _environmentFilter = environmentFilter ?? NoEnvOrContains(environment) {

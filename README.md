@@ -1,6 +1,10 @@
-# injectable
 
-Injectable is a convenient code generator for get_it. Inspired by Angular DI, Guice DI and inject.dart.
+
+<p>
+<a href="https://img.shields.io/badge/License-MIT-green"><img src="https://img.shields.io/badge/License-MIT-green" alt="MIT License"></a>
+<a href="https://github.com/Milad-Akarie/injectable/stargazers"><img src="https://img.shields.io/github/stars/Milad-Akarie/injectable?style=flat&logo=github&colorB=green&label=stars" alt="stars"></a>
+<a href="https://pub.dev/packages/injectable/versions/1.1.2"><img src="https://img.shields.io/badge/pub-1.1.2-orange" alt="pub version"></a>
+</p>
 
 ---
 
@@ -8,6 +12,7 @@ Injectable is a convenient code generator for get_it. Inspired by Angular DI, Gu
 - [Setup](#setup)
 - [Registering factories](#registering-factories)
 - [Registering singletons](#registering-singletons)
+- [Disposing of singletons](#disposing-of-singletons)
 - [Registering asynchronous injectables](#registering-asynchronous-injectables)
 - [Passing Parameters to factories](#passing-parameters-to-factories)
 - [Binding abstract classes to implementations](#binding-abstract-classes-to-implementations)
@@ -23,12 +28,12 @@ dependencies:
   # add injectable to your dependencies
   injectable:
   # add get_it
-  get_it:
+  get_It:
 
 dev_dependencies:
   # add the generator to your dev_dependencies
   injectable_generator:
-  # of course build_runner is needed to run the generator
+  # add build runner if not already added
   build_runner:
 ```
 
@@ -118,23 +123,51 @@ void $initGetIt(GetIt getIt,{String environment,EnvironmentFilter environmentFil
 
 ---
 
-Use the @singleton or @lazySingleton to annotate your singleton classes.
-Alternatively use the constructor version to pass signalsReady to getIt.registerSingleton(signalsReady)
-@Singleton(signalsReady: true) >> getIt.registerSingleton(Model(), signalsReady: true)
-@LazySingleton() >> getIt.registerLazySingleton(() => Model())
+Use the `@singleton` or `@lazySingleton` to annotate your singleton classes.
+Alternatively use the constructor version to pass signalsReady to `getIt.registerSingleton(signalsReady)`
+`@Singleton(signalsReady: true)` >> `getIt.registerSingleton(Model(), signalsReady: true)`
+`@LazySingleton()` >> `getIt.registerLazySingleton(() => Model())`
 
 ```dart
 @singleton // or @lazySingleton
 class ApiProvider {}
 ```
+## Disposing of singletons
+GetIt provides a way to dispose singleton and lazySingleton instances by passing a dispose callBack to the register function, Injectable works in the static realm which means it's not possible to pass instance functions to your annotation, luckly injectable provides two simple ways to handle instance disposing.
 
+1- Annotating an instance method inside of your singleton class with `@disposeMethod`.
+```dart
+@singleton // or lazySingleton
+class DataSource {
+
+  @disposeMethod
+  void dispose(){
+    // logic to dispose instance
+  }
+}
+```
+2- Passing a reference to a dispose function to `Singleton()` or `LazySingleton()` annotations.
+
+```dart
+@Singleton(dispose: disposeDataSource)
+class DataSource {
+
+  void dispose() {
+    // logic to dispose instance
+  }
+}
+/// dispose function signature must match Function(T instance)
+FutureOr disposeDataSource(DataSource instance){
+   instance.dispose();
+}
+```
 ## Registering asynchronous injectables
 
 ---
 
 Requires **GetIt >= 4.0.0**
 
-if you are to make our instance creation async you're gonna need a static initializer method since constructors can not be asynchronous.
+if we are to make our instance creation async we're gonna need a static initializer method since constructors can not be asynchronous.
 
 ```dart
 class ApiClient {
@@ -145,7 +178,7 @@ class ApiClient {
 }
 ```
 
-Now simply annotate your class with @injectable and tell injectable to use that static initializer method as a factory method using the @factoryMethod annotation
+Now simply annotate your class with `@injectable` and tell injectable to use that static initializer method as a factory method using the `@factoryMethod` annotation
 
 ```dart
 @injectable // or lazy/singleton
@@ -159,7 +192,7 @@ class ApiClient {
 ```
 
 injectable will automatically register it as an asynchronous factory because the return type is a Future.
-Generated Code:
+###### Generated Code:
 
 ```dart
 factoryAsync<ApiClient>(() => ApiClient.create());
@@ -176,11 +209,11 @@ abstract class RegisterModule {
 }
 ```
 
-Don't forget to call getAsync() instead of get() when resolving an async injectable
+Don't forget to call `getAsync<T>()` instead of `get<T>()` when resolving an async injectable.
 
-### Pre-Resolving the future
+### Pre-Resolving futures
 
-if you want to pre-await the future and register it's resolved value, annotate your async dependencies with @preResolve
+if you want to pre-await the future and register it's resolved value, annotate your async dependencies with `@preResolve`.
 
 ```dart
 @module
@@ -190,10 +223,10 @@ abstract class RegisterModule {
 }
 ```
 
-generated code
+###### generated code
 
 ```dart
-Future<void> $initGetIt(GetIt g, {String environment}) async {
+Future<void> $initGetIt(GetIt get, {String environment, EnvironmentFilter environmentFilter}) async {
   final gh = GetItHelper(getIt, environment);
   final registerModule = _$RegisterModule();
   final sharedPreferences = await registerModule.prefs;
@@ -202,14 +235,14 @@ Future<void> $initGetIt(GetIt g, {String environment}) async {
   }
 ```
 
-as you can see this will make your initGetIt func async so be sure to **await** for it
+as you can see this will make your `initGetIt` func async so be sure to **await** for it
 
 ## Passing Parameters to factories
 
 ---
 
 Requires **GetIt >= 4.0.0**
-If you're working with a class you own simply annotate your changing constructor param with @factoryParam, you can have up to two parameters **max**!
+If you're working with a class you own simply annotate your changing constructor param with `@factoryParam`, you can have up to two parameters **max**!
 
 ```dart
 @injectable
@@ -218,7 +251,7 @@ class BackendService {
 }
 ```
 
-generated code
+###### generated code
 
 ```dart
 factoryParam<BackendService, String, dynamic>(
@@ -228,7 +261,7 @@ factoryParam<BackendService, String, dynamic>(
 
 ### Using a register module (for third party dependencies)
 if you declare a module member as a method instead of a simple accessor, injectable will treat it as a factory method, meaning it will inject it's parameters as it would with a regular constructor.
-The same way if you annotate an injected param with @factoryParam injectable will treat it as a factory param.
+The same way if you annotate an injected param with `@factoryParam` injectable will treat it as a factory param.
 
 ```dart
 @module
@@ -237,7 +270,7 @@ abstract class RegisterModule {
 }
 ```
 
-generated code
+###### generated code
 
 ```dart
 factoryParam<BackendService, String, dynamic>(
@@ -247,23 +280,23 @@ factoryParam<BackendService, String, dynamic>(
 ## Binding abstract classes to implementations
 
 ---
-Use the 'as' Property inside of Injectable(as:..) to pass an abstract type that's implemented by the registered dependency
+Use the 'as' Property inside of `Injectable(as:..)` to pass an abstract type that's implemented by the registered dependency
 
 ```dart
 @Injectable(as: Service)
 class ServiceImpl implements Service {}
 
-// or 
-@Singleton(as: Service) 
+// or
+@Singleton(as: Service)
 class ServiceImpl implements Service {}
 
-// or 
-@LazySingleton(as: Service) 
+// or
+@LazySingleton(as: Service)
 class ServiceImpl implements Service {}
 
 ```
 
-Generated code for the Above example
+###### Generated code
 
 ```dart
 factory<Service>(() => ServiceImpl())
@@ -284,7 +317,7 @@ class ServiceImpl implements Service {}
 class ServiceImp2 implements Service {}
 ```
 
-Next annotate the injected instance with @Named() right in the constructor and pass in the name of the desired implementation.
+Next annotate the injected instance with `@Named()` right in the constructor and pass in the name of the desired implementation.
 
 ```dart
 @injectable
@@ -294,7 +327,7 @@ class MyRepo {
 }
 ```
 
-Generated code for the Above example
+###### Generated code
 
 ```dart
 factory<Service>(() => ServiceImpl1(), instanceName: 'impl1')
@@ -306,7 +339,7 @@ factory<MyRepo>(() => MyRepo(getIt('impl1'))
 ### Auto Tagging
 
 Use the lower cased @named annotation to automatically assign the implementation class name to the instance name.
-Then use @Named.from(Type) annotation to extract the name from the type
+Then use `@Named.from(Type)` annotation to extract the name from the type
 
 ```dart
 @named
@@ -320,7 +353,7 @@ class MyRepo {
 }
 ```
 
-Generated code for the Above example
+###### Generated code
 
 ```dart
 factory<Service>(() => ServiceImpl1(), instanceName: 'ServiceImpl1')
@@ -331,7 +364,7 @@ factory<MyRepo>(() => MyRepo(getIt('ServiceImpl1'))
 
 ---
 
-it is possible to register different dependencies for different environments by using **@Environment('name')** annotation.
+it is possible to register different dependencies for different environments by using `@Environment('name')` annotation.
 in the below example ServiceA is now only registered if we pass the environment name to \$initGetIt(environment: 'dev')
 
 ```dart
@@ -341,7 +374,7 @@ class ServiceA {}
 ```
 
 
-you could also create your own environment annotations by assigning the const constructor Environment("") to a global const var.
+you could also create your own environment annotations by assigning the const constructor `Environment("")` to a global const var.
 
 ```dart
 const dev = Environment('dev');
@@ -357,7 +390,7 @@ You can assign multiple environment names to the same class
 @injectable
 class ServiceA {}
 ```
-Alternatively use the env property in injectable and subs to assign environment names to your dependencies 
+Alternatively use the env property in injectable and subs to assign environment names to your dependencies
 
 ```dart
 @Injectable(as: Service, env: [Environment.dev, Environment.test])
@@ -374,7 +407,7 @@ Alternatively, you can pass your own `EnvironmentFilter` to decide what dependen
 
 ---
 
-By default, injectable will use the default constructor to build your dependencies but, you can tell injectable to use named/factory constructors or static create functions by using the @factoryMethod annotation. .
+By default, injectable will use the default constructor to build your dependencies but, you can tell injectable to use named/factory constructors or static create functions by using the `@factoryMethod` annotation. .
 
 ```dart
 @injectable
@@ -390,7 +423,7 @@ The constructor named "from" will be used when building MyRepository.
 factory<MyRepository>(MyRepository.from(getIt<Service>()))
 ```
 
-or annotate static create functions or factories inside of abstract classes with @factoryMethod
+or annotate static create functions or factories inside of abstract classes with `@factoryMethod`.
 
 ```dart
 @injectable
@@ -413,7 +446,7 @@ factory<Service>(() => Service.create(getIt<ApiClient>()))
 
 ---
 
-To Register third party types, create an abstract class and annotate it with @module then add your third party types as property accessors or methods like follows:
+To Register third party types, create an abstract class and annotate it with `@module` then add your third party types as property accessors or methods like follows:
 
 ```dart
 @module
@@ -424,7 +457,7 @@ abstract class RegisterModule {
   @prod
   @Injectable(as: ThirdPartyAbstract)
   ThirdPartyImpl get thirdPartyType;
- 
+
 }
 ```
 
@@ -435,22 +468,21 @@ In some cases you'd need to register instances that are asynchronous or singleto
 ```dart
 @module
 abstract class RegisterModule {
-
  // You can register named preemptive types like follows
   @Named("BaseUrl")
   String get baseUrl => 'My base url';
-  
-  // url here will be injected 
+
+  // url here will be injected
   @lazySingleton
   Dio dio(@Named('BaseUrl') String url) => Dio(BaseOptions(baseUrl: url));
- 
+
   // same thing works for instances that's gotten asynchronous.
   // all you need to do is wrap your instance with a future and tell injectable how
   // to initialize it
   @preResolve // if you need to pre resolve the value
   Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
   // Also, make sure you await for your configure function before running the App.
- 
+
 }
 ```
 
