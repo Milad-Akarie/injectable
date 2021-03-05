@@ -40,6 +40,7 @@ class DependencyResolver {
   List<InjectedDependency> _dependencies = [];
   ModuleConfig? _moduleConfig;
   DisposeFunctionConfig? _disposeFunctionConfig;
+
   DependencyResolver(this._typeResolver);
 
   DependencyConfig resolve(ClassElement element) {
@@ -234,10 +235,19 @@ class DependencyResolver {
               ?.getDisplayString(withNullability: false) ??
           namedAnnotation?.getField('name')?.toStringValue();
 
+      final resolvedType = _typeResolver.resolveType(param.type);
+      final isFactoryParam = _factoryParamChecker.hasAnnotationOfExact(param);
+
+      throwIf(
+        isFactoryParam && !resolvedType.isNullable,
+        'Factory params must be nullable',
+        element: param,
+      );
+
       _dependencies.add(InjectedDependency(
-        type: _typeResolver.resolveType(param.type),
+        type: resolvedType,
         instanceName: instanceName,
-        isFactoryParam: _factoryParamChecker.hasAnnotationOfExact(param),
+        isFactoryParam: isFactoryParam,
         paramName: param.name,
         isPositional: param.isPositional,
       ));

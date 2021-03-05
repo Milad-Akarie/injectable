@@ -6,7 +6,6 @@ import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
 Set<DependencyConfig> sortDependencies(List<DependencyConfig> deps) {
   // sort dependencies alphabetically
   deps.sort((a, b) => a.type.name.compareTo(b.type.name));
-
   // sort dependencies by their register order
   final Set<DependencyConfig> sorted = {};
   _sortByDependents(deps.toSet(), sorted);
@@ -19,7 +18,8 @@ void _sortByDependents(
     if (dep.dependencies.every(
       (iDep) =>
           iDep.isFactoryParam ||
-          sorted.map((d) => d.type).contains(iDep.type) ||
+          sorted.any((d) =>
+              d.type == iDep.type && d.instanceName == iDep.instanceName) ||
           !unSorted.map((d) => d.type).contains(iDep.type),
     )) {
       sorted.add(dep);

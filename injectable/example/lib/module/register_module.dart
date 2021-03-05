@@ -14,7 +14,7 @@ abstract class RegisterModule {
   @dev
   @preResolve
   @LazySingleton(dispose: disposeRepo)
-  Future<Repo> getRepo(LazyService service) {
+  Future<Repo> getRepo(IService service) {
     return Repo.asyncRepo(service);
   }
 }
@@ -23,14 +23,14 @@ void disposeRepo(Repo repo) {}
 
 abstract class Repo {
   @factoryMethod
-  static Future<RepoImpl> asyncRepo(LazyService service) async {
+  static Future<RepoImpl> asyncRepo(IService service) async {
     await Future.delayed(Duration(seconds: 1));
     return RepoImpl(service);
   }
 }
 
 class RepoImpl extends Repo {
-  final LazyService service;
+  final IService service;
 
   RepoImpl(this.service);
 }
