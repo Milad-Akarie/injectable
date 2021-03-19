@@ -22,7 +22,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
         .map((e) => e.toStringValue());
 
     final usesNullSafety = annotation.read('usesNullSafety').boolValue ?? false;
-    var targetFile = element.source.uri;
+    var targetFile = element.source?.uri;
     var preferRelativeImports =
         (annotation.peek("preferRelativeImports")?.boolValue ?? true == true);
 
@@ -56,7 +56,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     return DartFormatter().format(generatedLib.accept(emitter).toString());
   }
 
-  void _reportMissingDependencies(List<DependencyConfig> deps, Uri targetFile) {
+  void _reportMissingDependencies(
+      List<DependencyConfig> deps, Uri? targetFile) {
     final messages = [];
     final registeredDeps = deps.map((dep) => dep.type).toSet();
     deps.forEach((dep) {
@@ -75,7 +76,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       messages.add(
           '\nDid you forget to annotate the above class(s) or their implementation with @injectable?');
       printBoxed(messages.join('\n'),
-          header: "Missing dependencies in ${targetFile.path}\n");
+          header: "Missing dependencies in ${targetFile?.path}\n");
     }
   }
 
@@ -89,6 +90,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       } else {
         Set<String> registeredEnvironments = registered
             .fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
+
         if (registeredEnvironments.isEmpty ||
             dep.environments
                 .any((env) => registeredEnvironments.contains(env))) {

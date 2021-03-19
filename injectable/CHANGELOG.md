@@ -1,4 +1,9 @@
 # ChangeLog
+## [1.2.0]
+- Push nullSafety version to the main section
+- Fix sorting by dependents ignores named instances
+## [1.2.0-nullsafety]
+- add null safety support
 ## [1.1.2]
 - Add support for disposing of singletons.
 - change min version constraint of GetIt to 5.0.0

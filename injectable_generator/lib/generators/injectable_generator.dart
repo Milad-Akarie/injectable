@@ -14,8 +14,8 @@ const TypeChecker _typeChecker = TypeChecker.fromRuntime(Injectable);
 const TypeChecker _moduleChecker = TypeChecker.fromRuntime(Module);
 
 class InjectableGenerator implements Generator {
-  RegExp _classNameMatcher, _fileNameMatcher;
-  bool _autoRegister;
+  RegExp? _classNameMatcher, _fileNameMatcher;
+  late bool _autoRegister;
 
   InjectableGenerator(Map options) {
     _autoRegister = options['auto_register'] ?? false;
@@ -30,7 +30,7 @@ class InjectableGenerator implements Generator {
   }
 
   @override
-  FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
+  FutureOr<String?> generate(LibraryReader library, BuildStep buildStep) async {
     final allDepsInStep = <DependencyConfig>[];
     for (var clazz in library.classes) {
       if (_moduleChecker.hasAnnotationOfExact(clazz)) {
@@ -76,7 +76,7 @@ class InjectableGenerator implements Generator {
     }
     final fileName = clazz.source.shortName.replaceFirst('.dart', '');
     return (_classNameMatcher != null &&
-            _classNameMatcher.hasMatch(clazz.name)) ||
-        (_fileNameMatcher != null && _fileNameMatcher.hasMatch(fileName));
+            _classNameMatcher!.hasMatch(clazz.name)) ||
+        (_fileNameMatcher != null && _fileNameMatcher!.hasMatch(fileName));
   }
 }

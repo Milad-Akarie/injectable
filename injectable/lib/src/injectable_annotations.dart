@@ -28,11 +28,8 @@ class InjectableInit {
     this.preferRelativeImports = true,
     this.initializerName = r'$initGetIt',
     this.asExtension = false,
-    this.usesNullSafety = false,
-  })  : assert(generateForDir != null),
-        assert(initializerName != null),
-        assert(preferRelativeImports != null),
-        assert(asExtension != null);
+    this.usesNullSafety = true,
+  });
 }
 
 /// const instance of [InjectableInit]
@@ -45,11 +42,11 @@ class Injectable {
   /// The type to bind your implementation to,
   /// typically, an abstract class which is implemented by the
   /// annotated class.
-  final Type as;
+  final Type? as;
 
   /// an alternative way to pass env keys instead
   /// of annotating the element with @Environment
-  final List<String> env;
+  final List<String>? env;
 
   /// default constructor
   const Injectable({this.as, this.env});
@@ -64,24 +61,24 @@ const injectable = Injectable();
 class Singleton extends Injectable {
   /// passed to singlesReady property
   /// in registerSingleton function
-  final bool signalsReady;
+  final bool? signalsReady;
 
   /// passed to dependsOn property
   /// in registerSingleton function
-  final List<Type> dependsOn;
+  final List<Type>? dependsOn;
 
   /// a dispose callback function to be
   /// passed to [GetIt]
   /// the signature must match FutureOr dispose(T)
-  final Function dispose;
+  final Function? dispose;
 
   /// default constructor
   const Singleton({
     this.signalsReady,
     this.dependsOn,
     this.dispose,
-    Type as,
-    List<String> env,
+    Type? as,
+    List<String>? env,
   }) : super(as: as, env: env);
 }
 
@@ -94,15 +91,15 @@ const singleton = Singleton();
 class LazySingleton extends Injectable {
   /// default constructor
   const LazySingleton({
-    Type as,
-    List<String> env,
+    Type? as,
+    List<String>? env,
     this.dispose,
   }) : super(as: as, env: env);
 
   /// a dispose callback function to be
   /// passed to [GetIt]
   /// the signature must match FutureOr dispose(T)
-  final Function dispose;
+  final Function? dispose;
 }
 
 /// const instance of [LazySingleton]
@@ -114,7 +111,7 @@ const lazySingleton = LazySingleton();
 /// named injected dependencies in constructors
 class Named {
   /// The name in which an instance is registered
-  final String name;
+  final String? name;
 
   /// default constructor
   const Named(this.name) : type = null;
@@ -122,7 +119,7 @@ class Named {
   /// instead of providing a literal name
   /// you can pass a type, and its name will be extracted
   /// in during generation
-  final Type type;
+  final Type? type;
 
   /// A named constrictor to extract name for type
   const Named.from(this.type) : name = null;

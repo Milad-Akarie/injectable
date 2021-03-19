@@ -1,21 +1,20 @@
-import 'package:injectable_generator/models/importable_type.dart';
-import 'package:meta/meta.dart';
+import 'importable_type.dart';
 
 class DisposeFunctionConfig {
   final bool isInstance;
   final String name;
-  final ImportableType importableType;
+  final ImportableType? importableType;
 
   const DisposeFunctionConfig({
     this.isInstance = false,
-    @required this.name,
+    required this.name,
     this.importableType,
   });
 
   DisposeFunctionConfig copyWith({
-    bool isInstance,
-    String name,
-    ImportableType importableType,
+    bool? isInstance,
+    String? name,
+    ImportableType? importableType,
   }) {
     if ((isInstance == null || identical(isInstance, this.isInstance)) &&
         (name == null || identical(name, this.name)) &&
@@ -50,7 +49,7 @@ class DisposeFunctionConfig {
       isInstance.hashCode ^ name.hashCode ^ importableType.hashCode;
 
   factory DisposeFunctionConfig.fromJson(Map<String, dynamic> json) {
-    ImportableType disposeFunction;
+    ImportableType? disposeFunction;
 
     if (json['importableType'] != null) {
       disposeFunction = ImportableType.fromJson(json['importableType']);
@@ -68,7 +67,7 @@ class DisposeFunctionConfig {
       'isInstance': this.isInstance,
       'name': this.name,
       if (importableType != null)
-        'importableType': this.importableType.toJson(),
+        'importableType': this.importableType!.toJson(),
     } as Map<String, dynamic>;
   }
 }

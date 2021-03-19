@@ -8,10 +8,10 @@ abstract class EnvironmentFilter {
   /// holds passed environment keys
   /// to be used inside the filter or
   /// retrieved later by users
-  final Set<String> environments;
+  final Set<String?> environments;
 
   /// default constructor
-  const EnvironmentFilter(this.environments) : assert(environments != null);
+  const EnvironmentFilter(this.environments);
 
   /// This function is called before every
   /// registration call, if it returns true, the dependency
@@ -25,7 +25,7 @@ class SimpleEnvironmentFilter extends EnvironmentFilter {
   final EnvironmentFilterFunc filter;
 
   const SimpleEnvironmentFilter(
-      {this.filter, Set<String> environments = const {}})
+      {required this.filter, Set<String> environments = const {}})
       : super(environments);
 
   @override
@@ -35,7 +35,7 @@ class SimpleEnvironmentFilter extends EnvironmentFilter {
 /// This filter validates dependencies with no environment
 /// keys or contain the provided [environment]
 class NoEnvOrContains extends EnvironmentFilter {
-  NoEnvOrContains(String environment) : super({environment});
+  NoEnvOrContains(String? environment) : super({environment});
 
   @override
   bool canRegister(Set<String> depEnvironments) {

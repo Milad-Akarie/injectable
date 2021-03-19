@@ -7,14 +7,13 @@ const platformMobile = Environment('platformMobile');
 const platformWeb = Environment('platformWeb');
 
 @InjectableInit(
-  initializerName: 'init',
   asExtension: true,
-  usesNullSafety: false,
+  initializerName: 'init',
 )
 configInjector(
   GetIt getIt, {
-  String env,
-  EnvironmentFilter environmentFilter,
+  String? env,
+  EnvironmentFilter? environmentFilter,
 }) {
   return getIt.init(
     environmentFilter: environmentFilter,
