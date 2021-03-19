@@ -21,10 +21,10 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
         .listValue
         .map((e) => e.toStringValue());
 
-    final usesNullSafety = annotation.read('usesNullSafety').boolValue ?? false;
+    final usesNullSafety = annotation.read('usesNullSafety').boolValue;
     var targetFile = element.source?.uri;
     var preferRelativeImports =
-        (annotation.peek("preferRelativeImports")?.boolValue ?? true == true);
+        annotation.read("preferRelativeImports").boolValue;
 
     final dirPattern = generateForDir.length > 1
         ? '{${generateForDir.join(',')}}'

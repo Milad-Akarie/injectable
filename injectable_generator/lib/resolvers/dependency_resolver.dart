@@ -1,4 +1,3 @@
-import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:injectable/injectable.dart';
@@ -32,7 +31,7 @@ class DependencyResolver {
   int _injectableType = InjectableType.factory;
   bool? _signalsReady;
   bool _preResolve = false;
-  List<ImportableType>? _dependsOn;
+  List<ImportableType> _dependsOn = [];
   List<String> _environments = [];
   String? _instanceName;
   bool _isAsync = false;
@@ -101,7 +100,7 @@ class DependencyResolver {
     var injectableAnnotation = _injectableChecker.firstAnnotationOf(
       annotatedElement,
       throwOnUnresolved: false,
-    ) as DartObject?;
+    );
 
     DartType? abstractType;
     ExecutableElement? disposeFuncFromAnnotation;
@@ -111,13 +110,13 @@ class DependencyResolver {
       if (injectable.instanceOf(TypeChecker.fromRuntime(LazySingleton))) {
         _injectableType = InjectableType.lazySingleton;
         disposeFuncFromAnnotation =
-            injectable.peek('dispose')?.objectValue?.toFunctionValue();
+            injectable.peek('dispose')?.objectValue.toFunctionValue();
       } else if (injectable.instanceOf(TypeChecker.fromRuntime(Singleton))) {
         _injectableType = InjectableType.singleton;
         _signalsReady = injectable.peek('signalsReady')?.boolValue;
         disposeFuncFromAnnotation =
-            injectable.peek('dispose')?.objectValue?.toFunctionValue();
-        _dependsOn = injectable
+            injectable.peek('dispose')?.objectValue.toFunctionValue();
+        var dependsOn = injectable
             .peek('dependsOn')
             ?.listValue
             .map((type) => type.toTypeValue())
@@ -125,12 +124,15 @@ class DependencyResolver {
             .map<ImportableType>(
                 (dartType) => _typeResolver.resolveType(dartType!))
             .toList();
+        if (dependsOn != null) {
+          _dependsOn.addAll(dependsOn);
+        }
       }
       abstractType = injectable.peek('as')?.typeValue;
       inlineEnv = injectable
           .peek('env')
           ?.listValue
-          ?.map((e) => e.toStringValue())
+          .map((e) => e.toStringValue())
           .toList();
     }
     if (abstractType != null) {
@@ -150,8 +152,8 @@ class DependencyResolver {
     _environments = inlineEnv ??
         _envChecker
             .annotationsOf(annotatedElement)
-            ?.map(
-              (e) => e.getField('name')?.toStringValue(),
+            .map<String>(
+              (e) => e.getField('name')!.toStringValue()!,
             )
             .toList() ??
         const [];
@@ -227,8 +229,7 @@ class DependencyResolver {
     _isAsync = executableInitializer.returnType.isDartAsyncFuture;
     _constructorName = executableInitializer.name;
     for (ParameterElement param in executableInitializer.parameters) {
-      final namedAnnotation =
-          _namedChecker.firstAnnotationOf(param) as DartObject?;
+      final namedAnnotation = _namedChecker.firstAnnotationOf(param);
       final instanceName = namedAnnotation
               ?.getField('type')
               ?.toTypeValue()

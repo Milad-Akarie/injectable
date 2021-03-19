@@ -1,8 +1,10 @@
 // holds extracted data from annotation & element
 // to be used later when generating the register function
 
+import 'package:collection/collection.dart';
 import 'package:injectable_generator/models/module_config.dart';
 
+import '../injectable_types.dart';
 import 'dispose_function_config.dart';
 import 'importable_type.dart';
 import 'injected_dependency.dart';
@@ -18,7 +20,7 @@ class DependencyConfig {
   final List<String> environments;
   final String? constructorName;
   final bool isAsync;
-  final List<ImportableType>? dependsOn;
+  final List<ImportableType> dependsOn;
   final bool preResolve;
   final ModuleConfig? moduleConfig;
   final DisposeFunctionConfig? disposeFunction;
@@ -26,12 +28,12 @@ class DependencyConfig {
   const DependencyConfig({
     required this.type,
     required this.typeImpl,
-    required this.injectableType,
+    this.injectableType = InjectableType.factory,
     this.dependencies = const [],
     this.instanceName,
     this.signalsReady,
     this.environments = const [],
-    this.constructorName,
+    this.constructorName = '',
     this.isAsync = false,
     this.dependsOn = const [],
     this.preResolve = false,
@@ -51,14 +53,14 @@ class DependencyConfig {
           runtimeType == other.runtimeType &&
           type == other.type &&
           typeImpl == other.typeImpl &&
-          dependencies == other.dependencies &&
+          ListEquality().equals(dependencies, other.dependencies) &&
           injectableType == other.injectableType &&
           instanceName == other.instanceName &&
           signalsReady == other.signalsReady &&
-          environments == other.environments &&
+          ListEquality().equals(environments, other.environments) &&
           constructorName == other.constructorName &&
           isAsync == other.isAsync &&
-          dependsOn == other.dependsOn &&
+          ListEquality().equals(dependsOn, other.dependsOn) &&
           preResolve == other.preResolve &&
           disposeFunction == other.disposeFunction &&
           moduleConfig == other.moduleConfig);
@@ -67,14 +69,14 @@ class DependencyConfig {
   int get hashCode =>
       type.hashCode ^
       typeImpl.hashCode ^
-      dependencies.hashCode ^
+      ListEquality().hash(dependencies) ^
       injectableType.hashCode ^
       instanceName.hashCode ^
       signalsReady.hashCode ^
-      environments.hashCode ^
+      ListEquality().hash(environments) ^
       constructorName.hashCode ^
       isAsync.hashCode ^
-      dependsOn.hashCode ^
+      ListEquality().hash(dependsOn) ^
       preResolve.hashCode ^
       disposeFunction.hashCode ^
       moduleConfig.hashCode;
@@ -132,8 +134,7 @@ class DependencyConfig {
         if (moduleConfig != null) 'moduleConfig': moduleConfig!.toJson(),
         if (disposeFunction != null)
           'disposeFunction': disposeFunction!.toJson(),
-        if (dependsOn != null)
-          "dependsOn": dependsOn!.map((v) => v.toJson()).toList(),
+        "dependsOn": dependsOn.map((v) => v.toJson()).toList(),
         "environments": environments,
         "dependencies": dependencies.map((v) => v.toJson()).toList(),
         if (instanceName != null) "instanceName": instanceName,

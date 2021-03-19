@@ -1,4 +1,8 @@
 # ChangeLog
+## [1.2.1]
+- Pomp up versions of build, build_runner, dart_style and source_gen
+- Fix named instances are ignored when sorting dependencies. 
+- Clean up some code
 ## [1.2.0]
 - push nullSafety version to the main section
 - Fix sorting by dependents ignores named instances
