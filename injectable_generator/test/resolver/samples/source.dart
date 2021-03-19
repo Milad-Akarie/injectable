@@ -1,4 +1,14 @@
 import 'package:injectable/injectable.dart';
 
-@singleton
-class Demo {}
+@injectable
+class SimpleFactory {}
+
+@injectable
+class FactoryWithDeps {
+  const FactoryWithDeps(SimpleFactory simpleFactory);
+}
+
+abstract class IFactory {}
+
+@Injectable(as: IFactory)
+class FactoryAsAbstract extends IFactory {}

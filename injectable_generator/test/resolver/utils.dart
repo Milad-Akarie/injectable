@@ -49,14 +49,5 @@ class ResolvedInput {
   final LibraryReader library;
   final Resolver resolver;
 
-  ResolvedInput(this.library, this.resolver);
-}
-
-class InjectableGeneratorMock extends InjectableGenerator {
-  final ImportableTypeResolver resolver;
-
-  InjectableGeneratorMock(this.resolver, [Map options = const {}]) : super(options);
-
-  @override
-  ImportableTypeResolver getResolver(List<LibraryElement> libs) => this.resolver;
+  const ResolvedInput(this.library, this.resolver);
 }

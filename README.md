@@ -3,7 +3,7 @@
 <p>
 <a href="https://img.shields.io/badge/License-MIT-green"><img src="https://img.shields.io/badge/License-MIT-green" alt="MIT License"></a>
 <a href="https://github.com/Milad-Akarie/injectable/stargazers"><img src="https://img.shields.io/github/stars/Milad-Akarie/injectable?style=flat&logo=github&colorB=green&label=stars" alt="stars"></a>
-<a href="https://pub.dev/packages/injectable/versions/1.1.2"><img src="https://img.shields.io/badge/pub-1.1.2-orange" alt="pub version"></a>
+<a href="https://pub.dev/packages/injectable/versions/1.2.1"><img src="https://img.shields.io/badge/pub-1.2.1-orange" alt="pub version"></a>
 </p>
 
 ---
