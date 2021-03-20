@@ -8,6 +8,8 @@ import 'package:glob/glob.dart';
 import 'package:injectable/injectable.dart';
 import 'package:injectable_generator/code_builder/library_builder.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
+import 'package:injectable_generator/models/importable_type.dart';
+import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../utils.dart';
@@ -43,7 +45,14 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final initializerName = annotation.read('initializerName').stringValue;
     final asExtension = annotation.read('asExtension').boolValue;
 
-    _reportMissingDependencies(deps, targetFile);
+    final typeResolver =
+        ImportableTypeResolverImpl(await buildStep.resolver.libraries.toList());
+    final ignoredTypes =
+        annotation.read('ignoreUnregisteredTypes').listValue.map(
+              (e) => typeResolver.resolveType(e.toTypeValue()!),
+            );
+
+    _reportMissingDependencies(deps, ignoredTypes, targetFile);
     _validateDuplicateDependencies(deps);
     final generatedLib = generateLibrary(
       dependencies: deps,
@@ -56,8 +65,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     return DartFormatter().format(generatedLib.accept(emitter).toString());
   }
 
-  void _reportMissingDependencies(
-      List<DependencyConfig> deps, Uri? targetFile) {
+  void _reportMissingDependencies(List<DependencyConfig> deps,
+      Iterable<ImportableType> ignoredTypes, Uri? targetFile) {
     final messages = [];
     final registeredDeps = deps.map((dep) => dep.type).toSet();
     deps.forEach((dep) {
@@ -65,7 +74,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
           .where(
               (d) => !d.isFactoryParam && d.instanceName != kEnvironmentsName)
           .forEach((iDep) {
-        if (!registeredDeps.contains(iDep.type)) {
+        if (!registeredDeps.contains(iDep.type) &&
+            !ignoredTypes.contains(iDep.type)) {
           messages.add(
               "[${dep.typeImpl}] depends on unregistered type [${iDep.type}] ${iDep.type.import == null ? '' : 'from ${iDep.type.import}'}");
         }

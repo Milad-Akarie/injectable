@@ -1,4 +1,7 @@
 # ChangeLog
+## [1.2.2]
+- Fix generator crash after 1.2.1 update
+- Add option to ignore missing type warning for specified types
 ## [1.2.1]
 - Pomp up versions of build, build_runner, dart_style and source_gen
 - Fix named instances are ignored when sorting dependencies. 

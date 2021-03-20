@@ -266,7 +266,7 @@ Code buildSingletonRegisterFun(
   var asFactory = true;
   if (dep.isAsync) {
     funcReferName = 'singletonAsync';
-  } else if (dep.dependsOn?.isNotEmpty == true) {
+  } else if (dep.dependsOn.isNotEmpty) {
     funcReferName = 'singletonWithDependencies';
   } else {
     asFactory = false;
@@ -285,13 +285,13 @@ Code buildSingletonRegisterFun(
   ], {
     if (dep.instanceName != null)
       'instanceName': literalString(dep.instanceName),
-    if (dep.dependsOn?.isNotEmpty == true)
+    if (dep.dependsOn.isNotEmpty)
       'dependsOn': literalList(
-        dep.dependsOn!.map(
+        dep.dependsOn.map(
           (e) => typeRefer(e, targetFile),
         ),
       ),
-    if (dep.environments.isNotEmpty == true)
+    if (dep.environments.isNotEmpty)
       'registerFor': literalSet(
         dep.environments.map((e) => refer('_$e')),
       ),
