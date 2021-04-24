@@ -8,23 +8,25 @@ on:
 
 jobs:
   build-injectable-micropackages:
+    defaults:
+      run:
+        working-directory: injectable_micropackages
     runs-on: ubuntu-latest
     container:
       image:  google/dart:latest
     steps:
     - uses: actions/checkout@v2
-    - name: go to injectable_micropackages
-      run: cd injectable_micropackages
     - name: Install dependencies
       run: pub get
   build-injectable-generator-micropackages:
+    defaults:
+      run:
+        working-directory: injectable_generator_micropackages
     runs-on: ubuntu-latest
     container:
       image: google/dart:latest
     steps:
       - uses: actions/checkout@v2
-      - name: go to injectable_micropackages
-        run: cd injectable_generator_micropackages
       - name: Install dependencies
         run: pub get
 
