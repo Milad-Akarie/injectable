@@ -58,9 +58,9 @@ class ModelClassVisitor extends SimpleElementVisitor<ClassElement>{
 
 
   @override
-  ClassElement visitCompilationUnitElement(CompilationUnitElement element) {
+  ClassElement? visitCompilationUnitElement(CompilationUnitElement element) {
     location = element.location!.components.first;
-    return element.enums.first;
+    return null;
   }
 
   @override
@@ -71,11 +71,11 @@ class ModelClassVisitor extends SimpleElementVisitor<ClassElement>{
   }
 
   @override
-  ClassElement visitConstructorElement(ConstructorElement element) {
+  ClassElement? visitConstructorElement(ConstructorElement element) {
     assert(className == null);
     location = element.location!.components.first;
     className = element.type.returnType;
-    return element.enclosingElement;
+    return null;
   }
 }
 /// Implementation of visitor pattern to get all the methods that exist

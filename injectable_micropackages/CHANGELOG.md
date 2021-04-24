@@ -1,4 +1,6 @@
 # ChangeLog
+## [1.0.8] migration to null safety
+## [1.0.7] empty version to match with generator
 ## [1.0.6]
 - Added support for micropackages
 - Fix analyzer compatibility issues

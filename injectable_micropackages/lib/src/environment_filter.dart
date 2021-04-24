@@ -11,7 +11,7 @@ abstract class EnvironmentFilter {
   final Set<String> environments;
 
   /// default constructor
-  const EnvironmentFilter(this.environments) : assert(environments != null);
+  const EnvironmentFilter(this.environments);
 
   /// This function is called before every
   /// registration call, if it returns true, the dependency
@@ -25,7 +25,7 @@ class SimpleEnvironmentFilter extends EnvironmentFilter {
   final EnvironmentFilterFunc filter;
 
   const SimpleEnvironmentFilter(
-      {this.filter, Set<String> environments = const {}})
+      {required this.filter, Set<String> environments = const {}})
       : super(environments);
 
   @override

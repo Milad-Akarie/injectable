@@ -29,12 +29,14 @@ extension GetItInjectableX on GetIt {
     final registerModule = _$RegisterModule(this);
     gh.factory<Service>(
         () => MobileService(get<Set<String>>(instanceName: '__environments__')),
-        registerFor: {_platformMobile});
+        registerFor: {_platformMobile},
+        instanceName: '');
     gh.factory<Service>(
         () => WebService(get<Set<String>>(instanceName: '__environments__')),
-        registerFor: {_platformWeb});
+        registerFor: {_platformWeb},
+        instanceName: '');
     gh.factory<Repo>(() => registerModule.repo,
-        registerFor: {_prod, _platformMobile});
+        registerFor: {_prod, _platformMobile}, instanceName: '');
     MicroPackagesConfig.registerMicroModules(this);
     return this;
   }
@@ -42,7 +44,9 @@ extension GetItInjectableX on GetIt {
 
 class _$RegisterModule extends RegisterModule {
   final GetIt _get;
+
   _$RegisterModule(this._get);
+
   @override
   RepoImpl get repo => RepoImpl(_get<Service>());
 }

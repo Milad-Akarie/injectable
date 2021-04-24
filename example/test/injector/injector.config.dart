@@ -5,7 +5,7 @@
 // **************************************************************************
 
 import 'package:get_it/get_it.dart';
-import 'package:injectable/injectable_micropackages.dart';
+import 'package:injectable_micropackages/injectable_micropackages.dart';
 
 import '../sub/sub_test_service.dart';
 import '../test_service.dart';
@@ -19,7 +19,7 @@ GetIt $initGetIt(
   EnvironmentFilter environmentFilter,
 }) {
   final gh = GetItHelper(get, environment, environmentFilter);
-  gh.factory<SubTestService>(() => SubTestService());
-  gh.factory<TestService>(() => TestService());
+  gh.factory<SubTestService>(() => SubTestService(), instanceName: '', registerFor: null);
+  gh.factory<TestService>(() => TestService(), registerFor: null, instanceName: '');
   return get;
 }
