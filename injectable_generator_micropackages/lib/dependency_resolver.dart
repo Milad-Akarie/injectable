@@ -18,7 +18,7 @@ const TypeChecker factoryParamChecker = TypeChecker.fromRuntime(FactoryParam);
 const TypeChecker constructorChecker = TypeChecker.fromRuntime(FactoryMethod);
 
 class DependencyResolver {
-  Element _annotatedElement;
+  Element? _annotatedElement;
   final _dep = DependencyConfig();
   final ImportableTypeResolver _importResolver;
   final Map<String, DartType> _typeArgsMap = {};
@@ -27,7 +27,7 @@ class DependencyResolver {
 
   Future<DependencyConfig> resolve(Element element) {
     _annotatedElement = element;
-    return _resolveActualType(_annotatedElement);
+    return _resolveActualType(_annotatedElement as ClassElement?);
   }
 
   Future<DependencyConfig> resolveModuleMember(
@@ -38,7 +38,7 @@ class DependencyResolver {
     final returnType = executableElement.returnType;
 
     if (returnType is ParameterizedType) {
-      ClassElement element = returnType.element;
+      ClassElement element = returnType.element as ClassElement;
       for (int i = 0; i < element.typeParameters.length; i++) {
         _typeArgsMap[element.typeParameters[i].name] = returnType.typeArguments[i];
       }
@@ -53,7 +53,7 @@ class DependencyResolver {
     _dep.module = _importResolver.resolveType(moduleClazz.thisType);
     _dep.initializerName = executableElement.name;
 
-    ExecutableElement executableModuleMember;
+    ExecutableElement? executableModuleMember;
     if (executableElement is MethodElement) {
       _dep.isModuleMethod = true;
 
@@ -68,19 +68,19 @@ class DependencyResolver {
       }
     }
 
-    ClassElement clazz;
+    ClassElement? clazz;
     var type = returnType;
     if (executableElement.isAbstract) {
-      clazz = returnType.element;
+      clazz = returnType.element as ClassElement?;
       _dep.isAbstract = true;
     } else {
       if (returnType.isDartAsyncFuture) {
         final typeArg = returnType as ParameterizedType;
-        clazz = typeArg.typeArguments.first.element;
+        clazz = typeArg.typeArguments.first.element as ClassElement?;
         _dep.isAsync = true;
         type = typeArg.typeArguments.first;
       } else {
-        clazz = returnType.element;
+        clazz = returnType.element as ClassElement?;
       }
     }
 
@@ -88,15 +88,15 @@ class DependencyResolver {
   }
 
   Future<DependencyConfig> _resolveActualType(
-    ClassElement clazz, [
-    DartType type,
-    ExecutableElement excModuleMember,
+    ClassElement? clazz, [
+    DartType? type,
+    ExecutableElement? excModuleMember,
   ]) async {
-    _dep.type = _importResolver.resolveType(type ?? clazz.thisType);
+    _dep.type = _importResolver.resolveType(type ?? clazz!.thisType);
     _dep.typeImpl = _dep.type;
 
     final injectableAnnotation = injectableChecker
-        .firstAnnotationOf(_annotatedElement, throwOnUnresolved: false);
+        .firstAnnotationOf(_annotatedElement!, throwOnUnresolved: false);
 
     var abstractType;
     var inlineEnv;
@@ -117,7 +117,7 @@ class DependencyResolver {
             .peek('dependsOn')
             ?.listValue
             ?.map<String>(
-                (v) => v.toTypeValue().getDisplayString(withNullability: false))
+                (v) => v.toTypeValue()!.getDisplayString(withNullability: false))
             ?.toList();
       }
       abstractType = injectable
@@ -132,50 +132,50 @@ class DependencyResolver {
 
     if (abstractType != null) {
       final abstractChecker = TypeChecker.fromStatic(abstractType);
-      final abstractSubtype = clazz.allSupertypes.firstWhere(
+      final abstractSubtype = clazz!.allSupertypes.firstWhere(
               (type) => abstractChecker.isExactly(type.element), orElse: () {
         throwError(
           '[${clazz.name}] is not a subtype of [${abstractType.getDisplayString()}]',
           element: clazz,
         );
         return null;
-      });
+      } as InterfaceType Function()?);
 
       _dep.type = _importResolver.resolveType(abstractSubtype);
     }
 
     _dep.environments = inlineEnv ??
         envChecker
-            .annotationsOf(_annotatedElement)
+            .annotationsOf(_annotatedElement!)
             ?.map((e) => e.getField('name')?.toStringValue())
-            ?.toList();
+            ?.toList() as List<String>?;
 
-    _dep.preResolve = preResolveChecker.hasAnnotationOfExact(_annotatedElement);
+    _dep.preResolve = preResolveChecker.hasAnnotationOfExact(_annotatedElement!);
 
     final name = namedChecker
-        .firstAnnotationOfExact(_annotatedElement)
+        .firstAnnotationOfExact(_annotatedElement!)
         ?.getField('name')
         ?.toStringValue();
     if (name != null) {
       if (name.isNotEmpty) {
         _dep.instanceName = name;
       } else {
-        _dep.instanceName = clazz.name;
+        _dep.instanceName = clazz!.name;
       }
     }
 
-    ExecutableElement executableInitilizer;
+    ExecutableElement? executableInitilizer;
 
     if (excModuleMember != null) {
       executableInitilizer = excModuleMember;
     } else if (!_dep.isFromModule || _dep.isAbstract) {
-      final possibleFactories = <ExecutableElement>[
-        ...clazz.methods.where((m) => m.isStatic),
+      final possibleFactories = <ExecutableElement?>[
+        ...clazz!.methods.where((m) => m.isStatic),
         ...clazz.constructors
       ];
 
       executableInitilizer = possibleFactories.firstWhere(
-              (m) => constructorChecker.hasAnnotationOfExact(m), orElse: () {
+              (m) => constructorChecker.hasAnnotationOfExact(m!), orElse: () {
         throwIf(
           clazz.isAbstract,
           '''[${clazz
@@ -184,7 +184,7 @@ class DependencyResolver {
         );
         return clazz.unnamedConstructor;
       });
-      _dep.isAsync = executableInitilizer.returnType.isDartAsyncFuture;
+      _dep.isAsync = executableInitilizer!.returnType.isDartAsyncFuture;
     }
 
     if (executableInitilizer != null) {
@@ -197,7 +197,7 @@ class DependencyResolver {
             ?.getDisplayString(withNullability: false) ??
             namedAnnotation?.getField('name')?.toStringValue();
 
-        var paramType = param.type;
+        DartType? paramType = param.type;
         if (paramType is TypeParameterType) {
           paramType =
           _typeArgsMap[paramType.getDisplayString(withNullability: false)];
@@ -210,7 +210,7 @@ class DependencyResolver {
           resolvedType = ImportableType(name: 'dynamic');
         }
 
-        _dep.dependencies.add(InjectedDependency(
+        _dep.dependencies!.add(InjectedDependency(
           type: resolvedType,
           name: instanceName,
           isFactoryParam: factoryParamChecker.hasAnnotationOfExact(param),
@@ -219,12 +219,12 @@ class DependencyResolver {
         ));
       }
       final factoryParamsCount =
-          _dep.dependencies
-              .where((d) => d.isFactoryParam)
+          _dep.dependencies!
+              .where((d) => d.isFactoryParam!)
               .length;
 
       throwIf(
-        _dep.preResolve && factoryParamsCount != 0,
+        _dep.preResolve! && factoryParamsCount != 0,
         'Factories with params can not be pre-resolved',
         element: clazz,
       );

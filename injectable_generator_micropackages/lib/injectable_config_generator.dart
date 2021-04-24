@@ -18,7 +18,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   dynamic generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) async {
     final generateForDir = annotation.read('generateForDir').listValue.map((e) => e.toStringValue());
 
-    var targetFile = element.source.uri;
+    var targetFile = element.source!.uri;
     var preferRelativeImports = (annotation.peek("preferRelativeImports")?.boolValue ?? true == true);
     var isMicroPackageRoot = annotation.instanceOf(_microPackageRootInit);
 
@@ -33,7 +33,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     }
 
     final deps = <DependencyConfig>[];
-    jsonData.forEach((json) => deps.add(DependencyConfig.fromJson(json)));
+    jsonData.forEach((json) => deps.add(DependencyConfig.fromJson(json as Map<String, dynamic>)));
 
     final initializerName = annotation.read('initializerName').stringValue;
     final asExtension = annotation.read('asExtension').boolValue;
@@ -53,12 +53,12 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final messages = [];
     final registeredDeps = deps.map((dep) => dep.type).toSet();
     deps.forEach((dep) {
-      dep.dependencies
-          .where((d) => !d.isFactoryParam && d.name != kEnvironmentsName)
+      dep.dependencies!
+          .where((d) => !d.isFactoryParam! && d.name != kEnvironmentsName)
           .forEach((iDep) {
         if (!registeredDeps.contains(iDep.type)) {
           messages.add(
-              "[${dep.typeImpl}] depends on unregistered type [${iDep.type}] ${iDep.type.import == null ? '' : 'from ${iDep.type.import}'}");
+              "[${dep.typeImpl}] depends on unregistered type [${iDep.type}] ${iDep.type!.import == null ? '' : 'from ${iDep.type!.import}'}");
         }
       });
     });
@@ -80,9 +80,9 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
         validatedDeps.add(dep);
       } else {
         Set<String> registeredEnvironments = registered
-            .fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
+            .fold(<String>{}, (prev, elm) => prev..addAll(elm.environments!));
         if (registeredEnvironments.isEmpty ||
-            dep.environments
+            dep.environments!
                 .any((env) => registeredEnvironments.contains(env))) {
           throwBoxed(
               '${dep.typeImpl} [${dep.type}] env: ${dep.environments} \nis registered more than once under the same environment');

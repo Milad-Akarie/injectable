@@ -6,18 +6,18 @@ class ModuleFactoryGenerator extends RegisterFuncGenerator {
 
   @override
   String generateInitializer(DependencyConfig dep, {String getIt = 'get'}) {
-    final flattenedParams = flattenParams(dep.dependencies, getIt);
-    final constructorName = dep.constructorName != null && dep.constructorName.isNotEmpty ? '.${dep.constructorName}' : '';
-    return '${dep.typeImpl.getDisplayName(prefixedTypes, includeTypeArgs: false)}$constructorName($flattenedParams)';
+    final flattenedParams = flattenParams(dep.dependencies!, getIt);
+    final constructorName = dep.constructorName != null && dep.constructorName!.isNotEmpty ? '.${dep.constructorName}' : '';
+    return '${dep.typeImpl!.getDisplayName(prefixedTypes, includeTypeArgs: false)}$constructorName($flattenedParams)';
   }
 
   @override
-  String generate(DependencyConfig dep, {Set<ImportableType> prefixedTypes}) {
+  String generate(DependencyConfig dep, {Set<ImportableType>? prefixedTypes}) {
     final constructor = generateInitializer(dep, getIt: '_get');
-    if (dep.isModuleMethod) {
-      return '${dep.typeImpl.getDisplayName(prefixedTypes)} ${dep.initializerName}() => $constructor;';
+    if (dep.isModuleMethod!) {
+      return '${dep.typeImpl!.getDisplayName(prefixedTypes)} ${dep.initializerName}() => $constructor;';
     } else {
-      return '${dep.typeImpl.getDisplayName(prefixedTypes)} get ${dep.initializerName} => $constructor ;';
+      return '${dep.typeImpl!.getDisplayName(prefixedTypes)} get ${dep.initializerName} => $constructor ;';
     }
   }
 }

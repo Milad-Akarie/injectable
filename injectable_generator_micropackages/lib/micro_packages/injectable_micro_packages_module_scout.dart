@@ -27,8 +27,8 @@ class InjectableMicroPackagesModuleScout extends GeneratorForAnnotation<MicroPac
     String moduleClassName = LibraryReader(element.library).classes.first.name;
     String methodName = LibraryReader(element.library).classes.first.methods.first.name;
     */
-    String moduleClassName = visitor.className.getDisplayString(withNullability: false);
-    String location = visitor.location;
+    String moduleClassName = visitor.className!.getDisplayString(withNullability: false);
+    String? location = visitor.location;
     String methodName = visitor.methodNames.first;
 
 
@@ -45,9 +45,9 @@ class InjectableMicroPackagesModuleScout extends GeneratorForAnnotation<MicroPac
 /// and register ModelClassMethodsVisitor to each of them
 class ModelClassVisitor extends SimpleElementVisitor<ClassElement>{
 
-  DartType className;
+  DartType? className;
   var methodNames = <String>[];
-  String location;
+  String? location;
 
   /// For each method inside class element, the visitor will be called
   /// It will store the method name
@@ -59,21 +59,23 @@ class ModelClassVisitor extends SimpleElementVisitor<ClassElement>{
 
   @override
   ClassElement visitCompilationUnitElement(CompilationUnitElement element) {
-    location = element.location.components.first;
+    location = element.location!.components.first;
+    return element.enums.first;
   }
 
   @override
   visitLibraryElement(LibraryElement element) {
     //not working
     assert(location== null);
-    location = element.location.components.first;
+    location = element.location!.components.first;
   }
 
   @override
   ClassElement visitConstructorElement(ConstructorElement element) {
     assert(className == null);
-    location = element.location.components.first;
+    location = element.location!.components.first;
     className = element.type.returnType;
+    return element.enclosingElement;
   }
 }
 /// Implementation of visitor pattern to get all the methods that exist

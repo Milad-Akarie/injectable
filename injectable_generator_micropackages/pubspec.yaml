@@ -1,24 +1,24 @@
 name: injectable_generator_micropackages
-description: Injectable is a convenient code generator for get_it. Inspired by Angular DI, Guice DI and inject.dart. Also have support for micro packages.
-version: 1.0.7
+description: Injectable micropackages is a convenient code generator for get_it. Inspired by Angular DI, Guice DI and inject.dart. Also have support for micro packages.
+version: 1.0.8
 homepage: https://github.com/GoncaloPT/injectable
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  build: ^1.0.0
-  source_gen: ^0.9.0
-  path: ^1.6.0
-  glob: ^1.1.7
-  analyzer: ^0.40.1
-  code_builder: "^3.4.1"
-  injectable_micropackages:
-    #^1.0.6
-     path: ../injectable_micropackages
-  collection: ^1.14.8
+  build: ^2.0.1
+  source_gen: ^1.0.0
+  path: ^1.8.0
+  glob: ^2.0.1
+  dart_style: ^2.0.0
+  analyzer: ^1.5.0
+  code_builder: ^4.0.0
+  injectable_micropackages: ^1.0.8
+    # path: ../injectable_micropackages
+  collection: ^1.15.0
 dev_dependencies:
-  test:
-  build_runner: ^1.0.0
-  build_test:
+  test: ^1.17.1
+  build_runner: ^2.0.1
+  build_test: ^2.1.0
 
