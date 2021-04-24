@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -13,9 +12,11 @@ import 'package:source_gen/source_gen.dart';
 /// Runs for classes with @MicroPackage annotation
 /// generates a <moduleName>.micropackage.json file for each
 /// This Generator runs inside each micropackage module
-class InjectableMicroPackagesModuleScout extends GeneratorForAnnotation<MicroPackage>{
+class InjectableMicroPackagesModuleScout
+    extends GeneratorForAnnotation<MicroPackage> {
   @override
-  generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) {
+  generateForAnnotatedElement(
+      Element element, ConstantReader annotation, BuildStep buildStep) {
     var visitor = ModelClassVisitor();
     // register visitor
     element.visitChildren(visitor);
@@ -27,24 +28,23 @@ class InjectableMicroPackagesModuleScout extends GeneratorForAnnotation<MicroPac
     String moduleClassName = LibraryReader(element.library).classes.first.name;
     String methodName = LibraryReader(element.library).classes.first.methods.first.name;
     */
-    String moduleClassName = visitor.className!.getDisplayString(withNullability: false);
+    String moduleClassName =
+        visitor.className!.getDisplayString(withNullability: false);
     String? location = visitor.location;
     String methodName = visitor.methodNames.first;
 
-
     log.fine("element.name ${name}");
     log.fine("element.location ${location}");
-    log.fine(" LibraryReader(element).classes.first.name ${ moduleClassName}");
-    log.fine(" methodName ${ methodName}");
-    return jsonEncode(MicroPackageModuleModel(location,name, moduleClassName, methodName: methodName));
+    log.fine(" LibraryReader(element).classes.first.name ${moduleClassName}");
+    log.fine(" methodName ${methodName}");
+    return jsonEncode(MicroPackageModuleModel(location, name, moduleClassName,
+        methodName: methodName));
   }
-
 }
 
 /// Implementation of visitor pattern to get all the existent classes
 /// and register ModelClassMethodsVisitor to each of them
-class ModelClassVisitor extends SimpleElementVisitor<ClassElement>{
-
+class ModelClassVisitor extends SimpleElementVisitor<ClassElement> {
   DartType? className;
   var methodNames = <String>[];
   String? location;
@@ -56,7 +56,6 @@ class ModelClassVisitor extends SimpleElementVisitor<ClassElement>{
     methodNames.add(element.name);
   }
 
-
   @override
   ClassElement? visitCompilationUnitElement(CompilationUnitElement element) {
     location = element.location!.components.first;
@@ -66,7 +65,7 @@ class ModelClassVisitor extends SimpleElementVisitor<ClassElement>{
   @override
   visitLibraryElement(LibraryElement element) {
     //not working
-    assert(location== null);
+    assert(location == null);
     location = element.location!.components.first;
   }
 
@@ -78,8 +77,7 @@ class ModelClassVisitor extends SimpleElementVisitor<ClassElement>{
     return null;
   }
 }
+
 /// Implementation of visitor pattern to get all the methods that exist
 /// in one class. Values are stored in methodNames array
-class ModelClassMethodsVisitor extends SimpleElementVisitor{
-
-}
+class ModelClassMethodsVisitor extends SimpleElementVisitor {}

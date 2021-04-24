@@ -10,7 +10,7 @@ class DependencyConfig {
   int? injectableType;
   String? instanceName;
   bool? signalsReady;
-  List<String>? environments;
+  List<String?>? environments;
   String? initializerName;
   String? constructorName;
   bool? isAsync;
@@ -44,9 +44,9 @@ class DependencyConfig {
 
   Set<ImportableType> get allImportableTypes {
     var importableTypes = <ImportableType>{};
-    if (type!.fold != null) {
-      importableTypes.addAll(type!.fold);
-    }
+
+    importableTypes.addAll(type!.fold);
+
     if (typeImpl != null) {
       importableTypes.addAll(typeImpl!.fold);
     }
@@ -111,7 +111,7 @@ class DependencyConfig {
         if (signalsReady != null) "signalsReady": signalsReady,
         if (initializerName != null) "initializerName": initializerName,
         if (constructorName != null) "constructorName": constructorName,
-        if (isAbstract != null) 'isAbstract': isAbstract,
+        if(isAbstract!= null) 'isAbstract': isAbstract,
         if (isModuleMethod != null) 'isModuleMethod': isModuleMethod,
       };
 }
@@ -180,8 +180,12 @@ class ImportableType {
     return "$namePrefix$name$typeArgs";
   }
 
-  String getDisplayName(Set<ImportableType>? prefixedTypes, {bool includeTypeArgs = true}) {
-    return prefixedTypes?.lookup(this)?.fullName(includeTypeArgs: includeTypeArgs) ?? fullName(includeTypeArgs: includeTypeArgs);
+  String getDisplayName(Set<ImportableType>? prefixedTypes,
+      {bool includeTypeArgs = true}) {
+    return prefixedTypes
+            ?.lookup(this)
+            ?.fullName(includeTypeArgs: includeTypeArgs) ??
+        fullName(includeTypeArgs: includeTypeArgs);
   }
 
   String get importName => "'$import' ${prefix != null ? 'as $prefix' : ''}";
@@ -212,17 +216,16 @@ class ImportableType {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is ImportableType &&
-              runtimeType == other.runtimeType &&
-              identity == other.identity &&
-              ListEquality().equals(typeArguments, other.typeArguments);
+      other is ImportableType &&
+          runtimeType == other.runtimeType &&
+          identity == other.identity &&
+          ListEquality().equals(typeArguments, other.typeArguments);
 
   @override
   int get hashCode =>
       import.hashCode ^ name.hashCode ^ ListEquality().hash(typeArguments);
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         "name": name,
         "import": import,
         if (typeArguments?.isNotEmpty == true)

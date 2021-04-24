@@ -1,6 +1,12 @@
 # ChangeLog
-## [1.0.8] migration to null safety
-## [1.0.7] empty version to match with generator
+## [1.0.10]
+- Fixing bug caused by null safety migration
+## [1.0.9]
+- Version bump to level with injectable
+## [1.0.8] 
+- migration to null safety
+## [1.0.7] 
+- empty version to match with generator
 ## [1.0.6]
 - Added support for micropackages
 - Fix analyzer compatibility issues

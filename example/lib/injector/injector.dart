@@ -19,6 +19,6 @@ GetIt getIt = GetIt.instance;
   preferRelativeImports: true,
   asExtension: true,
 )
-void configInjector({String env, EnvironmentFilter environmentFilter}) {
+void configInjector({String? env, EnvironmentFilter? environmentFilter}) {
   getIt.init(environmentFilter: environmentFilter);
 }

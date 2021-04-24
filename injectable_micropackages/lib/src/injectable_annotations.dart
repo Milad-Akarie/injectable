@@ -23,11 +23,7 @@ class InjectableInit {
       {this.generateForDir = const ['lib'],
       this.preferRelativeImports = true,
       this.initializerName = r'$initGetIt',
-      this.asExtension = false})
-      : assert(generateForDir != null),
-        assert(initializerName != null),
-        assert(preferRelativeImports != null),
-        assert(asExtension != null);
+      this.asExtension = false});
 }
 
 /// const instance of [InjectableInit]

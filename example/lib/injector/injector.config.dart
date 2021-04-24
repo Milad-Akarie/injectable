@@ -22,21 +22,19 @@ const _prod = 'prod';
 
 extension GetItInjectableX on GetIt {
   GetIt init({
-    String environment,
-    EnvironmentFilter environmentFilter,
+    String? environment,
+    EnvironmentFilter? environmentFilter,
   }) {
     final gh = GetItHelper(this, environment, environmentFilter);
     final registerModule = _$RegisterModule(this);
     gh.factory<Service>(
         () => MobileService(get<Set<String>>(instanceName: '__environments__')),
-        registerFor: {_platformMobile},
-        instanceName: '');
+        registerFor: {_platformMobile});
     gh.factory<Service>(
         () => WebService(get<Set<String>>(instanceName: '__environments__')),
-        registerFor: {_platformWeb},
-        instanceName: '');
+        registerFor: {_platformWeb});
     gh.factory<Repo>(() => registerModule.repo,
-        registerFor: {_prod, _platformMobile}, instanceName: '');
+        registerFor: {_prod, _platformMobile});
     MicroPackagesConfig.registerMicroModules(this);
     return this;
   }
@@ -44,9 +42,7 @@ extension GetItInjectableX on GetIt {
 
 class _$RegisterModule extends RegisterModule {
   final GetIt _get;
-
   _$RegisterModule(this._get);
-
   @override
   RepoImpl get repo => RepoImpl(_get<Service>());
 }

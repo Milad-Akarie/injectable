@@ -15,11 +15,11 @@ import '../test_service.dart';
 
 GetIt $initGetIt(
   GetIt get, {
-  String environment,
-  EnvironmentFilter environmentFilter,
+  String? environment,
+  EnvironmentFilter? environmentFilter,
 }) {
   final gh = GetItHelper(get, environment, environmentFilter);
-  gh.factory<SubTestService>(() => SubTestService(), instanceName: '', registerFor: null);
-  gh.factory<TestService>(() => TestService(), registerFor: null, instanceName: '');
+  gh.factory<SubTestService>(() => SubTestService());
+  gh.factory<TestService>(() => TestService());
   return get;
 }

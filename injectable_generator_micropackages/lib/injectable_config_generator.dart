@@ -4,7 +4,6 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:glob/glob.dart';
 import 'package:injectable_micropackages/injectable_micropackages.dart';
-import 'package:path/path.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'dependency_config.dart';
@@ -79,7 +78,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       if (registered.isEmpty) {
         validatedDeps.add(dep);
       } else {
-        Set<String> registeredEnvironments = registered
+        Set<String?> registeredEnvironments = registered
             .fold(<String>{}, (prev, elm) => prev..addAll(elm.environments!));
         if (registeredEnvironments.isEmpty ||
             dep.environments!

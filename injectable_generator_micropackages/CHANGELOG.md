@@ -1,4 +1,8 @@
 # ChangeLog
+## [1.0.10]
+- Fixing bug caused by null safety migration
+## [1.0.9]
+Version bump to level with injectable
 ## [1.0.8] 
 - Migration to null safety
 ## [1.0.7]

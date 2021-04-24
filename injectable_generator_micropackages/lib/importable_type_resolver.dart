@@ -6,12 +6,12 @@ import 'package:path/path.dart' as p;
 abstract class ImportableTypeResolver {
   String? resolveImport(Element element);
 
-  ImportableType resolveType(DartType type);
+  ImportableType resolveType(DartType? type);
 
   static Set<ImportableType> resolvePrefixes(Set<ImportableType> importableTypes) {
     var registeredImports = <ImportableType>{};
     var importsWithPrefixes = <String?, ImportableType>{};
-    for (var iType in importableTypes.where((e) => e?.import != null)) {
+    for (var iType in importableTypes.where((e) => e.import != null)) {
       if (registeredImports.any((e) => e.name == iType.name)) {
         var prefix = Uri.parse(iType.import!).pathSegments.first;
         var prefixesWithSameNameCount = importsWithPrefixes.values.where((e) => e.prefix!.startsWith(prefix)).length;
@@ -71,8 +71,7 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
     }
 
     for (var lib in libs) {
-      if (lib.source != null &&
-          !_isCoreDartType(lib) &&
+      if (!_isCoreDartType(lib) &&
           lib.exportNamespace.definedNames.values.contains(element)) {
         return lib.identifier;
       }
@@ -103,9 +102,10 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
   }
 
   @override
-  ImportableType resolveType(DartType type) {
+  ImportableType resolveType(DartType? type) {
+    print('--- resolveType, $type ---');
     return ImportableType(
-      name: type.element!.name,
+      name: type!.element!.name,
       import: resolveImport(type.element),
       typeArguments: _resolveTypeArguments(type) as List<ImportableType>?,
     );
