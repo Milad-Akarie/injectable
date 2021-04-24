@@ -28,7 +28,7 @@ dependencies:
   # add injectable to your dependencies
   injectable:
   # add get_it
-  get_It:
+  get_it:
 
 dev_dependencies:
   # add the generator to your dev_dependencies
