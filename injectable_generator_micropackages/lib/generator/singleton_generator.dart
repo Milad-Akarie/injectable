@@ -13,15 +13,15 @@ class SingletonGenerator extends RegisterFuncGenerator {
       constructor = generateAwaitSetup(dep, initializer);
     }
 
-    final typeArg = '<${dep.type.getDisplayName(prefixedTypes)}>';
+    final typeArg = '<${dep.type!.getDisplayName(prefixedTypes)}>';
 
-    if (dep.isAsync && !dep.preResolve) {
+    if (dep.isAsync! && !dep.preResolve!) {
       write('gh.singletonAsync$typeArg(()=> $constructor');
-      if (dep.dependsOn.isNotEmpty) {
+      if (dep.dependsOn!.isNotEmpty) {
         write(', dependsOn: ${dep.dependsOn}');
       }
     } else {
-      if (dep.dependsOn.isEmpty) {
+      if (dep.dependsOn!.isEmpty) {
         write("gh.singleton$typeArg($constructor");
       } else {
         write('gh.singletonWithDependencies$typeArg(()=> $constructor, dependsOn: ${dep.dependsOn}');

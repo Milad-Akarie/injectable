@@ -12,8 +12,8 @@ import 'package:injectable_micropackages/injectable_micropackages.dart';
 
 extension GetItInjectableX on GetIt {
   GetIt $initGetIt({
-    String environment,
-    EnvironmentFilter environmentFilter,
+    String? environment,
+    EnvironmentFilter? environmentFilter,
   }) {
     final gh = GetItHelper(this, environment, environmentFilter);
     return this;

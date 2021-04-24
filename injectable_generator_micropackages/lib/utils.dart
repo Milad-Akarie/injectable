@@ -26,14 +26,14 @@ void throwSourceError(String message) {
   throw ("\n${pre.padRight(72, '-')}\n$message\n${''.padRight(72, '-')} \n");
 }
 
-void throwError(String message, {Element element}) {
+void throwError(String message, {Element? element}) {
   throw InvalidGenerationSourceError(
     message,
     element: element,
   );
 }
 
-void throwIf(bool condition, String message, {Element element}) {
+void throwIf(bool condition, String message, {Element? element}) {
   if (condition == true) {
     throw InvalidGenerationSourceError(
       message,

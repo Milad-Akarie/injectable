@@ -4,17 +4,17 @@ import 'package:injectable_generator_micropackages/dependency_config.dart';
 import 'package:path/path.dart' as p;
 
 abstract class ImportableTypeResolver {
-  String resolveImport(Element element);
+  String? resolveImport(Element element);
 
-  ImportableType resolveType(DartType type);
+  ImportableType resolveType(DartType? type);
 
   static Set<ImportableType> resolvePrefixes(Set<ImportableType> importableTypes) {
     var registeredImports = <ImportableType>{};
-    var importsWithPrefixes = <String, ImportableType>{};
-    for (var iType in importableTypes.where((e) => e?.import != null)) {
+    var importsWithPrefixes = <String?, ImportableType>{};
+    for (var iType in importableTypes.where((e) => e.import != null)) {
       if (registeredImports.any((e) => e.name == iType.name)) {
-        var prefix = Uri.parse(iType.import).pathSegments.first;
-        var prefixesWithSameNameCount = importsWithPrefixes.values.where((e) => e.prefix.startsWith(prefix)).length;
+        var prefix = Uri.parse(iType.import!).pathSegments.first;
+        var prefixesWithSameNameCount = importsWithPrefixes.values.where((e) => e.prefix!.startsWith(prefix)).length;
         prefix += (prefixesWithSameNameCount > 0 ? prefixesWithSameNameCount.toString() : '');
         importsWithPrefixes[iType.import] = iType.copyWith(prefix: prefix);
         registeredImports.add(iType);
@@ -27,7 +27,7 @@ abstract class ImportableTypeResolver {
         .map((e) =>
     importsWithPrefixes[e.import] == null
         ? e
-        : e.copyWith(prefix: importsWithPrefixes[e.import].prefix))
+        : e.copyWith(prefix: importsWithPrefixes[e.import]!.prefix))
         .toSet();
   }
 
@@ -64,15 +64,14 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
 
   ImportableTypeResolverImpl(this.libs);
 
-  String resolveImport(Element element) {
+  String? resolveImport(Element? element) {
     // return early if source is null or element is a core type
-    if (element?.source == null || _isCoreDartType(element)) {
+    if (element?.source == null || _isCoreDartType(element!)) {
       return null;
     }
 
     for (var lib in libs) {
-      if (lib.source != null &&
-          !_isCoreDartType(lib) &&
+      if (!_isCoreDartType(lib) &&
           lib.exportNamespace.definedNames.values.contains(element)) {
         return lib.identifier;
       }
@@ -81,7 +80,7 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
   }
 
   bool _isCoreDartType(Element element) {
-    return element.source.fullName == 'dart:core';
+    return element.source!.fullName == 'dart:core';
   }
 
   Iterable<ImportableType> _resolveTypeArguments(DartType typeToCheck) {
@@ -92,9 +91,9 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
           importableTypes.add(ImportableType(name: 'dynamic'));
         } else {
           importableTypes.add(ImportableType(
-            name: type.element.name,
+            name: type.element!.name,
             import: resolveImport(type.element),
-            typeArguments: _resolveTypeArguments(type),
+            typeArguments: _resolveTypeArguments(type) as List<ImportableType>?,
           ));
         }
       }
@@ -103,11 +102,12 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
   }
 
   @override
-  ImportableType resolveType(DartType type) {
+  ImportableType resolveType(DartType? type) {
+    print('--- resolveType, $type ---');
     return ImportableType(
-      name: type.element.name,
+      name: type!.element!.name,
       import: resolveImport(type.element),
-      typeArguments: _resolveTypeArguments(type),
+      typeArguments: _resolveTypeArguments(type) as List<ImportableType>?,
     );
   }
 }

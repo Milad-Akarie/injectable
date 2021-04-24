@@ -7,7 +7,7 @@ import 'Service.dart';
 @Injectable(as: Service)
 class MobileService extends Service {
   @override
-  final Set<String> environments;
+  final Set<String?> environments;
 
   MobileService(@Named(kEnvironmentsName) this.environments) {}
 }
@@ -16,7 +16,7 @@ class MobileService extends Service {
 @Injectable(as: Service)
 class WebService extends Service {
   @override
-  final Set<String> environments;
+  final Set<String?> environments;
 
   WebService(@Named(kEnvironmentsName) this.environments) {}
 }

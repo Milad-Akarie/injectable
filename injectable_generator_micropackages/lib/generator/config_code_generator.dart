@@ -19,11 +19,11 @@ class ConfigCodeGenerator {
   final List<DependencyConfig> allDeps;
   final Set<ImportableType> prefixedTypes = {};
   final _buffer = StringBuffer();
-  final Uri targetFile;
-  final String initializerName;
-  final bool asExtension;
+  final Uri? targetFile;
+  final String? initializerName;
+  final bool? asExtension;
   final bool isMicroPackageRoot;
-  static String microPackageConfigFileName = 'injection.config.micropackage.dart';
+  static String microPackageConfigFileName = 'injector.config.micropackage.dart';
 
   ConfigCodeGenerator(this.allDeps,
       {this.targetFile,
@@ -51,7 +51,7 @@ class ConfigCodeGenerator {
     _generateImports(importsWithPrefixes);
 
     // sort dependencies alphabetically
-    allDeps.sort((a, b) => a.type.name.compareTo(b.type.name));
+    allDeps.sort((a, b) => a.type!.name!.compareTo(b.type!.name!));
 
     // sort dependencies by their register order
     final Set<DependencyConfig> sorted = {};
@@ -59,7 +59,7 @@ class ConfigCodeGenerator {
 
     final modules = sorted.where((d) => d.isFromModule).map((d) => d.module).toSet();
 
-    final environments = sorted.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
+    final environments = sorted.fold(<String>{}, (dynamic prev, elm) => prev..addAll(elm.environments));
     if (environments.isNotEmpty) {
       _writeln("/// Environment names");
       environments.forEach((env) => _writeln("const _$env = '$env';"));
@@ -77,7 +77,7 @@ class ConfigCodeGenerator {
 
     var getItParam = 'GetIt get,';
     var getOrThis = 'get';
-    if (asExtension) {
+    if (asExtension!) {
       _writeln('extension GetItInjectableX on GetIt {');
       getItParam = '';
       getOrThis = "this";
@@ -85,19 +85,19 @@ class ConfigCodeGenerator {
 
     if (_hasAsync(sorted)) {
       _writeln(
-          "Future<GetIt> $initializerName($getItParam {String environment, EnvironmentFilter environmentFilter,}) async {");
+          "Future<GetIt> $initializerName($getItParam {String? environment, EnvironmentFilter? environmentFilter,}) async {");
     } else {
       _writeln(
-          "GetIt $initializerName($getItParam {String environment, EnvironmentFilter environmentFilter,}) {");
+          "GetIt $initializerName($getItParam {String? environment, EnvironmentFilter? environmentFilter,}) {");
     }
     _writeln(
         "final gh = GetItHelper($getOrThis, environment, environmentFilter);");
     modules.forEach((m) {
       final constParam = _getAbstractModuleDeps(sorted, m)
-              .any((d) => d.dependencies.isNotEmpty)
+              .any((d) => d.dependencies!.isNotEmpty)
           ? getOrThis
           : '';
-      _writeln('final ${toCamelCase(m.name)} = _\$$m($constParam);');
+      _writeln('final ${toCamelCase(m!.name!)} = _\$$m($constParam);');
     });
 
     _generateDeps(lazyDeps);
@@ -112,7 +112,7 @@ class ConfigCodeGenerator {
       _writeln("MicroPackagesConfig.registerMicroModules(this);");
     }
     _write('return $getOrThis;\n}');
-    if (asExtension) {
+    if (asExtension!) {
       _write('}');
     }
 
@@ -132,7 +132,7 @@ class ConfigCodeGenerator {
     importableTypes.add(
       ImportableType(
         name: 'GetItHelper',
-        import: 'package:injectable/injectable_micropackages.dart',
+        import: 'package:injectable_micropackages/injectable_micropackages.dart',
       ),
     );
 
@@ -150,20 +150,20 @@ class ConfigCodeGenerator {
 
     var finalizedImports = (targetFile == null
             ? uniqueImports.map((e) => e.copyWith(
-                import: ImportableTypeResolver.resolveAssetImports(e.import)))
+                import: ImportableTypeResolver.resolveAssetImports(e.import!)))
             : uniqueImports.map((e) => e.copyWith(
-                import: ImportableTypeResolver.relative(e.import, targetFile))))
+                import: ImportableTypeResolver.relative(e.import!, targetFile!))))
         .toSet();
 
     var dartImports =
-        finalizedImports.where((e) => e.import.startsWith('dart')).toList();
+        finalizedImports.where((e) => e.import!.startsWith('dart')).toList();
     if (dartImports.isNotEmpty) {
       _sortAndGenerate(dartImports);
       _writeln("");
     }
 
     var packageImports =
-        finalizedImports.where((e) => e.import.startsWith('package')).toList();
+        finalizedImports.where((e) => e.import!.startsWith('package')).toList();
     if (packageImports.isNotEmpty) {
       _sortAndGenerate(packageImports);
       _writeln("");
@@ -175,14 +175,14 @@ class ConfigCodeGenerator {
   }
 
   void _sortAndGenerate(List<ImportableType> importableTypes) {
-    importableTypes.sort((a, b) => a.name.compareTo(b.name));
+    importableTypes.sort((a, b) => a.name!.compareTo(b.name!));
     importableTypes.forEach((IType) => _writeln("import ${IType.importName};"));
   }
 
   void _generateDeps(Iterable<DependencyConfig> deps) {
     deps.forEach((dep) {
       if (dep.injectableType == InjectableType.factory) {
-        if (dep.dependencies.any((d) => d.isFactoryParam)) {
+        if (dep.dependencies!.any((d) => d.isFactoryParam!)) {
           _writeln(FactoryParamGenerator(prefixedTypes).generate(dep));
         } else {
           _writeln(LazyFactoryGenerator(prefixedTypes).generate(dep));
@@ -199,9 +199,9 @@ class ConfigCodeGenerator {
   void _sortByDependents(
       Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
     for (var dep in unSorted) {
-      if (dep.dependencies.every(
+      if (dep.dependencies!.every(
         (iDep) =>
-            iDep.isFactoryParam ||
+            iDep.isFactoryParam! ||
             sorted.map((d) => d.type).contains(iDep.type) ||
             !unSorted.map((d) => d.type).contains(iDep.type),
       )) {
@@ -214,15 +214,15 @@ class ConfigCodeGenerator {
   }
 
   bool _hasAsync(Set<DependencyConfig> deps) {
-    return deps.any((d) => d.isAsync && d.preResolve);
+    return deps.any((d) => d.isAsync! && d.preResolve!);
   }
 
   void _generateModules(
-      Set<ImportableType> modules, Set<DependencyConfig> deps) {
+      Set<ImportableType?> modules, Set<DependencyConfig> deps) {
     modules.forEach((m) {
-      _writeln('class _\$$m extends ${m.getDisplayName(prefixedTypes)}{');
+      _writeln('class _\$$m extends ${m!.getDisplayName(prefixedTypes)}{');
       final moduleDeps = _getAbstractModuleDeps(deps, m).toList();
-      if (moduleDeps.any((d) => d.dependencies.isNotEmpty)) {
+      if (moduleDeps.any((d) => d.dependencies!.isNotEmpty)) {
         _writeln("final GetIt _get;");
         _writeln('_\$$m(this._get);');
       }
@@ -232,7 +232,7 @@ class ConfigCodeGenerator {
   }
 
   Iterable<DependencyConfig> _getAbstractModuleDeps(
-      Set<DependencyConfig> deps, ImportableType m) {
+      Set<DependencyConfig> deps, ImportableType? m) {
     return deps.where((d) => d.isFromModule && d.module == m && d.isAbstract);
   }
 

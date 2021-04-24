@@ -18,9 +18,9 @@ class LazyFactoryGenerator extends RegisterFuncGenerator {
       constructor = generateAwaitSetup(dep, initializer);
     }
 
-    final asyncStr = dep.isAsync && !dep.preResolve ? 'Async' : '';
+    final asyncStr = dep.isAsync! && !dep.preResolve! ? 'Async' : '';
 
-    write("gh.$funcName$asyncStr<${dep.type.getDisplayName(prefixedTypes)}>(()=> $constructor");
+    write("gh.$funcName$asyncStr<${dep.type!.getDisplayName(prefixedTypes)}>(()=> $constructor");
 
     closeRegisterFunc(dep);
     return buffer.toString();

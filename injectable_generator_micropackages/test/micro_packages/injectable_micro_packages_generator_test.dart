@@ -10,14 +10,14 @@ main() {
       await testBuilder(
         builder,
         {
-          'injectable_generator|lib/injector.dart': _inputDartFile,
-          'injectable_generator|lib/micro_packages.json': _microPackageDefinition1,
+          'injectable_generator_micropackages|lib/injector.dart': _inputDartFile,
+          'injectable_generator_micropackages|lib/micro_packages.json': _microPackageDefinition1,
         },
         outputs: {
-          'injectable_generator|lib/injector.config.micropackage.dart': _expectedOutput1,
+          'injectable_generator_micropackages|lib/injector.config.micropackage.dart': _expectedOutput1,
         },
         reader: await PackageAssetReader.currentIsolate(),
-        rootPackage: 'injectable_generator',
+        rootPackage: 'injectable_generator_micropackages',
       );
     });
 
@@ -25,14 +25,14 @@ main() {
       await testBuilder(
         builder,
         {
-          'injectable_generator|lib/injector.dart': _inputDartFile,
-          'injectable_generator|lib/micro_packages.json': _microPackageDefinition2,
+          'injectable_generator_micropackages|lib/injector.dart': _inputDartFile,
+          'injectable_generator_micropackages|lib/micro_packages.json': _microPackageDefinition2,
         },
         outputs: {
-          'injectable_generator|lib/injector.config.micropackage.dart': _expectedOutput2,
+          'injectable_generator_micropackages|lib/injector.config.micropackage.dart': _expectedOutput2,
         },
         reader: await PackageAssetReader.currentIsolate(),
-        rootPackage: 'injectable_generator',
+        rootPackage: 'injectable_generator_micropackages',
       );
     });
 

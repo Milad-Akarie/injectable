@@ -1,18 +1,18 @@
 /// Represents a micro package
 class MicroPackageModuleModel {
   /// the moduleFileLocation, like package:<name>/<name>.dart
-  final String moduleFileLocation;
+  final String? moduleFileLocation;
 
   /// the module or package name
-  final String moduleName;
+  final String? moduleName;
 
   /// Name of the class that has
   /// registerModuleDependencies method and @microPackage annotation
-  final String moduleClassName;
+  final String? moduleClassName;
 
   ///Name of the method
   ///which will be called on module registration
-  final String methodName;
+  final String? methodName;
 
   MicroPackageModuleModel(
       this.moduleFileLocation, this.moduleName, this.moduleClassName,{

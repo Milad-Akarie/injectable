@@ -34,7 +34,7 @@ Future<ResolvedInput> resolveRawSource(String source) async {
   });
 }
 
-void testRawSource(String label, {String source, Map output}) {
+void testRawSource(String label, {String? source, Map? output}) {
   test(label, () async {
     final resolvedInput = await resolveRawSource('''
     import 'package:injectable/injectable_micropackages.dart'

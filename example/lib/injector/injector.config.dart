@@ -22,8 +22,8 @@ const _prod = 'prod';
 
 extension GetItInjectableX on GetIt {
   GetIt init({
-    String environment,
-    EnvironmentFilter environmentFilter,
+    String? environment,
+    EnvironmentFilter? environmentFilter,
   }) {
     final gh = GetItHelper(this, environment, environmentFilter);
     final registerModule = _$RegisterModule(this);

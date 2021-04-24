@@ -3,7 +3,7 @@
 Injectable is a convenient code generator for get_it. Inspired by Angular DI, Guice DI and inject.dart.
 
 ---
-
+- Disclaimer
 - [Installation](#installation)
 - [Setup](#setup)
 - [Registering factories](#registering-factories)
@@ -16,6 +16,10 @@ Injectable is a convenient code generator for get_it. Inspired by Angular DI, Gu
 - [Registering third party types](#Registering-third-party-types)
 - [Auto registering](#auto-registering)
 - [Micropackages support](#support-for-micro-packages)
+
+## Disclaimer
+This package is built using a fork of [Milad's injectable](https://github.com/Milad-Akarie/injectable) https://pub.dev/packages/injectable.
+The intention never has been to create a new package. Therefore, a PR adding micropackages feature was [created](https://github.com/Milad-Akarie/injectable/pull/146), but never approved. 
 
 ## Installation
 
