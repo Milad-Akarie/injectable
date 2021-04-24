@@ -7,16 +7,24 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  build-injectable-micropackages:
     runs-on: ubuntu-latest
-
     container:
       image:  google/dart:latest
-
     steps:
     - uses: actions/checkout@v2
+    - name: go to injectable_micropackages
+      run: cd injectable_micropackages
     - name: Install dependencies
       run: pub get
-    - name: Run tests
-      run: pub run test
+  build-injectable-generator-micropackages:
+    runs-on: ubuntu-latest
+    container:
+      image: google/dart:latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: go to injectable_micropackages
+        run: cd injectable_generator_micropackages
+      - name: Install dependencies
+        run: pub get
+
