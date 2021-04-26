@@ -38,8 +38,11 @@ void main() {
       ),
   );
 
-  // gh.factory<Service>(() => resolvedService, registerFor: {_prod});
-  final emitter = DartEmitter(Allocator.simplePrefixing(), true, true);
+  final emitter = DartEmitter(
+    allocator: Allocator.none,
+    orderDirectives: true,
+    useNullSafetySyntax: false,
+  );
   print(library.accept(emitter).toString());
   print(DartFormatter().format(library.accept(emitter).toString()));
 }

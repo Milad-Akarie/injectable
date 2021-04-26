@@ -1,4 +1,7 @@
 # ChangeLog
+## [1.3.0]
+- Include merge that fixes #194
+- Pomp up versions of build_runner -> 2.0.1, code_builder -> 4.0.0, analyzer -> 1.5.0 
 ## [1.2.2]
 - Fix generator crash after 1.2.1 update
 - Add option to ignore missing type warning for specified types

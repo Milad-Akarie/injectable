@@ -49,9 +49,9 @@ class ImportableType {
       });
     }
     return ImportableType(
-      import: json['import'] as String,
-      name: json['name'] as String,
-      isNullable: json['isNullable'] as bool,
+      import: json['import'],
+      name: json['name'],
+      isNullable: json['isNullable'],
       typeArguments: typeArguments,
     );
   }
