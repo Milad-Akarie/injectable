@@ -9,6 +9,7 @@ import 'package:injectable/injectable.dart' as _i2;
 
 import '../module/register_module.dart' as _i4;
 import '../services/abstract_service.dart' as _i3;
+import 'injector.dart' as _i5;
 
 const String _platformMobile = 'platformMobile';
 const String _platformWeb = 'platformWeb';
@@ -53,6 +54,7 @@ extension GetItInjectableX on _i1.GetIt {
         registerFor: {_dev},
         preResolve: true,
         dispose: _i4.disposeRepo);
+    gh.factory<_i5.ServiceB>(() => _i5.ServiceB(get<_i5.ServiceA>()));
     gh.singleton<_i4.DisposableSingleton>(_i4.DisposableSingleton(),
         dispose: (i) => i.dispose());
     return this;

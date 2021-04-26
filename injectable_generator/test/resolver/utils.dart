@@ -1,9 +1,7 @@
 import 'dart:io';
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
-import 'package:injectable_generator/generators/injectable_generator.dart';
 import 'package:injectable_generator/resolvers/dependency_resolver.dart';
 import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
 import 'package:path/path.dart' as p;

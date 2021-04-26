@@ -9,6 +9,7 @@ const platformWeb = Environment('platformWeb');
 @InjectableInit(
   asExtension: true,
   initializerName: 'init',
+  ignoreUnregisteredTypes: [ServiceA],
 )
 configInjector(
   GetIt getIt, {
@@ -19,4 +20,11 @@ configInjector(
     environmentFilter: environmentFilter,
     environment: env,
   );
+}
+
+class ServiceA {}
+
+@injectable
+class ServiceB {
+  ServiceB(ServiceA serviceA);
 }

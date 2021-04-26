@@ -22,11 +22,16 @@ class InjectableInit {
   /// suffixes to the generated code;
   final bool usesNullSafety;
 
+  ///  generator will not show warning for unregistered types
+  ///  included in this list
+  final List<Type> ignoreUnregisteredTypes;
+
   /// default constructor
   const InjectableInit({
     this.generateForDir = const ['lib'],
     this.preferRelativeImports = true,
     this.initializerName = r'$initGetIt',
+    this.ignoreUnregisteredTypes = const [],
     this.asExtension = false,
     this.usesNullSafety = true,
   });
