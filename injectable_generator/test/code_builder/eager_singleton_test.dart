@@ -116,6 +116,10 @@ void main() {
 
 String generate(DependencyConfig input) {
   final statement = buildSingletonRegisterFun(input);
-  final emitter = DartEmitter(Allocator.none, true, true);
+  final emitter = DartEmitter(
+    allocator: Allocator.none,
+    orderDirectives: true,
+    useNullSafetySyntax: false,
+  );
   return statement.accept(emitter).toString();
 }

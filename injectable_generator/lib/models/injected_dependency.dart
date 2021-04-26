@@ -46,10 +46,10 @@ class InjectedDependency {
     }
     return InjectedDependency(
       type: type,
-      instanceName: json['instanceName'] as String,
-      paramName: json['paramName'] as String,
-      isFactoryParam: json['isFactoryParam'] as bool,
-      isPositional: json['isPositional'] as bool,
+      instanceName: json['instanceName'],
+      paramName: json['paramName'],
+      isFactoryParam: json['isFactoryParam'],
+      isPositional: json['isPositional'],
     );
   }
 

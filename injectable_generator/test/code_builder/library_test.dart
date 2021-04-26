@@ -47,7 +47,7 @@ GetIt(GetIt get, {String environment, EnvironmentFilter environmentFilter}) {
 /// an extension to register the provided dependencies inside of [GetIt]
 extension GetItInjectableX on GetIt {
   /// initializes the registration of provided dependencies inside of [GetIt]
-  GetIt({String environment, EnvironmentFilter environmentFilter}) {
+  GetIt init({String environment, EnvironmentFilter environmentFilter}) {
     final gh = GetItHelper(this, environment, environmentFilter);
     return this;
   }
@@ -58,7 +58,15 @@ extension GetItInjectableX on GetIt {
 }
 
 String generate(List<DependencyConfig> input, {bool asExt = false}) {
-  final library = generateLibrary(dependencies: input, initializerName: 'init', asExtension: asExt);
-  final emitter = DartEmitter(Allocator.none, true, false);
+  final library = generateLibrary(
+    dependencies: input,
+    initializerName: 'init',
+    asExtension: asExt,
+  );
+  final emitter = DartEmitter(
+    allocator: Allocator.none,
+    orderDirectives: true,
+    useNullSafetySyntax: false,
+  );
   return DartFormatter().format(library.accept(emitter).toString());
 }

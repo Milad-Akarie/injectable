@@ -226,7 +226,7 @@ Code buildLazyRegisterFun(
     ).closure
   ], {
     if (dep.instanceName != null)
-      'instanceName': literalString(dep.instanceName),
+      'instanceName': literalString(dep.instanceName!),
     if (dep.environments.isNotEmpty == true)
       'registerFor': literalSet(
         dep.environments.map((e) => refer('_$e')),
@@ -284,7 +284,7 @@ Code buildSingletonRegisterFun(
         : instanceBuilder
   ], {
     if (dep.instanceName != null)
-      'instanceName': literalString(dep.instanceName),
+      'instanceName': literalString(dep.instanceName!),
     if (dep.dependsOn.isNotEmpty)
       'dependsOn': literalList(
         dep.dependsOn.map(
@@ -295,7 +295,8 @@ Code buildSingletonRegisterFun(
       'registerFor': literalSet(
         dep.environments.map((e) => refer('_$e')),
       ),
-    if (dep.signalsReady != null) 'signalsReady': literalBool(dep.signalsReady),
+    if (dep.signalsReady != null)
+      'signalsReady': literalBool(dep.signalsReady!),
     if (dep.preResolve == true) 'preResolve': literalBool(true),
     if (dep.disposeFunction != null)
       'dispose': _getDisposeFunctionAssignment(
@@ -333,7 +334,7 @@ Expression _buildInstance(
   if (dep.constructorName?.isNotEmpty == true) {
     return ref
         .newInstanceNamed(
-          dep.constructorName,
+          dep.constructorName!,
           positionalParams,
           namedParams,
         )
@@ -390,7 +391,7 @@ Expression _buildParamAssignment(
   }
   return refer(name).call([], {
     if (iDep.instanceName != null)
-      'instanceName': literalString(iDep.instanceName),
+      'instanceName': literalString(iDep.instanceName!),
   }, [
     typeRefer(iDep.type, targetFile, false),
   ]);
