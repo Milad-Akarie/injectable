@@ -1,4 +1,7 @@
 # ChangeLog
+## [1.4.0]
+- Pomp up get_it version to range to 7.0.0 <= 8.0.0
+- Pomp up build_runner version to 2.0.2
 ## [1.3.0]
 - Include merge that fixes #194
 - Pomp up versions of build_runner -> 2.0.1, code_builder -> 4.0.0, analyzer -> 1.5.0 
