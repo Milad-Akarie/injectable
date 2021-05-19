@@ -132,7 +132,7 @@ class DependencyResolver {
       inlineEnv = injectable
           .peek('env')
           ?.listValue
-          .map((e) => e.toStringValue())
+          .map((e) => e.toStringValue()!)
           .toList();
     }
     if (abstractType != null) {
