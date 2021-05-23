@@ -70,7 +70,7 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   build_runner_core:
     dependency: transitive
     description:
@@ -238,7 +238,7 @@ packages:
       name: injectable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.4.0"
+    version: "1.4.1"
   io:
     dependency: transitive
     description:
@@ -434,7 +434,7 @@ packages:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.17.3"
+    version: "1.17.4"
   test_api:
     dependency: transitive
     description:
@@ -448,7 +448,7 @@ packages:
       name: test_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.23"
+    version: "0.3.24"
   timing:
     dependency: transitive
     description:

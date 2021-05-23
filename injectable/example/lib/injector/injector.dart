@@ -24,7 +24,7 @@ configInjector(
 
 class ServiceA {}
 
-@injectable
+@Injectable()
 class ServiceB {
   ServiceB(ServiceA serviceA);
 }
