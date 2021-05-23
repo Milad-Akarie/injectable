@@ -1,4 +1,7 @@
 # ChangeLog
+## [1.4.1]
+- Pomp up build_runner version to 2.0.3
+- Fix generator crash when using inline environments #205
 ## [1.4.0]
 - Pomp up get_it version to range to 7.0.0 <= 8.0.0
 - Pomp up build_runner version to 2.0.2
