@@ -26,12 +26,17 @@ class InjectableInit {
   ///  included in this list
   final List<Type> ignoreUnregisteredTypes;
 
+  ///  generator will not show warning for unregistered types if import start with any string
+  ///  included in this list
+  final List<String> ignoreUnregisteredTypesInPackages;
+
   /// default constructor
   const InjectableInit({
     this.generateForDir = const ['lib'],
     this.preferRelativeImports = true,
     this.initializerName = r'$initGetIt',
     this.ignoreUnregisteredTypes = const [],
+    this.ignoreUnregisteredTypesInPackages = const [],
     this.asExtension = false,
     this.usesNullSafety = true,
   });
