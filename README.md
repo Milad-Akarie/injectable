@@ -261,6 +261,12 @@ factoryParam<BackendService, String, dynamic>(
     (url, _) => BackendService(url),  
   );  
 ```  
+###### Using a factoryParam method  
+  
+```dart  
+// Maximum 2 params
+getIt<BackendService>(param1: 'www.example.com')
+```  
   
 ### Using a register module (for third party dependencies)  
 if you declare a module member as a method instead of a simple accessor, injectable will treat it as a factory method, meaning it will inject it's parameters as it would with a regular constructor.  
