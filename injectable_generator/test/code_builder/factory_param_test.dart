@@ -118,7 +118,7 @@ void main() {
           )
         ],
       );
-      final allDeps = {
+      final allDeps = [
         dep,
         DependencyConfig(
           injectableType: InjectableType.factory,
@@ -126,16 +126,17 @@ void main() {
           typeImpl: ImportableType(name: 'Storage'),
           isAsync: true,
         ),
-      };
+      ];
       expect(generate(dep, allDeps: allDeps),
           'gh.factoryParamAsync<Demo, String, dynamic>((url, _) async  => Demo( await get.getAsync<Storage>(), url));');
     });
   });
 }
 
-String generate(DependencyConfig input,
-    {Set<DependencyConfig> allDeps = const {}}) {
-  final statement = buildLazyRegisterFun(input, allDeps);
+String generate(DependencyConfig input, {List<DependencyConfig>? allDeps}) {
+  final generator = LibraryGenerator(
+      dependencies: allDeps ?? [], initializerName: 'initGetIt');
+  final statement = generator.buildLazyRegisterFun(input);
   final emitter = DartEmitter(
     allocator: Allocator.none,
     orderDirectives: true,

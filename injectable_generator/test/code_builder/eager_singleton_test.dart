@@ -114,7 +114,7 @@ void main() {
           )
         ],
       );
-      final allDeps = {
+      final allDeps = [
         dep,
         DependencyConfig(
           injectableType: InjectableType.factory,
@@ -122,7 +122,7 @@ void main() {
           typeImpl: ImportableType(name: 'Storage'),
           isAsync: true,
         ),
-      };
+      ];
       expect(generate(dep, allDeps: allDeps),
           'gh.singletonAsync<Demo>(() async  => Demo( await get.getAsync<Storage>()));');
     });
@@ -160,7 +160,7 @@ void main() {
           )
         ],
       );
-      final allDeps = {
+      final allDeps = [
         dep,
         DependencyConfig(
           injectableType: InjectableType.factory,
@@ -169,16 +169,17 @@ void main() {
           instanceName: 'storageImpl',
           isAsync: true,
         ),
-      };
+      ];
       expect(generate(dep, allDeps: allDeps),
           'gh.singletonAsync<Demo>(() async  => Demo(storage:  await get.getAsync<Storage>(instanceName: \'storageImpl\')));');
     });
   });
 }
 
-String generate(DependencyConfig input,
-    {Set<DependencyConfig> allDeps: const {}}) {
-  final statement = buildSingletonRegisterFun(input, allDeps);
+String generate(DependencyConfig input, {List<DependencyConfig>? allDeps}) {
+  final generator = LibraryGenerator(
+      dependencies: allDeps ?? [], initializerName: 'initGetIt');
+  final statement = generator.buildSingletonRegisterFun(input);
   final emitter = DartEmitter(
     allocator: Allocator.none,
     orderDirectives: true,

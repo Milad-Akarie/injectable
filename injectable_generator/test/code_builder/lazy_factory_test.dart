@@ -45,7 +45,7 @@ void main() {
           )
         ],
       );
-      final allDeps = {
+      final allDeps = [
         dep,
         DependencyConfig(
           injectableType: InjectableType.factory,
@@ -53,7 +53,7 @@ void main() {
           typeImpl: ImportableType(name: 'Storage'),
           isAsync: true,
         )
-      };
+      ];
       expect(generate(dep, allDeps: allDeps),
           'gh.lazySingletonAsync<Demo>(() async  => Demo( await get.getAsync<Storage>()));');
     });
@@ -111,7 +111,7 @@ void main() {
           )
         ],
       );
-      final allDeps = {
+      final allDeps = [
         dep,
         DependencyConfig(
           injectableType: InjectableType.factory,
@@ -119,7 +119,7 @@ void main() {
           typeImpl: ImportableType(name: 'Storage'),
           isAsync: true,
         )
-      };
+      ];
       expect(generate(dep, allDeps: allDeps),
           'gh.factoryAsync<Demo>(() async  => Demo( await get.getAsync<Storage>()));');
     });
@@ -156,7 +156,7 @@ void main() {
               instanceName: 'storageImpl')
         ],
       );
-      final allDeps = {
+      final allDeps = [
         dep,
         DependencyConfig(
           injectableType: InjectableType.factory,
@@ -164,8 +164,8 @@ void main() {
           typeImpl: ImportableType(name: 'Storage'),
           instanceName: 'storageImpl',
           isAsync: true,
-        )
-      };
+        ),
+      ];
       expect(generate(dep, allDeps: allDeps),
           "gh.factoryAsync<Demo>(() async  => Demo(storage:  await get.getAsync<Storage>(instanceName: 'storageImpl')));");
     });
@@ -192,9 +192,10 @@ void main() {
   });
 }
 
-String generate(DependencyConfig input,
-    {Set<DependencyConfig> allDeps = const {}}) {
-  final statement = buildLazyRegisterFun(input, allDeps);
+String generate(DependencyConfig input, {List<DependencyConfig>? allDeps}) {
+  final generator = LibraryGenerator(
+      dependencies: allDeps ?? [], initializerName: 'initGetIt');
+  final statement = generator.buildLazyRegisterFun(input);
   final emitter = DartEmitter(
     allocator: Allocator.none,
     orderDirectives: true,
