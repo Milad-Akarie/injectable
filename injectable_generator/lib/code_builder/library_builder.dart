@@ -107,8 +107,10 @@ Library generateLibrary({
               ])
               .assignFinal(toCamelCase(module.type.name))
               .statement),
-          ...lazyDeps.map((dep) => buildLazyRegisterFun(dep, targetFile)),
-          ...eagerDeps.map((dep) => buildSingletonRegisterFun(dep, targetFile)),
+          ...lazyDeps
+              .map((dep) => buildLazyRegisterFun(dep, sorted, targetFile)),
+          ...eagerDeps
+              .map((dep) => buildSingletonRegisterFun(dep, sorted, targetFile)),
           getInstanceRefer.returned.statement,
         ]),
       ),
@@ -143,6 +145,7 @@ Library generateLibrary({
             (module) => _buildModule(
               module,
               sorted.where((e) => e.moduleConfig == module),
+              sorted,
               targetFile,
             ),
           )
@@ -152,6 +155,7 @@ Library generateLibrary({
 }
 
 Class _buildModule(ModuleConfig module, Iterable<DependencyConfig> deps,
+    Set<DependencyConfig> allDeps,
     [Uri? targetFile]) {
   final abstractDeps = deps.where((d) => d.moduleConfig!.isAbstract);
   return Class((clazz) {
@@ -186,28 +190,34 @@ Class _buildModule(ModuleConfig module, Iterable<DependencyConfig> deps,
           ..name = dep.moduleConfig!.initializerName
           ..returns = typeRefer(dep.typeImpl, targetFile)
           ..type = dep.moduleConfig!.isMethod ? null : MethodType.getter
-          ..body = _buildInstance(dep, targetFile, getReferName: '_getIt').code,
+          ..body =
+              _buildInstance(dep, allDeps, targetFile, getReferName: '_getIt')
+                  .code,
       ),
     ));
   });
 }
 
 Code buildLazyRegisterFun(
-  DependencyConfig dep, [
+  DependencyConfig dep,
+  Set<DependencyConfig> allDeps, [
   Uri? targetFile,
 ]) {
   var funcReferName;
   Map<String, Reference> factoryParams = {};
+  final hasAsyncDep = hasAsyncDependency(dep, allDeps);
+  final isOrHasAsyncDep = dep.isAsync || hasAsyncDep;
+
   if (dep.injectableType == InjectableType.factory) {
     final hasFactoryParams = dep.dependencies.any((d) => d.isFactoryParam);
     if (hasFactoryParams) {
-      funcReferName = dep.isAsync ? 'factoryParamAsync' : 'factoryParam';
+      funcReferName = isOrHasAsyncDep ? 'factoryParamAsync' : 'factoryParam';
       factoryParams.addAll(_resolveFactoryParams(dep, targetFile));
     } else {
-      funcReferName = dep.isAsync ? 'factoryAsync' : 'factory';
+      funcReferName = isOrHasAsyncDep ? 'factoryAsync' : 'factory';
     }
   } else if (dep.injectableType == InjectableType.lazySingleton) {
-    funcReferName = dep.isAsync ? 'lazySingletonAsync' : 'lazySingleton';
+    funcReferName = isOrHasAsyncDep ? 'lazySingletonAsync' : 'lazySingleton';
   }
   throwIf(funcReferName == null, 'Injectable type is not supported');
 
@@ -215,14 +225,15 @@ Code buildLazyRegisterFun(
     Method(
       (b) => b
         ..lambda = true
+        ..modifier = hasAsyncDep ? MethodModifier.async : null
         ..requiredParameters.addAll(
           factoryParams.keys.map(
             (name) => Parameter((b) => b.name = name),
           ),
         )
         ..body = dep.isFromModule
-            ? _buildInstanceForModule(dep, targetFile).code
-            : _buildInstance(dep, targetFile).code,
+            ? _buildInstanceForModule(dep, allDeps, targetFile).code
+            : _buildInstance(dep, allDeps, targetFile).code,
     ).closure
   ], {
     if (dep.instanceName != null)
@@ -259,12 +270,14 @@ Map<String, Reference> _resolveFactoryParams(DependencyConfig dep,
 }
 
 Code buildSingletonRegisterFun(
-  DependencyConfig dep, [
+  DependencyConfig dep,
+  Set<DependencyConfig> allDeps, [
   Uri? targetFile,
 ]) {
   var funcReferName;
   var asFactory = true;
-  if (dep.isAsync) {
+  final hasAsyncDep = hasAsyncDependency(dep, allDeps);
+  if (dep.isAsync || hasAsyncDep) {
     funcReferName = 'singletonAsync';
   } else if (dep.dependsOn.isNotEmpty) {
     funcReferName = 'singletonWithDependencies';
@@ -274,12 +287,13 @@ Code buildSingletonRegisterFun(
   }
 
   final instanceBuilder = dep.isFromModule
-      ? _buildInstanceForModule(dep, targetFile)
-      : _buildInstance(dep, targetFile);
+      ? _buildInstanceForModule(dep, allDeps, targetFile)
+      : _buildInstance(dep, allDeps, targetFile);
   final registerExpression = _ghRefer.property(funcReferName).call([
     asFactory
         ? Method((b) => b
           ..lambda = true
+          ..modifier = hasAsyncDep ? MethodModifier.async : null
           ..body = instanceBuilder.code).closure
         : instanceBuilder
   ], {
@@ -314,18 +328,20 @@ Code buildSingletonRegisterFun(
 
 Expression _buildInstance(
   DependencyConfig dep,
+  Set<DependencyConfig> allDeps,
   Uri? targetFile, {
   String getReferName = 'get',
 }) {
   final positionalParams = dep.positionalDependencies.map(
-    (iDep) => _buildParamAssignment(iDep, targetFile, name: getReferName),
+    (iDep) =>
+        _buildParamAssignment(iDep, allDeps, targetFile, name: getReferName),
   );
 
   final namedParams = Map.fromEntries(
     dep.namedDependencies.map(
       (iDep) => MapEntry(
         iDep.paramName,
-        _buildParamAssignment(iDep, targetFile, name: getReferName),
+        _buildParamAssignment(iDep, allDeps, targetFile, name: getReferName),
       ),
     ),
   );
@@ -344,7 +360,8 @@ Expression _buildInstance(
   }
 }
 
-Expression _buildInstanceForModule(DependencyConfig dep, Uri? targetFile) {
+Expression _buildInstanceForModule(
+    DependencyConfig dep, Set<DependencyConfig> allDeps, Uri? targetFile) {
   final module = dep.moduleConfig!;
   if (!module.isMethod) {
     return refer(
@@ -356,13 +373,14 @@ Expression _buildInstanceForModule(DependencyConfig dep, Uri? targetFile) {
       .newInstanceNamed(
         module.initializerName,
         dep.positionalDependencies.map(
-          (iDep) => _buildParamAssignment(iDep, targetFile, name: 'get'),
+          (iDep) =>
+              _buildParamAssignment(iDep, allDeps, targetFile, name: 'get'),
         ),
         Map.fromEntries(
           dep.namedDependencies.map(
             (iDep) => MapEntry(
               iDep.paramName,
-              _buildParamAssignment(iDep, targetFile, name: 'get'),
+              _buildParamAssignment(iDep, allDeps, targetFile, name: 'get'),
             ),
           ),
         ),
@@ -383,18 +401,21 @@ Expression _getDisposeFunctionAssignment(DisposeFunctionConfig disposeFunction,
 
 Expression _buildParamAssignment(
   InjectedDependency iDep,
+  Set<DependencyConfig> allDeps,
   Uri? targetFile, {
   required String name,
 }) {
   if (iDep.isFactoryParam) {
     return refer(iDep.paramName);
   }
-  return refer(name).call([], {
+  final isAsync = isAsyncOrHasAsyncDependency(iDep, allDeps);
+  final expression = refer(isAsync ? '$name.getAsync' : name).call([], {
     if (iDep.instanceName != null)
       'instanceName': literalString(iDep.instanceName!),
   }, [
     typeRefer(iDep.type, targetFile, false),
   ]);
+  return isAsync ? expression.awaited : expression;
 }
 
 bool moduleHasOverrides(Iterable<DependencyConfig> deps) {
