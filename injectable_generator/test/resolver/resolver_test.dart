@@ -20,67 +20,80 @@ class MockTypeResolver extends ImportableTypeResolverImpl {
 }
 
 void main() async {
-  var resolvedInput = await resolveInput('test/resolver/samples/source.dart');
-  var dependencyResolver = DependencyResolver(MockTypeResolver());
+  group('Dependency Resolver', () {
+    ResolvedInput? resolvedInput;
+    DependencyResolver? dependencyResolver;
 
-  test('Simple Factory no dependencies', () {
-    var simpleFactoryType = resolvedInput.library.findType('SimpleFactory')!;
+    setUp(() async {
+      resolvedInput = await resolveInput('test/resolver/samples/source.dart');
+      dependencyResolver = DependencyResolver(MockTypeResolver());
+    });
 
-    final type = ImportableType(
-      name: 'SimpleFactory',
-      import: 'source.dart',
-    );
-    expect(
-      DependencyConfig(
-        type: type,
-        typeImpl: type,
-        injectableType: InjectableType.factory,
-      ),
-      equals(dependencyResolver.resolve(simpleFactoryType)),
-    );
-  });
+    test('Simple Factory no dependencies', () {
+      var simpleFactoryType = resolvedInput!.library.findType('SimpleFactory')!;
 
-  test('Factory with dependencies', () {
-    final FactoryWithDeps = resolvedInput.library.findType('FactoryWithDeps')!;
-    final type = ImportableType(
-      name: 'FactoryWithDeps',
-      import: 'source.dart',
-    );
+      final type = ImportableType(
+        name: 'SimpleFactory',
+        import: 'source.dart',
+      );
+      expect(
+        DependencyConfig(
+          type: type,
+          typeImpl: type,
+          injectableType: InjectableType.factory,
+        ),
+        equals(dependencyResolver!.resolve(simpleFactoryType)),
+      );
+    });
 
-    final dependencyType = ImportableType(
-      name: 'SimpleFactory',
-      import: 'source.dart',
-    );
-    expect(
-      DependencyConfig(type: type, typeImpl: type, injectableType: InjectableType.factory, dependencies: [
-        InjectedDependency(
-          type: dependencyType,
-          paramName: 'simpleFactory',
-        )
-      ]),
-      dependencyResolver.resolve(FactoryWithDeps),
-    );
-  });
+    test('Factory with dependencies', () {
+      final FactoryWithDeps =
+          resolvedInput!.library.findType('FactoryWithDeps')!;
+      final type = ImportableType(
+        name: 'FactoryWithDeps',
+        import: 'source.dart',
+      );
 
-  test('Simple Factory as abstract no dependencies', () {
-    var factoryAsAbstract = resolvedInput.library.findType('FactoryAsAbstract')!;
+      final dependencyType = ImportableType(
+        name: 'SimpleFactory',
+        import: 'source.dart',
+      );
+      expect(
+        DependencyConfig(
+            type: type,
+            typeImpl: type,
+            injectableType: InjectableType.factory,
+            dependencies: [
+              InjectedDependency(
+                type: dependencyType,
+                paramName: 'simpleFactory',
+              )
+            ]),
+        dependencyResolver!.resolve(FactoryWithDeps),
+      );
+    });
 
-    final type = ImportableType(
-      name: 'IFactory',
-      import: 'source.dart',
-    );
+    test('Simple Factory as abstract no dependencies', () {
+      var factoryAsAbstract =
+          resolvedInput!.library.findType('FactoryAsAbstract')!;
 
-    final typeImpl = ImportableType(
-      name: 'FactoryAsAbstract',
-      import: 'source.dart',
-    );
-    expect(
-      DependencyConfig(
-        type: type,
-        typeImpl: typeImpl,
-        injectableType: InjectableType.factory,
-      ),
-      equals(dependencyResolver.resolve(factoryAsAbstract)),
-    );
+      final type = ImportableType(
+        name: 'IFactory',
+        import: 'source.dart',
+      );
+
+      final typeImpl = ImportableType(
+        name: 'FactoryAsAbstract',
+        import: 'source.dart',
+      );
+      expect(
+        DependencyConfig(
+          type: type,
+          typeImpl: typeImpl,
+          injectableType: InjectableType.factory,
+        ),
+        equals(dependencyResolver!.resolve(factoryAsAbstract)),
+      );
+    });
   });
 }

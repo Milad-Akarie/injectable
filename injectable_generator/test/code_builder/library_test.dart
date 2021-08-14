@@ -13,7 +13,8 @@ void main() {
 // ignore_for_file: unnecessary_lambdas
 // ignore_for_file: lines_longer_than_80_chars
 /// initializes the registration of provided dependencies inside of [GetIt]
-GetIt(GetIt get, {String environment, EnvironmentFilter environmentFilter}) {
+GetIt init(GetIt get,
+    {String environment, EnvironmentFilter environmentFilter}) {
   final gh = GetItHelper(get, environment, environmentFilter);
   return get;
 }
@@ -32,7 +33,8 @@ GetIt(GetIt get, {String environment, EnvironmentFilter environmentFilter}) {
 // ignore_for_file: unnecessary_lambdas
 // ignore_for_file: lines_longer_than_80_chars
 /// initializes the registration of provided dependencies inside of [GetIt]
-GetIt(GetIt get, {String environment, EnvironmentFilter environmentFilter}) {
+GetIt init(GetIt get,
+    {String environment, EnvironmentFilter environmentFilter}) {
   final gh = GetItHelper(get, environment, environmentFilter);
   gh.factory<Demo>(() => Demo());
   return get;
