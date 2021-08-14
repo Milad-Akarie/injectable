@@ -57,12 +57,13 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     
     _reportMissingDependencies(deps, ignoredTypes, ignoreTypesInPackages, targetFile);
     _validateDuplicateDependencies(deps);
-    final generatedLib = generateLibrary(
+    final generator = LibraryGenerator(
       dependencies: deps,
       targetFile: preferRelativeImports ? targetFile : null,
       initializerName: initializerName,
       asExtension: asExtension,
     );
+    final generatedLib = generator.generate();
     final emitter = DartEmitter(
       allocator: Allocator.simplePrefixing(),
       orderDirectives: true,
