@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 
 import '../injector/injector.dart';
 
-@module
+// @module
 abstract class RegisterModule {
   @prod
   @platformMobile
@@ -35,7 +35,7 @@ class RepoImpl extends Repo {
   RepoImpl(this.service);
 }
 
-@singleton
+// @singleton
 class DisposableSingleton {
   @disposeMethod
   void dispose() {}

@@ -10,13 +10,12 @@ class GetItHelper {
   final EnvironmentFilter _environmentFilter;
 
   /// creates a new instance of GetItHelper
-  GetItHelper(this.getIt,
-      [String? environment, EnvironmentFilter? environmentFilter])
+  GetItHelper(this.getIt, [String? environment, EnvironmentFilter? environmentFilter])
       : assert(environmentFilter == null || environment == null),
         _environmentFilter = environmentFilter ?? NoEnvOrContains(environment) {
     // register current Environments as lazy singleton
-    if (!getIt.isRegistered<Set<String?>>(instanceName: kEnvironmentsName)) {
-      getIt.registerLazySingleton<Set<String?>>(
+    if (!getIt.isRegistered<Set<String>>(instanceName: kEnvironmentsName)) {
+      getIt.registerLazySingleton<Set<String>>(
         () => _environmentFilter.environments,
         instanceName: kEnvironmentsName,
       );

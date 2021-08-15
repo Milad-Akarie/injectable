@@ -9,7 +9,7 @@ const platformWeb = Environment('platformWeb');
 @InjectableInit(
   asExtension: true,
   initializerName: 'init',
-  ignoreUnregisteredTypes: [ServiceA],
+  // ignoreUnregisteredTypes: [ServiceA],
 )
 configInjector(
   GetIt getIt, {
@@ -22,7 +22,21 @@ configInjector(
   );
 }
 
-class ServiceA {}
+typedef IntFunction = int Function(int x);
+
+@injectable
+IntFunction intFunction = (i) => i + 1;
+
+@Injectable()
+class ServiceA {
+  final IntFunction? dependency;
+  final Function? dep2;
+
+  ServiceA({
+    @factoryParam this.dependency,
+    @factoryParam this.dep2,
+  });
+}
 
 @Injectable()
 class ServiceB {
