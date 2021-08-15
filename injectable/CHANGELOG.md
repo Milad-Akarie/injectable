@@ -1,4 +1,10 @@
 # ChangeLog
+## [1.5.0]
+Use getAsync for async injected dependencies, fixes #230
+Add support for function factory params, fixes #224
+Update analyzer version #228
+Add ignore types in packages support 
+Fix some readme typos
 ## [1.4.1]
 - Pomp up build_runner version to 2.0.3
 - Fix generator crash when using inline environments #205

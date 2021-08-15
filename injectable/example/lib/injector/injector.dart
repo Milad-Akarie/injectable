@@ -1,3 +1,4 @@
+import 'package:example/services/abstract_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
@@ -38,7 +39,27 @@ class ServiceA {
   });
 }
 
-@Injectable()
-class ServiceB {
-  ServiceB(ServiceA serviceA);
+@injectable
+class AsyncServiceA {
+  AsyncServiceA(AsyncService x);
+}
+
+@injectable
+class World {
+  @factoryMethod
+  static Future<World> create() async => World();
+
+  String get name => 'World';
+}
+
+@injectable
+class Hello {
+  final World _world;
+
+  @factoryMethod
+  static Future<Hello> create(World world) async => Hello(world);
+
+  Hello(this._world);
+
+  String greeting() => 'Hello ${_world.name}!';
 }

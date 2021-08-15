@@ -24,7 +24,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
         .map((e) => e.toStringValue());
 
     final usesNullSafety = annotation.read('usesNullSafety').boolValue;
-    
+
     var targetFile = element.source?.uri;
     var preferRelativeImports =
         annotation.read("preferRelativeImports").boolValue;
@@ -52,10 +52,15 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
         annotation.read('ignoreUnregisteredTypes').listValue.map(
               (e) => typeResolver.resolveType(e.toTypeValue()!),
             );
-    final ignoreTypesInPackages =
-        annotation.read('ignoreUnregisteredTypesInPackages').listValue.map((e) => e.toStringValue()).where((e) => e!=null).cast<String>();
-    
-    _reportMissingDependencies(deps, ignoredTypes, ignoreTypesInPackages, targetFile);
+    final ignoreTypesInPackages = annotation
+        .read('ignoreUnregisteredTypesInPackages')
+        .listValue
+        .map((e) => e.toStringValue())
+        .where((e) => e != null)
+        .cast<String>();
+
+    _reportMissingDependencies(
+        deps, ignoredTypes, ignoreTypesInPackages, targetFile);
     _validateDuplicateDependencies(deps);
     final generator = LibraryGenerator(
       dependencies: deps,
@@ -72,8 +77,11 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     return DartFormatter().format(generatedLib.accept(emitter).toString());
   }
 
-  void _reportMissingDependencies(List<DependencyConfig> deps,
-      Iterable<ImportableType> ignoredTypes, Iterable<String> ignoredTypesInPackages, Uri? targetFile) {
+  void _reportMissingDependencies(
+      List<DependencyConfig> deps,
+      Iterable<ImportableType> ignoredTypes,
+      Iterable<String> ignoredTypesInPackages,
+      Uri? targetFile) {
     final messages = [];
     final registeredDeps = deps.map((dep) => dep.type).toSet();
     deps.forEach((dep) {
@@ -82,7 +90,10 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
               (d) => !d.isFactoryParam && d.instanceName != kEnvironmentsName)
           .forEach((iDep) {
         if (!registeredDeps.contains(iDep.type) &&
-            (!ignoredTypes.contains(iDep.type) &&  (iDep.type.import==null || !ignoredTypesInPackages.any((type) => iDep.type.import!.startsWith('package:$type'))))) {
+            (!ignoredTypes.contains(iDep.type) &&
+                (iDep.type.import == null ||
+                    !ignoredTypesInPackages.any((type) =>
+                        iDep.type.import!.startsWith('package:$type'))))) {
           messages.add(
               "[${dep.typeImpl}] depends on unregistered type [${iDep.type}] ${iDep.type.import == null ? '' : 'from ${iDep.type.import}'}");
         }

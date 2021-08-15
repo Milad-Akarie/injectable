@@ -24,7 +24,9 @@ abstract class EnvironmentFilter {
 class SimpleEnvironmentFilter extends EnvironmentFilter {
   final EnvironmentFilterFunc filter;
 
-  const SimpleEnvironmentFilter({required this.filter, Set<String> environments = const {}}) : super(environments);
+  const SimpleEnvironmentFilter(
+      {required this.filter, Set<String> environments = const {}})
+      : super(environments);
 
   @override
   bool canRegister(Set<String> depEnvironments) => filter(depEnvironments);
@@ -33,11 +35,13 @@ class SimpleEnvironmentFilter extends EnvironmentFilter {
 /// This filter validates dependencies with no environment
 /// keys or contain the provided [environment]
 class NoEnvOrContains extends EnvironmentFilter {
-  NoEnvOrContains(String? environment) : super({if (environment != null) environment});
+  NoEnvOrContains(String? environment)
+      : super({if (environment != null) environment});
 
   @override
   bool canRegister(Set<String> depEnvironments) {
-    return (depEnvironments.isEmpty) || depEnvironments.contains(environments.first);
+    return (depEnvironments.isEmpty) ||
+        depEnvironments.contains(environments.first);
   }
 }
 
@@ -48,7 +52,8 @@ class NoEnvOrContainsAll extends EnvironmentFilter {
 
   @override
   bool canRegister(Set<String> depEnvironments) {
-    return (depEnvironments.isEmpty) || depEnvironments.containsAll(environments);
+    return (depEnvironments.isEmpty) ||
+        depEnvironments.containsAll(environments);
   }
 }
 
@@ -59,6 +64,7 @@ class NoEnvOrContainsAny extends EnvironmentFilter {
 
   @override
   bool canRegister(Set<String> depEnvironments) {
-    return (depEnvironments.isEmpty) || depEnvironments.intersection(environments).isNotEmpty;
+    return (depEnvironments.isEmpty) ||
+        depEnvironments.intersection(environments).isNotEmpty;
   }
 }
