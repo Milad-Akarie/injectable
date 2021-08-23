@@ -104,10 +104,22 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
         if (type.element is TypeParameterElement) {
           importableTypes.add(ImportableType(name: 'dynamic'));
         } else {
+          String? name;
+          String? import;
+          final Element? element = type.element;
+          if (element is ClassElement && element.interfaces.isNotEmpty) {
+            final interface = element.interfaces.first;
+
+            name = interface.getDisplayString(withNullability: false);
+            import = resolveImport(interface.element);
+          } else {
+            name = type.element?.name ??
+                type.getDisplayString(withNullability: false);
+            import = resolveImport(type.element);
+          }
           importableTypes.add(ImportableType(
-            name: type.element?.name ??
-                type.getDisplayString(withNullability: false),
-            import: resolveImport(type.element),
+            name: name,
+            import: import,
             isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
             typeArguments: _resolveTypeArguments(type),
           ));
