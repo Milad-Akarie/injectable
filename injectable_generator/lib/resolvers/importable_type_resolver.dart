@@ -57,6 +57,11 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
     }
 
     for (var lib in libs) {
+      final isBarrelFile =
+          lib.exports.isNotEmpty && lib.topLevelElements.isEmpty;
+      if (isBarrelFile) {
+        continue;
+      }
       if (!_isCoreDartType(lib) &&
           lib.exportNamespace.definedNames.values.contains(element)) {
         return lib.identifier;
