@@ -106,17 +106,9 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
         } else {
           String? name;
           String? import;
-          final Element? element = type.element;
-          if (element is ClassElement && element.interfaces.isNotEmpty) {
-            final interface = element.interfaces.first;
-
-            name = interface.getDisplayString(withNullability: false);
-            import = resolveImport(interface.element);
-          } else {
-            name = type.element?.name ??
-                type.getDisplayString(withNullability: false);
-            import = resolveImport(type.element);
-          }
+          name = type.element?.name ??
+              type.getDisplayString(withNullability: false);
+          import = resolveImport(type.element);
           importableTypes.add(ImportableType(
             name: name,
             import: import,
