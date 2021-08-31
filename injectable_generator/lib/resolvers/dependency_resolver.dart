@@ -199,8 +199,8 @@ class DependencyResolver {
           element: disposeFuncFromAnnotation);
       _disposeFunctionConfig = DisposeFunctionConfig(
         name: disposeFuncFromAnnotation.name,
-        importableType:
-            _typeResolver.resolveFunctionType(disposeFuncFromAnnotation.type),
+        importableType: _typeResolver.resolveFunctionType(
+            disposeFuncFromAnnotation.type, disposeFuncFromAnnotation),
       );
     }
 

@@ -35,8 +35,8 @@ class RepoImpl extends Repo {
   RepoImpl(this.service);
 }
 
-// @singleton
+@singleton
 class DisposableSingleton {
   @disposeMethod
-  void dispose() {}
+  void dispose([String? x]) {}
 }

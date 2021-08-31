@@ -6,6 +6,7 @@ import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:glob/glob.dart';
 import 'package:injectable/injectable.dart';
+import 'package:injectable_generator/code_builder/builder_utils.dart';
 import 'package:injectable_generator/code_builder/library_builder.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
 import 'package:injectable_generator/models/importable_type.dart';
@@ -83,26 +84,42 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       Iterable<String> ignoredTypesInPackages,
       Uri? targetFile) {
     final messages = [];
-    final registeredDeps = deps.map((dep) => dep.type).toSet();
     deps.forEach((dep) {
-      dep.dependencies
-          .where(
-              (d) => !d.isFactoryParam && d.instanceName != kEnvironmentsName)
-          .forEach((iDep) {
-        if (!registeredDeps.contains(iDep.type) &&
-            (!ignoredTypes.contains(iDep.type) &&
-                (iDep.type.import == null ||
-                    !ignoredTypesInPackages.any((type) =>
-                        iDep.type.import!.startsWith('package:$type'))))) {
+      for (var iDep in dep.dependencies.where(
+          (d) => !d.isFactoryParam && d.instanceName != kEnvironmentsName)) {
+        if ((ignoredTypes.contains(iDep.type) ||
+            (iDep.type.import == null ||
+                ignoredTypesInPackages.any(
+                  (type) => iDep.type.import!.startsWith('package:$type'),
+                )))) {
+          continue;
+        }
+
+        final possibleDeps = lookupPossibleDeps(iDep, deps);
+
+        if (possibleDeps.isEmpty) {
           messages.add(
               "[${dep.typeImpl}] depends on unregistered type [${iDep.type}] ${iDep.type.import == null ? '' : 'from ${iDep.type.import}'}");
+        } else {
+          final availableEnvs = possibleDeps
+              .map((e) => e.environments)
+              .reduce((a, b) => a + b)
+              .toSet();
+          if (availableEnvs.isNotEmpty) {
+            final missingEnvs =
+                dep.environments.toSet().difference(availableEnvs);
+            if (missingEnvs.isNotEmpty) {
+              messages.add(
+                  '[${dep.typeImpl}] ${dep.environments.toSet()} depends on Type [${iDep.type}] ${iDep.type.import == null ? '' : 'from ${iDep.type.import}'} \n which is not available under environment keys $missingEnvs');
+            }
+          }
         }
-      });
+      }
     });
 
     if (messages.isNotEmpty) {
       messages.add(
-          '\nDid you forget to annotate the above class(s) or their implementation with @injectable?');
+          '\nDid you forget to annotate the above class(s) or their implementation with @injectable? \nor add the right environment keys?');
       printBoxed(messages.join('\n'),
           header: "Missing dependencies in ${targetFile?.path}\n");
     }

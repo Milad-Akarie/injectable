@@ -9,7 +9,8 @@ abstract class ImportableTypeResolver {
 
   ImportableType resolveType(DartType type);
 
-  ImportableType resolveFunctionType(FunctionType function);
+  ImportableType resolveFunctionType(FunctionType function,
+      [ExecutableElement? executableElement]);
 
   static String? relative(String? path, Uri? to) {
     if (path == null || to == null) {
@@ -70,13 +71,16 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
   }
 
   @override
-  ImportableType resolveFunctionType(FunctionType type) {
-    final functionElement = type.element ?? type.aliasElement;
+  ImportableType resolveFunctionType(FunctionType type,
+      [ExecutableElement? executableElement]) {
+    final functionElement =
+        executableElement ?? type.element ?? type.aliasElement;
     if (functionElement == null) {
       throw 'Can not resolve function type \nTry using an alias e.g typedef MyFunction = ${type.getDisplayString(withNullability: false)};';
     }
     final displayName = functionElement.displayName;
     var functionName = displayName;
+
     Element elementToImport = functionElement;
     var enclosingElement = functionElement.enclosingElement;
 
