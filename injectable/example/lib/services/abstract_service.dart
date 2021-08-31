@@ -1,4 +1,5 @@
 import 'package:example/injector/injector.dart';
+import 'package:example/module/register_module.dart';
 import 'package:injectable/injectable.dart';
 
 //

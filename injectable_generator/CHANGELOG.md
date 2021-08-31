@@ -1,4 +1,9 @@
 # ChangeLog
+## [1.5.1]
+Fix auto-async factory bug #237
+Fix passing dispose function throws #240
+Fix initialization order doesn't respect environments #238
+Add generator prints warning when an injected dependency is not available under the same environment 
 ## [1.5.0]
 Use getAsync for async injected dependencies, fixes #230
 Add support for function factory params, fixes #224

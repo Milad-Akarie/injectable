@@ -6,6 +6,36 @@ import 'package:injectable_generator/models/injected_dependency.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('Sort by dependents test', () {
+    test('should sort as [B,A,C]', () {
+      final deps = [
+        DependencyConfig.factory('A', deps: ['B']),
+        DependencyConfig.singleton('B'),
+        DependencyConfig.factory('C', deps: ['A']),
+      ];
+      final expectedResult = [
+        DependencyConfig.singleton('B'),
+        DependencyConfig.factory('A', deps: ['B']),
+        DependencyConfig.factory('C', deps: ['A']),
+      ];
+      expect(sortDependencies(deps).toList(), expectedResult);
+    });
+
+    test('Sorting with environments in mind, should sort as [B{prd},B{dev}},A{dev}]', () {
+      final deps = [
+        DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
+        DependencyConfig.factory('B', envs: ['prod']),
+        DependencyConfig.factory('B', envs: ['dev']),
+      ];
+      final expectedResult = [
+        DependencyConfig.factory('B', envs: ['prod']),
+        DependencyConfig.factory('B', envs: ['dev']),
+        DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
+      ];
+      expect(sortDependencies(deps).toList(), expectedResult);
+    });
+  });
+
   group('hasAsyncDependency', () {
     test('should return `false` when there are no dependencies', () {
       final dep = DependencyConfig(
@@ -183,6 +213,21 @@ void main() {
         typeImpl: ImportableType(name: 'Fizz'),
         injectableType: InjectableType.factory,
         isAsync: false,
+      );
+      final allDeps = {dep};
+      expect(isAsyncOrHasAsyncDependency(iDep, allDeps), isFalse);
+    });
+    test('should return `false` when async but preResolve is true', () {
+      final iDep = InjectedDependency(
+        type: ImportableType(name: 'Fizz'),
+        paramName: 'fizz',
+      );
+      final dep = DependencyConfig(
+        type: ImportableType(name: 'Fizz'),
+        typeImpl: ImportableType(name: 'Fizz'),
+        injectableType: InjectableType.factory,
+        isAsync: true,
+        preResolve: true,
       );
       final allDeps = {dep};
       expect(isAsyncOrHasAsyncDependency(iDep, allDeps), isFalse);
