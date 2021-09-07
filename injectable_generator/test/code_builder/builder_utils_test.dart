@@ -34,6 +34,18 @@ void main() {
       ];
       expect(sortDependencies(deps).toList(), expectedResult);
     });
+
+    test('should sort as [A,B]', () {
+      final deps = [
+        DependencyConfig.factory('AppServiceUser', deps: ['Service']),
+        DependencyConfig.factory('Service', envs: ['dev']),
+      ];
+      final expectedResult = [
+        DependencyConfig.factory('Service', envs: ['dev']),
+        DependencyConfig.factory('AppServiceUser', deps: ['Service']),
+      ];
+      expect(sortDependencies(deps).toList(), expectedResult);
+    });
   });
 
   group('hasAsyncDependency', () {

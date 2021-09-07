@@ -95,6 +95,7 @@ DependencyConfig? lookupDependencyWithNoEnvOrHasAny(
           d.type == iDep.type &&
           d.instanceName == iDep.instanceName &&
           (d.environments.isEmpty ||
+              envs.isEmpty ||
               d.environments.any(
                 (e) => envs.contains(e),
               )),
