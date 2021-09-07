@@ -6,4 +6,6 @@ GetIt getIt = GetIt.instance;
 
 void main() async {
   await configInjector(getIt, env: Environment.prod);
+
+
 }

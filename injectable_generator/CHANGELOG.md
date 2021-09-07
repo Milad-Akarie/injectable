@@ -1,4 +1,6 @@
 # ChangeLog
+## [1.5.2]
+Fix yet another registration order issue #244
 ## [1.5.1]
 Fix auto-async factory bug #237
 Fix passing dispose function throws #240
