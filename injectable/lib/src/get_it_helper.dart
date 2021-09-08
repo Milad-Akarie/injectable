@@ -147,7 +147,7 @@ class GetItHelper {
   /// a conditional wrapper method for getIt.registerSingleton
   /// it only registers if [_canRegister] returns true
   void singleton<T extends Object>(
-    T instance, {
+    FactoryFunc<T> instance, {
     String? instanceName,
     bool? signalsReady,
     Set<String>? registerFor,
@@ -155,7 +155,7 @@ class GetItHelper {
   }) {
     if (_canRegister(registerFor)) {
       getIt.registerSingleton<T>(
-        instance,
+        instance(),
         instanceName: instanceName,
         signalsReady: signalsReady,
         dispose: dispose,
@@ -178,7 +178,7 @@ class GetItHelper {
       if (preResolve) {
         return factoryfunc().then(
           (instance) => singleton(
-            instance,
+            () => instance,
             instanceName: instanceName,
             signalsReady: signalsReady,
             dispose: dispose,

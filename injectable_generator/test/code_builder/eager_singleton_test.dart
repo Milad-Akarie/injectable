@@ -15,7 +15,7 @@ void main() {
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
           )),
-          'gh.singleton<Demo>(Demo());');
+          'gh.singleton<Demo>(() => Demo());');
     });
 
     test("Singleton generator abstract", () {
@@ -25,7 +25,7 @@ void main() {
           type: ImportableType(name: 'AbstractType'),
           typeImpl: ImportableType(name: 'Demo'),
         )),
-        'gh.singleton<AbstractType>(Demo());',
+        'gh.singleton<AbstractType>(() => Demo());',
       );
     });
 
@@ -37,7 +37,7 @@ void main() {
           typeImpl: ImportableType(name: 'Demo'),
           instanceName: 'MyDemo',
         )),
-        "gh.singleton<Demo>(Demo(), instanceName: 'MyDemo');",
+        "gh.singleton<Demo>(() => Demo(), instanceName: 'MyDemo');",
       );
     });
 
@@ -91,7 +91,7 @@ void main() {
               )
             ],
           )),
-          'gh.singleton<Demo>(Demo(get<Storage>()));');
+          'gh.singleton<Demo>(() => Demo(get<Storage>()));');
     });
 
     test("Singleton generator with async Positional dependencies", () {
@@ -136,7 +136,7 @@ void main() {
               )
             ],
           )),
-          'gh.singleton<Demo>(Demo(storage: get<Storage>()));');
+          'gh.singleton<Demo>(() => Demo(storage: get<Storage>()));');
     });
 
     test("Singleton generator with async named dependencies", () {
@@ -194,7 +194,7 @@ void main() {
         ),
       ];
       expect(generate(dep, allDeps: allDeps),
-          'gh.singleton<Demo>(Demo(storage: get<Storage>(instanceName: \'storageImpl\')));');
+          'gh.singleton<Demo>(() => Demo(storage: get<Storage>(instanceName: \'storageImpl\')));');
     });
   });
 }

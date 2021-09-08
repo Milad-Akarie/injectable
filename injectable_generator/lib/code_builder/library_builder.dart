@@ -264,26 +264,22 @@ class LibraryGenerator {
 
   Code buildSingletonRegisterFun(DependencyConfig dep) {
     var funcReferName;
-    var asFactory = true;
     final hasAsyncDep = hasAsyncDependency(dep, _dependencies);
     if (dep.isAsync || hasAsyncDep) {
       funcReferName = 'singletonAsync';
     } else if (dep.dependsOn.isNotEmpty) {
       funcReferName = 'singletonWithDependencies';
     } else {
-      asFactory = false;
       funcReferName = 'singleton';
     }
 
     final instanceBuilder =
         dep.isFromModule ? _buildInstanceForModule(dep) : _buildInstance(dep);
     final registerExpression = _ghRefer.property(funcReferName).call([
-      asFactory
-          ? Method((b) => b
-            ..lambda = true
-            ..modifier = hasAsyncDep ? MethodModifier.async : null
-            ..body = instanceBuilder.code).closure
-          : instanceBuilder
+      Method((b) => b
+        ..lambda = true
+        ..modifier = hasAsyncDep ? MethodModifier.async : null
+        ..body = instanceBuilder.code).closure
     ], {
       if (dep.instanceName != null)
         'instanceName': literalString(dep.instanceName!),
