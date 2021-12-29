@@ -118,7 +118,7 @@ final getIt = GetIt.instance;
 void $initGetIt(GetIt getIt,{String environment,EnvironmentFilter environmentFilter}) {  
  final gh = GetItHelper(getIt, environment);  
   gh.factory<ServiceA>(() => ServiceA());  
-  gh.factory<ServiceB>(ServiceA(getIt<ServiceA>()));  
+  gh.factory<ServiceB>(ServiceB(getIt<ServiceA>()));  
 }  
 ```  
   
