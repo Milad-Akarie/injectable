@@ -74,7 +74,7 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
   ImportableType resolveFunctionType(FunctionType type,
       [ExecutableElement? executableElement]) {
     final functionElement =
-        executableElement ?? type.element ?? type.aliasElement;
+        executableElement ?? type.element ?? type.alias?.element;
     if (functionElement == null) {
       throw 'Can not resolve function type \nTry using an alias e.g typedef MyFunction = ${type.getDisplayString(withNullability: false)};';
     }
