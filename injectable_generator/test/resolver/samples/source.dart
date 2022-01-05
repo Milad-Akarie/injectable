@@ -4,9 +4,6 @@ import 'package:injectable/injectable.dart';
 class SimpleFactory {}
 
 @injectable
-class AsyncFactory {}
-
-@injectable
 class FactoryWithDeps {
   const FactoryWithDeps(SimpleFactory simpleFactory);
 }
@@ -17,21 +14,32 @@ class FactoryWithNullableDeps {
 }
 
 @injectable
+class FactoryWithFactoryParams {
+  const FactoryWithFactoryParams(@factoryParam SimpleFactory simpleFactory);
+}
+
+@injectable
+class FactoryWithNullableFactoryParams {
+  const FactoryWithNullableFactoryParams(
+      @factoryParam SimpleFactory? simpleFactory);
+}
+
+@injectable
 class AsyncFactoryWithNullableDeps {
-  const AsyncFactoryWithNullableDeps(AsyncFactory? asyncFactory);
+  const AsyncFactoryWithNullableDeps(SimpleFactory? simpleFactory);
   @factoryMethod
   static Future<AsyncFactoryWithNullableDeps> create(
-      @factoryParam AsyncFactory? asyncFactory) async {
-    return AsyncFactoryWithNullableDeps(asyncFactory);
+      @factoryParam SimpleFactory? simpleFactory) async {
+    return AsyncFactoryWithNullableDeps(simpleFactory);
   }
 }
 
 class AsyncFactoryWithNonNullableDeps {
-  const AsyncFactoryWithNonNullableDeps(AsyncFactory asyncFactory);
+  const AsyncFactoryWithNonNullableDeps(SimpleFactory simpleFactory);
   @factoryMethod
   static Future<AsyncFactoryWithNonNullableDeps> create(
-      @factoryParam AsyncFactory asyncFactory) async {
-    return AsyncFactoryWithNonNullableDeps(asyncFactory);
+      @factoryParam SimpleFactory simpleFactory) async {
+    return AsyncFactoryWithNonNullableDeps(simpleFactory);
   }
 }
 
