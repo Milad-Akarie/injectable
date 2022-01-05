@@ -71,7 +71,7 @@ class GetItHelper {
   /// a conditional wrapper method for getIt.registerFactoryParam
   /// it only registers if [_canRegister] returns true
   void factoryParam<T extends Object, P1, P2>(
-    FactoryFuncParam<T, P1?, P2?> factoryfunc, {
+    FactoryFuncParam<T, P1, P2> factoryfunc, {
     String? instanceName,
     Set<String>? registerFor,
   }) {
@@ -86,7 +86,7 @@ class GetItHelper {
   /// a conditional wrapper method for getIt.registerFactoryParamAsync
   /// it only registers if [_canRegister] returns true
   void factoryParamAsync<T extends Object, P1, P2>(
-    FactoryFuncParamAsync<T, P1?, P2?> factoryfunc, {
+    FactoryFuncParamAsync<T, P1, P2> factoryfunc, {
     String? instanceName,
     Set<String>? registerFor,
   }) {
