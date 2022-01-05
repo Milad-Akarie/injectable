@@ -73,6 +73,34 @@ void main() async {
       );
     });
 
+    test('Factory with nullable dependencies', () {
+      final FactoryWithDeps =
+          resolvedInput!.library.findType('FactoryWithNullableDeps')!;
+      final type = ImportableType(
+        name: 'FactoryWithNullableDeps',
+        import: 'source.dart',
+      );
+
+      final dependencyType = ImportableType(
+        name: 'SimpleFactory',
+        import: 'source.dart',
+        isNullable: true,
+      );
+      expect(
+        DependencyConfig(
+            type: type,
+            typeImpl: type,
+            injectableType: InjectableType.factory,
+            dependencies: [
+              InjectedDependency(
+                type: dependencyType,
+                paramName: 'simpleFactory',
+              )
+            ]),
+        dependencyResolver!.resolve(FactoryWithDeps),
+      );
+    });
+
     test('Simple Factory as abstract no dependencies', () {
       var factoryAsAbstract =
           resolvedInput!.library.findType('FactoryAsAbstract')!;
@@ -93,6 +121,37 @@ void main() async {
           injectableType: InjectableType.factory,
         ),
         equals(dependencyResolver!.resolve(factoryAsAbstract)),
+      );
+    });
+
+    test('Async factory with nullable dependencies', () {
+      final FactoryWithDeps =
+          resolvedInput!.library.findType('AsyncFactoryWithNullableDeps')!;
+      final type = ImportableType(
+        name: 'AsyncFactoryWithNullableDeps',
+        import: 'source.dart',
+      );
+
+      final dependencyType = ImportableType(
+        name: 'AsyncFactory',
+        import: 'source.dart',
+        isNullable: true,
+      );
+      expect(
+        DependencyConfig(
+            type: type,
+            typeImpl: type,
+            injectableType: InjectableType.factory,
+            dependencies: [
+              InjectedDependency(
+                type: dependencyType,
+                paramName: 'asyncFactory',
+                isFactoryParam: true,
+              )
+            ],
+            isAsync: true,
+            constructorName: 'create'),
+        dependencyResolver!.resolve(FactoryWithDeps),
       );
     });
   });
