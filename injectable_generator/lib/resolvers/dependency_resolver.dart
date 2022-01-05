@@ -241,12 +241,6 @@ class DependencyResolver {
           : _typeResolver.resolveType(param.type);
       final isFactoryParam = _factoryParamChecker.hasAnnotationOfExact(param);
 
-      throwIf(
-        isFactoryParam && !resolvedType.isNullable,
-        'Factory params must be nullable',
-        element: param,
-      );
-
       _dependencies.add(InjectedDependency(
         type: resolvedType,
         instanceName: instanceName,
