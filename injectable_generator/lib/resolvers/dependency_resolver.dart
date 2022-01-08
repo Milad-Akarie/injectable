@@ -242,8 +242,8 @@ class DependencyResolver {
       final isFactoryParam = _factoryParamChecker.hasAnnotationOfExact(param);
 
       throwIf(
-        isFactoryParam && !resolvedType.isNullable,
-        'Factory params must be nullable',
+        isFactoryParam && !resolvedType.isNullable && _isAsync,
+        'Async factory params must be nullable',
         element: param,
       );
 
