@@ -1,4 +1,7 @@
 # ChangeLog
+## [1.5.3]
+- Sync injectable and injectable_generator with GetIt v7.2.0 to generate non-nullable @factoryParams
+- Migrate to analyzer 3.0.0
 ## [1.5.0]
 Use getAsync for async injected dependencies, fixes #230
 Add support for function factory params, fixes #224
