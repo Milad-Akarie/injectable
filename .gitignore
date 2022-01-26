@@ -29,7 +29,6 @@ build/
 **/doc/api/
 .dart_tool/
 .flutter-plugins
-.packages
 .pub-cache/
 .pub/
 /build/

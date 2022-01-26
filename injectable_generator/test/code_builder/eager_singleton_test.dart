@@ -59,10 +59,7 @@ void main() {
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
             isAsync: true,
-            dependsOn: [
-              ImportableType(name: 'Storage'),
-              ImportableType(name: 'LocalRepo')
-            ],
+            dependsOn: [ImportableType(name: 'Storage'), ImportableType(name: 'LocalRepo')],
           )),
           "gh.singletonAsync<Demo>(() => Demo(), dependsOn: [Storage, LocalRepo]);");
     });
@@ -74,10 +71,7 @@ void main() {
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
             isAsync: false,
-            dependsOn: [
-              ImportableType(name: 'Storage'),
-              ImportableType(name: 'LocalRepo')
-            ],
+            dependsOn: [ImportableType(name: 'Storage'), ImportableType(name: 'LocalRepo')],
           )),
           'gh.singletonWithDependencies<Demo>(() => Demo(), dependsOn: [Storage, LocalRepo]);');
     });
@@ -173,12 +167,40 @@ void main() {
       expect(generate(dep, allDeps: allDeps),
           'gh.singletonAsync<Demo>(() async  => Demo(storage:  await get.getAsync<Storage>(instanceName: \'storageImpl\')));');
     });
+    test("Singleton generator with async & preResolve named dependencies", () {
+      final dep = DependencyConfig(
+        injectableType: InjectableType.singleton,
+        type: ImportableType(name: 'Demo'),
+        typeImpl: ImportableType(name: 'Demo'),
+        dependencies: [
+          InjectedDependency(
+            type: ImportableType(name: 'Storage'),
+            paramName: 'storage',
+            isFactoryParam: false,
+            isPositional: false,
+            instanceName: 'storageImpl',
+          )
+        ],
+      );
+      final allDeps = [
+        dep,
+        DependencyConfig(
+          injectableType: InjectableType.factory,
+          type: ImportableType(name: 'Storage'),
+          typeImpl: ImportableType(name: 'Storage'),
+          instanceName: 'storageImpl',
+          isAsync: true,
+          preResolve: true,
+        ),
+      ];
+      expect(generate(dep, allDeps: allDeps),
+          'gh.singleton<Demo>(Demo(storage: get<Storage>(instanceName: \'storageImpl\')));');
+    });
   });
 }
 
 String generate(DependencyConfig input, {List<DependencyConfig>? allDeps}) {
-  final generator = LibraryGenerator(
-      dependencies: allDeps ?? [], initializerName: 'initGetIt');
+  final generator = LibraryGenerator(dependencies: allDeps ?? [], initializerName: 'initGetIt');
   final statement = generator.buildSingletonRegisterFun(input);
   final emitter = DartEmitter(
     allocator: Allocator.none,

@@ -199,8 +199,8 @@ class DependencyResolver {
           element: disposeFuncFromAnnotation);
       _disposeFunctionConfig = DisposeFunctionConfig(
         name: disposeFuncFromAnnotation.name,
-        importableType:
-            _typeResolver.resolveFunctionType(disposeFuncFromAnnotation.type),
+        importableType: _typeResolver.resolveFunctionType(
+            disposeFuncFromAnnotation.type, disposeFuncFromAnnotation),
       );
     }
 
@@ -242,8 +242,8 @@ class DependencyResolver {
       final isFactoryParam = _factoryParamChecker.hasAnnotationOfExact(param);
 
       throwIf(
-        isFactoryParam && !resolvedType.isNullable,
-        'Factory params must be nullable',
+        isFactoryParam && !resolvedType.isNullable && _isAsync,
+        'Async factory params must be nullable',
         element: param,
       );
 

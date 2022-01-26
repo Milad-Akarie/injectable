@@ -2,6 +2,7 @@
 // to be used later when generating the register function
 
 import 'package:collection/collection.dart';
+import 'package:injectable/injectable.dart';
 import 'package:injectable_generator/models/module_config.dart';
 
 import '../injectable_types.dart';
@@ -40,6 +41,41 @@ class DependencyConfig {
     this.moduleConfig,
     this.disposeFunction,
   });
+
+  // used for testing
+  factory DependencyConfig.factory(String type,
+      {List<String> deps = const [], List<String> envs = const []}) {
+    return DependencyConfig(
+      type: ImportableType(name: type),
+      typeImpl: ImportableType(name: type),
+      environments: envs,
+      dependencies: deps
+          .map(
+            (e) => InjectedDependency(
+              type: ImportableType(name: e),
+              paramName: e.toLowerCase(),
+            ),
+          )
+          .toList(),
+    );
+  }
+  // used for testing
+  factory DependencyConfig.singleton(String type,
+      {List<String> deps = const []}) {
+    return DependencyConfig(
+      type: ImportableType(name: type),
+      typeImpl: ImportableType(name: type),
+      injectableType: InjectableType.singleton,
+      dependencies: deps
+          .map(
+            (e) => InjectedDependency(
+              type: ImportableType(name: e),
+              paramName: e.toLowerCase(),
+            ),
+          )
+          .toList(),
+    );
+  }
 
   @override
   String toString() {

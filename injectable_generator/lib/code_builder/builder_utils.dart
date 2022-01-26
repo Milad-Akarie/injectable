@@ -17,11 +17,20 @@ void _sortByDependents(
     Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
   for (var dep in unSorted) {
     if (dep.dependencies.every(
-      (iDep) =>
-          iDep.isFactoryParam ||
-          sorted.any((d) =>
-              d.type == iDep.type && d.instanceName == iDep.instanceName) ||
-          !unSorted.map((d) => d.type).contains(iDep.type),
+      (iDep) {
+        if (iDep.isFactoryParam) {
+          return true;
+        }
+        // if dep is already in sorted return true
+        if (lookupDependencyWithNoEnvOrHasAny(iDep, sorted, dep.environments) !=
+            null) {
+          return true;
+        }
+        // if dep is in unSorted we skip it in this iteration, if not we include it
+        return lookupDependencyWithNoEnvOrHasAny(
+                iDep, unSorted, dep.environments) ==
+            null;
+      },
     )) {
       sorted.add(dep);
     }
@@ -38,7 +47,7 @@ bool isAsyncOrHasAsyncDependency(
     return false;
   }
 
-  if (dep.isAsync) {
+  if (dep.isAsync && !dep.preResolve) {
     return true;
   }
 
@@ -56,7 +65,7 @@ bool hasAsyncDependency(DependencyConfig dep, Set<DependencyConfig> allDeps) {
     }
 
     // Ultimately, this is what we're looking for:
-    if (config.isAsync) {
+    if (config.isAsync && !config.preResolve) {
       return true;
     }
 
@@ -76,6 +85,30 @@ DependencyConfig? lookupDependency(
         (d) => d.type == iDep.type && d.instanceName == iDep.instanceName);
   } on StateError {}
   return null;
+}
+
+DependencyConfig? lookupDependencyWithNoEnvOrHasAny(
+    InjectedDependency iDep, Set<DependencyConfig> allDeps, List<String> envs) {
+  try {
+    return allDeps.firstWhere(
+      (d) =>
+          d.type == iDep.type &&
+          d.instanceName == iDep.instanceName &&
+          (d.environments.isEmpty ||
+              envs.isEmpty ||
+              d.environments.any(
+                (e) => envs.contains(e),
+              )),
+    );
+  } on StateError {}
+  return null;
+}
+
+Set<DependencyConfig> lookupPossibleDeps(
+    InjectedDependency iDep, Iterable<DependencyConfig> allDeps) {
+  return allDeps
+      .where((d) => d.type == iDep.type && d.instanceName == iDep.instanceName)
+      .toSet();
 }
 
 bool hasPreResolvedDependencies(Set<DependencyConfig> deps) {

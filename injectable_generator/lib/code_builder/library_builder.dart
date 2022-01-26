@@ -33,21 +33,12 @@ class LibraryGenerator {
     // if true use an awaited initializer
     final hasPreResolvedDeps = hasPreResolvedDependencies(_dependencies);
 
-    // eager singleton instances are registered at the end
-    final eagerDeps = <DependencyConfig>{};
-    final lazyDeps = <DependencyConfig>{};
     // all environment keys used
     final environments = <String>{};
     // all register modules
     final modules = <ModuleConfig>{};
     _dependencies.forEach((dep) {
       environments.addAll(dep.environments);
-
-      if (dep.injectableType == InjectableType.singleton) {
-        eagerDeps.add(dep);
-      } else {
-        lazyDeps.add(dep);
-      }
       if (dep.moduleConfig != null) {
         modules.add(dep.moduleConfig!);
       }
@@ -117,8 +108,13 @@ class LibraryGenerator {
                 ])
                 .assignFinal(toCamelCase(module.type.name))
                 .statement),
-            ...lazyDeps.map((dep) => buildLazyRegisterFun(dep)),
-            ...eagerDeps.map((dep) => buildSingletonRegisterFun(dep)),
+            ..._dependencies.map((dep) {
+              if (dep.injectableType == InjectableType.singleton) {
+                return buildSingletonRegisterFun(dep);
+              } else {
+                return buildLazyRegisterFun(dep);
+              }
+            }),
             getInstanceRefer.returned.statement,
           ]),
         ),
