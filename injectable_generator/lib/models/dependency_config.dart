@@ -25,6 +25,7 @@ class DependencyConfig {
   final bool preResolve;
   final ModuleConfig? moduleConfig;
   final DisposeFunctionConfig? disposeFunction;
+  final int orderPosition;
 
   const DependencyConfig({
     required this.type,
@@ -40,6 +41,7 @@ class DependencyConfig {
     this.preResolve = false,
     this.moduleConfig,
     this.disposeFunction,
+    this.orderPosition = 0,
   });
 
   // used for testing
@@ -99,7 +101,8 @@ class DependencyConfig {
           ListEquality().equals(dependsOn, other.dependsOn) &&
           preResolve == other.preResolve &&
           disposeFunction == other.disposeFunction &&
-          moduleConfig == other.moduleConfig);
+          moduleConfig == other.moduleConfig &&
+          orderPosition == other.orderPosition);
 
   @override
   int get hashCode =>
@@ -115,7 +118,8 @@ class DependencyConfig {
       ListEquality().hash(dependsOn) ^
       preResolve.hashCode ^
       disposeFunction.hashCode ^
-      moduleConfig.hashCode;
+      moduleConfig.hashCode^
+      orderPosition.hashCode;
 
   factory DependencyConfig.fromJson(Map<dynamic, dynamic> json) {
     ModuleConfig? moduleConfig;
@@ -158,6 +162,7 @@ class DependencyConfig {
       preResolve: json['preResolve'] as bool,
       moduleConfig: moduleConfig,
       disposeFunction: disposeFunction,
+      orderPosition: json['orderPosition'] as int,
     );
   }
 
@@ -176,6 +181,7 @@ class DependencyConfig {
         if (instanceName != null) "instanceName": instanceName,
         if (signalsReady != null) "signalsReady": signalsReady,
         if (constructorName != null) "constructorName": constructorName,
+        "orderPosition": orderPosition,
       };
 
   bool get isFromModule => moduleConfig != null;

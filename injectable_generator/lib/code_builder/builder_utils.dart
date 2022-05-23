@@ -10,7 +10,17 @@ Set<DependencyConfig> sortDependencies(List<DependencyConfig> deps) {
   // sort dependencies by their register order
   final Set<DependencyConfig> sorted = {};
   _sortByDependents(deps.toSet(), sorted);
-  return sorted;
+  // sort dependencies by their orderPosition
+  final orderSorted = sorted.toList()..sort(_sortDependencyConfigByOrder);
+  return orderSorted.toSet();
+}
+
+int _sortDependencyConfigByOrder(
+  DependencyConfig current,
+  DependencyConfig next,
+) {
+  if (next.orderPosition == current.orderPosition) return 0;
+  return next.orderPosition > current.orderPosition ? 1 : -1;
 }
 
 void _sortByDependents(
