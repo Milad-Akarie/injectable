@@ -11,7 +11,7 @@ dependencies:
   source_gen: ^1.1.0
   path: ^1.8.0
   glob: ^2.0.1
-  analyzer: ^3.0.0
+  analyzer: ^4.0.0
   code_builder: ^4.1.0
   dart_style: ^2.0.3
   injectable:
