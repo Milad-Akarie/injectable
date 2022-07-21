@@ -20,7 +20,7 @@ int _sortDependencyConfigByOrder(
   DependencyConfig next,
 ) {
   if (next.orderPosition == current.orderPosition) return 0;
-  return next.orderPosition > current.orderPosition ? 1 : -1;
+  return next.orderPosition > current.orderPosition ? -1 : 1;
 }
 
 void _sortByDependents(
