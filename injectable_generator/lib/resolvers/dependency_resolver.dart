@@ -57,15 +57,15 @@ class DependencyResolver {
 
     final returnType = executableElement.returnType;
     throwIf(
-      returnType.element is! ClassElement,
+      returnType.element2 is! ClassElement,
       '${returnType.getDisplayString(withNullability: false)} is not a class element',
-      element: returnType.element,
+      element: returnType.element2,
     );
 
     Element? clazz;
     var type = returnType;
     if (executableElement.isAbstract) {
-      clazz = returnType.element;
+      clazz = returnType.element2;
       isAbstract = true;
       throwIf(
         executableElement.parameters.isNotEmpty,
@@ -75,10 +75,10 @@ class DependencyResolver {
     } else {
       if (returnType.isDartAsyncFuture) {
         final typeArg = returnType as ParameterizedType;
-        clazz = typeArg.typeArguments.first.element;
+        clazz = typeArg.typeArguments.first.element2;
         type = typeArg.typeArguments.first;
       } else {
-        clazz = returnType.element;
+        clazz = returnType.element2;
       }
     }
     this._moduleConfig = ModuleConfig(
@@ -138,7 +138,7 @@ class DependencyResolver {
     if (abstractType != null) {
       final abstractChecker = TypeChecker.fromStatic(abstractType);
       var abstractSubtype = clazz.allSupertypes
-          .firstOrNull((type) => abstractChecker.isExactly(type.element));
+          .firstOrNull((type) => abstractChecker.isExactly(type.element2));
 
       throwIf(
         abstractSubtype == null,
