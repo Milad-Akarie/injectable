@@ -1,4 +1,6 @@
 # ChangeLog
+## [1.5.4]
+- Bump up analyzer version
 ## [1.5.3]
 - Sync injectable and injectable_generator with GetIt v7.2.0 to generate non-nullable @factoryParams
 - Migrate to analyzer 3.0.0
@@ -16,19 +18,19 @@ Update analyzer version #228
 Add ignore types in packages support 
 Fix some readme typos
 ## [1.4.1]
-- Pomp up build_runner version to 2.0.3
+- Bump up build_runner version to 2.0.3
 - Fix generator crash when using inline environments #205
 ## [1.4.0]
-- Pomp up get_it version to range to 7.0.0 <= 8.0.0
-- Pomp up build_runner version to 2.0.2
+- Bump up get_it version to range to 7.0.0 <= 8.0.0
+- Bump up build_runner version to 2.0.2
 ## [1.3.0]
 - Include merge that fixes #194
-- Pomp up versions of build_runner -> 2.0.1, code_builder -> 4.0.0, analyzer -> 1.5.0 
+- Bump up versions of build_runner -> 2.0.1, code_builder -> 4.0.0, analyzer -> 1.5.0 
 ## [1.2.2]
 - Fix generator crash after 1.2.1 update
 - Add option to ignore missing type warning for specified types
 ## [1.2.1]
-- Pomp up versions of build, build_runner, dart_style and source_gen
+- Bump up versions of build, build_runner, dart_style and source_gen
 - Fix named instances are ignored when sorting dependencies. 
 - Clean up some code
 ## [1.2.0]

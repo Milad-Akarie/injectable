@@ -2,6 +2,7 @@ import 'package:injectable_generator/code_builder/builder_utils.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
 import 'package:injectable_generator/models/importable_type.dart';
 import 'package:injectable_generator/models/injected_dependency.dart';
+import 'package:test/expect.dart';
 
 main() {
   var typeX = ImportableType(name: 'TypeX');
@@ -41,7 +42,7 @@ main() {
   var sorted = sortDependencies(unSortedDeps);
   print(sorted.map((e) => '${e.type}#${e.instanceName}'));
   // expect(
-  //   [typeA, typeB, typeC],
+  //   <ImportableType>[  typeX, typeB, typeC],
   //   equals(
   //     sorted.map((e) => e.type).toList(),
   //   ),
