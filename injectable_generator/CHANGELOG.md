@@ -1,4 +1,6 @@
 # ChangeLog
+## [1.5.5]
+- Bump up analyzer version
 ## [1.5.4]
 - Bump up analyzer version
 ## [1.5.3]
