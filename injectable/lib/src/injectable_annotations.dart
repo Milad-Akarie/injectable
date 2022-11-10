@@ -225,3 +225,17 @@ class DisposeMethod {
 /// const instance of [DisposeMethod]
 /// with default arguments
 const disposeMethod = DisposeMethod._();
+
+/// Classes annotated with @Order will overwrite
+/// the automatically generated position of the
+class Order {
+  /// determins the position in the order of generated GetIt functions
+  final int position;
+
+  /// default constructor
+  const Order(this.position);
+}
+
+/// const instance of [Order]
+/// with default arguments
+const order = Order(0);

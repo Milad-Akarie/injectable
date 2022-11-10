@@ -23,6 +23,8 @@ const TypeChecker _factoryMethodChecker =
 const TypeChecker _disposeMethodChecker =
     TypeChecker.fromRuntime(DisposeMethod);
 
+const TypeChecker _orderChecker = TypeChecker.fromRuntime(Order);
+
 class DependencyResolver {
   final ImportableTypeResolver _typeResolver;
 
@@ -39,6 +41,7 @@ class DependencyResolver {
   List<InjectedDependency> _dependencies = [];
   ModuleConfig? _moduleConfig;
   DisposeFunctionConfig? _disposeFunctionConfig;
+  int _order = 0;
 
   DependencyResolver(this._typeResolver);
 
@@ -159,7 +162,8 @@ class DependencyResolver {
         const [];
 
     _preResolve = _preResolveChecker.hasAnnotationOfExact(annotatedElement);
-
+    _order = _orderChecker.firstAnnotationOfExact(annotatedElement)?.getField('position')?.toIntValue() ?? 0;
+  
     final name = _namedChecker
         .firstAnnotationOfExact(annotatedElement)
         ?.getField('name')
@@ -203,6 +207,8 @@ class DependencyResolver {
             disposeFuncFromAnnotation.type, disposeFuncFromAnnotation),
       );
     }
+
+
 
     late ExecutableElement executableInitializer;
     if (excModuleMember != null && !excModuleMember.isAbstract) {
@@ -295,6 +301,7 @@ class DependencyResolver {
       constructorName: _constructorName,
       isAsync: _isAsync,
       disposeFunction: _disposeFunctionConfig,
+      orderPosition: _order,
     );
   }
 }
