@@ -46,11 +46,12 @@ class DependencyConfig {
 
   // used for testing
   factory DependencyConfig.factory(String type,
-      {List<String> deps = const [], List<String> envs = const []}) {
+      {List<String> deps = const [], List<String> envs = const [],int order = 0}) {
     return DependencyConfig(
       type: ImportableType(name: type),
       typeImpl: ImportableType(name: type),
       environments: envs,
+      orderPosition: order,
       dependencies: deps
           .map(
             (e) => InjectedDependency(
@@ -63,11 +64,12 @@ class DependencyConfig {
   }
   // used for testing
   factory DependencyConfig.singleton(String type,
-      {List<String> deps = const []}) {
+      {List<String> deps = const [],int order = 0}) {
     return DependencyConfig(
       type: ImportableType(name: type),
       typeImpl: ImportableType(name: type),
       injectableType: InjectableType.singleton,
+      orderPosition: order,
       dependencies: deps
           .map(
             (e) => InjectedDependency(

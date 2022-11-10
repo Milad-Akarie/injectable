@@ -48,6 +48,50 @@ void main() {
     });
   });
 
+  group('Sort by dependents and order position test', () {
+    test('should sort as [C,A,B]', () {
+      final deps = [
+        DependencyConfig.factory('A'),
+        DependencyConfig.singleton('B',order: 1),
+        DependencyConfig.factory('C', order: -1),
+      ];
+      final expectedResult = [
+        DependencyConfig.factory('C', order: -1),
+        DependencyConfig.factory('A'),
+        DependencyConfig.singleton('B',order: 1),
+      ];
+      expect(sortDependencies(deps).toList(), expectedResult);
+    });
+
+    test('should sort as [C,A,B] (with deps)', () {
+      final deps = [
+        DependencyConfig.factory('A', deps: ['B']),
+        DependencyConfig.singleton('B',order: 1),
+        DependencyConfig.factory('C', deps: ['A'], order: -1),
+      ];
+      final expectedResult = [
+        DependencyConfig.factory('C', deps: ['A'], order: -1),
+        DependencyConfig.factory('A', deps: ['B']),
+        DependencyConfig.singleton('B',order: 1),
+      ];
+      expect(sortDependencies(deps).toList(), expectedResult);
+    });
+
+    test('Sorting with environments in mind, should sort as [B{prd},B{dev}},A{dev}]', () {
+      final deps = [
+        DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
+        DependencyConfig.factory('B', envs: ['prod'],order: 1),
+        DependencyConfig.factory('B', envs: ['dev'],order: -1),
+      ];
+      final expectedResult = [
+        DependencyConfig.factory('B', envs: ['dev'], order: -1),
+        DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
+        DependencyConfig.factory('B', envs: ['prod'],order: 1),
+      ];
+      expect(sortDependencies(deps).toList(), expectedResult);
+    });
+  });
+
   group('hasAsyncDependency', () {
     test('should return `false` when there are no dependencies', () {
       final dep = DependencyConfig(

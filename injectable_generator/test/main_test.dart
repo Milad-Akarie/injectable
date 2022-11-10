@@ -2,8 +2,6 @@ import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 
 void main() {
-  print('test work');
-
   final library = Library(
     (b) => b
       ..body.addAll(

@@ -228,9 +228,9 @@ packages:
   injectable:
     dependency: "direct main"
     description:
-      name: injectable
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../injectable"
+      relative: true
+    source: path
     version: "1.5.4"
   io:
     dependency: transitive
