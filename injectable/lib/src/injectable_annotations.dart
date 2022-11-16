@@ -58,8 +58,16 @@ class Injectable {
   /// of annotating the element with @Environment
   final List<String>? env;
 
+  /// an alternative way to pass position order instead
+  /// of annotating the element with @Order
+  final int? order;
+
+  /// an alternative way to pass position scope instead
+  /// of annotating the element with @Scope
+  final String? scope;
+
   /// default constructor
-  const Injectable({this.as, this.env});
+  const Injectable({this.as, this.env, this.scope, this.order});
 }
 
 /// const instance of [Injectable]
@@ -89,7 +97,14 @@ class Singleton extends Injectable {
     this.dispose,
     Type? as,
     List<String>? env,
-  }) : super(as: as, env: env);
+    String? scope,
+    int? order,
+  }) : super(
+          as: as,
+          env: env,
+          order: order,
+          scope: scope,
+        );
 }
 
 /// const instance of [Singleton]
@@ -104,7 +119,14 @@ class LazySingleton extends Injectable {
     Type? as,
     List<String>? env,
     this.dispose,
-  }) : super(as: as, env: env);
+    String? scope,
+    int? order,
+  }) : super(
+          as: as,
+          env: env,
+          scope: scope,
+          order: order,
+        );
 
   /// a dispose callback function to be
   /// passed to [GetIt]
@@ -162,6 +184,7 @@ class Environment {
 /// keys that's registered internally inside of
 /// [GetItHelper]
 const kEnvironmentsName = '__environments__';
+const kEnvironmentsFilterName = '__environments__filter__';
 
 /// preset instance of common env name
 const dev = Environment(Environment.dev);
@@ -239,3 +262,13 @@ class Order {
 /// const instance of [Order]
 /// with default arguments
 const order = Order(0);
+
+/// Used to annotate dependencies which are
+/// registered under different scope than main-scope
+class Scope {
+  /// name of the scope
+  final String name;
+
+  /// default constructor
+  const Scope(this.name);
+}

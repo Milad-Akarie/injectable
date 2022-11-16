@@ -1,4 +1,8 @@
+import 'package:collection/collection.dart';
+
 /// a simple filter function to be used inside [SimpleEnvironmentFilter]
+
+
 typedef EnvironmentFilterFunc = bool Function(Set<String>);
 
 /// filter for whether to register for the given set of environments
@@ -41,7 +45,7 @@ class NoEnvOrContains extends EnvironmentFilter {
   @override
   bool canRegister(Set<String> depEnvironments) {
     return (depEnvironments.isEmpty) ||
-        depEnvironments.contains(environments.first);
+        depEnvironments.contains(environments.firstOrNull);
   }
 }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
@@ -7,12 +9,22 @@ class GetItHelper {
   final GetIt getIt;
 
   /// filter for whether to register for the given set of environments
-  final EnvironmentFilter _environmentFilter;
+  late final EnvironmentFilter _environmentFilter;
 
   /// creates a new instance of GetItHelper
   GetItHelper(this.getIt, [String? environment, EnvironmentFilter? environmentFilter])
-      : assert(environmentFilter == null || environment == null),
-        _environmentFilter = environmentFilter ?? NoEnvOrContains(environment) {
+      : assert(environmentFilter == null || environment == null) {
+    // register current EnvironmentsFilter as lazy singleton
+    if (!getIt.isRegistered<EnvironmentFilter>(instanceName: kEnvironmentsFilterName)) {
+      _environmentFilter = environmentFilter ?? NoEnvOrContains(environment);
+      getIt.registerLazySingleton<EnvironmentFilter>(
+        () => _environmentFilter,
+        instanceName: kEnvironmentsFilterName,
+      );
+    } else{
+      _environmentFilter = getIt<EnvironmentFilter>(instanceName: kEnvironmentsFilterName);
+    }
+
     // register current Environments as lazy singleton
     if (!getIt.isRegistered<Set<String>>(instanceName: kEnvironmentsName)) {
       getIt.registerLazySingleton<Set<String>>(
@@ -215,5 +227,28 @@ class GetItHelper {
         dispose: dispose,
       );
     }
+  }
+
+  Future<GetIt> initScopeAsync(String name,
+      {required Future<void> Function(GetItHelper gh) init, ScopeDisposeFunc? dispose}) {
+    final _completer = Completer<GetIt>();
+    getIt.pushNewScope(
+      scopeName: name,
+      init: (getIt) async {
+        await init(this);
+        _completer.complete(getIt);
+      },
+      dispose: dispose,
+    );
+    return _completer.future;
+  }
+
+  GetIt initScope(String name, {required void Function(GetItHelper gh) init, ScopeDisposeFunc? dispose}) {
+    getIt.pushNewScope(
+      scopeName: name,
+      init: (_) => init(this),
+      dispose: dispose,
+    );
+    return getIt;
   }
 }

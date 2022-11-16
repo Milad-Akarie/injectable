@@ -26,6 +26,7 @@ class DependencyConfig {
   final ModuleConfig? moduleConfig;
   final DisposeFunctionConfig? disposeFunction;
   final int orderPosition;
+  final String? scope;
 
   const DependencyConfig({
     required this.type,
@@ -42,11 +43,12 @@ class DependencyConfig {
     this.moduleConfig,
     this.disposeFunction,
     this.orderPosition = 0,
+    this.scope,
   });
 
   // used for testing
   factory DependencyConfig.factory(String type,
-      {List<String> deps = const [], List<String> envs = const [],int order = 0}) {
+      {List<String> deps = const [], List<String> envs = const [], int order = 0}) {
     return DependencyConfig(
       type: ImportableType(name: type),
       typeImpl: ImportableType(name: type),
@@ -62,9 +64,9 @@ class DependencyConfig {
           .toList(),
     );
   }
+
   // used for testing
-  factory DependencyConfig.singleton(String type,
-      {List<String> deps = const [],int order = 0}) {
+  factory DependencyConfig.singleton(String type, {List<String> deps = const [], int order = 0}) {
     return DependencyConfig(
       type: ImportableType(name: type),
       typeImpl: ImportableType(name: type),
@@ -83,7 +85,7 @@ class DependencyConfig {
 
   @override
   String toString() {
-    return 'DependencyConfig{type: $type, typeImpl: $typeImpl, dependencies: $dependencies, injectableType: $injectableType, instanceName: $instanceName, signalsReady: $signalsReady, environments: $environments, constructorName: $constructorName, isAsync: $isAsync, dependsOn: $dependsOn, preResolve: $preResolve, moduleConfig: $moduleConfig}';
+    return 'DependencyConfig{type: $type, typeImpl: $typeImpl, dependencies: $dependencies, injectableType: $injectableType, instanceName: $instanceName, signalsReady: $signalsReady, environments: $environments, constructorName: $constructorName, isAsync: $isAsync, dependsOn: $dependsOn, preResolve: $preResolve, moduleConfig: $moduleConfig,scope: $scope}';
   }
 
   @override
@@ -103,6 +105,7 @@ class DependencyConfig {
           ListEquality().equals(dependsOn, other.dependsOn) &&
           preResolve == other.preResolve &&
           disposeFunction == other.disposeFunction &&
+          scope == other.scope &&
           moduleConfig == other.moduleConfig &&
           orderPosition == other.orderPosition);
 
@@ -120,8 +123,9 @@ class DependencyConfig {
       ListEquality().hash(dependsOn) ^
       preResolve.hashCode ^
       disposeFunction.hashCode ^
-      moduleConfig.hashCode^
-      orderPosition.hashCode;
+      moduleConfig.hashCode ^
+      orderPosition.hashCode ^
+      scope.hashCode;
 
   factory DependencyConfig.fromJson(Map<dynamic, dynamic> json) {
     ModuleConfig? moduleConfig;
@@ -165,6 +169,7 @@ class DependencyConfig {
       moduleConfig: moduleConfig,
       disposeFunction: disposeFunction,
       orderPosition: json['orderPosition'] as int,
+      scope: json['scope'] as String?,
     );
   }
 
@@ -175,8 +180,7 @@ class DependencyConfig {
         "preResolve": preResolve,
         "injectableType": injectableType,
         if (moduleConfig != null) 'moduleConfig': moduleConfig!.toJson(),
-        if (disposeFunction != null)
-          'disposeFunction': disposeFunction!.toJson(),
+        if (disposeFunction != null) 'disposeFunction': disposeFunction!.toJson(),
         "dependsOn": dependsOn.map((v) => v.toJson()).toList(),
         "environments": environments,
         "dependencies": dependencies.map((v) => v.toJson()).toList(),
@@ -184,13 +188,12 @@ class DependencyConfig {
         if (signalsReady != null) "signalsReady": signalsReady,
         if (constructorName != null) "constructorName": constructorName,
         "orderPosition": orderPosition,
+        if (scope != null) "scope": scope,
       };
 
   bool get isFromModule => moduleConfig != null;
 
-  List<InjectedDependency> get positionalDependencies =>
-      dependencies.where((d) => d.isPositional).toList();
+  List<InjectedDependency> get positionalDependencies => dependencies.where((d) => d.isPositional).toList();
 
-  List<InjectedDependency> get namedDependencies =>
-      dependencies.where((d) => !d.isPositional).toList();
+  List<InjectedDependency> get namedDependencies => dependencies.where((d) => !d.isPositional).toList();
 }

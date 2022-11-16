@@ -63,6 +63,9 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     _reportMissingDependencies(
         deps, ignoredTypes, ignoreTypesInPackages, targetFile);
     _validateDuplicateDependencies(deps);
+
+
+
     final generator = LibraryGenerator(
       dependencies: deps,
       targetFile: preferRelativeImports ? targetFile : null,

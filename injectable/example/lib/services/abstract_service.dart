@@ -47,7 +47,7 @@ class AsyncService extends AbstractService {
 abstract class IService {}
 
 @dev
-@Injectable(as: IService)
+@Injectable(as: IService, scope: 'auth')
 class ServiceImpl extends IService {
   ServiceImpl(@factoryParam String? param);
 }
