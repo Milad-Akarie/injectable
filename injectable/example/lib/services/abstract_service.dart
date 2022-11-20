@@ -27,7 +27,6 @@ class WebService extends AbstractService {
 }
 
 @dev
-@preResolve
 @Injectable(as: AbstractService)
 class AsyncService extends AbstractService {
   @override
@@ -37,7 +36,7 @@ class AsyncService extends AbstractService {
     @Named(kEnvironmentsName) this.environments,
   );
 
-  @factoryMethod
+  @FactoryMethod(preResolve: true)
   static Future<AsyncService> create(
     @Named(kEnvironmentsName) Set<String> envs,
   ) =>
@@ -60,5 +59,18 @@ class LazyServiceImpl extends IService {
   @factoryMethod
   static Future<IService> create(@factoryParam String? param) {
     return Future.value(LazyServiceImpl._(param));
+  }
+}
+
+@singleton
+ class PostConstructableService {
+  final IService service;
+
+  PostConstructableService(this.service);
+
+  @PostConstruct()
+  Future<void> init() {
+    return Future.value(this);
+    // return this;
   }
 }

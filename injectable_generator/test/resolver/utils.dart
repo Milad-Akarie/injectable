@@ -38,7 +38,7 @@ void testRawSource(String label, {required String source, required Map output}) 
     import 'package:injectable/injectable.dart'
     $source''');
     final importsResolve = ImportableTypeResolverImpl(await resolvedInput.resolver.libraries.toList());
-    final generated = await DependencyResolver(importsResolve).resolve(resolvedInput.library.classes.first);
+    final generated = DependencyResolver(importsResolve).resolve(resolvedInput.library.classes.first);
     expect(output, generated.toJson());
   });
 }

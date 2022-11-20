@@ -5,7 +5,7 @@ class InjectableInit {
   final List<String> generateForDir;
 
   /// if true relative imports will be used where possible
-  /// defaults to true
+  /// defaults to false
   final bool preferRelativeImports;
 
   /// generated initializer name
@@ -15,7 +15,7 @@ class InjectableInit {
   /// if true the init function
   /// will be generated inside
   /// of a [GetIi] extension
-  /// defaults to false
+  /// defaults to true
   final bool asExtension;
 
   /// weather to include null-safety
@@ -30,21 +30,63 @@ class InjectableInit {
   ///  included in this list
   final List<String> ignoreUnregisteredTypesInPackages;
 
+  /// indicates whether the package using the annotation
+  /// is a microPackage, in that case a  different
+  /// output will be generated.
+  // ignore: unused_field
+  final bool _isMicroPackage;
+
+  /// weather or not the main initializers
+  /// should include micro package modules
+  /// defaults to true
+  final bool includeMicroPackages;
+
+  /// throw an error and abort generation
+  /// in case of missing dependencies
+  /// defaults to false
+  final bool throwOnMissingDependencies;
+
+  /// a List of external package modules to be registered
+  /// in the default package initializer
+  /// classes passed here must extend [MicroPackageModule]
+  final List<Type>? externalPackageModules;
+
   /// default constructor
   const InjectableInit({
     this.generateForDir = const ['lib'],
-    this.preferRelativeImports = true,
-    this.initializerName = r'$initGetIt',
+    this.preferRelativeImports = false,
+    this.initializerName = 'init',
     this.ignoreUnregisteredTypes = const [],
     this.ignoreUnregisteredTypesInPackages = const [],
-    this.asExtension = false,
+    this.asExtension = true,
     this.usesNullSafety = true,
-  });
+    this.externalPackageModules,
+    this.throwOnMissingDependencies = false,
+    this.includeMicroPackages = true,
+  }) : _isMicroPackage = false;
+
+  /// default constructor
+  const InjectableInit.microPackage({
+    this.generateForDir = const ['lib'],
+    this.preferRelativeImports = false,
+    this.ignoreUnregisteredTypes = const [],
+    this.externalPackageModules,
+    this.throwOnMissingDependencies = false,
+    this.ignoreUnregisteredTypesInPackages = const [],
+    this.usesNullSafety = true,
+  })  : _isMicroPackage = true,
+        asExtension = false,
+        includeMicroPackages = false,
+        initializerName = 'init';
 }
 
 /// const instance of [InjectableInit]
 /// with default arguments
 const injectableInit = InjectableInit();
+
+/// const instance of [InjectableInit.microPackage]
+/// with default arguments
+const microPackageInit = InjectableInit.microPackage();
 
 /// Marks a class as an injectable
 /// dependency and generates
@@ -58,8 +100,16 @@ class Injectable {
   /// of annotating the element with @Environment
   final List<String>? env;
 
+  /// an alternative way to pass position order instead
+  /// of annotating the element with @Order
+  final int? order;
+
+  /// an alternative way to pass position scope instead
+  /// of annotating the element with @Scope
+  final String? scope;
+
   /// default constructor
-  const Injectable({this.as, this.env});
+  const Injectable({this.as, this.env, this.scope, this.order});
 }
 
 /// const instance of [Injectable]
@@ -89,7 +139,14 @@ class Singleton extends Injectable {
     this.dispose,
     Type? as,
     List<String>? env,
-  }) : super(as: as, env: env);
+    String? scope,
+    int? order,
+  }) : super(
+          as: as,
+          env: env,
+          order: order,
+          scope: scope,
+        );
 }
 
 /// const instance of [Singleton]
@@ -104,7 +161,14 @@ class LazySingleton extends Injectable {
     Type? as,
     List<String>? env,
     this.dispose,
-  }) : super(as: as, env: env);
+    String? scope,
+    int? order,
+  }) : super(
+          as: as,
+          env: env,
+          scope: scope,
+          order: order,
+        );
 
   /// a dispose callback function to be
   /// passed to [GetIt]
@@ -162,6 +226,7 @@ class Environment {
 /// keys that's registered internally inside of
 /// [GetItHelper]
 const kEnvironmentsName = '__environments__';
+const kEnvironmentsFilterName = '__environments__filter__';
 
 /// preset instance of common env name
 const dev = Environment(Environment.dev);
@@ -176,12 +241,16 @@ const test = Environment(Environment.test);
 /// function as an injectable constructor
 /// if not added the default constructor will be used.
 class FactoryMethod {
-  const FactoryMethod._();
+  /// return value will be pre-awaited before it's
+  /// registered inside of GetIt
+  final bool preResolve;
+  // default constructor
+  const FactoryMethod({this.preResolve = false});
 }
 
 /// const instance of [FactoryMethod]
 /// with default values
-const factoryMethod = FactoryMethod._();
+const factoryMethod = FactoryMethod();
 
 /// Marks a constructor param as
 /// factoryParam so it can be passed
@@ -216,6 +285,21 @@ class PreResolve {
 /// with default arguments
 const preResolve = PreResolve._();
 
+/// methods annotated with [postConstruct]
+/// will be called in a cascade manner
+/// after being constructed
+class PostConstruct {
+  /// return value will be pre-awaited before it's
+  /// registered inside of GetIt
+  final bool preResolve;
+  // default constructor
+  const PostConstruct({this.preResolve = false});
+}
+
+/// const instance of [PostConstruct]
+/// with default arguments
+const postConstruct = PostConstruct();
+
 /// marks an instance method as a dispose
 /// call back to be passed to [GetIt]
 class DisposeMethod {
@@ -229,7 +313,7 @@ const disposeMethod = DisposeMethod._();
 /// Classes annotated with @Order will overwrite
 /// the automatically generated position of the
 class Order {
-  /// determins the position in the order of generated GetIt functions
+  /// determines the position in the order of generated GetIt functions
   final int position;
 
   /// default constructor
@@ -239,3 +323,13 @@ class Order {
 /// const instance of [Order]
 /// with default arguments
 const order = Order(0);
+
+/// Used to annotate dependencies which are
+/// registered under a different scope than main-scope
+class Scope {
+  /// name of the scope
+  final String name;
+
+  /// default constructor
+  const Scope(this.name);
+}

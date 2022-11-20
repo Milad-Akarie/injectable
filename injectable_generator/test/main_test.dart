@@ -41,6 +41,5 @@ void main() {
     orderDirectives: true,
     useNullSafetySyntax: false,
   );
-  print(library.accept(emitter).toString());
   print(DartFormatter().format(library.accept(emitter).toString()));
 }

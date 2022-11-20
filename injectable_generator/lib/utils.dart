@@ -49,7 +49,7 @@ void printBoxed(String message,
 }
 
 extension IterableExtenstion<E> on Iterable<E> {
-  E? firstOrNull(bool test(E element)) {
+  E? firstOrNull(bool Function(E element) test) {
     for (var e in this) {
       if (test(e)) {
         return e;

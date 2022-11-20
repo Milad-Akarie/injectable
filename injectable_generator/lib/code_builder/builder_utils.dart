@@ -1,4 +1,5 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:collection/collection.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
 import 'package:injectable_generator/models/importable_type.dart';
 import 'package:injectable_generator/models/injected_dependency.dart';
@@ -23,8 +24,7 @@ int _sortDependencyConfigByOrder(
   return next.orderPosition > current.orderPosition ? -1 : 1;
 }
 
-void _sortByDependents(
-    Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
+void _sortByDependents(Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
   for (var dep in unSorted) {
     if (dep.dependencies.every(
       (iDep) {
@@ -32,14 +32,11 @@ void _sortByDependents(
           return true;
         }
         // if dep is already in sorted return true
-        if (lookupDependencyWithNoEnvOrHasAny(iDep, sorted, dep.environments) !=
-            null) {
+        if (lookupDependencyWithNoEnvOrHasAny(iDep, sorted, dep.environments) != null) {
           return true;
         }
         // if dep is in unSorted we skip it in this iteration, if not we include it
-        return lookupDependencyWithNoEnvOrHasAny(
-                iDep, unSorted, dep.environments) ==
-            null;
+        return lookupDependencyWithNoEnvOrHasAny(iDep, unSorted, dep.environments) == null;
       },
     )) {
       sorted.add(dep);
@@ -50,8 +47,7 @@ void _sortByDependents(
   }
 }
 
-bool isAsyncOrHasAsyncDependency(
-    InjectedDependency iDep, Set<DependencyConfig> allDeps) {
+bool isAsyncOrHasAsyncDependency(InjectedDependency iDep, Set<DependencyConfig> allDeps) {
   final dep = lookupDependency(iDep, allDeps);
   if (dep == null) {
     return false;
@@ -88,37 +84,31 @@ bool hasAsyncDependency(DependencyConfig dep, Set<DependencyConfig> allDeps) {
   return false;
 }
 
-DependencyConfig? lookupDependency(
-    InjectedDependency iDep, Set<DependencyConfig> allDeps) {
-  try {
-    return allDeps.firstWhere(
-        (d) => d.type == iDep.type && d.instanceName == iDep.instanceName);
-  } on StateError {}
-  return null;
+DependencyConfig? lookupDependency(InjectedDependency iDep, Set<DependencyConfig> allDeps) {
+  return allDeps.firstWhereOrNull(
+    (d) => d.type == iDep.type && d.instanceName == iDep.instanceName,
+  );
 }
 
 DependencyConfig? lookupDependencyWithNoEnvOrHasAny(
-    InjectedDependency iDep, Set<DependencyConfig> allDeps, List<String> envs) {
-  try {
-    return allDeps.firstWhere(
-      (d) =>
-          d.type == iDep.type &&
-          d.instanceName == iDep.instanceName &&
-          (d.environments.isEmpty ||
-              envs.isEmpty ||
-              d.environments.any(
-                (e) => envs.contains(e),
-              )),
-    );
-  } on StateError {}
-  return null;
+  InjectedDependency iDep,
+  Set<DependencyConfig> allDeps,
+  List<String> envs,
+) {
+  return allDeps.firstWhereOrNull(
+    (d) =>
+        d.type == iDep.type &&
+        d.instanceName == iDep.instanceName &&
+        (d.environments.isEmpty ||
+            envs.isEmpty ||
+            d.environments.any(
+              (e) => envs.contains(e),
+            )),
+  );
 }
 
-Set<DependencyConfig> lookupPossibleDeps(
-    InjectedDependency iDep, Iterable<DependencyConfig> allDeps) {
-  return allDeps
-      .where((d) => d.type == iDep.type && d.instanceName == iDep.instanceName)
-      .toSet();
+Set<DependencyConfig> lookupPossibleDeps(InjectedDependency iDep, Iterable<DependencyConfig> allDeps) {
+  return allDeps.where((d) => d.type == iDep.type && d.instanceName == iDep.instanceName).toSet();
 }
 
 bool hasPreResolvedDependencies(Set<DependencyConfig> deps) {
@@ -135,8 +125,7 @@ TypeReference nullableRefer(
       ..url = url
       ..isNullable = nullable);
 
-Reference typeRefer(ImportableType type,
-    [Uri? targetFile, bool withNullabilitySuffix = true]) {
+Reference typeRefer(ImportableType type, [Uri? targetFile, bool withNullabilitySuffix = true]) {
   final relativeImport = targetFile == null
       ? ImportableTypeResolver.resolveAssetImport(type.import)
       : ImportableTypeResolver.relative(type.import, targetFile);

@@ -48,7 +48,7 @@ void main() async {
     });
 
     test('Factory with nullable dependencies', () {
-      final FactoryWithDeps =
+      final factoryWithDeps =
           resolvedInput!.library.findType('FactoryWithNullableDeps')!;
       final type = ImportableType(
         name: 'FactoryWithNullableDeps',
@@ -71,12 +71,12 @@ void main() async {
                 paramName: 'simpleFactory',
               )
             ]),
-        dependencyResolver!.resolve(FactoryWithDeps),
+        dependencyResolver!.resolve(factoryWithDeps),
       );
     });
 
     test('Factory with dependencies', () {
-      final FactoryWithDeps =
+      final factoryWithDeps =
           resolvedInput!.library.findType('FactoryWithDeps')!;
       final type = ImportableType(
         name: 'FactoryWithDeps',
@@ -98,12 +98,12 @@ void main() async {
                 paramName: 'simpleFactory',
               )
             ]),
-        dependencyResolver!.resolve(FactoryWithDeps),
+        dependencyResolver!.resolve(factoryWithDeps),
       );
     });
 
     test('Factory with nullable factoryParams', () {
-      final FactoryWithDeps =
+      final factoryWithDeps =
           resolvedInput!.library.findType('FactoryWithNullableFactoryParams')!;
       final type = ImportableType(
         name: 'FactoryWithNullableFactoryParams',
@@ -127,12 +127,12 @@ void main() async {
                 isFactoryParam: true,
               )
             ]),
-        dependencyResolver!.resolve(FactoryWithDeps),
+        dependencyResolver!.resolve(factoryWithDeps),
       );
     });
 
     test('Factory with factoryParams', () {
-      final FactoryWithDeps =
+      final factoryWithDeps =
           resolvedInput!.library.findType('FactoryWithFactoryParams')!;
       final type = ImportableType(
         name: 'FactoryWithFactoryParams',
@@ -155,7 +155,7 @@ void main() async {
                 isFactoryParam: true,
               )
             ]),
-        dependencyResolver!.resolve(FactoryWithDeps),
+        dependencyResolver!.resolve(factoryWithDeps),
       );
     });
 
@@ -184,7 +184,7 @@ void main() async {
     });
 
     test('Async factory with nullable dependencies', () {
-      final FactoryWithDeps =
+      final factoryWithDeps =
           resolvedInput!.library.findType('AsyncFactoryWithNullableDeps')!;
       final type = ImportableType(
         name: 'AsyncFactoryWithNullableDeps',
@@ -210,21 +210,91 @@ void main() async {
             ],
             isAsync: true,
             constructorName: 'create'),
-        dependencyResolver!.resolve(FactoryWithDeps),
+        dependencyResolver!.resolve(factoryWithDeps),
       );
     });
 
     test('Async factory with non nullable dependencies', () {
-      final FactoryWithDeps =
+      final factoryWithDeps =
           resolvedInput!.library.findType('AsyncFactoryWithNonNullableDeps')!;
       final errorMessage = 'Async factory params must be nullable';
-      var resultError;
+      InvalidGenerationSourceError? resultError;
       try {
-        dependencyResolver!.resolve(FactoryWithDeps);
+        dependencyResolver!.resolve(factoryWithDeps);
       } catch (error) {
         resultError = error as InvalidGenerationSourceError;
       }
-      expect(resultError.message, errorMessage);
+      expect(resultError?.message, errorMessage);
     });
+
+    test('Simple Factory with inline order', () {
+      var simpleFactoryType = resolvedInput!.library.findType('FactoryWithInlineOrder')!;
+      final type = ImportableType(
+        name: 'FactoryWithInlineOrder',
+        import: 'source.dart',
+      );
+      expect(
+        DependencyConfig(
+          type: type,
+          typeImpl: type,
+          injectableType: InjectableType.factory,
+          orderPosition: 1,
+        ),
+        equals(dependencyResolver!.resolve(simpleFactoryType)),
+      );
+    });
+
+    test('Simple Factory with annotation order', () {
+      var simpleFactoryType = resolvedInput!.library.findType('FactoryWithAnnotationOrder')!;
+      final type = ImportableType(
+        name: 'FactoryWithAnnotationOrder',
+        import: 'source.dart',
+      );
+      expect(
+        DependencyConfig(
+          type: type,
+          typeImpl: type,
+          injectableType: InjectableType.factory,
+          orderPosition: 1,
+        ),
+        equals(dependencyResolver!.resolve(simpleFactoryType)),
+      );
+    });
+
+
+    test('Simple Factory with inline scope', () {
+      var simpleFactoryType = resolvedInput!.library.findType('FactoryWithInlineScope')!;
+      final type = ImportableType(
+        name: 'FactoryWithInlineScope',
+        import: 'source.dart',
+      );
+      expect(
+        DependencyConfig(
+          type: type,
+          typeImpl: type,
+          injectableType: InjectableType.factory,
+          scope: 'scope'
+        ),
+        equals(dependencyResolver!.resolve(simpleFactoryType)),
+      );
+    });
+
+    test('Simple Factory with annotation scope', () {
+      var simpleFactoryType = resolvedInput!.library.findType('FactoryWithAnnotationScope')!;
+      final type = ImportableType(
+        name: 'FactoryWithAnnotationScope',
+        import: 'source.dart',
+      );
+      expect(
+        DependencyConfig(
+          type: type,
+          typeImpl: type,
+          injectableType: InjectableType.factory,
+          scope: 'scope'
+        ),
+        equals(dependencyResolver!.resolve(simpleFactoryType)),
+      );
+    });
+
   });
 }

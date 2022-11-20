@@ -231,7 +231,7 @@ packages:
       path: "../injectable"
       relative: true
     source: path
-    version: "1.5.4"
+    version: "2.0.0"
   io:
     dependency: transitive
     description:
@@ -253,6 +253,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
+  lints:
+    dependency: "direct dev"
+    description:
+      name: lints
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   logging:
     dependency: transitive
     description:

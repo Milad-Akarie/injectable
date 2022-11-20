@@ -18,6 +18,28 @@ class FactoryWithFactoryParams {
   const FactoryWithFactoryParams(@factoryParam SimpleFactory simpleFactory);
 }
 
+@Injectable(order: 1)
+class FactoryWithInlineOrder {
+  const FactoryWithInlineOrder();
+}
+
+@Order(1)
+@injectable
+class FactoryWithAnnotationOrder {
+  const FactoryWithAnnotationOrder();
+}
+
+@Injectable(scope: 'scope')
+class FactoryWithInlineScope{
+  const FactoryWithInlineScope();
+}
+
+@Scope('scope')
+@injectable
+class FactoryWithAnnotationScope{
+  const FactoryWithAnnotationScope();
+}
+
 @injectable
 class FactoryWithNullableFactoryParams {
   const FactoryWithNullableFactoryParams(

@@ -1,10 +1,14 @@
-import 'package:example/injector/injector.dart';
+import 'package:awesome/calculator.dart';
+import 'package:example/injector/injector.config.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
 GetIt getIt = GetIt.instance;
 
 void main() async {
-  await configInjector(getIt, env: Environment.prod);
+  await getIt.init(environment: Environment.dev);
+  print(getIt<Calculator>());
+  // await getIt.initAuthScope();
+
 
 }

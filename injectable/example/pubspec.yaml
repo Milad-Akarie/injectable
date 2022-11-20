@@ -6,6 +6,8 @@ environment:
 
 dependencies:
   get_it:  ">=7.0.0 <8.0.0"
+  awesome:
+    path: feature/awesome
 
 dev_dependencies:
   pedantic: ^1.11.1
