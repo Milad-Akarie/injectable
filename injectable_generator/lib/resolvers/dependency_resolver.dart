@@ -20,6 +20,7 @@ const TypeChecker _factoryParamChecker = TypeChecker.fromRuntime(FactoryParam);
 const TypeChecker _scopeChecker = TypeChecker.fromRuntime(Scope);
 const TypeChecker _factoryMethodChecker = TypeChecker.fromRuntime(FactoryMethod);
 const TypeChecker _disposeMethodChecker = TypeChecker.fromRuntime(DisposeMethod);
+const TypeChecker _postConstructChecker = TypeChecker.fromRuntime(PostConstruct);
 
 const TypeChecker _orderChecker = TypeChecker.fromRuntime(Order);
 
@@ -31,12 +32,12 @@ class DependencyResolver {
   int _injectableType = InjectableType.factory;
   bool? _signalsReady;
   bool _preResolve = false;
-  List<ImportableType> _dependsOn = [];
+  final List<ImportableType> _dependsOn = [];
   List<String> _environments = [];
   String? _instanceName;
   bool _isAsync = false;
   String? _constructorName;
-  List<InjectedDependency> _dependencies = [];
+  final List<InjectedDependency> _dependencies = [];
   ModuleConfig? _moduleConfig;
   DisposeFunctionConfig? _disposeFunctionConfig;
   int? _order;
@@ -83,13 +84,13 @@ class DependencyResolver {
         clazz = returnType.element2;
       }
     }
-    this._moduleConfig = ModuleConfig(
+    _moduleConfig = ModuleConfig(
       isAbstract: isAbstract,
       isMethod: executableElement is MethodElement,
       type: moduleType,
       initializerName: initializerName,
     );
-    this._type = _typeResolver.resolveType(type);
+    _type = _typeResolver.resolveType(type);
     return _resolveActualType(clazz as ClassElement, executableElement);
   }
 
@@ -106,7 +107,7 @@ class DependencyResolver {
 
     DartType? abstractType;
     ExecutableElement? disposeFuncFromAnnotation;
-    var inlineEnv;
+    List<String>? inlineEnv;
     if (injectableAnnotation != null) {
       final injectable = ConstantReader(injectableAnnotation);
       if (injectable.instanceOf(TypeChecker.fromRuntime(LazySingleton))) {
@@ -151,8 +152,7 @@ class DependencyResolver {
             .map<String>(
               (e) => e.getField('name')!.toStringValue()!,
             )
-            .toList() ??
-        const [];
+            .toList();
     _scope ??= _scopeChecker.firstAnnotationOfExact(annotatedElement)?.getField('name')?.toStringValue();
     _preResolve = _preResolveChecker.hasAnnotationOfExact(annotatedElement);
     _order ??= _orderChecker.firstAnnotationOfExact(annotatedElement)?.getField('position')?.toIntValue() ?? 0;
@@ -203,7 +203,14 @@ class DependencyResolver {
       ];
 
       executableInitializer = possibleFactories.firstWhere(
-        (m) => _factoryMethodChecker.hasAnnotationOfExact(m),
+        (m) {
+          final annotation = _factoryMethodChecker.firstAnnotationOf(m);
+          if (annotation != null) {
+            _preResolve |= annotation.getField('preResolve')!.toBoolValue() ?? false;
+            return true;
+          }
+          return false;
+        },
         orElse: () {
           throwIf(
             clazz.isAbstract,
@@ -214,6 +221,7 @@ class DependencyResolver {
         },
       );
     }
+    _preResolve |= _preResolveChecker.hasAnnotationOf(executableInitializer);
 
     _isAsync = executableInitializer.returnType.isDartAsyncFuture;
     _constructorName = executableInitializer.name;
@@ -266,6 +274,43 @@ class DependencyResolver {
       element: clazz,
     );
 
+    String? postConstruct;
+    bool postConstructReturnsSelf = false;
+    for (final method in clazz.methods) {
+      final postConstructAnnotation = _postConstructChecker.firstAnnotationOf(method);
+      if (postConstructAnnotation != null) {
+        throwIf(
+          method.isStatic,
+          'PostConstruct method can not be static',
+          element: method,
+        );
+        throwIf(
+          method.isPrivate,
+          'PostConstruct method can not be private',
+          element: method,
+        );
+        throwIf(
+          method.parameters.any((e) => e.isRequiredNamed || e.isRequiredPositional),
+          'PostConstruct method can not have required parameters',
+          element: method,
+        );
+        throwIf(
+          method.parameters.any((e) => e.isRequiredNamed || e.isRequiredPositional),
+          'PostConstruct method can not have required parameters',
+          element: method,
+        );
+        postConstruct = method.name;
+        _isAsync = method.returnType.isDartAsyncFuture;
+        _preResolve = ConstantReader(postConstructAnnotation).read('preResolve').boolValue;
+        final returnType = _typeResolver.resolveType(
+          _isAsync ? (method.returnType as ParameterizedType).typeArguments.first : method.returnType,
+        );
+
+        postConstructReturnsSelf = returnType == _type || returnType == _typeImpl;
+        break;
+      }
+    }
+
     return DependencyConfig(
       type: _type,
       typeImpl: _typeImpl,
@@ -282,6 +327,8 @@ class DependencyResolver {
       disposeFunction: _disposeFunctionConfig,
       orderPosition: _order!,
       scope: _scope,
+      postConstruct: postConstruct,
+      postConstructReturnsSelf: postConstructReturnsSelf,
     );
   }
 }

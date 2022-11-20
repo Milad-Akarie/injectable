@@ -59,9 +59,9 @@ class ImportableType {
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
     return {
-      'import': this.import,
-      'name': this.name,
-      'isNullable': this.isNullable,
+      'import': import,
+      'name': name,
+      'isNullable': isNullable,
       if (typeArguments.isNotEmpty)
         "typeArguments": typeArguments.map((v) => v.toJson()).toList(),
     } as Map<String, dynamic>;

@@ -21,7 +21,7 @@ class GetItHelper {
         () => _environmentFilter,
         instanceName: kEnvironmentsFilterName,
       );
-    } else{
+    } else {
       _environmentFilter = getIt<EnvironmentFilter>(instanceName: kEnvironmentsFilterName);
     }
 
@@ -33,6 +33,29 @@ class GetItHelper {
       );
     }
   }
+
+  T call<T extends Object>({
+    String? instanceName,
+    dynamic param1,
+    dynamic param2,
+  }) =>
+      getIt.get<T>(
+        instanceName: instanceName,
+        param1: param1,
+        param2: param2,
+      );
+
+  Future<T> getAsync<T extends Object>({
+    String? instanceName,
+    dynamic param1,
+    dynamic param2,
+  }) =>
+      getIt.getAsync<T>(
+        instanceName: instanceName,
+        param1: param1,
+        param2: param2,
+      );
+
 
   bool _canRegister(Set<String>? registerFor) {
     return _environmentFilter.canRegister(registerFor ?? {});
@@ -56,14 +79,14 @@ class GetItHelper {
   /// a conditional wrapper method for getIt.registerFactoryAsync
   /// it only registers if [_canRegister] returns true
   Future<void> factoryAsync<T extends Object>(
-    FactoryFuncAsync<T> factoryfunc, {
+    FactoryFuncAsync<T> factoryFunc, {
     String? instanceName,
     bool preResolve = false,
     Set<String>? registerFor,
   }) {
     if (_canRegister(registerFor)) {
       if (preResolve) {
-        return factoryfunc().then(
+        return factoryFunc().then(
           (instance) => factory(
             () => instance,
             instanceName: instanceName,
@@ -71,7 +94,7 @@ class GetItHelper {
         );
       } else {
         getIt.registerFactoryAsync<T>(
-          factoryfunc,
+          factoryFunc,
           instanceName: instanceName,
         );
       }
@@ -82,13 +105,13 @@ class GetItHelper {
   /// a conditional wrapper method for getIt.registerFactoryParam
   /// it only registers if [_canRegister] returns true
   void factoryParam<T extends Object, P1, P2>(
-    FactoryFuncParam<T, P1, P2> factoryfunc, {
+    FactoryFuncParam<T, P1, P2> factoryFunc, {
     String? instanceName,
     Set<String>? registerFor,
   }) {
     if (_canRegister(registerFor)) {
       getIt.registerFactoryParam<T, P1, P2>(
-        factoryfunc,
+        factoryFunc,
         instanceName: instanceName,
       );
     }
@@ -229,20 +252,24 @@ class GetItHelper {
     }
   }
 
+
+  /// a helper method to push a new scope and init it's dependencies
+  /// asynchronously inside of [GetIt]
   Future<GetIt> initScopeAsync(String name,
       {required Future<void> Function(GetItHelper gh) init, ScopeDisposeFunc? dispose}) {
-    final _completer = Completer<GetIt>();
+    final completer = Completer<GetIt>();
     getIt.pushNewScope(
       scopeName: name,
       init: (getIt) async {
         await init(this);
-        _completer.complete(getIt);
+        completer.complete(getIt);
       },
       dispose: dispose,
     );
-    return _completer.future;
+    return completer.future;
   }
-
+  /// a helper method to push a new scope and init it's dependencies
+  /// inside of [GetIt]
   GetIt initScope(String name, {required void Function(GetItHelper gh) init, ScopeDisposeFunc? dispose}) {
     getIt.pushNewScope(
       scopeName: name,

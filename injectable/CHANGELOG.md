@@ -1,4 +1,14 @@
 # ChangeLog
+## [2.0.0] [Minor breaking changes]
+- Add support for micro packages
+- Add support for external package modules
+- Add support for manual dependencies ordering thanks to @casvanluijtelaar
+- Add support for GetIt scopes
+- Add @PostConstruct annotation to execute sync/async code after construction
+- Add preResolve to @FactoryMethod annotation              
+- Add throwOnMissingDependencies flag to @InjectableInit annotation
+- Change asExtension default value to true [breaking change] 
+- Change initializerName default value to 'init' [breaking change]
 ## [1.5.3]
 - Sync injectable and injectable_generator with GetIt v7.2.0 to generate non-nullable @factoryParams
 - Migrate to analyzer 3.0.0

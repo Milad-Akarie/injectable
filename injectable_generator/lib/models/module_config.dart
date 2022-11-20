@@ -20,8 +20,8 @@ class ModuleConfig {
     String? initializerName,
   }) {
     if ((isAbstract == null || identical(isAbstract, this.isAbstract)) &&
-        (isModuleMethod == null || identical(isModuleMethod, this.isMethod)) &&
-        (module == null || identical(module, this.type)) &&
+        (isModuleMethod == null || identical(isModuleMethod, isMethod)) &&
+        (module == null || identical(module, type)) &&
         (initializerName == null ||
             identical(initializerName, this.initializerName))) {
       return this;
@@ -29,8 +29,8 @@ class ModuleConfig {
 
     return ModuleConfig(
       isAbstract: isAbstract ?? this.isAbstract,
-      isMethod: isModuleMethod ?? this.isMethod,
-      type: module ?? this.type,
+      isMethod: isModuleMethod ?? isMethod,
+      type: module ?? type,
       initializerName: initializerName ?? this.initializerName,
     );
   }
@@ -62,10 +62,10 @@ class ModuleConfig {
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
     return {
-      'isAbstract': this.isAbstract,
-      'isMethod': this.isMethod,
-      'type': this.type,
-      'initializerName': this.initializerName,
+      'isAbstract': isAbstract,
+      'isMethod': isMethod,
+      'type': type,
+      'initializerName': initializerName,
     } as Map<String, dynamic>;
   }
 }

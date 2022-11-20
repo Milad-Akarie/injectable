@@ -23,7 +23,7 @@ class DisposeFunctionConfig {
       return this;
     }
 
-    return new DisposeFunctionConfig(
+    return DisposeFunctionConfig(
       isInstance: isInstance ?? this.isInstance,
       name: name ?? this.name,
       importableType: importableType ?? this.importableType,
@@ -64,10 +64,10 @@ class DisposeFunctionConfig {
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
     return {
-      'isInstance': this.isInstance,
-      'name': this.name,
+      'isInstance': isInstance,
+      'name': name,
       if (importableType != null)
-        'importableType': this.importableType!.toJson(),
+        'importableType': importableType!.toJson(),
     } as Map<String, dynamic>;
   }
 }

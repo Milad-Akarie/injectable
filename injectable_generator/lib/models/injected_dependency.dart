@@ -33,19 +33,11 @@ class InjectedDependency {
 
   @override
   int get hashCode =>
-      type.hashCode ^
-      instanceName.hashCode ^
-      paramName.hashCode ^
-      isFactoryParam.hashCode ^
-      isPositional.hashCode;
+      type.hashCode ^ instanceName.hashCode ^ paramName.hashCode ^ isFactoryParam.hashCode ^ isPositional.hashCode;
 
   factory InjectedDependency.fromJson(Map<String, dynamic> json) {
-    var type;
-    if (json['type'] != null) {
-      type = ImportableType.fromJson(json['type']);
-    }
     return InjectedDependency(
-      type: type,
+      type: ImportableType.fromJson(json['type']),
       instanceName: json['instanceName'],
       paramName: json['paramName'],
       isFactoryParam: json['isFactoryParam'],
@@ -56,11 +48,11 @@ class InjectedDependency {
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_cast
     return {
-      'type': this.type,
-      'instanceName': this.instanceName,
-      'paramName': this.paramName,
-      'isFactoryParam': this.isFactoryParam,
-      'isPositional': this.isPositional,
+      'type': type,
+      'instanceName': instanceName,
+      'paramName': paramName,
+      'isFactoryParam': isFactoryParam,
+      'isPositional': isPositional,
     } as Map<String, dynamic>;
   }
 }

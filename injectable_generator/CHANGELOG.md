@@ -1,4 +1,14 @@
 # ChangeLog
+## [2.0.0] [Minor breaking changes]
+- Add support for micro packages
+- Add support for external package modules
+- Add support for manual dependencies ordering thanks to @casvanluijtelaar
+- Add support for GetIt scopes
+- Add @PostConstruct annotation to execute sync/async code after construction
+- Add preResolve to @FactoryMethod annotation
+- Add throwOnMissingDependencies flag to @InjectableInit annotation
+- Change asExtension default value to true [breaking change]
+- Change initializerName default value to 'init' [breaking change]
 ## [1.5.5]
 - Bump up analyzer version
 ## [1.5.4]

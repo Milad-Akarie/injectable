@@ -95,7 +95,7 @@ void main() {
               )
             ],
           )),
-          'gh.factoryParam<Demo, String, dynamic>((url, _) => Demo(get<Storage>(), url));');
+          'gh.factoryParam<Demo, String, dynamic>((url, _) => Demo(gh<Storage>(), url));');
     });
 
     test("One factory param with injected async dependencies test", () {
@@ -128,14 +128,17 @@ void main() {
         ),
       ];
       expect(generate(dep, allDeps: allDeps),
-          'gh.factoryParamAsync<Demo, String, dynamic>((url, _) async  => Demo( await get.getAsync<Storage>(), url));');
+          'gh.factoryParamAsync<Demo, String, dynamic>((url, _) async  => Demo( await gh.getAsync<Storage>(), url));');
     });
   });
 }
 
 String generate(DependencyConfig input, {List<DependencyConfig>? allDeps}) {
-  final generator = LibraryGenerator(
-      dependencies: allDeps ?? [], initializerName: 'initGetIt');
+  final generator = InitMethodGenerator(
+    scopeDependencies: allDeps ?? [],
+    allDependencies: allDeps?.toSet() ?? {},
+    initializerName: 'initGetIt',
+  );
   final statement = generator.buildLazyRegisterFun(input);
   final emitter = DartEmitter(
     allocator: Allocator.none,

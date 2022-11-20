@@ -2,7 +2,6 @@
 // to be used later when generating the register function
 
 import 'package:collection/collection.dart';
-import 'package:injectable/injectable.dart';
 import 'package:injectable_generator/models/module_config.dart';
 
 import '../injectable_types.dart';
@@ -20,7 +19,9 @@ class DependencyConfig {
   final bool? signalsReady;
   final List<String> environments;
   final String? constructorName;
+  final String? postConstruct;
   final bool isAsync;
+  final bool postConstructReturnsSelf;
   final List<ImportableType> dependsOn;
   final bool preResolve;
   final ModuleConfig? moduleConfig;
@@ -44,6 +45,8 @@ class DependencyConfig {
     this.disposeFunction,
     this.orderPosition = 0,
     this.scope,
+    this.postConstructReturnsSelf = false,
+    this.postConstruct,
   });
 
   // used for testing
@@ -107,6 +110,8 @@ class DependencyConfig {
           disposeFunction == other.disposeFunction &&
           scope == other.scope &&
           moduleConfig == other.moduleConfig &&
+          postConstruct == other.postConstruct &&
+          postConstructReturnsSelf == other.postConstructReturnsSelf &&
           orderPosition == other.orderPosition);
 
   @override
@@ -125,6 +130,8 @@ class DependencyConfig {
       disposeFunction.hashCode ^
       moduleConfig.hashCode ^
       orderPosition.hashCode ^
+      postConstruct.hashCode ^
+      postConstructReturnsSelf.hashCode ^
       scope.hashCode;
 
   factory DependencyConfig.fromJson(Map<dynamic, dynamic> json) {
@@ -163,9 +170,11 @@ class DependencyConfig {
       signalsReady: json['signalsReady'],
       environments: json['environments']?.cast<String>(),
       constructorName: json['constructorName'],
+      postConstruct: json['postConstruct'],
       isAsync: json['isAsync'] as bool,
       dependsOn: dependsOn,
       preResolve: json['preResolve'] as bool,
+      postConstructReturnsSelf: json['postConstructReturnsSelf'] as bool,
       moduleConfig: moduleConfig,
       disposeFunction: disposeFunction,
       orderPosition: json['orderPosition'] as int,
@@ -177,6 +186,7 @@ class DependencyConfig {
         'type': type.toJson(),
         'typeImpl': typeImpl.toJson(),
         "isAsync": isAsync,
+        "postConstructReturnsSelf": postConstructReturnsSelf,
         "preResolve": preResolve,
         "injectableType": injectableType,
         if (moduleConfig != null) 'moduleConfig': moduleConfig!.toJson(),
@@ -187,6 +197,7 @@ class DependencyConfig {
         if (instanceName != null) "instanceName": instanceName,
         if (signalsReady != null) "signalsReady": signalsReady,
         if (constructorName != null) "constructorName": constructorName,
+        if (postConstruct != null) "postConstruct": postConstruct,
         "orderPosition": orderPosition,
         if (scope != null) "scope": scope,
       };

@@ -55,7 +55,7 @@ void main() {
         )
       ];
       expect(generate(dep, allDeps: allDeps),
-          'gh.lazySingletonAsync<Demo>(() async  => Demo( await get.getAsync<Storage>()));');
+          'gh.lazySingletonAsync<Demo>(() async  => Demo( await gh.getAsync<Storage>()));');
     });
 
     test("factory generator abstract type != implementation", () {
@@ -94,7 +94,7 @@ void main() {
               )
             ],
           )),
-          'gh.factory<Demo>(() => Demo(get<Storage>()));');
+          'gh.factory<Demo>(() => Demo(gh<Storage>()));');
     });
 
     test("factory generator with async positional dependencies", () {
@@ -121,7 +121,7 @@ void main() {
         )
       ];
       expect(generate(dep, allDeps: allDeps),
-          'gh.factoryAsync<Demo>(() async  => Demo( await get.getAsync<Storage>()));');
+          'gh.factoryAsync<Demo>(() async  => Demo( await gh.getAsync<Storage>()));');
     });
 
     test("factory generator with named dependencies", () {
@@ -139,7 +139,7 @@ void main() {
                   instanceName: "storageImpl")
             ],
           )),
-          "gh.factory<Demo>(() => Demo(storage: get<Storage>(instanceName: 'storageImpl')));");
+          "gh.factory<Demo>(() => Demo(storage: gh<Storage>(instanceName: 'storageImpl')));");
     });
 
     test("factory generator with async named dependencies", () {
@@ -167,7 +167,7 @@ void main() {
         ),
       ];
       expect(generate(dep, allDeps: allDeps),
-          "gh.factoryAsync<Demo>(() async  => Demo(storage:  await get.getAsync<Storage>(instanceName: 'storageImpl')));");
+          "gh.factoryAsync<Demo>(() async  => Demo(storage:  await gh.getAsync<Storage>(instanceName: 'storageImpl')));");
     });
 
     test("factory generator with parameterized type", () {
@@ -187,14 +187,100 @@ void main() {
               )
             ],
           )),
-          "gh.factory<Demo<String>>(() => Demo(storage: get<Storage>()));");
+          "gh.factory<Demo<String>>(() => Demo(storage: gh<Storage>()));");
     });
+  });
+
+  test("factory generator with synchronous postConstruct method (return self: false)", () {
+    expect(
+        generate(DependencyConfig(
+          type: ImportableType(name: 'Demo'),
+          typeImpl: ImportableType(name: 'Demo'),
+          injectableType: InjectableType.factory,
+          postConstruct: 'init',
+          postConstructReturnsSelf: false,
+          dependencies: [
+            InjectedDependency(
+                type: ImportableType(name: 'Storage'),
+                paramName: 'storage',
+                isFactoryParam: false,
+                isPositional: false,
+                instanceName: "storageImpl")
+          ],
+        )),
+        "gh.factory<Demo>(() => Demo(storage: gh<Storage>(instanceName: 'storageImpl'))..init());");
+  });
+
+  test("factory generator with synchronous postConstruct method (return self: true)", () {
+    expect(
+        generate(DependencyConfig(
+          type: ImportableType(name: 'Demo'),
+          typeImpl: ImportableType(name: 'Demo'),
+          injectableType: InjectableType.factory,
+          postConstruct: 'init',
+          postConstructReturnsSelf: true,
+          dependencies: [
+            InjectedDependency(
+                type: ImportableType(name: 'Storage'),
+                paramName: 'storage',
+                isFactoryParam: false,
+                isPositional: false,
+                instanceName: "storageImpl")
+          ],
+        )),
+        "gh.factory<Demo>(() => Demo(storage: gh<Storage>(instanceName: 'storageImpl')).init());");
+  });
+
+  test("factory generator with asynchronous postConstruct method (returns self: true)", () {
+    expect(
+        generate(DependencyConfig(
+          type: ImportableType(name: 'Demo'),
+          typeImpl: ImportableType(name: 'Demo'),
+          injectableType: InjectableType.factory,
+          postConstruct: 'init',
+          postConstructReturnsSelf: true,
+          isAsync: true,
+          dependencies: [
+            InjectedDependency(
+                type: ImportableType(name: 'Storage'),
+                paramName: 'storage',
+                isFactoryParam: false,
+                isPositional: false,
+                instanceName: "storageImpl")
+          ],
+        )),
+        "gh.factoryAsync<Demo>(() => Demo(storage: gh<Storage>(instanceName: 'storageImpl')).init());");
+  });
+
+  test("factory generator with asynchronous postConstruct method (returns self: false)", () {
+    expect(
+        generate(DependencyConfig(
+          type: ImportableType(name: 'Demo'),
+          typeImpl: ImportableType(name: 'Demo'),
+          injectableType: InjectableType.factory,
+          postConstruct: 'init',
+          postConstructReturnsSelf: false,
+          isAsync: true,
+          dependencies: [
+            InjectedDependency(
+                type: ImportableType(name: 'Storage'),
+                paramName: 'storage',
+                isFactoryParam: false,
+                isPositional: false,
+                instanceName: "storageImpl")
+          ],
+        )),
+        'gh.factoryAsync<Demo>(() { final i = Demo(storage: gh<Storage>(instanceName: \'storageImpl\'));\n'
+            'return  i.init().then((_) => i); } );');
   });
 }
 
 String generate(DependencyConfig input, {List<DependencyConfig>? allDeps}) {
-  final generator = LibraryGenerator(
-      dependencies: allDeps ?? [], initializerName: 'initGetIt');
+  final generator = InitMethodGenerator(
+    scopeDependencies: allDeps ?? [],
+    allDependencies: allDeps?.toSet() ?? {},
+    initializerName: 'initGetIt',
+  );
   final statement = generator.buildLazyRegisterFun(input);
   final emitter = DartEmitter(
     allocator: Allocator.none,

@@ -51,6 +51,7 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
 
   ImportableTypeResolverImpl(this.libs);
 
+  @override
   String? resolveImport(Element? element) {
     // return early if source is null or element is a core type
     if (element?.source == null || _isCoreDartType(element)) {
@@ -71,12 +72,12 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
   }
 
   @override
-  ImportableType resolveFunctionType(FunctionType type,
+  ImportableType resolveFunctionType(FunctionType function,
       [ExecutableElement? executableElement]) {
     final functionElement =
-        executableElement ?? type.element2 ?? type.alias?.element;
+        executableElement ?? function.element2 ?? function.alias?.element;
     if (functionElement == null) {
-      throw 'Can not resolve function type \nTry using an alias e.g typedef MyFunction = ${type.getDisplayString(withNullability: false)};';
+      throw 'Can not resolve function type \nTry using an alias e.g typedef MyFunction = ${function.getDisplayString(withNullability: false)};';
     }
     final displayName = functionElement.displayName;
     var functionName = displayName;
@@ -92,7 +93,7 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
     return ImportableType(
       name: functionName,
       import: resolveImport(elementToImport),
-      isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
+      isNullable: function.nullabilitySuffix == NullabilitySuffix.question,
     );
   }
 
