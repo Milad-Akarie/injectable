@@ -27,7 +27,7 @@ align="center" src="https://img.shields.io/pub/v/injectable.svg?" alt="pub versi
 - [Using named factories and static create functions](#Using-named-factories-and-static-create-functions)
 - [Registering third party types](#Registering-third-party-types)
 - [Auto registering](#auto-registering)
-- [Manual  order](#manual-order)
+- [Manual order](#manual-order)
 - [Using scopes](#using-scopes)
 - [Including microPackages and external modules](#including-micropackages-and-external-modules)
 
