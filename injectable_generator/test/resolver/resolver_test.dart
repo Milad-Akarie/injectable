@@ -228,7 +228,8 @@ void main() async {
     });
 
     test('Simple Factory with inline order', () {
-      var simpleFactoryType = resolvedInput!.library.findType('FactoryWithInlineOrder')!;
+      var simpleFactoryType =
+          resolvedInput!.library.findType('FactoryWithInlineOrder')!;
       final type = ImportableType(
         name: 'FactoryWithInlineOrder',
         import: 'source.dart',
@@ -245,7 +246,8 @@ void main() async {
     });
 
     test('Simple Factory with annotation order', () {
-      var simpleFactoryType = resolvedInput!.library.findType('FactoryWithAnnotationOrder')!;
+      var simpleFactoryType =
+          resolvedInput!.library.findType('FactoryWithAnnotationOrder')!;
       final type = ImportableType(
         name: 'FactoryWithAnnotationOrder',
         import: 'source.dart',
@@ -261,40 +263,38 @@ void main() async {
       );
     });
 
-
     test('Simple Factory with inline scope', () {
-      var simpleFactoryType = resolvedInput!.library.findType('FactoryWithInlineScope')!;
+      var simpleFactoryType =
+          resolvedInput!.library.findType('FactoryWithInlineScope')!;
       final type = ImportableType(
         name: 'FactoryWithInlineScope',
         import: 'source.dart',
       );
       expect(
         DependencyConfig(
-          type: type,
-          typeImpl: type,
-          injectableType: InjectableType.factory,
-          scope: 'scope'
-        ),
+            type: type,
+            typeImpl: type,
+            injectableType: InjectableType.factory,
+            scope: 'scope'),
         equals(dependencyResolver!.resolve(simpleFactoryType)),
       );
     });
 
     test('Simple Factory with annotation scope', () {
-      var simpleFactoryType = resolvedInput!.library.findType('FactoryWithAnnotationScope')!;
+      var simpleFactoryType =
+          resolvedInput!.library.findType('FactoryWithAnnotationScope')!;
       final type = ImportableType(
         name: 'FactoryWithAnnotationScope',
         import: 'source.dart',
       );
       expect(
         DependencyConfig(
-          type: type,
-          typeImpl: type,
-          injectableType: InjectableType.factory,
-          scope: 'scope'
-        ),
+            type: type,
+            typeImpl: type,
+            injectableType: InjectableType.factory,
+            scope: 'scope'),
         equals(dependencyResolver!.resolve(simpleFactoryType)),
       );
     });
-
   });
 }

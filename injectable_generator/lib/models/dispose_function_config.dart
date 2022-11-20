@@ -66,8 +66,7 @@ class DisposeFunctionConfig {
     return {
       'isInstance': isInstance,
       'name': name,
-      if (importableType != null)
-        'importableType': importableType!.toJson(),
+      if (importableType != null) 'importableType': importableType!.toJson(),
     } as Map<String, dynamic>;
   }
 }

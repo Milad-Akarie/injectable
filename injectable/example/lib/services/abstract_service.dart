@@ -63,7 +63,7 @@ class LazyServiceImpl extends IService {
 }
 
 @singleton
- class PostConstructableService {
+class PostConstructableService {
   final IService service;
 
   PostConstructableService(this.service);

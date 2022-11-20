@@ -19,17 +19,26 @@ import '../utils.dart';
 
 class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   @override
-  dynamic generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) async {
-    final generateForDir = annotation.read('generateForDir').listValue.map((e) => e.toStringValue());
+  dynamic generateForAnnotatedElement(
+      Element element, ConstantReader annotation, BuildStep buildStep) async {
+    final generateForDir = annotation
+        .read('generateForDir')
+        .listValue
+        .map((e) => e.toStringValue());
 
     final usesNullSafety = annotation.read('usesNullSafety').boolValue;
     final isMicroPackage = annotation.read('_isMicroPackage').boolValue;
-    final throwOnMissingDependencies = annotation.read('throwOnMissingDependencies').boolValue;
+    final throwOnMissingDependencies =
+        annotation.read('throwOnMissingDependencies').boolValue;
     var targetFile = element.source?.uri;
-    var preferRelativeImports = annotation.read("preferRelativeImports").boolValue;
-    var includeMicroPackages = annotation.read("includeMicroPackages").boolValue;
+    var preferRelativeImports =
+        annotation.read("preferRelativeImports").boolValue;
+    var includeMicroPackages =
+        annotation.read("includeMicroPackages").boolValue;
 
-    final dirPattern = generateForDir.length > 1 ? '{${generateForDir.join(',')}}' : '${generateForDir.first}';
+    final dirPattern = generateForDir.length > 1
+        ? '{${generateForDir.join(',')}}'
+        : '${generateForDir.first}';
 
     final injectableConfigFiles = Glob("$dirPattern/**.injectable.json");
 
@@ -47,28 +56,33 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final initializerName = annotation.read('initializerName').stringValue;
     final asExtension = annotation.read('asExtension').boolValue;
 
-    final typeResolver = ImportableTypeResolverImpl(await buildStep.resolver.libraries.toList());
+    final typeResolver =
+        ImportableTypeResolverImpl(await buildStep.resolver.libraries.toList());
 
-    final ignoredTypes = annotation.read('ignoreUnregisteredTypes').listValue.map(
-          (e) => typeResolver.resolveType(e.toTypeValue()!),
-        );
-
-    final microPackageModules = annotation.peek('externalPackageModules')?.listValue.map(
-          (e) {
-            final typeValue = e.toTypeValue()!;
-            throwIf(
-              typeValue.element2 is! ClassElement ||
-                  !TypeChecker.fromRuntime(MicroPackageModule).isSuperOf(typeValue.element2!),
-              'ExternalPackageModule must be a class that extends MicroPackageModule',
-              element: element,
+    final ignoredTypes =
+        annotation.read('ignoreUnregisteredTypes').listValue.map(
+              (e) => typeResolver.resolveType(e.toTypeValue()!),
             );
-            return typeResolver.resolveType(typeValue);
-          },
-        ).toSet() ??
-        <ImportableType>{};
+
+    final microPackageModules =
+        annotation.peek('externalPackageModules')?.listValue.map(
+              (e) {
+                final typeValue = e.toTypeValue()!;
+                throwIf(
+                  typeValue.element2 is! ClassElement ||
+                      !TypeChecker.fromRuntime(MicroPackageModule)
+                          .isSuperOf(typeValue.element2!),
+                  'ExternalPackageModule must be a class that extends MicroPackageModule',
+                  element: element,
+                );
+                return typeResolver.resolveType(typeValue);
+              },
+            ).toSet() ??
+            <ImportableType>{};
 
     if (!isMicroPackage && includeMicroPackages) {
-      await for (final match in Glob('**.module.dart', recursive: true).list()) {
+      await for (final match
+          in Glob('**.module.dart', recursive: true).list()) {
         final commentAnnotation = File(match.path).readAsLinesSync().first;
         if (commentAnnotation.contains('@GeneratedMicroModule')) {
           final segments = commentAnnotation.split(';');
@@ -124,7 +138,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       useNullSafetySyntax: usesNullSafety,
     );
 
-    final output = DartFormatter().format(generatedLib.accept(emitter).toString());
+    final output =
+        DartFormatter().format(generatedLib.accept(emitter).toString());
 
     if (isMicroPackage) {
       final outputId = buildStep.inputId.changeExtension('.module.dart');
@@ -149,7 +164,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   ) {
     final messages = [];
     for (final dep in deps) {
-      for (var iDep in dep.dependencies.where((d) => !d.isFactoryParam && d.instanceName != kEnvironmentsName)) {
+      for (var iDep in dep.dependencies.where(
+          (d) => !d.isFactoryParam && d.instanceName != kEnvironmentsName)) {
         if ((ignoredTypes.contains(iDep.type) ||
             (iDep.type.import == null ||
                 ignoredTypesInPackages.any(
@@ -164,9 +180,13 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
           messages.add(
               "[${dep.typeImpl}] depends on unregistered type [${iDep.type}] ${iDep.type.import == null ? '' : 'from ${iDep.type.import}'}");
         } else {
-          final availableEnvs = possibleDeps.map((e) => e.environments).reduce((a, b) => a + b).toSet();
+          final availableEnvs = possibleDeps
+              .map((e) => e.environments)
+              .reduce((a, b) => a + b)
+              .toSet();
           if (availableEnvs.isNotEmpty) {
-            final missingEnvs = dep.environments.toSet().difference(availableEnvs);
+            final missingEnvs =
+                dep.environments.toSet().difference(availableEnvs);
             if (missingEnvs.isNotEmpty) {
               messages.add(
                 '[${dep.typeImpl}] ${dep.environments.toSet()} depends on Type [${iDep.type}] ${iDep.type.import == null ? '' : 'from ${iDep.type.import}'} \n which is not available under environment keys $missingEnvs',
@@ -181,20 +201,25 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       messages.add(
           '\nDid you forget to annotate the above class(s) or their implementation with @injectable? \nor add the right environment keys?');
       throwIf(throwOnMissingDependencies, messages.join('\n'));
-      printBoxed(messages.join('\n'), header: "Missing dependencies in ${targetFile?.path}\n");
+      printBoxed(messages.join('\n'),
+          header: "Missing dependencies in ${targetFile?.path}\n");
     }
   }
 
   void _validateDuplicateDependencies(List<DependencyConfig> deps) {
     final validatedDeps = <DependencyConfig>[];
     for (var dep in deps) {
-      var registered = validatedDeps.where((elm) => elm.type == dep.type && elm.instanceName == dep.instanceName);
+      var registered = validatedDeps.where((elm) =>
+          elm.type == dep.type && elm.instanceName == dep.instanceName);
       if (registered.isEmpty) {
         validatedDeps.add(dep);
       } else {
-        Set<String> registeredEnvironments = registered.fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
+        Set<String> registeredEnvironments = registered
+            .fold(<String>{}, (prev, elm) => prev..addAll(elm.environments));
 
-        if (registeredEnvironments.isEmpty || dep.environments.any((env) => registeredEnvironments.contains(env))) {
+        if (registeredEnvironments.isEmpty ||
+            dep.environments
+                .any((env) => registeredEnvironments.contains(env))) {
           throwBoxed(
             '${dep.typeImpl} [${dep.type}] env: ${dep.environments} \nis registered more than once under the same environment',
           );

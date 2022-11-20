@@ -3,7 +3,6 @@ import 'package:injectable/injectable.dart';
 
 @module
 abstract class RegisterModule {
-
   @Injectable(as: Repo)
   RepoImpl get repo;
 
