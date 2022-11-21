@@ -55,8 +55,8 @@ Fix some readme typos
 - Add support for get_it ^5.0
 - Fix analyzer compatibility issues
 ## [1.0.4]
-- Add option to customize the initilizer function name
-- Add option to generate the initilizer function as an extension
+- Add option to customize the initializer function name
+- Add option to generate the initializer function as an extension
 - Change initializer functions returns the passed get_it instance instead of void
 - Add Advanced environment filter that can be extended and customized
 - Fix Injectable generator not handling multiple instances of generic types #107
