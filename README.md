@@ -59,7 +59,7 @@ final getIt = GetIt.instance;
   preferRelativeImports: true, // default
   asExtension: false, // default
 )
-void configureDependencies() => getIt.init(getIt);
+void configureDependencies() => getIt.init();
 ```
 
 Note: you can tell injectable what directories to generate for using the generateForDir property inside of @injectableInit.  
@@ -67,7 +67,7 @@ The following example will only process files inside of the test folder.
 
 ```dart
 @InjectableInit(generateForDir: ['test'])
-void configureDependencies() => getIt.init(getIt);
+void configureDependencies() => getIt.init();
 ```
 
 4. Call configureDependencies() in your main func before running the App.
