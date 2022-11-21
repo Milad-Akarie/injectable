@@ -9,7 +9,7 @@ class InjectableInit {
   final bool preferRelativeImports;
 
   /// generated initializer name
-  /// defaults to $initGetIt
+  /// defaults to $init
   final String initializerName;
 
   /// if true the init function

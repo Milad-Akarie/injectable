@@ -137,7 +137,7 @@ String generate(DependencyConfig input, {List<DependencyConfig>? allDeps}) {
   final generator = InitMethodGenerator(
     scopeDependencies: allDeps ?? [],
     allDependencies: allDeps?.toSet() ?? {},
-    initializerName: 'initGetIt',
+    initializerName: 'init',
   );
   final statement = generator.buildLazyRegisterFun(input);
   final emitter = DartEmitter(
