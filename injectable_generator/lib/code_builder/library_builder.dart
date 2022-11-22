@@ -16,7 +16,7 @@ const _ghRefer = Reference('GetItHelper', _injectableImport);
 const _ghLocalRefer = Reference('gh');
 
 mixin SharedGeneratorCode {
-  Set<DependencyConfig> get _dependencies;
+  Set<DependencyConfig> get dependencies;
 
   Uri? get targetFile;
 
@@ -65,7 +65,7 @@ mixin SharedGeneratorCode {
     }
     getAsyncReferName ??= asExtension ? 'getAsync' : 'gh.getAsync';
     getReferName ??= 'gh';
-    final isAsync = isAsyncOrHasAsyncDependency(iDep, _dependencies);
+    final isAsync = isAsyncOrHasAsyncDependency(iDep, dependencies);
     final expression =
         refer(isAsync ? getAsyncReferName : getReferName).call([], {
       if (iDep.instanceName != null)
@@ -79,7 +79,7 @@ mixin SharedGeneratorCode {
 
 class LibraryGenerator with SharedGeneratorCode {
   @override
-  late Set<DependencyConfig> _dependencies;
+  late Set<DependencyConfig> dependencies;
   @override
   final Uri? targetFile;
   @override
@@ -89,22 +89,20 @@ class LibraryGenerator with SharedGeneratorCode {
   final Set<ImportableType> microPackagesModules;
 
   LibraryGenerator({
-    required List<DependencyConfig> dependencies,
+    required this.dependencies,
     required this.initializerName,
     this.targetFile,
     this.asExtension = false,
     this.microPackageName,
     this.microPackagesModules = const {},
-  }) {
-    _dependencies = sortDependencies(dependencies);
-  }
+  });
 
   Library generate() {
     // all environment keys used
     final environments = <String>{};
     // all register modules
     final modules = <ModuleConfig>{};
-    for (final dep in _dependencies) {
+    for (final dep in dependencies) {
       environments.addAll(dep.environments);
       if (dep.moduleConfig != null) {
         modules.add(dep.moduleConfig!);
@@ -112,7 +110,7 @@ class LibraryGenerator with SharedGeneratorCode {
     }
 
     final scopes =
-        groupBy<DependencyConfig, String?>(_dependencies, (d) => d.scope);
+        groupBy<DependencyConfig, String?>(dependencies, (d) => d.scope);
     final isMicroPackage = microPackageName != null;
 
     throwIf(
@@ -128,7 +126,7 @@ class LibraryGenerator with SharedGeneratorCode {
         initMethods.add(
           InitMethodGenerator(
             scopeDependencies: scopeDeps,
-            allDependencies: _dependencies,
+            allDependencies: dependencies,
             initializerName:
                 isRootScope ? initializerName : 'init${capitalize(name!)}Scope',
             asExtension: asExtension,
@@ -188,7 +186,7 @@ class LibraryGenerator with SharedGeneratorCode {
             ...modules.map(
               (module) => _buildModule(
                 module,
-                _dependencies.where((e) => e.moduleConfig == module),
+                dependencies.where((e) => e.moduleConfig == module),
               ),
             )
           ],
@@ -242,7 +240,7 @@ class LibraryGenerator with SharedGeneratorCode {
 
 class InitMethodGenerator with SharedGeneratorCode {
   @override
-  late Set<DependencyConfig> _dependencies;
+  late Set<DependencyConfig> dependencies;
   @override
   final Uri? targetFile;
   @override
@@ -265,17 +263,17 @@ class InitMethodGenerator with SharedGeneratorCode {
     this.microPackagesModules = const {},
   }) {
     assert(microPackagesModules.isEmpty || scopeName == null);
-    _dependencies = sortDependencies(scopeDependencies);
+    dependencies = sortDependencies(scopeDependencies);
   }
 
   Method generate() {
     // if true use an awaited initializer
     final useAsyncModifier = microPackagesModules.isNotEmpty ||
-        hasPreResolvedDependencies(_dependencies);
+        hasPreResolvedDependencies(dependencies);
 
     // all register modules
     final modules = <ModuleConfig>{};
-    for (var dep in _dependencies) {
+    for (var dep in dependencies) {
       if (dep.moduleConfig != null) {
         modules.add(dep.moduleConfig!);
       }
@@ -300,7 +298,7 @@ class InitMethodGenerator with SharedGeneratorCode {
           ])
           .assignFinal(toCamelCase(module.type.name))
           .statement),
-      ..._dependencies.map((dep) {
+      ...dependencies.map((dep) {
         if (dep.injectableType == InjectableType.singleton) {
           return buildSingletonRegisterFun(dep);
         } else {
@@ -424,7 +422,7 @@ class InitMethodGenerator with SharedGeneratorCode {
   Code buildLazyRegisterFun(DependencyConfig dep) {
     String? funcReferName;
     Map<String, Reference> factoryParams = {};
-    final hasAsyncDep = hasAsyncDependency(dep, _dependencies);
+    final hasAsyncDep = hasAsyncDependency(dep, dependencies);
     final isOrHasAsyncDep = dep.isAsync || hasAsyncDep;
 
     if (dep.injectableType == InjectableType.factory) {
@@ -527,7 +525,7 @@ class InitMethodGenerator with SharedGeneratorCode {
   Code buildSingletonRegisterFun(DependencyConfig dep) {
     String funcReferName;
     var asFactory = true;
-    final hasAsyncDep = hasAsyncDependency(dep, _dependencies);
+    final hasAsyncDep = hasAsyncDependency(dep, dependencies);
     if (dep.isAsync || hasAsyncDep) {
       funcReferName = 'singletonAsync';
     } else if (dep.dependsOn.isNotEmpty) {

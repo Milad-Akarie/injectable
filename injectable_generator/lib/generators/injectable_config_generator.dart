@@ -123,7 +123,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     _validateDuplicateDependencies(deps);
 
     final generator = LibraryGenerator(
-      dependencies: deps,
+      dependencies: Set.of(deps),
       targetFile: preferRelativeImports ? targetFile : null,
       initializerName: initializerName,
       asExtension: asExtension,

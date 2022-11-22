@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.0.1] 
+- Fix registration order #324
 ## [2.0.0] [Minor breaking changes]
 - Add support for micro packages
 - Add support for external package modules
