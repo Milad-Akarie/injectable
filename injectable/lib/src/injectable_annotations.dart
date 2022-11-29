@@ -49,7 +49,18 @@ class InjectableInit {
   /// a List of external package modules to be registered
   /// in the default package initializer
   /// classes passed here must extend [MicroPackageModule]
+  @Deprecated('use externalPackageModulesBefore instead')
   final List<Type>? externalPackageModules;
+
+  /// a List of external package modules to be registered
+  /// in the default package initializer before root dependencies
+  /// classes passed here must extend [MicroPackageModule]
+  final List<ExternalModule>? externalPackageModulesBefore;
+
+  /// a List of external package modules to be registered
+  /// in the default package initializer after root dependencies
+  /// classes passed here must extend [MicroPackageModule]
+  final List<ExternalModule>? externalPackageModulesAfter;
 
   /// default constructor
   const InjectableInit({
@@ -63,6 +74,8 @@ class InjectableInit {
     this.externalPackageModules,
     this.throwOnMissingDependencies = false,
     this.includeMicroPackages = true,
+    this.externalPackageModulesAfter,
+    this.externalPackageModulesBefore,
   }) : _isMicroPackage = false;
 
   /// default constructor
@@ -71,6 +84,8 @@ class InjectableInit {
     this.preferRelativeImports = false,
     this.ignoreUnregisteredTypes = const [],
     this.externalPackageModules,
+    this.externalPackageModulesAfter,
+    this.externalPackageModulesBefore,
     this.throwOnMissingDependencies = false,
     this.ignoreUnregisteredTypesInPackages = const [],
     this.usesNullSafety = true,
@@ -332,4 +347,11 @@ class Scope {
 
   /// default constructor
   const Scope(this.name);
+}
+
+class ExternalModule {
+  final Type module;
+  final String? scope;
+
+  const ExternalModule(this.module, {this.scope});
 }

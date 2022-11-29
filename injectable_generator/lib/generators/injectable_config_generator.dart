@@ -11,6 +11,7 @@ import 'package:injectable/injectable.dart';
 import 'package:injectable_generator/code_builder/builder_utils.dart';
 import 'package:injectable_generator/code_builder/library_builder.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
+import 'package:injectable_generator/models/external_module_config.dart';
 import 'package:injectable_generator/models/importable_type.dart';
 import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
 import 'package:source_gen/source_gen.dart';
@@ -33,6 +34,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     var targetFile = element.source?.uri;
     var preferRelativeImports =
         annotation.read("preferRelativeImports").boolValue;
+
     var includeMicroPackages =
         annotation.read("includeMicroPackages").boolValue;
 
@@ -64,22 +66,28 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
               (e) => typeResolver.resolveType(e.toTypeValue()!),
             );
 
-    final microPackageModules =
-        annotation.peek('externalPackageModules')?.listValue.map(
-              (e) {
-                final typeValue = e.toTypeValue()!;
-                throwIf(
-                  typeValue.element2 is! ClassElement ||
-                      !TypeChecker.fromRuntime(MicroPackageModule)
-                          .isSuperOf(typeValue.element2!),
-                  'ExternalPackageModule must be a class that extends MicroPackageModule',
-                  element: element,
-                );
-                return typeResolver.resolveType(typeValue);
-              },
-            ).toSet() ??
-            <ImportableType>{};
+    final microPackageModulesBefore = _getMicroPackageModules(
+      annotation.peek('externalPackageModulesBefore'),
+      typeResolver,
+    );
 
+    // remove after deprecation period
+    if (microPackageModulesBefore.isEmpty) {
+      microPackageModulesBefore.addAll(
+        _getMicroPackageModulesMapped(
+          annotation.peek('externalPackageModules'),
+          typeResolver,
+        ),
+      );
+    }
+
+    final microPackageModulesAfter = _getMicroPackageModules(
+      annotation.peek('externalPackageModulesAfter'),
+      typeResolver,
+    );
+
+    final microPackagesModules =
+        microPackageModulesBefore.union(microPackageModulesAfter);
     if (!isMicroPackage && includeMicroPackages) {
       await for (final match
           in Glob('**.module.dart', recursive: true).list()) {
@@ -87,12 +95,16 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
         if (commentAnnotation.contains('@GeneratedMicroModule')) {
           final segments = commentAnnotation.split(';');
           if (segments.length == 3) {
-            microPackageModules.add(
+            final externalModule = ExternalModuleConfig(
               ImportableType(
                 name: segments[1],
                 import: segments[2],
               ),
             );
+            if (!microPackagesModules
+                .any((e) => externalModule.module == e.module)) {
+              microPackageModulesBefore.add(externalModule);
+            }
           }
         }
       }
@@ -108,8 +120,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
 
     // we want to ignore unregistered types in microPackages
     // because the micro module should handle them
-    for (final pckModule in microPackageModules) {
-      final packageName = Uri.parse(pckModule.import!).scheme;
+    for (final pckModule in microPackagesModules) {
+      final packageName = Uri.parse(pckModule.module.import!).scheme;
       ignoreTypesInPackages.add(packageName);
     }
 
@@ -128,7 +140,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       initializerName: initializerName,
       asExtension: asExtension,
       microPackageName: isMicroPackage ? buildStep.inputId.package : null,
-      microPackagesModules: microPackageModules,
+      microPackagesModulesBefore: microPackageModulesBefore,
+      microPackagesModulesAfter: microPackageModulesAfter,
     );
 
     final generatedLib = generator.generate();
@@ -153,6 +166,47 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       );
     }
     return output;
+  }
+
+  Set<ExternalModuleConfig> _getMicroPackageModules(
+    ConstantReader? constList,
+    ImportableTypeResolverImpl typeResolver,
+  ) {
+    return constList?.listValue.map(
+          (e) {
+            final reader = ConstantReader(e);
+            final typeValue = reader.read('module').typeValue;
+            final scope = reader.peek('scope')?.stringValue;
+            throwIf(
+              typeValue.element2 is! ClassElement ||
+                  !TypeChecker.fromRuntime(MicroPackageModule)
+                      .isSuperOf(typeValue.element2!),
+              'ExternalPackageModule must be a class that extends MicroPackageModule',
+            );
+            return ExternalModuleConfig(
+                typeResolver.resolveType(typeValue), scope);
+          },
+        ).toSet() ??
+        <ExternalModuleConfig>{};
+  }
+
+  Set<ExternalModuleConfig> _getMicroPackageModulesMapped(
+    ConstantReader? constList,
+    ImportableTypeResolverImpl typeResolver,
+  ) {
+    return constList?.listValue.map(
+          (e) {
+            final typeValue = e.toTypeValue()!;
+            throwIf(
+              typeValue.element2 is! ClassElement ||
+                  !TypeChecker.fromRuntime(MicroPackageModule)
+                      .isSuperOf(typeValue.element2!),
+              'ExternalPackageModule must be a class that extends MicroPackageModule',
+            );
+            return ExternalModuleConfig(typeResolver.resolveType(typeValue));
+          },
+        ).toSet() ??
+        <ExternalModuleConfig>{};
   }
 
   void _reportMissingDependencies(

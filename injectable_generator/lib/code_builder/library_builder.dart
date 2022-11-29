@@ -2,7 +2,7 @@ import 'package:code_builder/code_builder.dart';
 import 'package:injectable_generator/code_builder/builder_utils.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
 import 'package:injectable_generator/models/dispose_function_config.dart';
-import 'package:injectable_generator/models/importable_type.dart';
+import 'package:injectable_generator/models/external_module_config.dart';
 import 'package:injectable_generator/models/injected_dependency.dart';
 import 'package:injectable_generator/models/module_config.dart';
 import 'package:injectable_generator/utils.dart';
@@ -86,7 +86,8 @@ class LibraryGenerator with SharedGeneratorCode {
   final bool asExtension;
   final String initializerName;
   final String? microPackageName;
-  final Set<ImportableType> microPackagesModules;
+  final Set<ExternalModuleConfig> microPackagesModulesBefore,
+      microPackagesModulesAfter;
 
   LibraryGenerator({
     required this.dependencies,
@@ -94,7 +95,8 @@ class LibraryGenerator with SharedGeneratorCode {
     this.targetFile,
     this.asExtension = false,
     this.microPackageName,
-    this.microPackagesModules = const {},
+    this.microPackagesModulesBefore = const {},
+    this.microPackagesModulesAfter = const {},
   });
 
   Library generate() {
@@ -109,33 +111,47 @@ class LibraryGenerator with SharedGeneratorCode {
       }
     }
 
-    final scopes =
+    final scopedDeps =
         groupBy<DependencyConfig, String?>(dependencies, (d) => d.scope);
+    final scopedBeforeExternalModules = groupBy<ExternalModuleConfig, String?>(
+        microPackagesModulesBefore, (d) => d.scope);
+    final scopedAfterExternalModules = groupBy<ExternalModuleConfig, String?>(
+        microPackagesModulesAfter, (d) => d.scope);
+
     final isMicroPackage = microPackageName != null;
 
     throwIf(
-      isMicroPackage && scopes.length > 1,
+      isMicroPackage && scopedDeps.length > 1,
       'Scopes are not supported in micro package modules!',
     );
 
+    if (scopedDeps.isEmpty) {
+      scopedDeps[null] = [];
+    }
+    final allScopeKeys = {
+      ...scopedDeps.keys,
+      ...scopedBeforeExternalModules.keys,
+      ...scopedAfterExternalModules.keys,
+    };
     final initMethods = <Method>[];
-    for (final name in scopes.keys) {
-      final scopeDeps = scopes[name];
-      if (scopeDeps != null) {
-        final isRootScope = name == null;
-        initMethods.add(
-          InitMethodGenerator(
-            scopeDependencies: scopeDeps,
-            allDependencies: dependencies,
-            initializerName:
-                isRootScope ? initializerName : 'init${capitalize(name!)}Scope',
-            asExtension: asExtension,
-            scopeName: name,
-            isMicroPackage: isMicroPackage,
-            microPackagesModules: isRootScope ? microPackagesModules : const {},
-          ).generate(),
-        );
-      }
+    for (final scope in allScopeKeys) {
+      final scopeDeps = scopedDeps[scope];
+      final isRootScope = scope == null;
+      initMethods.add(
+        InitMethodGenerator(
+          scopeDependencies: scopeDeps ?? [],
+          allDependencies: dependencies,
+          initializerName:
+              isRootScope ? initializerName : 'init${capitalize(scope!)}Scope',
+          asExtension: asExtension,
+          scopeName: scope,
+          isMicroPackage: isMicroPackage,
+          microPackagesModulesBefore:
+              scopedBeforeExternalModules[scope]?.toSet() ?? const {},
+          microPackagesModulesAfter:
+              scopedAfterExternalModules[scope]?.toSet() ?? const {},
+        ).generate(),
+      );
     }
 
     return Library(
@@ -250,7 +266,8 @@ class InitMethodGenerator with SharedGeneratorCode {
   final String initializerName;
   final String? scopeName;
   final bool isMicroPackage;
-  final Set<ImportableType> microPackagesModules;
+  final Set<ExternalModuleConfig> microPackagesModulesBefore,
+      microPackagesModulesAfter;
 
   InitMethodGenerator({
     required List<DependencyConfig> scopeDependencies,
@@ -260,15 +277,17 @@ class InitMethodGenerator with SharedGeneratorCode {
     this.asExtension = false,
     this.scopeName,
     this.isMicroPackage = false,
-    this.microPackagesModules = const {},
+    this.microPackagesModulesBefore = const {},
+    this.microPackagesModulesAfter = const {},
   }) {
-    assert(microPackagesModules.isEmpty || scopeName == null);
+    assert(microPackagesModulesBefore.isEmpty || scopeName == null);
     dependencies = sortDependencies(scopeDependencies);
   }
 
   Method generate() {
     // if true use an awaited initializer
-    final useAsyncModifier = microPackagesModules.isNotEmpty ||
+    final useAsyncModifier = microPackagesModulesBefore.isNotEmpty ||
+        microPackagesModulesAfter.isNotEmpty ||
         hasPreResolvedDependencies(dependencies);
 
     // all register modules
@@ -282,7 +301,7 @@ class InitMethodGenerator with SharedGeneratorCode {
     final getInstanceRefer = refer(asExtension ? 'this' : 'getIt');
 
     final ghStatements = [
-      for (final pckModule in microPackagesModules)
+      for (final pckModule in microPackagesModulesBefore.map((e) => e.module))
         refer(pckModule.name, pckModule.import)
             .newInstance(const [])
             .property('init')
@@ -305,6 +324,13 @@ class InitMethodGenerator with SharedGeneratorCode {
           return buildLazyRegisterFun(dep);
         }
       }),
+      for (final pckModule in microPackagesModulesAfter.map((e) => e.module))
+        refer(pckModule.name, pckModule.import)
+            .newInstance(const [])
+            .property('init')
+            .call([_ghLocalRefer])
+            .awaited
+            .statement,
     ];
 
     final Reference returnRefer;

@@ -1,4 +1,7 @@
 # ChangeLog
+## [2.1.0]
+- Add support for micro package modules order [before,after]
+- Add support for micro package modules scopes
 ## [2.0.1] 
 - Fix registration order #324
 ## [2.0.0] [Minor breaking changes]
