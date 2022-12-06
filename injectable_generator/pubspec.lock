@@ -226,12 +226,12 @@ packages:
     source: hosted
     version: "4.0.0"
   injectable:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
-      path: "../injectable"
-      relative: true
-    source: path
-    version: "2.0.1"
+      name: injectable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   io:
     dependency: transitive
     description:
@@ -337,6 +337,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  recase:
+    dependency: "direct main"
+    description:
+      name: recase
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.1.0"
   shelf:
     dependency: transitive
     description:

@@ -16,6 +16,7 @@ dependencies:
   dart_style: ^2.0.3
   injectable: ^2.1.0
   collection: ^1.15.0
+  recase: ^4.1.0
 dev_dependencies:
   build_runner: ^2.1.2
   build_test: ^2.1.3

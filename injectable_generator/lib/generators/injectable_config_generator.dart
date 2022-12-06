@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:glob/list_local_fs.dart';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:glob/glob.dart';
+import 'package:glob/list_local_fs.dart';
 import 'package:injectable/injectable.dart';
 import 'package:injectable_generator/code_builder/builder_utils.dart';
 import 'package:injectable_generator/code_builder/library_builder.dart';
@@ -14,6 +14,7 @@ import 'package:injectable_generator/models/dependency_config.dart';
 import 'package:injectable_generator/models/external_module_config.dart';
 import 'package:injectable_generator/models/importable_type.dart';
 import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
+import 'package:recase/recase.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../utils.dart';
@@ -139,7 +140,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       targetFile: preferRelativeImports ? targetFile : null,
       initializerName: initializerName,
       asExtension: asExtension,
-      microPackageName: isMicroPackage ? buildStep.inputId.package : null,
+      microPackageName:
+          isMicroPackage ? buildStep.inputId.package.pascalCase : null,
       microPackagesModulesBefore: microPackageModulesBefore,
       microPackagesModulesAfter: microPackageModulesAfter,
     );
