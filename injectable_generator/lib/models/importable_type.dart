@@ -5,6 +5,7 @@ class ImportableType {
   final String name;
   final bool isNullable;
   final List<ImportableType> typeArguments;
+  final Set<String>? otherImports;
 
   String get identity => "$import#$name";
 
@@ -13,7 +14,10 @@ class ImportableType {
     this.import,
     this.isNullable = false,
     this.typeArguments = const [],
+    this.otherImports,
   });
+
+  Set<String?> get allImports => {import, ...?otherImports};
 
   @override
   String toString() {
@@ -29,14 +33,14 @@ class ImportableType {
       identical(this, other) ||
       (other is ImportableType &&
           runtimeType == other.runtimeType &&
-          import == other.import &&
+          allImports.intersection(other.allImports).isNotEmpty &&
           name == other.name &&
           isNullable == other.isNullable &&
           ListEquality().equals(typeArguments, other.typeArguments));
 
   @override
   int get hashCode =>
-      import.hashCode ^
+      SetEquality().hash(allImports) ^
       name.hashCode ^
       isNullable.hashCode ^
       ListEquality().hash(typeArguments);
@@ -52,6 +56,8 @@ class ImportableType {
       import: json['import'],
       name: json['name'],
       isNullable: json['isNullable'],
+      otherImports:
+          (json['otherImports'] as List<dynamic>?)?.toSet().cast<String>(),
       typeArguments: typeArguments,
     );
   }
@@ -64,6 +70,8 @@ class ImportableType {
       'isNullable': isNullable,
       if (typeArguments.isNotEmpty)
         "typeArguments": typeArguments.map((v) => v.toJson()).toList(),
+      if (otherImports?.isNotEmpty == true)
+        "otherImports": otherImports?.toList(),
     } as Map<String, dynamic>;
   }
 }

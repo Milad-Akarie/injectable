@@ -15,8 +15,8 @@ class MockTypeResolver extends ImportableTypeResolverImpl {
   MockTypeResolver() : super([]);
 
   @override
-  String? resolveImport(Element? element) {
-    return 'source.dart';
+  Set<String> resolveImports(Element? element) {
+    return {'source.dart'};
   }
 }
 

@@ -7,21 +7,12 @@ import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
 
 Set<DependencyConfig> sortDependencies(List<DependencyConfig> deps) {
   // sort dependencies alphabetically
-  deps.sort((a, b) => a.type.name.compareTo(b.type.name));
+  deps.sortBy((e) => e.type.name);
   // sort dependencies by their register order
   final Set<DependencyConfig> sorted = {};
   _sortByDependents(deps.toSet(), sorted);
   // sort dependencies by their orderPosition
-  final orderSorted = sorted.toList()..sort(_sortDependencyConfigByOrder);
-  return orderSorted.toSet();
-}
-
-int _sortDependencyConfigByOrder(
-  DependencyConfig current,
-  DependencyConfig next,
-) {
-  if (next.orderPosition == current.orderPosition) return 0;
-  return next.orderPosition > current.orderPosition ? -1 : 1;
+  return sorted.sortedBy<num>((e) => e.orderPosition).toSet();
 }
 
 void _sortByDependents(

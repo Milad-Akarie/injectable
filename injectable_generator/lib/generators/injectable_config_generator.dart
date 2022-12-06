@@ -161,7 +161,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       return buildStep.writeAsString(
         outputId,
         [
-          '//@GeneratedMicroModule;${capitalize(buildStep.inputId.package)}PackageModule;${outputId.uri}',
+          '//@GeneratedMicroModule;${capitalize(buildStep.inputId.package.pascalCase)}PackageModule;${outputId.uri}',
           defaultFileHeader,
           output,
         ].join('\n'),

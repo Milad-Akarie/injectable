@@ -1,4 +1,10 @@
 # ChangeLog
+## [2.1.3]
+- Fix name of MicroPackageModule contains "_" (is not pascal case) #332
+## [2.1.2]
+- Fix registration order
+## [2.1.1]
+- Fix barrel files related issue
 ## [2.1.0]
 - Add support for micro package modules order [before,after]
 - Add support for micro package modules scopes
