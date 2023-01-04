@@ -48,7 +48,7 @@ dev_dependencies:
 ---  
 
 1. Create a new dart file and define a global var for your GetIt instance.
-2. Define a top-level function (lets call it configureDependencies) then annotate it with @injectableInit.
+2. Define a top-level function (let's call it configureDependencies) then annotate it with @injectableInit.
 3. Call the **Generated** func getIt.init(), or your custom initializer name inside your configure func and pass in the getIt instance.
 
 ```dart  
@@ -112,7 +112,7 @@ flutter packages pub run build_runner build
 
 ### Inside of the generated file
 
-Injectable will generate the needed register functions for you
+Injectable will generate the needed register functions for you.
 
 ```dart  
 import 'package:get_it/get_it.dart' as _i1;  
@@ -139,7 +139,7 @@ extension GetItInjectableX on _i1.GetIt {
   
 ---  
 
-Use the `@singleton` or `@lazySingleton` to annotate your singleton classes.    
+Use `@singleton` or `@lazySingleton` to annotate your singleton classes.
 Alternatively use the constructor version to pass signalsReady to `getIt.registerSingleton(signalsReady)` `@Singleton(signalsReady: true)` >> `getIt.registerSingleton(Model(), signalsReady: true)` `@LazySingleton()` >> `getIt.registerLazySingleton(() => Model())`
 
 ```dart  
@@ -149,7 +149,7 @@ class ApiProvider {}
 
 ## Disposing of singletons
 
-GetIt provides a way to dispose singleton and lazySingleton instances by passing a dispose callBack to the register function, Injectable works in the static realm which means it's not possible to pass instance functions to your annotation, luckly injectable provides two simple ways to handle instance disposing.
+GetIt provides a way to dispose singleton and lazySingleton instances by passing a dispose callback to the register function.  Injectable works in the static realm, which means it's not possible to pass instance functions to your annotation; luckily injectable provides two simple ways to handle instance disposal.
 
 1- Annotating an instance method inside of your singleton class with `@disposeMethod`.
 
@@ -226,7 +226,7 @@ class SomeController  {
 }  
 ```  
 
-now both of these annotations take an optional bool flag `preResolve`, if the create or initialize methods return a future and preResolve is true, the future will be pre-resolved ( awaited ) before the dependency is registered inside of GetIt otherwise it's registered as an async dependency.
+now both of these annotations take an optional bool flag `preResolve`. If the create or initialize methods return a future and preResolve is true, the future will be pre-resolved ( awaited ) before the dependency is registered inside of GetIt, otherwise it's registered as an async dependency.
 
 ## Registering asynchronous injectables
 
@@ -264,7 +264,7 @@ factoryAsync<ApiClient>(() => ApiClient.create());
 
 ### Using a register module (for third party dependencies)
 
-just wrap your instance with a future, and you're good to go
+just wrap your instance with a future, and you're good to go.
 
 ```dart  
 @module  
@@ -277,7 +277,7 @@ Don't forget to call `getAsync<T>()` instead of `get<T>()` when resolving an asy
 
 ## Pre-Resolving futures
 
-if you want to pre-await the future and register it's resolved value, annotate your async dependencies with `@preResolve`.
+if you want to pre-await the future and register its resolved value, annotate your async dependencies with `@preResolve`.
 
 ```dart  
 @module  
@@ -287,7 +287,7 @@ abstract class RegisterModule {
 }  
 ```  
 
-It also works with `@factoryMethod` and `@postConstruct` annotations
+It also works with `@factoryMethod` and `@postConstruct` annotations.
 
 ```dart  
 @Injectable()  
@@ -313,7 +313,7 @@ class SomeController  {
 }  
 ```  
 
-#### generated code
+#### Generated Code:
 
 ```dart  
 import 'package:get_it/get_it.dart' as _i1;  
@@ -337,13 +337,15 @@ extension GetItInjectableX on _i1.GetIt {
 }  
 ```  
 
-as you can see this will make your `init` func async so be sure to **await** for it
+as you can see this will make your `init` func async so be sure to **await** for it.
 
 ## Passing Parameters to factories
   
 ---  
 
-Requires **GetIt >= 4.0.0** If you're working with a class you own simply annotate your changing constructor param with `@factoryParam`, you can have up to two parameters **max**!
+Requires **GetIt >= 4.0.0**
+
+If you're working with a class you own simply annotate your changing constructor param with `@factoryParam`, you can have up to two parameters **max**!
 
 ```dart  
 @injectable  
@@ -352,7 +354,7 @@ class BackendService {
 }  
 ```  
 
-#### generated code
+#### Generated Code:
 
 ```dart  
 factoryParam<BackendService, String, dynamic>(  
@@ -360,9 +362,11 @@ factoryParam<BackendService, String, dynamic>(
  );  
 ```  
 
-### Using a register module (for third party dependencies) if you declare a module member as a method instead of a simple accessor, injectable will treat it as a factory method, meaning it will inject it's parameters as it would with a regular constructor.
+### Using a register module (for third party dependencies)
 
-The same way if you annotate an injected param with `@factoryParam` injectable will treat it as a factory param.
+if you declare a module member as a method instead of a simple accessor, injectable will treat it as a factory method, meaning it will inject its parameters as it would with a regular constructor.
+
+This is similar to how if you annotate an injected param with `@factoryParam` injectable will treat it as a factory param.
 
 ```dart  
 @module  
@@ -371,7 +375,7 @@ abstract class RegisterModule {
 }  
 ```  
 
-#### generated code
+#### Generated Code:
 
 ```dart  
 factoryParam<BackendService, String, dynamic>(  
@@ -396,7 +400,7 @@ class ServiceImpl implements Service {}
   
 ```  
 
-###### Generated code
+###### Generated Code:
 
 ```dart  
 factory<Service>(() => ServiceImpl())  
@@ -404,10 +408,10 @@ factory<Service>(() => ServiceImpl())
 
 ### Binding an abstract class to multiple implementations
 
-Since we can't use type binding to register more than one implementation, we have to use names (tags)    
+Since we can't use type binding to register more than one implementation, we have to use names (tags)
 to register our instances or register under different environment. (we will get to that later)
 
-```  
+```dart
 @Named("impl1")  
 @Injectable(as: Service)  
 class ServiceImpl implements Service {}  
@@ -427,7 +431,7 @@ class MyRepo {
 }  
 ```  
 
-###### Generated code
+###### Generated Code:
 
 ```dart  
 factory<Service>(() => ServiceImpl1(), instanceName: 'impl1')  
@@ -438,8 +442,7 @@ factory<MyRepo>(() => MyRepo(getIt('impl1'))
 
 ### Auto Tagging
 
-Use the lower cased @named annotation to automatically assign the implementation class name to the instance name.    
-Then use `@Named.from(Type)` annotation to extract the name from the type
+Use the lower cased `@named` annotation to automatically assign the implementation class name to the instance name. Then use `@Named.from(Type)` annotation to extract the name from the type.
 
 ```dart  
 @named  
@@ -453,7 +456,7 @@ class MyRepo {
 }  
 ```  
 
-###### Generated code
+###### Generated Code:
 
 ```dart  
 factory<Service>(() => ServiceImpl1(), instanceName: 'ServiceImpl1')  
@@ -464,8 +467,7 @@ factory<MyRepo>(() => MyRepo(getIt('ServiceImpl1'))
   
 ---  
 
-it is possible to register different dependencies for different environments by using `@Environment('name')` annotation.    
-in the below example ServiceA is now only registered if we pass the environment name to \$init(environment: 'dev')
+it is possible to register different dependencies for different environments by using `@Environment('name')` annotation. in the below example ServiceA is now only registered if we pass the environment name to `$init(environment: 'dev')`.
 
 ```dart  
 @Environment("dev")  
@@ -483,7 +485,7 @@ const dev = Environment('dev');
 class ServiceA {}  
 ```  
 
-You can assign multiple environment names to the same class
+You can assign multiple environment names to the same class.
 
 ```dart  
 @test  
@@ -492,7 +494,7 @@ You can assign multiple environment names to the same class
 class ServiceA {}  
 ```  
 
-Alternatively use the env property in injectable and subs to assign environment names to your dependencies
+Alternatively use the env property in injectable and subs to assign environment names to your dependencies.
 
 ```dart  
 @Injectable(as: Service, env: [Environment.dev, Environment.test])  
@@ -500,7 +502,7 @@ class RealServiceImpl implements Service {}
 ```  
 
 Now passing your environment to `init` function will create a simple environment filter that will only validate dependencies that have no environments or one of their environments matches the given environment.    
-Alternatively, you can pass your own `EnvironmentFilter` to decide what dependencies to register based on their environment keys, or use one of the shipped ones
+Alternatively, you can pass your own `EnvironmentFilter` to decide what dependencies to register based on their environment keys, or use one of the shipped ones:
 
 - NoEnvOrContainsAll
 - NoEnvOrContainsAny
@@ -510,7 +512,7 @@ Alternatively, you can pass your own `EnvironmentFilter` to decide what dependen
   
 ---  
 
-To Register third party types, create an abstract class and annotate it with `@module` then add your third party types as property accessors or methods like follows:
+To Register third party types, create an abstract class and annotate it with `@module` then add your third party types as property accessors or methods as follows:
 
 ```dart  
 @module  
@@ -526,7 +528,7 @@ abstract class RegisterModule {
 
 ### Providing custom initializers
 
-In some cases you'd need to register instances that are asynchronous or singleton instances or just have a custom initializer and that's a bit hard for injectable to figure out on it's own, so you need to tell injectable how to initialize them;
+In some cases you'd need to register instances that are asynchronous or singleton instances or just have a custom initializer and that's a bit hard for injectable to figure out on its own, so you need to tell injectable how to initialize them:
 
 ```dart  
 @module  
@@ -556,7 +558,7 @@ if you're facing even a weirder scenario you can always register them manually i
 
 Instead of annotating every single injectable class you write, it is possible to use a [Convention Based Configuration](https://en.wikipedia.org/wiki/Convention_over_configuration) to auto register your injectable classes, especially if you follow a concise naming convention.
 
-for example, you can tell the generator to auto-register any class that ends with Service, Repository or Bloc    
+For example, you can tell the generator to auto-register any class that ends with Service, Repository or Bloc    
 using a simple regex pattern    
 class_name_pattern: 'Service$|Repository$|Bloc\$'    
 To use auto-register create a file with the name **build.yaml** in the same directory as **pubspec.yaml** and add
@@ -593,12 +595,12 @@ class Service{}
 
 ## Using Scopes
 
-GetIt v5.0 introduced scopes support, which allows registration of related-dependencies in a different scope, so they can be initialized only when they needed and disposed of when they're not [More on that here](https://pub.dev/packages/get_it#scopes)
+GetIt v5.0 introduced scopes support, which allows registration of related dependencies in a different scope, so they can be initialized only when needed and disposed of when they're not. [More on that here.](https://pub.dev/packages/get_it#scopes)
 
-To use `GetIt` scopes using injectable you simply annotate the dependencies that's meant to be registered in a different scope with `@Scope('scope-name')` or pass in the scope name to Injectable or it's subs like so `@Injectable(scope: 'scope-name')`.
+To use `GetIt` scopes using injectable you simply annotate the dependencies that are meant to be registered in a different scope with `@Scope('scope-name')` or pass in the scope name to Injectable or its subs like so `@Injectable(scope: 'scope-name')`.
 
 dependencies tagged with a scope name will be generated inside of a separate init method than the other main-scope dependencies.  
-e.g
+e.g.
 
 ```dart  
 // @Scope('auth') this works too  
@@ -631,7 +633,7 @@ so all you have to do is annotate the package as a microPackage by using the nam
 initMicroPackage(){} // will not be called but needed for code generation  
 ```  
 
-#### Generated code
+#### Generated Code:
 
 ```dart  
 class AwesomePackageModule extends MicroPackageModule {  
@@ -642,12 +644,17 @@ class AwesomePackageModule extends MicroPackageModule {
  }}  
 ```  
 
-By default injectable will automatically include all `MicroPackagesModules` in project directory unless `includeMicroPackages` flag inside of `@InjectableInit(includeMicroPackages: false)` is set to false.
+By default injectable will automatically include all `MicroPackagesModules` in the project directory unless the `includeMicroPackages` flag inside of `@InjectableInit` is set to false.
 
-it's also possible to include micro local or external modules manually by passing them to `externalPackageModules` property inside if @injectableInit so they're initialized with the rest of the local dependencies.  
+```dart
+@InjectableInit(includeMicroPackages: false)
+```
+
+it's also possible to include micro local or external modules manually by passing them to the `externalPackageModules` property inside of @injectableInit so they're initialized with the rest of the local dependencies.  
 **Note:**
 Modules assigned to externalPackageModulesBefore will be initialized before the root dependencies;
-Modules assigned to externalPackageModulesBefore will be initialized before the root dependencies;
+Modules assigned to externalPackageModulesAfter will be initialized after the root dependencies;
+
 ```dart  
 @InjectableInit(  
   externalPackageModulesBefore: [  
@@ -659,8 +666,9 @@ Modules assigned to externalPackageModulesBefore will be initialized before the 
  ],)  
 void configureDependencies() {}
 ```  
+
 #### Initializing modules inside of scopes
-External Modules can be initlzized inside of specific scopes by simply assigning a scope to `ExternalModule`
+External Modules can be initialized inside of specific scopes by simply assigning a scope to `ExternalModule`.
 ```dart
 @InjectableInit(  
   externalPackageModulesBefore: [  
