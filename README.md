@@ -49,15 +49,20 @@ dev_dependencies:
 
 1. Create a new dart file and define a global var for your GetIt instance.
 2. Define a top-level function (lets call it configureDependencies) then annotate it with @injectableInit.
-3. Call the **Generated** func getIt.init(), or your custom initializer name inside your configure func and pass in the getIt instance.
+3. Import the **Generated** dart file created later on in the code. This will follow the name of the file with the `@InjectableInit` annotated func, eg `file_name.config.dart`.
+4. Call the **Generated** extension func getIt.init(), or your custom initializer name inside your configure func.
+	
+Note: This example is for version 2+
 
 ```dart  
+import '<FILE_NAME>.config.dart';
+	
 final getIt = GetIt.instance;  
   
 @InjectableInit(  
   initializerName: 'init', // default  
   preferRelativeImports: true, // default  
-  asExtension: false, // default  
+  asExtension: true, // default  
 )  
 void configureDependencies() => getIt.init();  
 ```  
@@ -66,6 +71,8 @@ Note: you can tell injectable what directories to generate for using the generat
 The following example will only process files inside of the test folder.
 
 ```dart  
+import '<FILE_NAME>.config.dart';
+	
 @InjectableInit(generateForDir: ['test'])  
 void configureDependencies() => getIt.init();  
 ```  
