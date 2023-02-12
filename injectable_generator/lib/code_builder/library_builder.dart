@@ -172,8 +172,8 @@ class LibraryGenerator with SharedGeneratorCode {
                 Extension(
                   (b) => b
                     ..docs.addAll([
-                      '/// ignore_for_file: unnecessary_lambdas',
-                      '/// ignore_for_file: lines_longer_than_80_chars',
+                      '// ignore_for_file: unnecessary_lambdas',
+                      '// ignore_for_file: lines_longer_than_80_chars',
                     ])
                     ..name = 'GetItInjectableX'
                     ..on = _getItRefer
@@ -187,8 +187,8 @@ class LibraryGenerator with SharedGeneratorCode {
               Class(
                 (b) => b
                   ..docs.addAll([
-                    '\n/// ignore_for_file: unnecessary_lambdas',
-                    '/// ignore_for_file: lines_longer_than_80_chars',
+                    '\n// ignore_for_file: unnecessary_lambdas',
+                    '// ignore_for_file: lines_longer_than_80_chars',
                   ])
                   ..name = '${capitalize(microPackageName!)}PackageModule'
                   ..extend = refer(
@@ -351,10 +351,10 @@ class InitMethodGenerator with SharedGeneratorCode {
       (b) => b
         ..docs.addAll([
           if (!asExtension && scopeName == null && !isMicroPackage) ...[
-            '\n/// ignore_for_file: unnecessary_lambdas',
-            '/// ignore_for_file: lines_longer_than_80_chars'
+            '\n// ignore_for_file: unnecessary_lambdas',
+            '// ignore_for_file: lines_longer_than_80_chars'
           ],
-          '/// initializes the registration of ${scopeName ?? 'main'}-scope dependencies inside of [GetIt]'
+          '// initializes the registration of ${scopeName ?? 'main'}-scope dependencies inside of GetIt'
         ])
         ..modifier = useAsyncModifier ? MethodModifier.async : null
         ..returns = returnRefer
