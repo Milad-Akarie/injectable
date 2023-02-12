@@ -1,4 +1,7 @@
 # ChangeLog
+## [2.1.4]
+- Fix Scopes - class is registered more than once under the same environment #338
+- Fix Injectable unable to detect dependencies from micropackages #341
 ## [2.1.3]
 - Fix name of MicroPackageModule contains "_" (is not pascal case) #332
 ## [2.1.2]

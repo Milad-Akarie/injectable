@@ -122,7 +122,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     // we want to ignore unregistered types in microPackages
     // because the micro module should handle them
     for (final pckModule in microPackagesModules) {
-      final packageName = Uri.parse(pckModule.module.import!).scheme;
+      final packageName = Uri.parse(pckModule.module.import!).pathSegments.first;
       ignoreTypesInPackages.add(packageName);
     }
 
@@ -265,8 +265,10 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   void _validateDuplicateDependencies(List<DependencyConfig> deps) {
     final validatedDeps = <DependencyConfig>[];
     for (var dep in deps) {
+
       var registered = validatedDeps.where((elm) =>
-          elm.type == dep.type && elm.instanceName == dep.instanceName);
+          elm.type == dep.type && elm.instanceName == dep.instanceName && elm.scope == dep.scope,);
+
       if (registered.isEmpty) {
         validatedDeps.add(dep);
       } else {
@@ -277,7 +279,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
             dep.environments
                 .any((env) => registeredEnvironments.contains(env))) {
           throwBoxed(
-            '${dep.typeImpl} [${dep.type}] env: ${dep.environments} \nis registered more than once under the same environment',
+            '${dep.typeImpl} [${dep.type}] envs: ${dep.environments}  scope: ${dep.scope} \nis registered more than once under the same environment or in the same scope',
           );
         }
       }

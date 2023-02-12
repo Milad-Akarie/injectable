@@ -1,3 +1,4 @@
+import 'package:awesome/calculator.dart';
 import 'package:example/injector/injector.dart';
 import 'package:injectable/injectable.dart';
 
@@ -66,7 +67,7 @@ class LazyServiceImpl extends IService {
 class PostConstructableService {
   final IService service;
 
-  PostConstructableService(this.service);
+  PostConstructableService(this.service,Calculator calculator);
 
   @PostConstruct()
   Future<void> init() {
