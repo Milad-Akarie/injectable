@@ -28,17 +28,14 @@ mixin SharedGeneratorCode {
     String? getMethodName,
   }) {
     final positionalParams = dep.positionalDependencies.map(
-      (iDep) => _buildParamAssignment(iDep,
-          getAsyncReferName: getAsyncMethodName, getReferName: getMethodName),
+      (iDep) => _buildParamAssignment(iDep, getAsyncReferName: getAsyncMethodName, getReferName: getMethodName),
     );
 
     final namedParams = Map.fromEntries(
       dep.namedDependencies.map(
         (iDep) => MapEntry(
           iDep.paramName,
-          _buildParamAssignment(iDep,
-              getAsyncReferName: getAsyncMethodName,
-              getReferName: getMethodName),
+          _buildParamAssignment(iDep, getAsyncReferName: getAsyncMethodName, getReferName: getMethodName),
         ),
       ),
     );
@@ -66,10 +63,8 @@ mixin SharedGeneratorCode {
     getAsyncReferName ??= asExtension ? 'getAsync' : 'gh.getAsync';
     getReferName ??= 'gh';
     final isAsync = isAsyncOrHasAsyncDependency(iDep, dependencies);
-    final expression =
-        refer(isAsync ? getAsyncReferName : getReferName).call([], {
-      if (iDep.instanceName != null)
-        'instanceName': literalString(iDep.instanceName!),
+    final expression = refer(isAsync ? getAsyncReferName : getReferName).call([], {
+      if (iDep.instanceName != null) 'instanceName': literalString(iDep.instanceName!),
     }, [
       typeRefer(iDep.type, targetFile, false),
     ]);
@@ -86,8 +81,7 @@ class LibraryGenerator with SharedGeneratorCode {
   final bool asExtension;
   final String initializerName;
   final String? microPackageName;
-  final Set<ExternalModuleConfig> microPackagesModulesBefore,
-      microPackagesModulesAfter;
+  final Set<ExternalModuleConfig> microPackagesModulesBefore, microPackagesModulesAfter;
 
   LibraryGenerator({
     required this.dependencies,
@@ -111,12 +105,11 @@ class LibraryGenerator with SharedGeneratorCode {
       }
     }
 
-    final scopedDeps =
-        groupBy<DependencyConfig, String?>(dependencies, (d) => d.scope);
-    final scopedBeforeExternalModules = groupBy<ExternalModuleConfig, String?>(
-        microPackagesModulesBefore, (d) => d.scope);
-    final scopedAfterExternalModules = groupBy<ExternalModuleConfig, String?>(
-        microPackagesModulesAfter, (d) => d.scope);
+    final scopedDeps = groupBy<DependencyConfig, String?>(dependencies, (d) => d.scope);
+    final scopedBeforeExternalModules =
+        groupBy<ExternalModuleConfig, String?>(microPackagesModulesBefore, (d) => d.scope);
+    final scopedAfterExternalModules =
+        groupBy<ExternalModuleConfig, String?>(microPackagesModulesAfter, (d) => d.scope);
 
     final isMicroPackage = microPackageName != null;
 
@@ -142,21 +135,23 @@ class LibraryGenerator with SharedGeneratorCode {
           scopeDependencies: scopeDeps ?? [],
           targetFile: targetFile,
           allDependencies: dependencies,
-          initializerName:
-              isRootScope ? initializerName : 'init${capitalize(scope!)}Scope',
+          initializerName: isRootScope ? initializerName : 'init${capitalize(scope!)}Scope',
           asExtension: asExtension,
           scopeName: scope,
           isMicroPackage: isMicroPackage,
-          microPackagesModulesBefore:
-              scopedBeforeExternalModules[scope]?.toSet() ?? const {},
-          microPackagesModulesAfter:
-              scopedAfterExternalModules[scope]?.toSet() ?? const {},
+          microPackagesModulesBefore: scopedBeforeExternalModules[scope]?.toSet() ?? const {},
+          microPackagesModulesAfter: scopedAfterExternalModules[scope]?.toSet() ?? const {},
         ).generate(),
       );
     }
 
     return Library(
       (b) => b
+        ..comments.addAll([
+          'ignore_for_file: unnecessary_lambdas',
+          'ignore_for_file: lines_longer_than_80_chars',
+          'coverage:ignore-file',
+        ])
         ..body.addAll(
           [
             ...environments.map(
@@ -172,10 +167,6 @@ class LibraryGenerator with SharedGeneratorCode {
               if (asExtension)
                 Extension(
                   (b) => b
-                    ..docs.addAll([
-                      '// ignore_for_file: unnecessary_lambdas',
-                      '// ignore_for_file: lines_longer_than_80_chars',
-                    ])
                     ..name = 'GetItInjectableX'
                     ..on = _getItRefer
                     ..methods.addAll(initMethods),
@@ -187,10 +178,6 @@ class LibraryGenerator with SharedGeneratorCode {
             if (isMicroPackage)
               Class(
                 (b) => b
-                  ..docs.addAll([
-                    '\n// ignore_for_file: unnecessary_lambdas',
-                    '// ignore_for_file: lines_longer_than_80_chars',
-                  ])
                   ..name = '${capitalize(microPackageName!)}PackageModule'
                   ..extend = refer(
                     'MicroPackageModule',
@@ -245,10 +232,7 @@ class LibraryGenerator with SharedGeneratorCode {
             ..name = dep.moduleConfig!.initializerName
             ..returns = typeRefer(dep.typeImpl, targetFile)
             ..type = dep.moduleConfig!.isMethod ? null : MethodType.getter
-            ..body = _buildInstance(dep,
-                    getAsyncMethodName: '_getIt.getAsync',
-                    getMethodName: '_getIt')
-                .code,
+            ..body = _buildInstance(dep, getAsyncMethodName: '_getIt.getAsync', getMethodName: '_getIt').code,
         ),
       ));
     });
@@ -267,8 +251,7 @@ class InitMethodGenerator with SharedGeneratorCode {
   final String initializerName;
   final String? scopeName;
   final bool isMicroPackage;
-  final Set<ExternalModuleConfig> microPackagesModulesBefore,
-      microPackagesModulesAfter;
+  final Set<ExternalModuleConfig> microPackagesModulesBefore, microPackagesModulesAfter;
 
   InitMethodGenerator({
     required List<DependencyConfig> scopeDependencies,
@@ -309,15 +292,16 @@ class InitMethodGenerator with SharedGeneratorCode {
             .call([_ghLocalRefer])
             .awaited
             .statement,
-      ...modules.map((module) => refer('_\$${module.type.name}')
-          .call([
-            if (moduleHasOverrides(
-              allDependencies.where((e) => e.moduleConfig == module),
-            ))
-              getInstanceRefer
-          ])
-          .assignFinal(toCamelCase(module.type.name))
-          .statement),
+      ...modules.map(
+        (module) => declareFinal(toCamelCase(module.type.name))
+            .assign(refer('_\$${module.type.name}').call([
+              if (moduleHasOverrides(
+                allDependencies.where((e) => e.moduleConfig == module),
+              ))
+                getInstanceRefer
+            ]))
+            .statement,
+      ),
       ...dependencies.map((dep) {
         if (dep.injectableType == InjectableType.singleton) {
           return buildSingletonRegisterFun(dep);
@@ -413,8 +397,7 @@ class InitMethodGenerator with SharedGeneratorCode {
                   ], {
                     'dispose': refer('dispose'),
                     'init': Method((b) => b
-                      ..modifier =
-                          useAsyncModifier ? MethodModifier.async : null
+                      ..modifier = useAsyncModifier ? MethodModifier.async : null
                       ..requiredParameters.add(Parameter(
                         (b) => b
                           ..name = 'gh'
@@ -428,15 +411,14 @@ class InitMethodGenerator with SharedGeneratorCode {
                   .statement
             else ...[
               if (!isMicroPackage)
-                refer('GetItHelper', _injectableImport)
-                    .newInstance(
+                declareFinal('gh')
+                    .assign(refer('GetItHelper', _injectableImport).newInstance(
                       [
                         getInstanceRefer,
                         refer('environment'),
                         refer('environmentFilter'),
                       ],
-                    )
-                    .assignFinal('gh')
+                    ))
                     .statement,
               ...ghStatements,
               if (!isMicroPackage) getInstanceRefer.returned.statement,
@@ -465,8 +447,7 @@ class InitMethodGenerator with SharedGeneratorCode {
     }
     throwIf(funcReferName == null, 'Injectable type is not supported');
 
-    final instanceBuilder =
-        dep.isFromModule ? _buildInstanceForModule(dep) : _buildInstance(dep);
+    final instanceBuilder = dep.isFromModule ? _buildInstanceForModule(dep) : _buildInstance(dep);
     final instanceBuilderCode = _buildInstanceBuilderCode(instanceBuilder, dep);
     final registerExpression = _ghLocalRefer.property(funcReferName!).call([
       Method(
@@ -481,37 +462,31 @@ class InitMethodGenerator with SharedGeneratorCode {
           ..body = instanceBuilderCode,
       ).closure
     ], {
-      if (dep.instanceName != null)
-        'instanceName': literalString(dep.instanceName!),
+      if (dep.instanceName != null) 'instanceName': literalString(dep.instanceName!),
       if (dep.environments.isNotEmpty == true)
         'registerFor': literalSet(
           dep.environments.map((e) => refer('_$e')),
         ),
       if (dep.preResolve == true) 'preResolve': literalBool(true),
-      if (dep.disposeFunction != null)
-        'dispose': _getDisposeFunctionAssignment(dep.disposeFunction!)
+      if (dep.disposeFunction != null) 'dispose': _getDisposeFunctionAssignment(dep.disposeFunction!)
     }, [
       typeRefer(dep.type, targetFile),
       ...factoryParams.values.map((p) => p.type)
     ]);
-    return dep.preResolve
-        ? registerExpression.awaited.statement
-        : registerExpression.statement;
+    return dep.preResolve ? registerExpression.awaited.statement : registerExpression.statement;
   }
 
-  Code _buildInstanceBuilderCode(
-      Expression instanceBuilder, DependencyConfig dep) {
+  Code _buildInstanceBuilderCode(Expression instanceBuilder, DependencyConfig dep) {
     var instanceBuilderCode = instanceBuilder.code;
     if (dep.postConstruct != null) {
       if (dep.postConstructReturnsSelf) {
-        instanceBuilderCode =
-            instanceBuilder.property(dep.postConstruct!).call(const []).code;
+        instanceBuilderCode = instanceBuilder.property(dep.postConstruct!).call(const []).code;
       } else {
         if (dep.isAsync) {
           instanceBuilderCode = Block(
             (b) => b
               ..statements.addAll([
-                instanceBuilder.assignFinal('i').statement,
+                declareFinal('i').assign(instanceBuilder).statement,
                 refer('i')
                     .property(dep.postConstruct!)
                     .call(const [])
@@ -521,8 +496,7 @@ class InitMethodGenerator with SharedGeneratorCode {
                         (b) => b
                           ..lambda = true
                           ..body = refer('i').code
-                          ..requiredParameters
-                              .add(Parameter((b) => b..name = '_')),
+                          ..requiredParameters.add(Parameter((b) => b..name = '_')),
                       ).closure
                     ])
                     .returned
@@ -530,8 +504,7 @@ class InitMethodGenerator with SharedGeneratorCode {
               ]),
           );
         } else {
-          instanceBuilderCode =
-              instanceBuilder.cascade(dep.postConstruct!).call(const []).code;
+          instanceBuilderCode = instanceBuilder.cascade(dep.postConstruct!).call(const []).code;
         }
       }
     }
@@ -562,8 +535,7 @@ class InitMethodGenerator with SharedGeneratorCode {
       funcReferName = 'singleton';
     }
 
-    final instanceBuilder =
-        dep.isFromModule ? _buildInstanceForModule(dep) : _buildInstance(dep);
+    final instanceBuilder = dep.isFromModule ? _buildInstanceForModule(dep) : _buildInstance(dep);
     final instanceBuilderCode = _buildInstanceBuilderCode(instanceBuilder, dep);
     final registerExpression = _ghLocalRefer.property(funcReferName).call([
       asFactory
@@ -573,8 +545,7 @@ class InitMethodGenerator with SharedGeneratorCode {
             ..body = instanceBuilderCode).closure
           : CodeExpression(instanceBuilderCode)
     ], {
-      if (dep.instanceName != null)
-        'instanceName': literalString(dep.instanceName!),
+      if (dep.instanceName != null) 'instanceName': literalString(dep.instanceName!),
       if (dep.dependsOn.isNotEmpty)
         'dependsOn': literalList(
           dep.dependsOn.map(
@@ -585,18 +556,14 @@ class InitMethodGenerator with SharedGeneratorCode {
         'registerFor': literalSet(
           dep.environments.map((e) => refer('_$e')),
         ),
-      if (dep.signalsReady != null)
-        'signalsReady': literalBool(dep.signalsReady!),
+      if (dep.signalsReady != null) 'signalsReady': literalBool(dep.signalsReady!),
       if (dep.preResolve == true) 'preResolve': literalBool(true),
-      if (dep.disposeFunction != null)
-        'dispose': _getDisposeFunctionAssignment(dep.disposeFunction!)
+      if (dep.disposeFunction != null) 'dispose': _getDisposeFunctionAssignment(dep.disposeFunction!)
     }, [
       typeRefer(dep.type, targetFile)
     ]);
 
-    return dep.preResolve
-        ? registerExpression.awaited.statement
-        : registerExpression.statement;
+    return dep.preResolve ? registerExpression.awaited.statement : registerExpression.statement;
   }
 
   Expression _buildInstanceForModule(DependencyConfig dep) {
@@ -623,13 +590,11 @@ class InitMethodGenerator with SharedGeneratorCode {
     );
   }
 
-  Expression _getDisposeFunctionAssignment(
-      DisposeFunctionConfig disposeFunction) {
+  Expression _getDisposeFunctionAssignment(DisposeFunctionConfig disposeFunction) {
     if (disposeFunction.isInstance) {
       return Method((b) => b
-            ..requiredParameters.add(Parameter((b) => b.name = 'i'))
-            ..body = refer('i').property(disposeFunction.name).call([]).code)
-          .closure;
+        ..requiredParameters.add(Parameter((b) => b.name = 'i'))
+        ..body = refer('i').property(disposeFunction.name).call([]).code).closure;
     } else {
       return typeRefer(disposeFunction.importableType!, targetFile);
     }

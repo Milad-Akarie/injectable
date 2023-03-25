@@ -180,9 +180,9 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
             final typeValue = reader.read('module').typeValue;
             final scope = reader.peek('scope')?.stringValue;
             throwIf(
-              typeValue.element2 is! ClassElement ||
+              typeValue.element is! ClassElement ||
                   !TypeChecker.fromRuntime(MicroPackageModule)
-                      .isSuperOf(typeValue.element2!),
+                      .isSuperOf(typeValue.element!),
               'ExternalPackageModule must be a class that extends MicroPackageModule',
             );
             return ExternalModuleConfig(
@@ -200,9 +200,9 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
           (e) {
             final typeValue = e.toTypeValue()!;
             throwIf(
-              typeValue.element2 is! ClassElement ||
+              typeValue.element is! ClassElement ||
                   !TypeChecker.fromRuntime(MicroPackageModule)
-                      .isSuperOf(typeValue.element2!),
+                      .isSuperOf(typeValue.element!),
               'ExternalPackageModule must be a class that extends MicroPackageModule',
             );
             return ExternalModuleConfig(typeResolver.resolveType(typeValue));

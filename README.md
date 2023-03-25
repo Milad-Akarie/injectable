@@ -688,7 +688,7 @@ void configureDependencies() {}
 
 then a scope initialization method/extension will be generated.
 ```dart
- await getIt.initAwesomeScope();  
+ await getIt.initAwesomeScope()
 ```
 
 ## Problems with the generation?

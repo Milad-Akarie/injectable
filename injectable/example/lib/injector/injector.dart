@@ -7,6 +7,7 @@ const platformMobile = Environment('platformMobile');
 const platformWeb = Environment('platformWeb');
 
 @InjectableInit(
+  preferRelativeImports: true,
   externalPackageModulesAfter: [
     ExternalModule(AwesomePackageModule),
   ],

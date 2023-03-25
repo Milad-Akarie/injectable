@@ -77,7 +77,7 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
   ImportableType resolveFunctionType(FunctionType function,
       [ExecutableElement? executableElement]) {
     final functionElement =
-        executableElement ?? function.element2 ?? function.alias?.element;
+        executableElement ?? function.element ?? function.alias?.element;
     if (functionElement == null) {
       throw 'Can not resolve function type \nTry using an alias e.g typedef MyFunction = ${function.getDisplayString(withNullability: false)};';
     }
@@ -85,7 +85,7 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
     var functionName = displayName;
 
     Element elementToImport = functionElement;
-    var enclosingElement = functionElement.enclosingElement3;
+    var enclosingElement = functionElement.enclosingElement;
 
     if (enclosingElement != null && enclosingElement is ClassElement) {
       functionName = '${enclosingElement.displayName}.$displayName';
@@ -104,12 +104,12 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
     final importableTypes = <ImportableType>[];
     if (typeToCheck is ParameterizedType) {
       for (DartType type in typeToCheck.typeArguments) {
-        if (type.element2 is TypeParameterElement) {
+        if (type.element is TypeParameterElement) {
           importableTypes.add(ImportableType(name: 'dynamic'));
         } else {
-          final imports = resolveImports(type.element2);
+          final imports = resolveImports(type.element);
           importableTypes.add(ImportableType(
-            name: type.element2?.name ??
+            name: type.element?.name ??
                 type.getDisplayString(withNullability: false),
             import: imports.firstOrNull,
             otherImports: imports.skip(1).toSet(),
@@ -124,10 +124,10 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
 
   @override
   ImportableType resolveType(DartType type) {
-    final imports = resolveImports(type.element2);
+    final imports = resolveImports(type.element);
     return ImportableType(
       name:
-          type.element2?.name ?? type.getDisplayString(withNullability: false),
+          type.element?.name ?? type.getDisplayString(withNullability: false),
       isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
       import: imports.firstOrNull,
       otherImports: imports.skip(1).toSet(),

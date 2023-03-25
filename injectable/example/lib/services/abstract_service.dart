@@ -67,7 +67,7 @@ class LazyServiceImpl extends IService {
 class PostConstructableService {
   final IService service;
 
-  PostConstructableService(this.service,Calculator calculator);
+  PostConstructableService(this.service, Calculator calculator);
 
   @PostConstruct()
   Future<void> init() {
