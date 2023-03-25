@@ -140,6 +140,7 @@ class LibraryGenerator with SharedGeneratorCode {
       initMethods.add(
         InitMethodGenerator(
           scopeDependencies: scopeDeps ?? [],
+          targetFile: targetFile,
           allDependencies: dependencies,
           initializerName:
               isRootScope ? initializerName : 'init${capitalize(scope!)}Scope',
