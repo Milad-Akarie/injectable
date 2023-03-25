@@ -1,4 +1,8 @@
 # ChangeLog
+## [2.1.5]
+- Add coverage:ignore-file comment to generated config
+- Fix relative imports not working
+- Update dependencies (codeBuilder, source_gen)
 ## [2.1.4]
 - Fix Scopes - class is registered more than once under the same environment #338
 - Fix Injectable unable to detect dependencies from micropackages #341
