@@ -191,7 +191,9 @@ void main() {
     });
   });
 
-  test("factory generator with synchronous postConstruct method (return self: false)", () {
+  test(
+      "factory generator with synchronous postConstruct method (return self: false)",
+      () {
     expect(
         generate(DependencyConfig(
           type: ImportableType(name: 'Demo'),
@@ -211,7 +213,9 @@ void main() {
         "gh.factory<Demo>(() => Demo(storage: gh<Storage>(instanceName: 'storageImpl'))..init());");
   });
 
-  test("factory generator with synchronous postConstruct method (return self: true)", () {
+  test(
+      "factory generator with synchronous postConstruct method (return self: true)",
+      () {
     expect(
         generate(DependencyConfig(
           type: ImportableType(name: 'Demo'),
@@ -231,7 +235,9 @@ void main() {
         "gh.factory<Demo>(() => Demo(storage: gh<Storage>(instanceName: 'storageImpl')).init());");
   });
 
-  test("factory generator with asynchronous postConstruct method (returns self: true)", () {
+  test(
+      "factory generator with asynchronous postConstruct method (returns self: true)",
+      () {
     expect(
         generate(DependencyConfig(
           type: ImportableType(name: 'Demo'),
@@ -252,7 +258,9 @@ void main() {
         "gh.factoryAsync<Demo>(() => Demo(storage: gh<Storage>(instanceName: 'storageImpl')).init());");
   });
 
-  test("factory generator with asynchronous postConstruct method (returns self: false)", () {
+  test(
+      "factory generator with asynchronous postConstruct method (returns self: false)",
+      () {
     expect(
         generate(DependencyConfig(
           type: ImportableType(name: 'Demo'),
@@ -271,7 +279,7 @@ void main() {
           ],
         )),
         'gh.factoryAsync<Demo>(() { final i = Demo(storage: gh<Storage>(instanceName: \'storageImpl\'));\n'
-            'return  i.init().then((_) => i); } );');
+        'return  i.init().then((_) => i); } );');
   });
 }
 
@@ -279,7 +287,7 @@ String generate(DependencyConfig input, {List<DependencyConfig>? allDeps}) {
   final generator = InitMethodGenerator(
     scopeDependencies: allDeps ?? [],
     allDependencies: allDeps?.toSet() ?? {},
-    initializerName: 'initGetIt',
+    initializerName: 'init',
   );
   final statement = generator.buildLazyRegisterFun(input);
   final emitter = DartEmitter(

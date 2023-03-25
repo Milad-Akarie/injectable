@@ -1,11 +1,12 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:collection/collection.dart';
 import 'package:injectable_generator/models/importable_type.dart';
 import 'package:path/path.dart' as p;
 
 abstract class ImportableTypeResolver {
-  String? resolveImport(Element element);
+  Set<String> resolveImports(Element element);
 
   ImportableType resolveType(DartType type);
 
@@ -52,19 +53,20 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
   ImportableTypeResolverImpl(this.libs);
 
   @override
-  String? resolveImport(Element? element) {
+  Set<String> resolveImports(Element? element) {
+    final imports = <String>{};
     // return early if source is null or element is a core type
     if (element?.source == null || _isCoreDartType(element)) {
-      return null;
+      return imports;
     }
-
+    libs.where((e) => e.exportNamespace.definedNames.values.contains(element));
     for (var lib in libs) {
       if (!_isCoreDartType(lib) &&
           lib.exportNamespace.definedNames.values.contains(element)) {
-        return lib.identifier;
+        imports.add(lib.identifier);
       }
     }
-    return null;
+    return imports;
   }
 
   bool _isCoreDartType(Element? element) {
@@ -89,10 +91,11 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
       functionName = '${enclosingElement.displayName}.$displayName';
       elementToImport = enclosingElement;
     }
-
+    final imports = resolveImports(elementToImport);
     return ImportableType(
       name: functionName,
-      import: resolveImport(elementToImport),
+      import: imports.firstOrNull,
+      otherImports: imports.skip(1).toSet(),
       isNullable: function.nullabilitySuffix == NullabilitySuffix.question,
     );
   }
@@ -104,10 +107,12 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
         if (type.element2 is TypeParameterElement) {
           importableTypes.add(ImportableType(name: 'dynamic'));
         } else {
+          final imports = resolveImports(type.element2);
           importableTypes.add(ImportableType(
             name: type.element2?.name ??
                 type.getDisplayString(withNullability: false),
-            import: resolveImport(type.element2),
+            import: imports.firstOrNull,
+            otherImports: imports.skip(1).toSet(),
             isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
             typeArguments: _resolveTypeArguments(type),
           ));
@@ -119,11 +124,13 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
 
   @override
   ImportableType resolveType(DartType type) {
+    final imports = resolveImports(type.element2);
     return ImportableType(
       name:
           type.element2?.name ?? type.getDisplayString(withNullability: false),
       isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
-      import: resolveImport(type.element2),
+      import: imports.firstOrNull,
+      otherImports: imports.skip(1).toSet(),
       typeArguments: _resolveTypeArguments(type),
     );
   }

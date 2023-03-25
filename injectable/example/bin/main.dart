@@ -9,6 +9,4 @@ void main() async {
   await getIt.init(environment: Environment.dev);
   print(getIt<Calculator>());
   // await getIt.initAuthScope();
-
-
 }

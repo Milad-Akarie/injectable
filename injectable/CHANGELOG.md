@@ -1,4 +1,10 @@
 # ChangeLog
+## [2.1.0]
+- Add support for micro package modules order [before,after]
+- Add support for micro package modules scopes
+## [2.0.1]
+- Fix registration order #324
+- Fix some types in readme file
 ## [2.0.0] [Minor breaking changes]
 - Add support for micro packages
 - Add support for external package modules
@@ -55,8 +61,8 @@ Fix some readme typos
 - Add support for get_it ^5.0
 - Fix analyzer compatibility issues
 ## [1.0.4]
-- Add option to customize the initilizer function name
-- Add option to generate the initilizer function as an extension
+- Add option to customize the initializer function name
+- Add option to generate the initializer function as an extension
 - Change initializer functions returns the passed get_it instance instead of void
 - Add Advanced environment filter that can be extended and customized
 - Fix Injectable generator not handling multiple instances of generic types #107

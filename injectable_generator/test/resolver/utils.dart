@@ -10,8 +10,8 @@ import 'package:test/test.dart';
 
 Future<ResolvedInput> resolveInput(String sourceFile) async {
   final files = [File(sourceFile)];
-  final fileMap = Map<String, String>.fromEntries(
-      files.map((f) => MapEntry('pkg|lib/${p.basename(f.path)}', f.readAsStringSync())));
+  final fileMap = Map<String, String>.fromEntries(files.map(
+      (f) => MapEntry('pkg|lib/${p.basename(f.path)}', f.readAsStringSync())));
   return await resolveSources<ResolvedInput>(fileMap, (resolver) async {
     final assetId = AssetId.parse(fileMap.keys.first);
     final library = await resolver.libraryFor(assetId);
@@ -32,13 +32,16 @@ Future<ResolvedInput> resolveRawSource(String source) async {
   });
 }
 
-void testRawSource(String label, {required String source, required Map output}) {
+void testRawSource(String label,
+    {required String source, required Map output}) {
   test(label, () async {
     final resolvedInput = await resolveRawSource('''
     import 'package:injectable/injectable.dart'
     $source''');
-    final importsResolve = ImportableTypeResolverImpl(await resolvedInput.resolver.libraries.toList());
-    final generated = DependencyResolver(importsResolve).resolve(resolvedInput.library.classes.first);
+    final importsResolve = ImportableTypeResolverImpl(
+        await resolvedInput.resolver.libraries.toList());
+    final generated = DependencyResolver(importsResolve)
+        .resolve(resolvedInput.library.classes.first);
     expect(output, generated.toJson());
   });
 }

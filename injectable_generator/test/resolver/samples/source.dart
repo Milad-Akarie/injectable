@@ -30,13 +30,13 @@ class FactoryWithAnnotationOrder {
 }
 
 @Injectable(scope: 'scope')
-class FactoryWithInlineScope{
+class FactoryWithInlineScope {
   const FactoryWithInlineScope();
 }
 
 @Scope('scope')
 @injectable
-class FactoryWithAnnotationScope{
+class FactoryWithAnnotationScope {
   const FactoryWithAnnotationScope();
 }
 

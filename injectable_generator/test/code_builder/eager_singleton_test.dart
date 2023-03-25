@@ -59,7 +59,10 @@ void main() {
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
             isAsync: true,
-            dependsOn: [ImportableType(name: 'Storage'), ImportableType(name: 'LocalRepo')],
+            dependsOn: [
+              ImportableType(name: 'Storage'),
+              ImportableType(name: 'LocalRepo')
+            ],
           )),
           "gh.singletonAsync<Demo>(() => Demo(), dependsOn: [Storage, LocalRepo]);");
     });
@@ -71,7 +74,10 @@ void main() {
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
             isAsync: false,
-            dependsOn: [ImportableType(name: 'Storage'), ImportableType(name: 'LocalRepo')],
+            dependsOn: [
+              ImportableType(name: 'Storage'),
+              ImportableType(name: 'LocalRepo')
+            ],
           )),
           'gh.singletonWithDependencies<Demo>(() => Demo(), dependsOn: [Storage, LocalRepo]);');
     });
@@ -203,7 +209,7 @@ String generate(DependencyConfig input, {List<DependencyConfig>? allDeps}) {
   final generator = InitMethodGenerator(
     scopeDependencies: allDeps ?? [],
     allDependencies: allDeps?.toSet() ?? {},
-    initializerName: 'initGetIt',
+    initializerName: 'init',
   );
   final statement = generator.buildSingletonRegisterFun(input);
   final emitter = DartEmitter(
