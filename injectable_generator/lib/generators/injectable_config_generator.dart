@@ -91,7 +91,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
         microPackageModulesBefore.union(microPackageModulesAfter);
     if (!isMicroPackage && includeMicroPackages) {
       await for (final match
-          in Glob('**.module.dart', recursive: true).list()) {
+          in Glob('$dirPattern/**.module.dart', recursive: true).list()) {
         final commentAnnotation = File(match.path).readAsLinesSync().first;
         if (commentAnnotation.contains('@GeneratedMicroModule')) {
           final segments = commentAnnotation.split(';');
