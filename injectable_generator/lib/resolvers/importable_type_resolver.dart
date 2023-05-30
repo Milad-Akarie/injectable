@@ -126,8 +126,7 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
   ImportableType resolveType(DartType type) {
     final imports = resolveImports(type.element);
     return ImportableType(
-      name:
-          type.element?.name ?? type.getDisplayString(withNullability: false),
+      name: type.element?.name ?? type.getDisplayString(withNullability: false),
       isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
       import: imports.firstOrNull,
       otherImports: imports.skip(1).toSet(),
