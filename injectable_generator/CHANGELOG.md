@@ -1,4 +1,8 @@
 # ChangeLog
+## [2.1.6]
+- Fix const instances are not generated as consts
+- update dart constrains to ">=2.17.0 <4.0.0"
+- Upgrade some dependencies
 ## [2.1.5]
 - Add coverage:ignore-file comment to generated config
 - Fix relative imports not working

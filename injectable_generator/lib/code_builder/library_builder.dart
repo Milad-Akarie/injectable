@@ -143,7 +143,7 @@ class LibraryGenerator with SharedGeneratorCode {
           targetFile: targetFile,
           allDependencies: dependencies,
           initializerName:
-              isRootScope ? initializerName : 'init${capitalize(scope!)}Scope',
+              isRootScope ? initializerName : 'init${capitalize(scope)}Scope',
           asExtension: asExtension,
           scopeName: scope,
           isMicroPackage: isMicroPackage,

@@ -281,7 +281,9 @@ class DependencyResolver {
       ));
     }
 
-    _canBeConst = (executableInitializer is ConstructorElement && executableInitializer.isConst) && _dependencies.isEmpty;
+    _canBeConst = (executableInitializer is ConstructorElement &&
+            executableInitializer.isConst) &&
+        _dependencies.isEmpty;
     final factoryParamsCount =
         _dependencies.where((d) => d.isFactoryParam).length;
 

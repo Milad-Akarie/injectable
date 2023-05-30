@@ -91,7 +91,6 @@ class DependencyConfig {
     );
   }
 
-
   @override
   String toString() {
     return 'DependencyConfig{type: $type, typeImpl: $typeImpl, injectableType: $injectableType, dependencies: $dependencies, instanceName: $instanceName, signalsReady: $signalsReady, environments: $environments, constructorName: $constructorName, postConstruct: $postConstruct, isAsync: $isAsync, postConstructReturnsSelf: $postConstructReturnsSelf, dependsOn: $dependsOn, preResolve: $preResolve, canBeConst: $canBeConst, moduleConfig: $moduleConfig, disposeFunction: $disposeFunction, orderPosition: $orderPosition, scope: $scope}';

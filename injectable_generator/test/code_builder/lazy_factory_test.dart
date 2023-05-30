@@ -34,11 +34,10 @@ void main() {
     test("Simple empty const constructor generator", () {
       expect(
           generate(DependencyConfig(
-            injectableType: InjectableType.factory,
-            type: ImportableType(name: 'Demo'),
-            typeImpl: ImportableType(name: 'Demo'),
-            canBeConst: true
-          )),
+              injectableType: InjectableType.factory,
+              type: ImportableType(name: 'Demo'),
+              typeImpl: ImportableType(name: 'Demo'),
+              canBeConst: true)),
           'gh.factory<Demo>(() => const Demo());');
     });
 
