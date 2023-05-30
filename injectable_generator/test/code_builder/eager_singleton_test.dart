@@ -37,7 +37,7 @@ void main() {
           typeImpl: ImportableType(name: 'Demo'),
           instanceName: 'MyDemo',
         )),
-        "gh.singleton<Demo>(Demo(), instanceName: 'MyDemo');",
+        "gh.singleton<Demo>(Demo(), instanceName: 'MyDemo', );",
       );
     });
 
@@ -64,7 +64,7 @@ void main() {
               ImportableType(name: 'LocalRepo')
             ],
           )),
-          "gh.singletonAsync<Demo>(() => Demo(), dependsOn: [Storage, LocalRepo]);");
+          "gh.singletonAsync<Demo>(() => Demo(), dependsOn: [Storage, LocalRepo, ], );");
     });
 
     test("Singleton generator with dependsOn", () {
@@ -79,7 +79,7 @@ void main() {
               ImportableType(name: 'LocalRepo')
             ],
           )),
-          'gh.singletonWithDependencies<Demo>(() => Demo(), dependsOn: [Storage, LocalRepo]);');
+          'gh.singletonWithDependencies<Demo>(() => Demo(), dependsOn: [Storage, LocalRepo, ], );');
     });
 
     test("Singleton generator with Positional dependencies", () {

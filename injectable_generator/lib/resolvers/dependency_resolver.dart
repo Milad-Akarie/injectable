@@ -39,6 +39,7 @@ class DependencyResolver {
   List<String> _environments = [];
   String? _instanceName;
   bool _isAsync = false;
+  bool _canBeConst = false;
   String? _constructorName;
   final List<InjectedDependency> _dependencies = [];
   ModuleConfig? _moduleConfig;
@@ -279,6 +280,8 @@ class DependencyResolver {
         isPositional: param.isPositional,
       ));
     }
+
+    _canBeConst = (executableInitializer is ConstructorElement && executableInitializer.isConst) && _dependencies.isEmpty;
     final factoryParamsCount =
         _dependencies.where((d) => d.isFactoryParam).length;
 
@@ -365,6 +368,7 @@ class DependencyResolver {
       isAsync: _isAsync,
       disposeFunction: _disposeFunctionConfig,
       orderPosition: _order!,
+      canBeConst: _canBeConst,
       scope: _scope,
       postConstruct: postConstruct,
       postConstructReturnsSelf: postConstructReturnsSelf,

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:injectable_generator/code_builder/builder_utils.dart';
 import 'package:injectable_generator/injectable_types.dart';
 import 'package:injectable_generator/models/dependency_config.dart';

@@ -24,6 +24,7 @@ class DependencyConfig {
   final bool postConstructReturnsSelf;
   final List<ImportableType> dependsOn;
   final bool preResolve;
+  final bool canBeConst;
   final ModuleConfig? moduleConfig;
   final DisposeFunctionConfig? disposeFunction;
   final int orderPosition;
@@ -41,6 +42,7 @@ class DependencyConfig {
     this.isAsync = false,
     this.dependsOn = const [],
     this.preResolve = false,
+    this.canBeConst = false,
     this.moduleConfig,
     this.disposeFunction,
     this.orderPosition = 0,
@@ -89,9 +91,10 @@ class DependencyConfig {
     );
   }
 
+
   @override
   String toString() {
-    return 'DependencyConfig{type: $type, typeImpl: $typeImpl, dependencies: $dependencies, injectableType: $injectableType, instanceName: $instanceName, signalsReady: $signalsReady, environments: $environments, constructorName: $constructorName, isAsync: $isAsync, dependsOn: $dependsOn, preResolve: $preResolve, moduleConfig: $moduleConfig,scope: $scope}';
+    return 'DependencyConfig{type: $type, typeImpl: $typeImpl, injectableType: $injectableType, dependencies: $dependencies, instanceName: $instanceName, signalsReady: $signalsReady, environments: $environments, constructorName: $constructorName, postConstruct: $postConstruct, isAsync: $isAsync, postConstructReturnsSelf: $postConstructReturnsSelf, dependsOn: $dependsOn, preResolve: $preResolve, canBeConst: $canBeConst, moduleConfig: $moduleConfig, disposeFunction: $disposeFunction, orderPosition: $orderPosition, scope: $scope}';
   }
 
   @override
@@ -110,6 +113,7 @@ class DependencyConfig {
           isAsync == other.isAsync &&
           ListEquality().equals(dependsOn, other.dependsOn) &&
           preResolve == other.preResolve &&
+          canBeConst == other.canBeConst &&
           disposeFunction == other.disposeFunction &&
           scope == other.scope &&
           moduleConfig == other.moduleConfig &&
@@ -132,6 +136,7 @@ class DependencyConfig {
       preResolve.hashCode ^
       disposeFunction.hashCode ^
       moduleConfig.hashCode ^
+      canBeConst.hashCode ^
       orderPosition.hashCode ^
       postConstruct.hashCode ^
       postConstructReturnsSelf.hashCode ^
@@ -175,6 +180,7 @@ class DependencyConfig {
       constructorName: json['constructorName'],
       postConstruct: json['postConstruct'],
       isAsync: json['isAsync'] as bool,
+      canBeConst: json['canBeConst'] as bool,
       dependsOn: dependsOn,
       preResolve: json['preResolve'] as bool,
       postConstructReturnsSelf: json['postConstructReturnsSelf'] as bool,
@@ -191,6 +197,7 @@ class DependencyConfig {
         "isAsync": isAsync,
         "postConstructReturnsSelf": postConstructReturnsSelf,
         "preResolve": preResolve,
+        "canBeConst": canBeConst,
         "injectableType": injectableType,
         if (moduleConfig != null) 'moduleConfig': moduleConfig!.toJson(),
         if (disposeFunction != null)

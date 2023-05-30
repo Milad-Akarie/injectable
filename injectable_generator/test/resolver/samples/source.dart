@@ -69,3 +69,13 @@ abstract class IFactory {}
 
 @Injectable(as: IFactory)
 class FactoryAsAbstract extends IFactory {}
+
+@Injectable()
+class ConstService{
+  const ConstService();
+}
+
+@Injectable()
+class ConstServiceWithDeps{
+  const ConstServiceWithDeps(SimpleFactory simpleFactory);
+}

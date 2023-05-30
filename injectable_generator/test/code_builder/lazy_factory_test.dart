@@ -31,6 +31,17 @@ void main() {
           'gh.lazySingleton<Demo>(() => Demo());');
     });
 
+    test("Simple empty const constructor generator", () {
+      expect(
+          generate(DependencyConfig(
+            injectableType: InjectableType.factory,
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
+            canBeConst: true
+          )),
+          'gh.factory<Demo>(() => const Demo());');
+    });
+
     test("lazy singleton generator with async dependencies", () {
       final dep = DependencyConfig(
         injectableType: InjectableType.lazySingleton,

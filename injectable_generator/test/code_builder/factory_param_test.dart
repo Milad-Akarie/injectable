@@ -23,7 +23,7 @@ void main() {
               )
             ],
           )),
-          'gh.factoryParam<Demo, Storage, dynamic>((storage, _) => Demo(storage));');
+          'gh.factoryParam<Demo, Storage, dynamic>((storage, _, ) => Demo(storage));');
     });
 
     test("Two factory param generator test", () {
@@ -47,7 +47,7 @@ void main() {
               )
             ],
           )),
-          'gh.factoryParam<Demo, Storage, Url>((storage, url) => Demo(storage, url));');
+          'gh.factoryParam<Demo, Storage, Url>((storage, url, ) => Demo(storage, url, ));');
     });
 
     test("Two named factory param generator test", () {
@@ -71,7 +71,7 @@ void main() {
               )
             ],
           )),
-          'gh.factoryParam<Demo, Storage, Url>((storage, url) => Demo(storage: storage, url: url));');
+          'gh.factoryParam<Demo, Storage, Url>((storage, url, ) => Demo(storage: storage, url: url, ));');
     });
 
     test("One factory param with injected dependencies test", () {
@@ -95,7 +95,7 @@ void main() {
               )
             ],
           )),
-          'gh.factoryParam<Demo, String, dynamic>((url, _) => Demo(gh<Storage>(), url));');
+          'gh.factoryParam<Demo, String, dynamic>((url, _, ) => Demo(gh<Storage>(), url, ));');
     });
 
     test("One factory param with injected async dependencies test", () {
@@ -128,7 +128,7 @@ void main() {
         ),
       ];
       expect(generate(dep, allDeps: allDeps),
-          'gh.factoryParamAsync<Demo, String, dynamic>((url, _) async  => Demo( await gh.getAsync<Storage>(), url));');
+          'gh.factoryParamAsync<Demo, String, dynamic>((url, _, ) async  => Demo( await gh.getAsync<Storage>(), url, ));');
     });
   });
 }
