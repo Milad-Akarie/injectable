@@ -6,5 +6,4 @@ GetIt getIt = GetIt.instance;
 
 void main() async {
   await getIt.init(environment: Environment.dev);
-
 }

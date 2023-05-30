@@ -2,15 +2,13 @@ import 'package:example/injector/injector.dart';
 import 'package:injectable/injectable.dart';
 
 @Injectable()
-class ConstService{
+class ConstService {
   const ConstService();
 }
 
 abstract class AbstractService {
   Set<String> get environments;
 }
-
-
 
 @platformMobile
 @Injectable(as: AbstractService)
@@ -81,16 +79,13 @@ class PostConstructableService {
   }
 }
 
-
-sealed class Model{
+sealed class Model {
   Model get m {
-    return switch(this){
-      ModelX() => ModelX(),
-      ModelY() => ModelY()
-    };
-  }}
+    return switch (this) { ModelX() => ModelX(), ModelY() => ModelY() };
+  }
+}
+
 @Injectable(as: Model)
- class ModelX extends Model{}
- class ModelY extends Model{}
+class ModelX extends Model {}
 
-
+class ModelY extends Model {}

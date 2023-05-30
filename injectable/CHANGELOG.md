@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.1.2]
+- Update dart constrains to ">=2.17.0 <4.0.0"
 ## [2.1.1]
 - add coverage:ignore-file comment to generated config
 - fix relative imports not working

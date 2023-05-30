@@ -16,4 +16,3 @@ configInjector(
     environment: env,
   );
 }
-
