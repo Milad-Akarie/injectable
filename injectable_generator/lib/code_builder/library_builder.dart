@@ -66,8 +66,10 @@ mixin SharedGeneratorCode {
     getAsyncReferName ??= asExtension ? 'getAsync' : 'gh.getAsync';
     getReferName ??= 'gh';
     final isAsync = dependencies.isAsyncOrHasAsyncDependency(iDep);
-    final expression = refer(isAsync ? getAsyncReferName : getReferName).call([], {
-      if (iDep.instanceName != null) 'instanceName': literalString(iDep.instanceName!),
+    final expression =
+        refer(isAsync ? getAsyncReferName : getReferName).call([], {
+      if (iDep.instanceName != null)
+        'instanceName': literalString(iDep.instanceName!),
     }, [
       typeRefer(iDep.type, targetFile, false),
     ]);
