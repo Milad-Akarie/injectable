@@ -10,8 +10,6 @@ import 'package:meta/meta.dart';
 
 class DependencySet with IterableMixin<DependencyConfig> {
   final Set<DependencyConfig> _dependencies;
-  late final Map<_DependencyId, List<DependencyConfig>> _lookupTable =
-      _dependencies.groupListsBy((d) => d.id);
 
   DependencySet({
     required Iterable<DependencyConfig> dependencies,
