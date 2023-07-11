@@ -92,7 +92,6 @@ extension _InjectedDependencyX on InjectedDependency {
 
 @visibleForTesting
 Set<DependencyConfig> sortDependencies(Iterable<DependencyConfig> it) {
-  print('Sorting dependencies');
   // sort dependencies alphabetically
   final deps = it.toList()..sortBy((e) => e.type.name);
   // sort dependencies by their register order
@@ -100,7 +99,6 @@ Set<DependencyConfig> sortDependencies(Iterable<DependencyConfig> it) {
   _sortByDependents(deps.toSet(), sorted);
   // sort dependencies by their orderPosition
   final s = sorted.sortedBy<num>((e) => e.orderPosition).toSet();
-  print('Done sorting dependencies');
   return s;
 }
 
