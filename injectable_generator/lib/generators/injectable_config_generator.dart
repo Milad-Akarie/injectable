@@ -60,17 +60,19 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final asExtension = annotation.read('asExtension').boolValue;
 
     final typeResolver =
-        ImportableTypeResolverImpl(await buildStep.resolver.libraries.toList());
+    ImportableTypeResolverImpl(await buildStep.resolver.libraries.toList());
 
     final ignoredTypes =
-        annotation.read('ignoreUnregisteredTypes').listValue.map(
-              (e) => typeResolver.resolveType(e.toTypeValue()!),
-            );
+    annotation.read('ignoreUnregisteredTypes').listValue.map(
+          (e) => typeResolver.resolveType(e.toTypeValue()!),
+    );
 
     final microPackageModulesBefore = _getMicroPackageModules(
       annotation.peek('externalPackageModulesBefore'),
       typeResolver,
     );
+
+    final shouldCreateGetItHelper = annotation.read('createGetItHelper').boolValue;
 
     // remove after deprecation period
     if (microPackageModulesBefore.isEmpty) {
@@ -88,10 +90,10 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     );
 
     final microPackagesModules =
-        microPackageModulesBefore.union(microPackageModulesAfter);
+    microPackageModulesBefore.union(microPackageModulesAfter);
     if (!isMicroPackage && includeMicroPackages) {
       await for (final match
-          in Glob('**.module.dart', recursive: true).list()) {
+      in Glob('**.module.dart', recursive: true).list()) {
         final commentAnnotation = File(match.path).readAsLinesSync().first;
         if (commentAnnotation.contains('@GeneratedMicroModule')) {
           final segments = commentAnnotation.split(';');
@@ -142,9 +144,10 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       initializerName: initializerName,
       asExtension: asExtension,
       microPackageName:
-          isMicroPackage ? buildStep.inputId.package.pascalCase : null,
+      isMicroPackage ? buildStep.inputId.package.pascalCase : null,
       microPackagesModulesBefore: microPackageModulesBefore,
       microPackagesModulesAfter: microPackageModulesAfter,
+      createNewGetItInstance: shouldCreateGetItHelper,
     );
 
     final generatedLib = generator.generate();
@@ -155,7 +158,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     );
 
     final output =
-        DartFormatter().format(generatedLib.accept(emitter).toString());
+    DartFormatter().format(generatedLib.accept(emitter).toString());
 
     if (isMicroPackage) {
       final outputId = buildStep.inputId.changeExtension('.module.dart');
@@ -172,61 +175,61 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   }
 
   Set<ExternalModuleConfig> _getMicroPackageModules(
-    ConstantReader? constList,
-    ImportableTypeResolverImpl typeResolver,
-  ) {
+      ConstantReader? constList,
+      ImportableTypeResolverImpl typeResolver,
+      ) {
     return constList?.listValue.map(
           (e) {
-            final reader = ConstantReader(e);
-            final typeValue = reader.read('module').typeValue;
-            final scope = reader.peek('scope')?.stringValue;
-            throwIf(
-              typeValue.element is! ClassElement ||
-                  !TypeChecker.fromRuntime(MicroPackageModule)
-                      .isSuperOf(typeValue.element!),
-              'ExternalPackageModule must be a class that extends MicroPackageModule',
-            );
-            return ExternalModuleConfig(
-                typeResolver.resolveType(typeValue), scope);
-          },
-        ).toSet() ??
+        final reader = ConstantReader(e);
+        final typeValue = reader.read('module').typeValue;
+        final scope = reader.peek('scope')?.stringValue;
+        throwIf(
+          typeValue.element is! ClassElement ||
+              !TypeChecker.fromRuntime(MicroPackageModule)
+                  .isSuperOf(typeValue.element!),
+          'ExternalPackageModule must be a class that extends MicroPackageModule',
+        );
+        return ExternalModuleConfig(
+            typeResolver.resolveType(typeValue), scope);
+      },
+    ).toSet() ??
         <ExternalModuleConfig>{};
   }
 
   Set<ExternalModuleConfig> _getMicroPackageModulesMapped(
-    ConstantReader? constList,
-    ImportableTypeResolverImpl typeResolver,
-  ) {
+      ConstantReader? constList,
+      ImportableTypeResolverImpl typeResolver,
+      ) {
     return constList?.listValue.map(
           (e) {
-            final typeValue = e.toTypeValue()!;
-            throwIf(
-              typeValue.element is! ClassElement ||
-                  !TypeChecker.fromRuntime(MicroPackageModule)
-                      .isSuperOf(typeValue.element!),
-              'ExternalPackageModule must be a class that extends MicroPackageModule',
-            );
-            return ExternalModuleConfig(typeResolver.resolveType(typeValue));
-          },
-        ).toSet() ??
+        final typeValue = e.toTypeValue()!;
+        throwIf(
+          typeValue.element is! ClassElement ||
+              !TypeChecker.fromRuntime(MicroPackageModule)
+                  .isSuperOf(typeValue.element!),
+          'ExternalPackageModule must be a class that extends MicroPackageModule',
+        );
+        return ExternalModuleConfig(typeResolver.resolveType(typeValue));
+      },
+    ).toSet() ??
         <ExternalModuleConfig>{};
   }
 
   void _reportMissingDependencies(
-    List<DependencyConfig> deps,
-    Iterable<ImportableType> ignoredTypes,
-    Iterable<String> ignoredTypesInPackages,
-    Uri? targetFile,
-    bool throwOnMissingDependencies,
-  ) {
+      List<DependencyConfig> deps,
+      Iterable<ImportableType> ignoredTypes,
+      Iterable<String> ignoredTypesInPackages,
+      Uri? targetFile,
+      bool throwOnMissingDependencies,
+      ) {
     final messages = [];
     for (final dep in deps) {
       for (var iDep in dep.dependencies.where(
-          (d) => !d.isFactoryParam && d.instanceName != kEnvironmentsName)) {
+              (d) => !d.isFactoryParam && d.instanceName != kEnvironmentsName)) {
         if ((ignoredTypes.contains(iDep.type) ||
             (iDep.type.import == null ||
                 ignoredTypesInPackages.any(
-                  (type) => iDep.type.import!.startsWith('package:$type'),
+                      (type) => iDep.type.import!.startsWith('package:$type'),
                 )))) {
           continue;
         }
@@ -243,7 +246,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
               .toSet();
           if (availableEnvs.isNotEmpty) {
             final missingEnvs =
-                dep.environments.toSet().difference(availableEnvs);
+            dep.environments.toSet().difference(availableEnvs);
             if (missingEnvs.isNotEmpty) {
               messages.add(
                 '[${dep.typeImpl}] ${dep.environments.toSet()} depends on Type [${iDep.type}] ${iDep.type.import == null ? '' : 'from ${iDep.type.import}'} \n which is not available under environment keys $missingEnvs',
@@ -267,8 +270,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final validatedDeps = <DependencyConfig>[];
     for (var dep in deps) {
       var registered = validatedDeps.where(
-        (elm) =>
-            elm.type == dep.type &&
+            (elm) =>
+        elm.type == dep.type &&
             elm.instanceName == dep.instanceName &&
             elm.scope == dep.scope,
       );

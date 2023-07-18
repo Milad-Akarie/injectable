@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.1.3]
+- A new [InjectableInit] parameter has been added. We call this parameter [createGetItHelper]. Through this parameter, micro packages can be provided with [GetItHelper] instance support.
 ## [2.1.2]
 - Update dart constrains to ">=2.17.0 <4.0.0"
 ## [2.1.1]

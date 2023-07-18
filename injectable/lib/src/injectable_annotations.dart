@@ -62,6 +62,10 @@ class InjectableInit {
   /// classes passed here must extend [MicroPackageModule]
   final List<ExternalModule>? externalPackageModulesAfter;
 
+  /// If [createGetItHelper] is true, an additional top-level get_it instance
+  /// will be extracted for micro modules.
+  final bool createGetItHelper;
+
   /// default constructor
   const InjectableInit({
     this.generateForDir = const ['lib'],
@@ -76,7 +80,8 @@ class InjectableInit {
     this.includeMicroPackages = true,
     this.externalPackageModulesAfter,
     this.externalPackageModulesBefore,
-  }) : _isMicroPackage = false;
+  })  : _isMicroPackage = false,
+        createGetItHelper = false;
 
   /// default constructor
   const InjectableInit.microPackage({
@@ -89,6 +94,7 @@ class InjectableInit {
     this.throwOnMissingDependencies = false,
     this.ignoreUnregisteredTypesInPackages = const [],
     this.usesNullSafety = true,
+    this.createGetItHelper = false,
   })  : _isMicroPackage = true,
         asExtension = false,
         includeMicroPackages = false,
@@ -157,11 +163,11 @@ class Singleton extends Injectable {
     String? scope,
     int? order,
   }) : super(
-          as: as,
-          env: env,
-          order: order,
-          scope: scope,
-        );
+    as: as,
+    env: env,
+    order: order,
+    scope: scope,
+  );
 }
 
 /// const instance of [Singleton]
@@ -179,11 +185,11 @@ class LazySingleton extends Injectable {
     String? scope,
     int? order,
   }) : super(
-          as: as,
-          env: env,
-          scope: scope,
-          order: order,
-        );
+    as: as,
+    env: env,
+    scope: scope,
+    order: order,
+  );
 
   /// a dispose callback function to be
   /// passed to [GetIt]
@@ -259,6 +265,7 @@ class FactoryMethod {
   /// return value will be pre-awaited before it's
   /// registered inside of GetIt
   final bool preResolve;
+
   // default constructor
   const FactoryMethod({this.preResolve = false});
 }
@@ -307,6 +314,7 @@ class PostConstruct {
   /// return value will be pre-awaited before it's
   /// registered inside of GetIt
   final bool preResolve;
+
   // default constructor
   const PostConstruct({this.preResolve = false});
 }
