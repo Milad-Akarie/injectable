@@ -1,18 +1,105 @@
+import 'dart:collection';
+
 import 'package:code_builder/code_builder.dart';
 import 'package:collection/collection.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
 import 'package:injectable_generator/models/importable_type.dart';
 import 'package:injectable_generator/models/injected_dependency.dart';
 import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
+import 'package:meta/meta.dart';
 
-Set<DependencyConfig> sortDependencies(List<DependencyConfig> deps) {
+class DependencySet with IterableMixin<DependencyConfig> {
+  final Set<DependencyConfig> _dependencies;
+
+  DependencySet({
+    required Iterable<DependencyConfig> dependencies,
+  }) : _dependencies = sortDependencies(dependencies);
+
+  bool hasAsyncDependency(DependencyConfig dep) {
+    _ensureAsyncDepsMapInitialized();
+    return _hasAsyncDeps![dep.id] ?? false;
+  }
+
+  bool isAsyncOrHasAsyncDependency(InjectedDependency iDep) {
+    _ensureAsyncDepsMapInitialized();
+    return _isAsyncOrHasAsyncDeps![iDep.id] ?? false;
+  }
+
+  Map<_DependencyId, bool>? _hasAsyncDeps;
+  Map<_DependencyId, bool>? _isAsyncOrHasAsyncDeps;
+
+  void _ensureAsyncDepsMapInitialized() {
+    if (_hasAsyncDeps != null) {
+      return;
+    }
+
+    final hasAsyncDepsMap = <_DependencyId, bool>{};
+    final isAsyncOrHasAsyncDepsMap = <_DependencyId, bool>{};
+
+    for (final dep in _dependencies) {
+      final hasAsyncDeps = dep.dependencies.any((childDependency) {
+        final cid = childDependency.id;
+        return isAsyncOrHasAsyncDepsMap[cid] ?? false;
+      });
+
+      final did = dep.id;
+      hasAsyncDepsMap[did] = hasAsyncDeps;
+      isAsyncOrHasAsyncDepsMap[did] =
+          (dep.isAsync && !dep.preResolve) || hasAsyncDeps;
+    }
+
+    _hasAsyncDeps = hasAsyncDepsMap;
+    _isAsyncOrHasAsyncDeps = isAsyncOrHasAsyncDepsMap;
+  }
+
+  @override
+  Iterator<DependencyConfig> get iterator => _dependencies.iterator;
+}
+
+class _DependencyId {
+  final ImportableType type;
+  final String? instanceName;
+
+  const _DependencyId({
+    required this.type,
+    required this.instanceName,
+  });
+
+  @override
+  String toString() {
+    return 'DependencyId{type: $type, instanceName: $instanceName}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is _DependencyId &&
+          runtimeType == other.runtimeType &&
+          type == other.type &&
+          instanceName == other.instanceName);
+
+  @override
+  int get hashCode => Object.hash(type, instanceName);
+}
+
+extension _DependencyConfigX on DependencyConfig {
+  _DependencyId get id => _DependencyId(type: type, instanceName: instanceName);
+}
+
+extension _InjectedDependencyX on InjectedDependency {
+  _DependencyId get id => _DependencyId(type: type, instanceName: instanceName);
+}
+
+@visibleForTesting
+Set<DependencyConfig> sortDependencies(Iterable<DependencyConfig> it) {
   // sort dependencies alphabetically
-  deps.sortBy((e) => e.type.name);
+  final deps = it.toList()..sortBy((e) => e.type.name);
   // sort dependencies by their register order
   final Set<DependencyConfig> sorted = {};
   _sortByDependents(deps.toSet(), sorted);
   // sort dependencies by their orderPosition
-  return sorted.sortedBy<num>((e) => e.orderPosition).toSet();
+  final s = sorted.sortedBy<num>((e) => e.orderPosition).toSet();
+  return s;
 }
 
 void _sortByDependents(
@@ -40,44 +127,6 @@ void _sortByDependents(
   if (unSorted.isNotEmpty) {
     _sortByDependents(unSorted.difference(sorted), sorted);
   }
-}
-
-bool isAsyncOrHasAsyncDependency(
-    InjectedDependency iDep, Set<DependencyConfig> allDeps) {
-  final dep = lookupDependency(iDep, allDeps);
-  if (dep == null) {
-    return false;
-  }
-
-  if (dep.isAsync && !dep.preResolve) {
-    return true;
-  }
-
-  return hasAsyncDependency(dep, allDeps);
-}
-
-bool hasAsyncDependency(DependencyConfig dep, Set<DependencyConfig> allDeps) {
-  for (final iDep in dep.dependencies) {
-    var config = lookupDependency(iDep, allDeps);
-
-    // If the dependency corresponding to the InjectedDependency couldn't be
-    // found, this probably indicates there is a missing dependency.
-    if (config == null) {
-      continue;
-    }
-
-    // Ultimately, this is what we're looking for:
-    if (config.isAsync && !config.preResolve) {
-      return true;
-    }
-
-    // If the dependency itself isn't async, check to see if any of *its*
-    // dependencies are async.
-    if (hasAsyncDependency(config, allDeps)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 DependencyConfig? lookupDependency(
@@ -111,7 +160,7 @@ Set<DependencyConfig> lookupPossibleDeps(
       .toSet();
 }
 
-bool hasPreResolvedDependencies(Set<DependencyConfig> deps) {
+bool hasPreResolvedDependencies(Iterable<DependencyConfig> deps) {
   return deps.any((d) => d.isAsync && d.preResolve);
 }
 

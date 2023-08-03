@@ -104,7 +104,8 @@ void main() {
         injectableType: InjectableType.factory,
       );
       final allDeps = {dep};
-      expect(hasAsyncDependency(dep, allDeps), isFalse);
+      final depSet = DependencySet(dependencies: allDeps);
+      expect(depSet.hasAsyncDependency(dep), isFalse);
     });
 
     test('should return `false` when all deps are not async', () {
@@ -127,7 +128,8 @@ void main() {
           injectableType: InjectableType.factory,
         ),
       };
-      expect(hasAsyncDependency(dep, allDeps), isFalse);
+      final depSet = DependencySet(dependencies: allDeps);
+      expect(depSet.hasAsyncDependency(dep), isFalse);
     });
 
     test('should return `false` for a missing dependency', () {
@@ -143,7 +145,8 @@ void main() {
         ],
       );
       final allDeps = <DependencyConfig>{dep};
-      expect(hasAsyncDependency(dep, allDeps), isFalse);
+      final depSet = DependencySet(dependencies: allDeps);
+      expect(depSet.hasAsyncDependency(dep), isFalse);
     });
 
     test('should return `true` when at least one dep is async', () {
@@ -178,7 +181,8 @@ void main() {
           instanceName: 'buzzImpl',
         ),
       };
-      expect(hasAsyncDependency(dep, allDeps), isTrue);
+      final depSet = DependencySet(dependencies: allDeps);
+      expect(depSet.hasAsyncDependency(dep), isTrue);
     });
 
     test('should return `true` when a named instance dep is async', () {
@@ -213,7 +217,8 @@ void main() {
           isAsync: true,
         ),
       };
-      expect(hasAsyncDependency(dep, allDeps), isTrue);
+      final depSet = DependencySet(dependencies: allDeps);
+      expect(depSet.hasAsyncDependency(dep), isTrue);
     });
 
     test('should return `true` when a transitive dep is async', () {
@@ -249,7 +254,8 @@ void main() {
           isAsync: true,
         ),
       };
-      expect(hasAsyncDependency(dep, allDeps), isTrue);
+      final depSet = DependencySet(dependencies: allDeps);
+      expect(depSet.hasAsyncDependency(dep), isTrue);
     });
   });
 
@@ -260,7 +266,8 @@ void main() {
         paramName: 'fizz',
       );
       final allDeps = <DependencyConfig>{};
-      expect(isAsyncOrHasAsyncDependency(iDep, allDeps), isFalse);
+      final depSet = DependencySet(dependencies: allDeps);
+      expect(depSet.isAsyncOrHasAsyncDependency(iDep), isFalse);
     });
 
     test('should return `false` when not async and no deps', () {
@@ -275,7 +282,8 @@ void main() {
         isAsync: false,
       );
       final allDeps = {dep};
-      expect(isAsyncOrHasAsyncDependency(iDep, allDeps), isFalse);
+      final depSet = DependencySet(dependencies: allDeps);
+      expect(depSet.isAsyncOrHasAsyncDependency(iDep), isFalse);
     });
     test('should return `false` when async but preResolve is true', () {
       final iDep = InjectedDependency(
@@ -290,7 +298,8 @@ void main() {
         preResolve: true,
       );
       final allDeps = {dep};
-      expect(isAsyncOrHasAsyncDependency(iDep, allDeps), isFalse);
+      final depSet = DependencySet(dependencies: allDeps);
+      expect(depSet.isAsyncOrHasAsyncDependency(iDep), isFalse);
     });
 
     test('should return `true` when async', () {
@@ -305,7 +314,8 @@ void main() {
         isAsync: true,
       );
       final allDeps = {dep};
-      expect(isAsyncOrHasAsyncDependency(iDep, allDeps), isTrue);
+      final depSet = DependencySet(dependencies: allDeps);
+      expect(depSet.isAsyncOrHasAsyncDependency(iDep), isTrue);
     });
 
     test('should return `false` when not async and no async deps', () {
@@ -332,7 +342,8 @@ void main() {
           injectableType: InjectableType.factory,
         )
       };
-      expect(isAsyncOrHasAsyncDependency(iDep, allDeps), isFalse);
+      final depSet = DependencySet(dependencies: allDeps);
+      expect(depSet.isAsyncOrHasAsyncDependency(iDep), isFalse);
     });
 
     test('should return `true` when has an async deps', () {
@@ -360,7 +371,8 @@ void main() {
           isAsync: true,
         )
       };
-      expect(isAsyncOrHasAsyncDependency(iDep, allDeps), isTrue);
+      final depSet = DependencySet(dependencies: allDeps);
+      expect(depSet.isAsyncOrHasAsyncDependency(iDep), isTrue);
     });
   });
 

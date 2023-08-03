@@ -19,6 +19,7 @@ dependencies:
 #    path: ../injectable
   collection: ^1.15.0
   recase: ^4.1.0
+  meta: ^1.9.1
 dev_dependencies:
   build_runner: ^2.3.3
   build_test: ^2.1.3
