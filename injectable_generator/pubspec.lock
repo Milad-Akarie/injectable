@@ -252,9 +252,10 @@ packages:
   injectable:
     dependency: "direct main"
     description:
-      path: "../injectable"
-      relative: true
-    source: path
+      name: injectable
+      sha256: "4cc54247877952e5d76cc2d0be093a0954f83a4407d02770b77fcf7cf3192ee9"
+      url: "https://pub.dev"
+    source: hosted
     version: "2.2.0"
   io:
     dependency: transitive

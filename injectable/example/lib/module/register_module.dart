@@ -3,7 +3,6 @@ import 'package:injectable/injectable.dart';
 
 @module
 abstract class RegisterModule {
-
   @Named("Repo")
   @dev
   @LazySingleton(dispose: disposeRepo)
