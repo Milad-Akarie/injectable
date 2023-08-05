@@ -45,13 +45,16 @@ mixin SharedGeneratorCode {
 
     final ref = typeRefer(dep.typeImpl, targetFile);
     if (dep.constructorName?.isNotEmpty == true) {
-      return ref.newInstanceNamed(
+      final constructor =
+          dep.canBeConst ? ref.constInstanceNamed : ref.newInstanceNamed;
+      return constructor(
         dep.constructorName!,
         positionalParams,
         namedParams,
       );
     } else {
-      return ref.newInstance(positionalParams, namedParams);
+      final constructor = dep.canBeConst ? ref.constInstance : ref.newInstance;
+      return constructor(positionalParams, namedParams);
     }
   }
 
@@ -346,13 +349,8 @@ class InitMethodGenerator with SharedGeneratorCode {
 
     return Method(
       (b) => b
-        ..docs.addAll([
-          if (!asExtension && scopeName == null && !isMicroPackage) ...[
-            '\n// ignore_for_file: unnecessary_lambdas',
-            '// ignore_for_file: lines_longer_than_80_chars'
-          ],
-          '// initializes the registration of ${scopeName ?? 'main'}-scope dependencies inside of GetIt'
-        ])
+        ..docs.add(
+            '// initializes the registration of ${scopeName ?? 'main'}-scope dependencies inside of GetIt')
         ..modifier = useAsyncModifier ? MethodModifier.async : null
         ..returns = returnRefer
         ..name = initializerName
