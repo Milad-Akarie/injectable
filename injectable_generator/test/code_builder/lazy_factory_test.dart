@@ -1,4 +1,5 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:injectable_generator/code_builder/builder_utils.dart';
 import 'package:injectable_generator/code_builder/library_builder.dart';
 import 'package:injectable_generator/injectable_types.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
@@ -33,11 +34,13 @@ void main() {
 
     test("Simple empty const constructor generator", () {
       expect(
-          generate(DependencyConfig(
-              injectableType: InjectableType.factory,
-              type: ImportableType(name: 'Demo'),
-              typeImpl: ImportableType(name: 'Demo'),
-              canBeConst: true)),
+          generate(
+            DependencyConfig(
+                injectableType: InjectableType.factory,
+                type: ImportableType(name: 'Demo'),
+                typeImpl: ImportableType(name: 'Demo'),
+                canBeConst: true),
+          ),
           'gh.factory<Demo>(() => const Demo());');
     });
 
@@ -296,7 +299,7 @@ void main() {
 String generate(DependencyConfig input, {List<DependencyConfig>? allDeps}) {
   final generator = InitMethodGenerator(
     scopeDependencies: allDeps ?? [],
-    allDependencies: allDeps?.toSet() ?? {},
+    allDependencies: DependencySet(dependencies: allDeps?.toSet() ?? {}),
     initializerName: 'init',
   );
   final statement = generator.buildLazyRegisterFun(input);

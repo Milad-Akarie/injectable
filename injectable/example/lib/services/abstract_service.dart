@@ -49,6 +49,7 @@ class AsyncService extends AbstractService {
 
 abstract class IService {}
 
+@named
 @dev
 @Injectable(as: IService)
 class ServiceImpl extends IService {

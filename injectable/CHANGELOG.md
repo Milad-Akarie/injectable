@@ -1,6 +1,10 @@
 # ChangeLog
-## [2.1.3]
+## [2.3.0]
 - A new [InjectableInit] parameter has been added. We call this parameter [createGetItHelper]. Through this parameter, micro packages can be provided with [GetItHelper] instance support.
+## [2.2.0]
+- Optimize injectable_generator async analysis by [https://github.com/Jjagg]
+- Update dart constrains to ">=3.0.0 <4.0.0"
+- Update analyzer constrains to include v6+
 ## [2.1.2]
 - Update dart constrains to ">=2.17.0 <4.0.0"
 ## [2.1.1]

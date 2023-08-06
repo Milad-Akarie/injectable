@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:collection/collection.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:glob/glob.dart';
 import 'package:glob/list_local_fs.dart';
@@ -137,6 +138,17 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       throwOnMissingDependencies,
     );
     _validateDuplicateDependencies(deps);
+
+    /// don't allow registering of the same dependency with both async and sync factories
+    final groupedByType = deps.groupListsBy((d) => (d.type, d.instanceName));
+    for (final entry in groupedByType.entries) {
+      final first = entry.value.first;
+      final isAsync = first.isAsync && !first.preResolve;
+      throwIf(
+        entry.value.any((e) => (e.isAsync && !e.preResolve) != isAsync),
+        'Dependencies of type [${entry.key.$1}] must either all be async or all be sync\n',
+      );
+    }
 
     final generator = LibraryGenerator(
       dependencies: Set.of(deps),
