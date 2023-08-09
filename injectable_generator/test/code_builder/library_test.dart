@@ -36,7 +36,7 @@ GetIt init(
 // coverage:ignore-file
 
 extension GetItInjectableX on GetIt {
-  // initializes the registration of main-scope dependencies inside of GetIt
+// initializes the registration of main-scope dependencies inside of GetIt
   GetIt init({
     String environment,
     EnvironmentFilter environmentFilter,

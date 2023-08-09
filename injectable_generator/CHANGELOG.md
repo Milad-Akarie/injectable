@@ -1,4 +1,7 @@
 # ChangeLog
+## [2.3.0]
+- Revert: bumping up collection version to use 1.17.1
+- Refactor: the main scope init method will now always be generated even if it has no dependencies
 ## [2.2.0]
 - Optimize injectable_generator async analysis by [https://github.com/Jjagg]
 - Update dart constrains to ">=3.0.0 <4.0.0"
