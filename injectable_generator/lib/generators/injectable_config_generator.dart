@@ -40,6 +40,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     var includeMicroPackages =
         annotation.read("includeMicroPackages").boolValue;
 
+    var rootDir = annotation.read("rootDir").stringValue;
+
     final dirPattern = generateForDir.length > 1
         ? '{${generateForDir.join(',')}}'
         : '${generateForDir.first}';
@@ -91,8 +93,10 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final microPackagesModules =
         microPackageModulesBefore.union(microPackageModulesAfter);
     if (!isMicroPackage && includeMicroPackages) {
-      await for (final match
-          in Glob('**.module.dart', recursive: true).list()) {
+      final glob = Glob('**.module.dart', recursive: true);
+      final filesStream = glob.list(root: rootDir);
+
+      await for (final match in filesStream) {
         final commentAnnotation = File(match.path).readAsLinesSync().first;
         if (commentAnnotation.contains('@GeneratedMicroModule')) {
           final segments = commentAnnotation.split(';');

@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.4.0]
+- Added [rootDir] support for specifying the root directory for the generation process.
 ## [2.3.0]
 - Revert: bumping up collection version to use 1.17.1
 - Refactor: the main scope init method will now always be generated even if it has no dependencies
