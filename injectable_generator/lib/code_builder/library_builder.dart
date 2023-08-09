@@ -114,7 +114,7 @@ class LibraryGenerator with SharedGeneratorCode {
       }
     }
 
-    final scopedDeps =
+    var scopedDeps =
         groupBy<DependencyConfig, String?>(dependencies, (d) => d.scope);
     final scopedBeforeExternalModules = groupBy<ExternalModuleConfig, String?>(
         microPackagesModulesBefore, (d) => d.scope);
@@ -128,8 +128,9 @@ class LibraryGenerator with SharedGeneratorCode {
       'Scopes are not supported in micro package modules!',
     );
 
-    if (scopedDeps.isEmpty) {
-      scopedDeps[null] = [];
+    // make sure root scope is always generated even if empty
+    if (!scopedDeps.containsKey(null)) {
+      scopedDeps = {null: const [], ...scopedDeps};
     }
     final allScopeKeys = {
       ...scopedDeps.keys,
@@ -347,10 +348,18 @@ class InitMethodGenerator with SharedGeneratorCode {
           : _getItRefer;
     }
 
+    final ghBuilder = refer('GetItHelper', _injectableImport).newInstance(
+      [
+        getInstanceRefer,
+        refer('environment'),
+        refer('environmentFilter'),
+      ],
+    );
+
     return Method(
       (b) => b
         ..docs.add(
-            '// initializes the registration of ${scopeName ?? 'main'}-scope dependencies inside of GetIt')
+            '\n// initializes the registration of ${scopeName ?? 'main'}-scope dependencies inside of GetIt')
         ..modifier = useAsyncModifier ? MethodModifier.async : null
         ..returns = returnRefer
         ..name = initializerName
@@ -422,15 +431,10 @@ class InitMethodGenerator with SharedGeneratorCode {
                   .statement
             else ...[
               if (!isMicroPackage)
-                declareFinal('gh')
-                    .assign(refer('GetItHelper', _injectableImport).newInstance(
-                      [
-                        getInstanceRefer,
-                        refer('environment'),
-                        refer('environmentFilter'),
-                      ],
-                    ))
-                    .statement,
+                if (dependencies.isNotEmpty)
+                  declareFinal('gh').assign(ghBuilder).statement
+                else
+                  ghBuilder.statement,
               ...ghStatements,
               if (!isMicroPackage) getInstanceRefer.returned.statement,
             ],

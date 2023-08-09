@@ -16,7 +16,7 @@ dependencies:
   dart_style: ^2.0.3
   injectable: ^2.2.0
 #    path: ../injectable
-  collection: ^1.18.0
+  collection: ^1.17.1
   recase: ^4.1.0
   meta: ^1.9.1
 dev_dependencies:
