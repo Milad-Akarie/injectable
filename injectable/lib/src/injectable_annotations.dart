@@ -14,7 +14,7 @@ class InjectableInit {
 
   /// if true the init function
   /// will be generated inside
-  /// of a [GetIi] extension
+  /// of a [GetIt] extension
   /// defaults to true
   final bool asExtension;
 
