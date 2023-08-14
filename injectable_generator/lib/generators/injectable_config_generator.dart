@@ -33,14 +33,14 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final isMicroPackage = annotation.read('_isMicroPackage').boolValue;
     final throwOnMissingDependencies =
         annotation.read('throwOnMissingDependencies').boolValue;
-    var targetFile = element.source?.uri;
-    var preferRelativeImports =
+    final targetFile = element.source?.uri;
+    final preferRelativeImports =
         annotation.read("preferRelativeImports").boolValue;
 
-    var includeMicroPackages =
+    final includeMicroPackages =
         annotation.read("includeMicroPackages").boolValue;
 
-    var rootDir = annotation.read("rootDir").stringValue;
+    final rootDir = annotation.peek('rootDir')?.stringValue;
 
     final dirPattern = generateForDir.length > 1
         ? '{${generateForDir.join(',')}}'

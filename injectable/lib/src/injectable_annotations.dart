@@ -21,7 +21,7 @@ class InjectableInit {
   /// Example: ../../path/path2
   /// Absolute Path:
   /// Example: /Users/username/Downloads
-  final String rootDir;
+  final String? rootDir;
 
   /// if true the init function
   /// will be generated inside
@@ -76,7 +76,7 @@ class InjectableInit {
   /// default constructor
   const InjectableInit({
     this.generateForDir = const ['lib'],
-    this.rootDir = '.',
+    this.rootDir,
     this.preferRelativeImports = false,
     this.initializerName = 'init',
     this.ignoreUnregisteredTypes = const [],
@@ -105,7 +105,7 @@ class InjectableInit {
         asExtension = false,
         includeMicroPackages = false,
         initializerName = 'init',
-        rootDir = '.';
+        rootDir = null;
 }
 
 /// const instance of [InjectableInit]
