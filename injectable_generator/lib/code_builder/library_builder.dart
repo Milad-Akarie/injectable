@@ -431,10 +431,7 @@ class InitMethodGenerator with SharedGeneratorCode {
                   .statement
             else ...[
               if (!isMicroPackage)
-                if (dependencies.isNotEmpty)
-                  declareFinal('gh').assign(ghBuilder).statement
-                else
-                  ghBuilder.statement,
+                declareFinal('gh').assign(ghBuilder).statement,
               ...ghStatements,
               if (!isMicroPackage) getInstanceRefer.returned.statement,
             ],
