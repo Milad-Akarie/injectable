@@ -12,7 +12,6 @@ class InjectableInit {
   /// defaults to $init
   final String initializerName;
 
-
   /// If [rootDir] is provided, generation processes will continue
   /// through this dir.
   /// You can define the [rootDir] in the following two ways:
