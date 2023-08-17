@@ -12,6 +12,17 @@ class InjectableInit {
   /// defaults to $init
   final String initializerName;
 
+
+  /// If [rootDir] is provided, generation processes will continue
+  /// through this dir.
+  /// You can define the [rootDir] in the following two ways:
+  ///
+  /// Relative Path:
+  /// Example: ../../path/path2
+  /// Absolute Path:
+  /// Example: /Users/username/Downloads
+  final String? rootDir;
+
   /// if true the init function
   /// will be generated inside
   /// of a [GetIt] extension
@@ -65,6 +76,7 @@ class InjectableInit {
   /// default constructor
   const InjectableInit({
     this.generateForDir = const ['lib'],
+    this.rootDir,
     this.preferRelativeImports = false,
     this.initializerName = 'init',
     this.ignoreUnregisteredTypes = const [],
@@ -92,7 +104,8 @@ class InjectableInit {
   })  : _isMicroPackage = true,
         asExtension = false,
         includeMicroPackages = false,
-        initializerName = 'init';
+        initializerName = 'init',
+        rootDir = null;
 }
 
 /// const instance of [InjectableInit]

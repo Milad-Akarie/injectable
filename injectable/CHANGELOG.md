@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.3.0]
+- Added [rootDir] support for specifying the root directory for the generation process.
 ## [2.2.0]
 - Optimize injectable_generator async analysis by [https://github.com/Jjagg]
 - Update dart constrains to ">=3.0.0 <4.0.0"
