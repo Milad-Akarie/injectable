@@ -255,7 +255,7 @@ packages:
       path: "../injectable"
       relative: true
     source: path
-    version: "2.2.0"
+    version: "2.3.0"
   io:
     dependency: transitive
     description:
