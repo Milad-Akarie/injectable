@@ -143,6 +143,27 @@ class Injectable {
 /// with default arguments
 const injectable = Injectable();
 
+/// Marks a class as an viewModel
+/// dependency and generates
+class ViewModel extends Injectable {
+  /// default constructor
+  const ViewModel({
+    Type? as,
+    List<String>? env,
+    String? scope,
+    int? order,
+  }) : super(
+          as: as,
+          env: env,
+          order: order,
+          scope: scope,
+        );
+}
+
+/// const instance of [ViewModel]
+/// with default arguments
+const viewModel = ViewModel();
+
 /// Classes annotated with @Singleton
 /// will generate registerSingleton function
 class Singleton extends Injectable {
@@ -180,6 +201,43 @@ class Singleton extends Injectable {
 /// with default arguments
 const singleton = Singleton();
 
+/// Classes annotated with @SingletonViewModel
+/// will generate registerSingletonViewModel function
+class SingletonViewModel extends Injectable {
+  /// passed to singlesReady property
+  /// in registerSingleton function
+  final bool? signalsReady;
+
+  /// passed to dependsOn property
+  /// in registerSingleton function
+  final List<Type>? dependsOn;
+
+  /// a dispose callback function to be
+  /// passed to [GetIt]
+  /// the signature must match FutureOr dispose(T)
+  final Function? dispose;
+
+  /// default constructor
+  const SingletonViewModel({
+    this.signalsReady,
+    this.dependsOn,
+    this.dispose,
+    Type? as,
+    List<String>? env,
+    String? scope,
+    int? order,
+  }) : super(
+          as: as,
+          env: env,
+          order: order,
+          scope: scope,
+        );
+}
+
+/// const instance of [SingletonViewModel]
+/// with default arguments
+const singletonViewModel = SingletonViewModel();
+
 /// Classes annotated with @LazySingleton
 /// will generate registerLazySingleton func
 class LazySingleton extends Injectable {
@@ -206,6 +264,33 @@ class LazySingleton extends Injectable {
 /// const instance of [LazySingleton]
 /// with default arguments
 const lazySingleton = LazySingleton();
+
+/// Classes annotated with @LazySingletonViewModel
+/// will generate registerLazySingletonViewModel func
+class LazySingletonViewModel extends Injectable {
+  /// default constructor
+  const LazySingletonViewModel({
+    Type? as,
+    List<String>? env,
+    this.dispose,
+    String? scope,
+    int? order,
+  }) : super(
+          as: as,
+          env: env,
+          scope: scope,
+          order: order,
+        );
+
+  /// a dispose callback function to be
+  /// passed to [GetIt]
+  /// the signature must match FutureOr dispose(T)
+  final Function? dispose;
+}
+
+/// const instance of [LazySingletonViewModel]
+/// with default arguments
+const lazySingletonViewModel = LazySingletonViewModel();
 
 /// Used to register a dependency under a name
 /// instead of type also used to annotated

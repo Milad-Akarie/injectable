@@ -6,6 +6,11 @@ class ConstService {
   const ConstService();
 }
 
+@ViewModel()
+class ConstViewModel {
+  const ConstViewModel();
+}
+
 abstract class AbstractService {
   Set<String> get environments;
 }
@@ -28,6 +33,16 @@ class WebService extends AbstractService {
   final Set<String> environments;
 
   WebService(@Named(kEnvironmentsName) this.environments);
+}
+
+@LazySingletonViewModel()
+class ViewModel1 {
+  ViewModel1();
+}
+
+@SingletonViewModel()
+class ViewModel2 {
+  ViewModel2();
 }
 
 @dev

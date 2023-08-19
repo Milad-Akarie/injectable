@@ -319,7 +319,8 @@ class InitMethodGenerator with SharedGeneratorCode {
             .statement,
       ),
       ...dependencies.map((dep) {
-        if (dep.injectableType == InjectableType.singleton) {
+        if (dep.injectableType == InjectableType.singleton ||
+            dep.injectableType == InjectableType.singletonViewModel) {
           return buildSingletonRegisterFun(dep);
         } else {
           return buildLazyRegisterFun(dep);
@@ -451,7 +452,8 @@ class InitMethodGenerator with SharedGeneratorCode {
     final hasAsyncDep = dependencies.hasAsyncDependency(dep);
     final isOrHasAsyncDep = dep.isAsync || hasAsyncDep;
 
-    if (dep.injectableType == InjectableType.factory) {
+    if (dep.injectableType == InjectableType.factory ||
+        dep.injectableType == InjectableType.viewModel) {
       final hasFactoryParams = dep.dependencies.any((d) => d.isFactoryParam);
       if (hasFactoryParams) {
         funcReferName = isOrHasAsyncDep ? 'factoryParamAsync' : 'factoryParam';
@@ -459,7 +461,8 @@ class InitMethodGenerator with SharedGeneratorCode {
       } else {
         funcReferName = isOrHasAsyncDep ? 'factoryAsync' : 'factory';
       }
-    } else if (dep.injectableType == InjectableType.lazySingleton) {
+    } else if (dep.injectableType == InjectableType.lazySingleton ||
+        dep.injectableType == InjectableType.lazySingletonViewModel) {
       funcReferName = isOrHasAsyncDep ? 'lazySingletonAsync' : 'lazySingleton';
     }
     throwIf(funcReferName == null, 'Injectable type is not supported');

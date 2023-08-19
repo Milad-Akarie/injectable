@@ -118,6 +118,28 @@ class DependencyResolver {
         _injectableType = InjectableType.lazySingleton;
         disposeFuncFromAnnotation =
             injectable.peek('dispose')?.objectValue.toFunctionValue();
+      } else if (injectable
+          .instanceOf(TypeChecker.fromRuntime(LazySingletonViewModel))) {
+        _injectableType = InjectableType.lazySingletonViewModel;
+        disposeFuncFromAnnotation =
+            injectable.peek('dispose')?.objectValue.toFunctionValue();
+      } else if (injectable
+          .instanceOf(TypeChecker.fromRuntime(SingletonViewModel))) {
+        _injectableType = InjectableType.singletonViewModel;
+        _signalsReady = injectable.peek('signalsReady')?.boolValue;
+        disposeFuncFromAnnotation =
+            injectable.peek('dispose')?.objectValue.toFunctionValue();
+        var dependsOn = injectable
+            .peek('dependsOn')
+            ?.listValue
+            .map((type) => type.toTypeValue())
+            .where((v) => v != null)
+            .map<ImportableType>(
+                (dartType) => _typeResolver.resolveType(dartType!))
+            .toList();
+        if (dependsOn != null) {
+          _dependsOn.addAll(dependsOn);
+        }
       } else if (injectable.instanceOf(TypeChecker.fromRuntime(Singleton))) {
         _injectableType = InjectableType.singleton;
         _signalsReady = injectable.peek('signalsReady')?.boolValue;
@@ -194,6 +216,12 @@ class DependencyResolver {
       throwIf(
         _injectableType == InjectableType.factory,
         'Factory types can not have a dispose method',
+        element: clazz,
+      );
+
+      throwIf(
+        _injectableType == InjectableType.viewModel,
+        'viewModel types can not have a dispose method',
         element: clazz,
       );
       throwIf(
@@ -300,7 +328,9 @@ class DependencyResolver {
     );
 
     throwIf(
-      _injectableType != InjectableType.factory && factoryParamsCount != 0,
+      _injectableType != InjectableType.factory &&
+          _injectableType != InjectableType.viewModel &&
+          factoryParamsCount != 0,
       'only factories can have parameters',
       element: clazz,
     );
