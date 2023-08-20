@@ -8,6 +8,9 @@ environment:
 
 dependencies:
   get_it: ">=7.2.0 <8.0.0"
+  provider: ^6.0.5
+  flutter:
+    sdk: flutter
 
 dev_dependencies:
   lints: ^2.1.1

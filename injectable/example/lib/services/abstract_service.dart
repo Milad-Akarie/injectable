@@ -35,16 +35,6 @@ class WebService extends AbstractService {
   WebService(@Named(kEnvironmentsName) this.environments);
 }
 
-@LazySingletonViewModel()
-class ViewModel1 {
-  ViewModel1();
-}
-
-@SingletonViewModel()
-class ViewModel2 {
-  ViewModel2();
-}
-
 @dev
 @Injectable(as: AbstractService)
 class AsyncService extends AbstractService {
@@ -60,39 +50,6 @@ class AsyncService extends AbstractService {
     @Named(kEnvironmentsName) Set<String> envs,
   ) =>
       Future.value(AsyncService(envs));
-}
-
-abstract class IService {}
-
-@named
-@dev
-@Injectable(as: IService)
-class ServiceImpl extends IService {
-  ServiceImpl(@factoryParam String? param);
-}
-
-@test
-@Injectable(as: IService)
-class LazyServiceImpl extends IService {
-  LazyServiceImpl._(String? param);
-
-  @factoryMethod
-  static Future<IService> create(@factoryParam String? param) {
-    return Future.value(LazyServiceImpl._(param));
-  }
-}
-
-@singleton
-class PostConstructableService {
-  final IService service;
-
-  PostConstructableService(this.service);
-
-  @PostConstruct()
-  Future<void> init() {
-    return Future.value(null);
-    // return this;
-  }
 }
 
 sealed class Model {

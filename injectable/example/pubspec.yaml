@@ -6,6 +6,8 @@ environment:
 
 dependencies:
   get_it:  ">=7.0.0 <8.0.0"
+  flutter:
+    sdk: flutter
   injectable:
     path: ../../injectable
 
