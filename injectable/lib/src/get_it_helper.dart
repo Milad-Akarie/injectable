@@ -92,6 +92,7 @@ class GetItHelper {
           (instance) => factory(
             () => instance,
             instanceName: instanceName,
+            registerFor: registerFor,
           ),
         );
       } else {
@@ -166,6 +167,7 @@ class GetItHelper {
           (instance) => lazySingleton(
             () => instance,
             instanceName: instanceName,
+            registerFor: registerFor,
             dispose: dispose,
           ),
         );
@@ -217,6 +219,7 @@ class GetItHelper {
             instance,
             instanceName: instanceName,
             signalsReady: signalsReady,
+            registerFor: registerFor,
             dispose: dispose,
           ),
         );
