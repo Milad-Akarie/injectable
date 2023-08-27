@@ -8,8 +8,7 @@ void main() {
   group('Library test group', () {
     test("Simple init function", () {
       expect(generate([DependencyConfig.factory('Demo')]), '''
-// ignore_for_file: unnecessary_lambdas
-// ignore_for_file: lines_longer_than_80_chars
+// ignore_for_file: type=lint
 // coverage:ignore-file
 
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -31,8 +30,7 @@ GetIt init(
 
     test("Simple asExtension init", () {
       expect(generate([DependencyConfig.factory('Demo')], asExt: true), '''
-// ignore_for_file: unnecessary_lambdas
-// ignore_for_file: lines_longer_than_80_chars
+// ignore_for_file: type=lint
 // coverage:ignore-file
 
 extension GetItInjectableX on GetIt {

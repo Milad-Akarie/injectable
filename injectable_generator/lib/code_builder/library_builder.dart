@@ -162,8 +162,7 @@ class LibraryGenerator with SharedGeneratorCode {
     return Library(
       (b) => b
         ..comments.addAll([
-          'ignore_for_file: unnecessary_lambdas',
-          'ignore_for_file: lines_longer_than_80_chars',
+          'ignore_for_file: type=lint',
           'coverage:ignore-file',
         ])
         ..body.addAll(
