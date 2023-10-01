@@ -46,7 +46,7 @@ class InjectableInit {
   // ignore: unused_field
   final bool _isMicroPackage;
 
-  /// weather or not the main initializers
+  /// whether or not the main initializers
   /// should include micro package modules
   /// defaults to true
   final bool includeMicroPackages;
