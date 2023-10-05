@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.3.1]
+- Fix PreResolved singletons/factories fail checking environment filters #398
 ## [2.3.0]
 - Added [rootDir] support for specifying the root directory for the generation process.
 - Fix Undefined name 'gh'. when generating @InjectableInit() with only microPackageModule #392
