@@ -352,7 +352,7 @@ class InitMethodGenerator with SharedGeneratorCode {
         getInstanceRefer,
         refer('environment'),
         refer('environmentFilter'),
-        refer('instanceCallback'),
+        refer('retrievalCallback'),
       ],
     );
 
@@ -397,7 +397,7 @@ class InitMethodGenerator with SharedGeneratorCode {
               )),
             Parameter((b) => b
               ..named = true
-              ..name = 'instanceCallback'
+              ..name = 'retrievalCallback'
               ..type = nullableRefer(
                 'Object Function(Object)',
                 nullable: true,
