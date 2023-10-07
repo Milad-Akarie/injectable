@@ -352,6 +352,7 @@ class InitMethodGenerator with SharedGeneratorCode {
         getInstanceRefer,
         refer('environment'),
         refer('environmentFilter'),
+        refer('instanceCallback'),
       ],
     );
 
@@ -393,7 +394,14 @@ class InitMethodGenerator with SharedGeneratorCode {
                 'EnvironmentFilter',
                 url: _injectableImport,
                 nullable: true,
-              ))
+              )),
+            Parameter((b) => b
+              ..named = true
+              ..name = 'instanceCallback'
+              ..type = nullableRefer(
+                'Object Function(Object)',
+                nullable: true,
+              )),
           ] else if (!isMicroPackage)
             Parameter((b) => b
               ..named = true

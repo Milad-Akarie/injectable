@@ -11,9 +11,12 @@ class GetItHelper {
   /// filter for whether to register for the given set of environments
   late final EnvironmentFilter _environmentFilter;
 
+  /// callback for instance
+  late final Object Function(Object) _instanceCallback;
+
   /// creates a new instance of GetItHelper
   GetItHelper(this.getIt,
-      [String? environment, EnvironmentFilter? environmentFilter])
+      [String? environment, EnvironmentFilter? environmentFilter, Object Function(Object)? instanceCallback])
       : assert(environmentFilter == null || environment == null) {
     // register current EnvironmentsFilter as lazy singleton
     if (!getIt.isRegistered<EnvironmentFilter>(
@@ -27,6 +30,9 @@ class GetItHelper {
       _environmentFilter =
           getIt<EnvironmentFilter>(instanceName: kEnvironmentsFilterName);
     }
+
+    // ensure instance callback is initialized to at least a benign passthrough
+    _instanceCallback = instanceCallback ?? (o) => o;
 
     // register current Environments as lazy singleton
     if (!getIt.isRegistered<Set<String>>(instanceName: kEnvironmentsName)) {
@@ -42,11 +48,12 @@ class GetItHelper {
     dynamic param1,
     dynamic param2,
   }) =>
+      _instanceCallback(
       getIt.get<T>(
         instanceName: instanceName,
         param1: param1,
         param2: param2,
-      );
+      )) as T;
 
   Future<T> getAsync<T extends Object>({
     String? instanceName,
