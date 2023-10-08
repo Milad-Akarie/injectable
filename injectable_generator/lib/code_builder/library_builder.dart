@@ -393,7 +393,14 @@ class InitMethodGenerator with SharedGeneratorCode {
                 'EnvironmentFilter',
                 url: _injectableImport,
                 nullable: true,
-              ))
+              )),
+            Parameter((b) => b
+              ..named = true
+              ..name = 'instanceCallback'
+              ..type = nullableRefer(
+                'T Function<T>(T)',
+                nullable: true,
+              )),
           ] else if (!isMicroPackage)
             Parameter((b) => b
               ..named = true
@@ -436,6 +443,7 @@ class InitMethodGenerator with SharedGeneratorCode {
                   declareFinal('gh').assign(ghBuilder).statement
                 else
                   ghBuilder.statement,
+              declareFinal('cb').assign(refer('instanceCallback').ifNullThen(CodeExpression(Code('<T>(p0) => p0'))),).statement,
               ...ghStatements,
               if (!isMicroPackage) getInstanceRefer.returned.statement,
             ],
@@ -499,6 +507,7 @@ class InitMethodGenerator with SharedGeneratorCode {
 
   Code _buildInstanceBuilderCode(
       Expression instanceBuilder, DependencyConfig dep) {
+    instanceBuilder = refer('cb').call([instanceBuilder]);
     var instanceBuilderCode = instanceBuilder.code;
     if (dep.postConstruct != null) {
       if (dep.postConstructReturnsSelf) {
@@ -528,7 +537,7 @@ class InitMethodGenerator with SharedGeneratorCode {
               ]),
           );
         } else {
-          instanceBuilderCode =
+          instanceBuilderCode = 
               instanceBuilder.cascade(dep.postConstruct!).call(const []).code;
         }
       }
