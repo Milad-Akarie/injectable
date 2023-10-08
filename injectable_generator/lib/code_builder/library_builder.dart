@@ -443,7 +443,7 @@ class InitMethodGenerator with SharedGeneratorCode {
                   declareFinal('gh').assign(ghBuilder).statement
                 else
                   ghBuilder.statement,
-              declareFinal('ccb').assign(refer('constructorCallback').ifNullThen(CodeExpression(Code('<T>(p0) => p0'))),).statement,
+              declareFinal('ccb').assign(refer('constructorCallback').ifNullThen(CodeExpression(Code('<T>(_) => _'))),).statement,
               ...ghStatements,
               if (!isMicroPackage) getInstanceRefer.returned.statement,
             ],
