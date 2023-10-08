@@ -396,7 +396,7 @@ class InitMethodGenerator with SharedGeneratorCode {
               )),
             Parameter((b) => b
               ..named = true
-              ..name = 'instanceCallback'
+              ..name = 'constructorCallback'
               ..type = nullableRefer(
                 'T Function<T>(T)',
                 nullable: true,
@@ -443,7 +443,7 @@ class InitMethodGenerator with SharedGeneratorCode {
                   declareFinal('gh').assign(ghBuilder).statement
                 else
                   ghBuilder.statement,
-              declareFinal('cb').assign(refer('instanceCallback').ifNullThen(CodeExpression(Code('<T>(p0) => p0'))),).statement,
+              declareFinal('ccb').assign(refer('constructorCallback').ifNullThen(CodeExpression(Code('<T>(p0) => p0'))),).statement,
               ...ghStatements,
               if (!isMicroPackage) getInstanceRefer.returned.statement,
             ],
@@ -507,7 +507,7 @@ class InitMethodGenerator with SharedGeneratorCode {
 
   Code _buildInstanceBuilderCode(
       Expression instanceBuilder, DependencyConfig dep) {
-    instanceBuilder = refer('cb').call([instanceBuilder]);
+    instanceBuilder = refer('ccb').call([instanceBuilder]);
     var instanceBuilderCode = instanceBuilder.code;
     if (dep.postConstruct != null) {
       if (dep.postConstructReturnsSelf) {
