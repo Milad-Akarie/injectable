@@ -546,7 +546,7 @@ class InitMethodGenerator with SharedGeneratorCode {
               ]),
           );
         } else {
-          instanceBuilderCode = 
+          instanceBuilderCode =
               instanceBuilder.cascade(dep.postConstruct!).call(const []).code;
         }
       }
