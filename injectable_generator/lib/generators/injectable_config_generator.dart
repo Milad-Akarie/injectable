@@ -27,6 +27,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
 
     final usesNullSafety = annotation.read('usesNullSafety').boolValue;
     final isMicroPackage = annotation.read('_isMicroPackage').boolValue;
+    final usesConstructorCallback = annotation.read('usesConstructorCallback').boolValue;
     final throwOnMissingDependencies = annotation.read('throwOnMissingDependencies').boolValue;
     final targetFile = element.source?.uri;
     final preferRelativeImports = annotation.read("preferRelativeImports").boolValue;
@@ -146,6 +147,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       microPackageName: isMicroPackage ? buildStep.inputId.package.pascalCase : null,
       microPackagesModulesBefore: microPackageModulesBefore,
       microPackagesModulesAfter: microPackageModulesAfter,
+      usesConstructorCallback: usesConstructorCallback,
     );
 
     final generatedLib = generator.generate();

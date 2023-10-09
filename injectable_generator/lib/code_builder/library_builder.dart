@@ -87,6 +87,7 @@ class LibraryGenerator with SharedGeneratorCode {
   final Uri? targetFile;
   @override
   final bool asExtension;
+  final bool usesConstructorCallback;
   final String initializerName;
   final String? microPackageName;
   final Set<ExternalModuleConfig> microPackagesModulesBefore,
@@ -100,6 +101,7 @@ class LibraryGenerator with SharedGeneratorCode {
     this.microPackageName,
     this.microPackagesModulesBefore = const {},
     this.microPackagesModulesAfter = const {},
+    this.usesConstructorCallback = false,
   }) : dependencies = DependencySet(dependencies: dependencies);
 
   Library generate() {
@@ -155,6 +157,7 @@ class LibraryGenerator with SharedGeneratorCode {
               scopedBeforeExternalModules[scope]?.toSet() ?? const {},
           microPackagesModulesAfter:
               scopedAfterExternalModules[scope]?.toSet() ?? const {},
+          usesConstructorCallback: usesConstructorCallback
         ).generate(),
       );
     }
@@ -267,6 +270,7 @@ class InitMethodGenerator with SharedGeneratorCode {
   final String initializerName;
   final String? scopeName;
   final bool isMicroPackage;
+  final bool usesConstructorCallback;
   final Set<ExternalModuleConfig> microPackagesModulesBefore,
       microPackagesModulesAfter;
 
@@ -280,6 +284,7 @@ class InitMethodGenerator with SharedGeneratorCode {
     this.isMicroPackage = false,
     this.microPackagesModulesBefore = const {},
     this.microPackagesModulesAfter = const {},
+    this.usesConstructorCallback = false,
   })  : assert(microPackagesModulesBefore.isEmpty || scopeName == null),
         dependencies = DependencySet(dependencies: scopeDependencies);
 
@@ -394,6 +399,7 @@ class InitMethodGenerator with SharedGeneratorCode {
                 url: _injectableImport,
                 nullable: true,
               )),
+          if (usesConstructorCallback)
             Parameter((b) => b
               ..named = true
               ..name = 'constructorCallback'
@@ -443,7 +449,8 @@ class InitMethodGenerator with SharedGeneratorCode {
                   declareFinal('gh').assign(ghBuilder).statement
                 else
                   ghBuilder.statement,
-              declareFinal('ccb').assign(refer('constructorCallback').ifNullThen(CodeExpression(Code('<T>(_) => _'))),).statement,
+              if (usesConstructorCallback)
+                declareFinal('ccb').assign(refer('constructorCallback').ifNullThen(CodeExpression(Code('<T>(_) => _'))),).statement,
               ...ghStatements,
               if (!isMicroPackage) getInstanceRefer.returned.statement,
             ],
@@ -507,7 +514,9 @@ class InitMethodGenerator with SharedGeneratorCode {
 
   Code _buildInstanceBuilderCode(
       Expression instanceBuilder, DependencyConfig dep) {
-    instanceBuilder = refer('ccb').call([instanceBuilder]);
+    if (usesConstructorCallback){
+      instanceBuilder = refer('ccb').call([instanceBuilder]);
+    }
     var instanceBuilderCode = instanceBuilder.code;
     if (dep.postConstruct != null) {
       if (dep.postConstructReturnsSelf) {

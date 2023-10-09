@@ -72,6 +72,15 @@ class InjectableInit {
   /// classes passed here must extend [MicroPackageModule]
   final List<ExternalModule>? externalPackageModulesAfter;
 
+  /// feature flag to activate a 'constructor callback'.
+  /// Setting this to 'true' will generate an additional parameter
+  /// to '$initGetIt' - named "constructorCallback" - a function of signature 
+  /// "T constructorCallback<T>(T)".
+  /// Injectable will pass all injectable objects to this delegate at the
+  /// time of their constructor/module-method invocation.
+  /// defaults to false
+  final bool usesConstructorCallback;  
+
   /// default constructor
   const InjectableInit({
     this.generateForDir = const ['lib'],
@@ -87,6 +96,7 @@ class InjectableInit {
     this.includeMicroPackages = true,
     this.externalPackageModulesAfter,
     this.externalPackageModulesBefore,
+    this.usesConstructorCallback = false,
   }) : _isMicroPackage = false;
 
   /// default constructor
@@ -97,6 +107,7 @@ class InjectableInit {
     this.externalPackageModules,
     this.externalPackageModulesAfter,
     this.externalPackageModulesBefore,
+    this.usesConstructorCallback = false,
     this.throwOnMissingDependencies = false,
     this.ignoreUnregisteredTypesInPackages = const [],
     this.usesNullSafety = true,
