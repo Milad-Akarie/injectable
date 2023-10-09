@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.4.1]
+- Add option to pass instance callback function to the init function by @Adam-Langley
 ## [2.4.0]
 - Added [rootDir] support for specifying the root directory for the generation process.
 ## [2.3.0]

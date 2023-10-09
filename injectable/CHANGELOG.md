@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.3.2]
+- Add option to pass instance callback function to the init function by @Adam-Langley
 ## [2.3.1]
 - Fix PreResolved singletons/factories fail checking environment filters #398
 ## [2.3.0]

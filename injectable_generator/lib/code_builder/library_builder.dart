@@ -145,20 +145,21 @@ class LibraryGenerator with SharedGeneratorCode {
       final isRootScope = scope == null;
       initMethods.add(
         InitMethodGenerator(
-          scopeDependencies: scopeDeps ?? [],
-          targetFile: targetFile,
-          allDependencies: dependencies,
-          initializerName:
-              isRootScope ? initializerName : 'init${capitalize(scope)}Scope',
-          asExtension: asExtension,
-          scopeName: scope,
-          isMicroPackage: isMicroPackage,
-          microPackagesModulesBefore:
-              scopedBeforeExternalModules[scope]?.toSet() ?? const {},
-          microPackagesModulesAfter:
-              scopedAfterExternalModules[scope]?.toSet() ?? const {},
-          usesConstructorCallback: usesConstructorCallback
-        ).generate(),
+                scopeDependencies: scopeDeps ?? [],
+                targetFile: targetFile,
+                allDependencies: dependencies,
+                initializerName: isRootScope
+                    ? initializerName
+                    : 'init${capitalize(scope)}Scope',
+                asExtension: asExtension,
+                scopeName: scope,
+                isMicroPackage: isMicroPackage,
+                microPackagesModulesBefore:
+                    scopedBeforeExternalModules[scope]?.toSet() ?? const {},
+                microPackagesModulesAfter:
+                    scopedAfterExternalModules[scope]?.toSet() ?? const {},
+                usesConstructorCallback: usesConstructorCallback)
+            .generate(),
       );
     }
 
@@ -399,14 +400,14 @@ class InitMethodGenerator with SharedGeneratorCode {
                 url: _injectableImport,
                 nullable: true,
               )),
-          if (usesConstructorCallback)
-            Parameter((b) => b
-              ..named = true
-              ..name = 'constructorCallback'
-              ..type = nullableRefer(
-                'T Function<T>(T)',
-                nullable: true,
-              )),
+            if (usesConstructorCallback)
+              Parameter((b) => b
+                ..named = true
+                ..name = 'constructorCallback'
+                ..type = nullableRefer(
+                  'T Function<T>(T)',
+                  nullable: true,
+                )),
           ] else if (!isMicroPackage)
             Parameter((b) => b
               ..named = true
@@ -450,7 +451,12 @@ class InitMethodGenerator with SharedGeneratorCode {
                 else
                   ghBuilder.statement,
               if (usesConstructorCallback)
-                declareFinal('ccb').assign(refer('constructorCallback').ifNullThen(CodeExpression(Code('<T>(_) => _'))),).statement,
+                declareFinal('ccb')
+                    .assign(
+                      refer('constructorCallback')
+                          .ifNullThen(CodeExpression(Code('<T>(_) => _'))),
+                    )
+                    .statement,
               ...ghStatements,
               if (!isMicroPackage) getInstanceRefer.returned.statement,
             ],
@@ -514,7 +520,7 @@ class InitMethodGenerator with SharedGeneratorCode {
 
   Code _buildInstanceBuilderCode(
       Expression instanceBuilder, DependencyConfig dep) {
-    if (usesConstructorCallback){
+    if (usesConstructorCallback) {
       instanceBuilder = refer('ccb').call([instanceBuilder]);
     }
     var instanceBuilderCode = instanceBuilder.code;
