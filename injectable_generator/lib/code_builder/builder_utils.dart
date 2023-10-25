@@ -6,6 +6,7 @@ import 'package:injectable_generator/models/dependency_config.dart';
 import 'package:injectable_generator/models/importable_type.dart';
 import 'package:injectable_generator/models/injected_dependency.dart';
 import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
+import 'package:injectable_generator/utils.dart';
 import 'package:meta/meta.dart';
 
 class DependencySet with IterableMixin<DependencyConfig> {
@@ -103,29 +104,34 @@ Set<DependencyConfig> sortDependencies(Iterable<DependencyConfig> it) {
 }
 
 void _sortByDependents(
-    Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
+  Set<DependencyConfig> unSorted,
+  Set<DependencyConfig> sorted, {
+  Set<DependencyConfig>? processing,
+}) {
+  processing ??= {};
   for (var dep in unSorted) {
+    // Check for circular dependencies
+    throwIf(processing.contains(dep), _generateCircularDependencyErrorMessage(dep));
+    processing.add(dep);
     if (dep.dependencies.every(
       (iDep) {
         if (iDep.isFactoryParam) {
           return true;
         }
         // if dep is already in sorted return true
-        if (lookupDependencyWithNoEnvOrHasAny(iDep, sorted, dep.environments) !=
-            null) {
+        if (lookupDependencyWithNoEnvOrHasAny(iDep, sorted, dep.environments) != null) {
           return true;
         }
         // if dep is in unSorted we skip it in this iteration, if not we include it
-        return lookupDependencyWithNoEnvOrHasAny(
-                iDep, unSorted, dep.environments) ==
-            null;
+        return lookupDependencyWithNoEnvOrHasAny(iDep, unSorted, dep.environments) == null;
       },
     )) {
       sorted.add(dep);
+      processing.remove(dep); // Dependency is resolved, remove from processing
     }
   }
   if (unSorted.isNotEmpty) {
-    _sortByDependents(unSorted.difference(sorted), sorted);
+    _sortByDependents(unSorted.difference(sorted), sorted, processing: processing);
   }
 }
 
@@ -190,4 +196,61 @@ Reference typeRefer(ImportableType type,
       );
     }
   });
+}
+
+String _generateCircularDependencyErrorMessage(DependencyConfig dependency) {
+  var message = StringBuffer()
+    ..writeln('Circular dependency detected!')
+    ..writeln('Dependency Type: ${dependency.type.name}')
+    ..writeln('Implementation Type: ${dependency.typeImpl.name}')
+    ..writeln('Injectable Type: ${_getInjectableType(dependency.injectableType)}')
+    ..writeln('Dependencies: ${dependency.dependencies.map((d) => d.type.name).join(', ')}')
+    ..writeln('Is Async: ${dependency.isAsync}')
+    ..writeln('Pre Resolve: ${dependency.preResolve}')
+    ..writeln('Can Be Const: ${dependency.canBeConst}')
+    ..writeln('Order Position: ${dependency.orderPosition}')
+    ..writeln('Scope: ${dependency.scope ?? 'None'}');
+
+  if (dependency.environments.isNotEmpty) {
+    message.writeln('Environments: ${dependency.environments.join(', ')}');
+  }
+
+  if (dependency.constructorName != null && dependency.constructorName!.isNotEmpty) {
+    message.writeln('Constructor Name: ${dependency.constructorName}');
+  }
+
+  if (dependency.signalsReady != null) {
+    message.writeln('Signals Ready: ${dependency.signalsReady}');
+  }
+
+  if (dependency.instanceName != null) {
+    message.writeln('Instance Name: ${dependency.instanceName}');
+  }
+
+  if (dependency.postConstruct != null) {
+    message.writeln('Post Construct: ${dependency.postConstruct}');
+  }
+
+  if (dependency.moduleConfig != null) {
+    message.writeln('Module Config: ${dependency.moduleConfig}');
+  }
+
+  if (dependency.disposeFunction != null) {
+    message.writeln('Dispose Function: ${dependency.disposeFunction}');
+  }
+
+  return message.toString();
+}
+
+String _getInjectableType(int injectableType) {
+  switch (injectableType) {
+    case 0:
+      return 'Factory';
+    case 1:
+      return 'Singleton';
+    case 2:
+      return 'Lazy Singleton';
+    default:
+      return 'Unknown';
+  }
 }
