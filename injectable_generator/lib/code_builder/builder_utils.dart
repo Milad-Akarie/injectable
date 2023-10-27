@@ -103,16 +103,8 @@ Set<DependencyConfig> sortDependencies(Iterable<DependencyConfig> it) {
   return s;
 }
 
-void _sortByDependents(
-  Set<DependencyConfig> unSorted,
-  Set<DependencyConfig> sorted, {
-  Set<DependencyConfig>? processing,
-}) {
-  processing ??= {};
+void _sortByDependents(Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
   for (var dep in unSorted) {
-    // Check for circular dependencies
-    throwIf(processing.contains(dep), _generateCircularDependencyErrorMessage(dep));
-    processing.add(dep);
     if (dep.dependencies.every(
       (iDep) {
         if (iDep.isFactoryParam) {
@@ -127,16 +119,20 @@ void _sortByDependents(
       },
     )) {
       sorted.add(dep);
-      processing.remove(dep); // Dependency is resolved, remove from processing
     }
   }
   if (unSorted.isNotEmpty) {
-    _sortByDependents(unSorted.difference(sorted), sorted, processing: processing);
+    final diff = unSorted.difference(sorted);
+    if (unSorted.length == diff.length) {
+      final loop = _findLoop(unSorted.toList(), []);
+      final loopMessage = 'loop: ${loop.map((e) => e.type.name).join(' -> ')}';
+      throwError('Circular dependency detected!\n$loopMessage');
+    }
+    _sortByDependents(diff, sorted);
   }
 }
 
-DependencyConfig? lookupDependency(
-    InjectedDependency iDep, Set<DependencyConfig> allDeps) {
+DependencyConfig? lookupDependency(InjectedDependency iDep, Set<DependencyConfig> allDeps) {
   return allDeps.firstWhereOrNull(
     (d) => d.type == iDep.type && d.instanceName == iDep.instanceName,
   );
@@ -198,59 +194,29 @@ Reference typeRefer(ImportableType type,
   });
 }
 
-String _generateCircularDependencyErrorMessage(DependencyConfig dependency) {
-  var message = StringBuffer()
-    ..writeln('Circular dependency detected!')
-    ..writeln('Dependency Type: ${dependency.type.name}')
-    ..writeln('Implementation Type: ${dependency.typeImpl.name}')
-    ..writeln('Injectable Type: ${_getInjectableType(dependency.injectableType)}')
-    ..writeln('Dependencies: ${dependency.dependencies.map((d) => d.type.name).join(', ')}')
-    ..writeln('Is Async: ${dependency.isAsync}')
-    ..writeln('Pre Resolve: ${dependency.preResolve}')
-    ..writeln('Can Be Const: ${dependency.canBeConst}')
-    ..writeln('Order Position: ${dependency.orderPosition}')
-    ..writeln('Scope: ${dependency.scope ?? 'None'}');
-
-  if (dependency.environments.isNotEmpty) {
-    message.writeln('Environments: ${dependency.environments.join(', ')}');
+List<DependencyConfig> _findLoop(
+  List<DependencyConfig> unsorted,
+  List<DependencyConfig> loop,
+) {
+  if (loop.isEmpty) {
+    loop.add(unsorted.first);
   }
-
-  if (dependency.constructorName != null && dependency.constructorName!.isNotEmpty) {
-    message.writeln('Constructor Name: ${dependency.constructorName}');
+  final dependency = loop.last;
+  for (final item in dependency.dependencies) {
+    final next = lookupDependencyWithNoEnvOrHasAny(item, unsorted.toSet(), dependency.environments);
+    if (next != null) {
+      if (loop.contains(next)) {
+        loop.add(next);
+        return loop;
+      }
+      loop.add(next);
+      return _findLoop(unsorted, loop);
+    }
   }
-
-  if (dependency.signalsReady != null) {
-    message.writeln('Signals Ready: ${dependency.signalsReady}');
-  }
-
-  if (dependency.instanceName != null) {
-    message.writeln('Instance Name: ${dependency.instanceName}');
-  }
-
-  if (dependency.postConstruct != null) {
-    message.writeln('Post Construct: ${dependency.postConstruct}');
-  }
-
-  if (dependency.moduleConfig != null) {
-    message.writeln('Module Config: ${dependency.moduleConfig}');
-  }
-
-  if (dependency.disposeFunction != null) {
-    message.writeln('Dispose Function: ${dependency.disposeFunction}');
-  }
-
-  return message.toString();
-}
-
-String _getInjectableType(int injectableType) {
-  switch (injectableType) {
-    case 0:
-      return 'Factory';
-    case 1:
-      return 'Singleton';
-    case 2:
-      return 'Lazy Singleton';
-    default:
-      return 'Unknown';
-  }
+  throwError(
+    "We shouldn't get there because previous sorting guarantees that for each "
+    "dependecny in unsorted list there's at least one unresolved dependency hence it lies in "
+    "unsorted according to _sortByDependents invariants. If you see this, report a bug.",
+  );
+  return [];
 }
