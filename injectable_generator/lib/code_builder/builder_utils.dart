@@ -132,7 +132,8 @@ void _sortByDependents(Set<DependencyConfig> unSorted, Set<DependencyConfig> sor
   }
 }
 
-DependencyConfig? lookupDependency(InjectedDependency iDep, Set<DependencyConfig> allDeps) {
+DependencyConfig? lookupDependency(
+    InjectedDependency iDep, Set<DependencyConfig> allDeps) {
   return allDeps.firstWhereOrNull(
     (d) => d.type == iDep.type && d.instanceName == iDep.instanceName,
   );
