@@ -124,7 +124,8 @@ void _sortByDependents(Set<DependencyConfig> unSorted, Set<DependencyConfig> sor
   if (unSorted.isNotEmpty) {
     final diff = unSorted.difference(sorted);
     if (unSorted.length == diff.length) {
-      final loop = _findLoop(unSorted.toList(), []);
+      final loop = _findLoop(unSorted, {}).toList();
+      loop.add(loop.first);
       final loopMessage = 'loop: ${loop.map((e) => e.type.name).join(' -> ')}';
       throwError('Circular dependency detected!\n$loopMessage');
     }
@@ -195,9 +196,9 @@ Reference typeRefer(ImportableType type,
   });
 }
 
-List<DependencyConfig> _findLoop(
-  List<DependencyConfig> unsorted,
-  List<DependencyConfig> loop,
+Set<DependencyConfig> _findLoop(
+  Set<DependencyConfig> unsorted,
+  Set<DependencyConfig> loop,
 ) {
   if (loop.isEmpty) {
     loop.add(unsorted.first);
@@ -207,7 +208,6 @@ List<DependencyConfig> _findLoop(
     final next = lookupDependencyWithNoEnvOrHasAny(item, unsorted.toSet(), dependency.environments);
     if (next != null) {
       if (loop.contains(next)) {
-        loop.add(next);
         return loop;
       }
       loop.add(next);
@@ -219,5 +219,5 @@ List<DependencyConfig> _findLoop(
     "dependecny in unsorted list there's at least one unresolved dependency hence it lies in "
     "unsorted according to _sortByDependents invariants. If you see this, report a bug.",
   );
-  return [];
+  return {};
 }
