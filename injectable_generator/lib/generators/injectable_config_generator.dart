@@ -177,7 +177,13 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
         DartFormatter().format(generatedLib.accept(emitter).toString());
 
     if (isMicroPackage) {
-      final outputId = buildStep.inputId.changeExtension('.module.dart');
+      final outputId = buildStep.allowedOutputs.firstWhereOrNull(
+        (element) => element.path.endsWith('.module.dart'),
+      );
+      if (outputId == null) {
+        throwBoxed(_invalidCustomBuildExtensionsMessage);
+        return;
+      }
       return buildStep.writeAsString(
         outputId,
         [
@@ -307,5 +313,15 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
         }
       }
     }
+  }
+
+  String get _invalidCustomBuildExtensionsMessage {
+    return '''Custom 'build_extensions' detected but the output for '.module.dart' not provided
+See an example of a valid build_extensions below:
+      ...
+        options:
+          build_extensions:
+            {'lib/{{}}.dart': ['lib/generated/{{}}.config.dart', 'lib/generated/{{}}.module.dart']}
+''';
   }
 }
