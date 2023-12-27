@@ -155,7 +155,7 @@ class DependencyResolver {
         element: clazz,
       );
 
-      _type = _typeResolver.resolveType(abstractSubtype!);
+      _type = _typeResolver.resolveType(abstractType);
     }
 
     _environments = inlineEnv ??
