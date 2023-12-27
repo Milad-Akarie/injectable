@@ -62,7 +62,7 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
     libs.where((e) => e.exportNamespace.definedNames.values.contains(element));
     for (var lib in libs) {
       final isBarrelFile =
-          lib.exports.isNotEmpty && lib.topLevelElements.isEmpty;
+          lib.libraryExports.isNotEmpty && lib.topLevelElements.isEmpty;
       if (isBarrelFile) {
         continue;
       }
