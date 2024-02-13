@@ -265,8 +265,12 @@ class GetItHelper {
     getIt.pushNewScope(
       scopeName: name,
       init: (getIt) async {
-        await init(this);
-        completer.complete(getIt);
+        try {
+          await init(this);
+          completer.complete(getIt);
+        } catch (e, s) {
+          completer.completeError(e, s);
+        }
       },
       dispose: dispose,
     );
