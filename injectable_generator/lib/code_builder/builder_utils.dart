@@ -111,10 +111,10 @@ void _sortByDependents(
           return true;
         }
         // if dep is already in sorted return true
-        if (lookupDependencyWithNoEnvOrHasAny(iDep, sorted, dep.environments) !=
-            null) {
-          return true;
-        }
+        // if (lookupDependencyWithNoEnvOrHasAny(iDep, sorted, dep.environments) !=
+        //     null) {
+        //   return true;
+        // }
         // if dep is in unSorted we skip it in this iteration, if not we include it
         return lookupDependencyWithNoEnvOrHasAny(
                 iDep, unSorted, dep.environments) ==

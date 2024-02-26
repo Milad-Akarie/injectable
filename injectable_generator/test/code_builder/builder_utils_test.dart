@@ -37,6 +37,24 @@ void main() {
       expect(sortDependencies(deps).toList(), expectedResult);
     });
 
+    test(
+        'Sorting with environments in mind, should sort as [B{prd},C,B{dev}},A{dev}]',
+            () {
+          final deps = [
+            DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
+            DependencyConfig.factory('B', envs: ['prod']),
+            DependencyConfig.factory('B', envs: ['dev'], deps: ['C']),
+            DependencyConfig.factory('C'),
+          ];
+          final expectedResult = [
+            DependencyConfig.factory('B', envs: ['prod']),
+            DependencyConfig.factory('C'),
+            DependencyConfig.factory('B', envs: ['dev'], deps: ['C']),
+            DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
+          ];
+          expect(sortDependencies(deps).toList(), expectedResult);
+        });
+
     test('should sort as [A,B]', () {
       final deps = [
         DependencyConfig.factory('AppServiceUser', deps: ['Service']),
