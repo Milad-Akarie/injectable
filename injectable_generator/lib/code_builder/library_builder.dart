@@ -573,14 +573,12 @@ class InitMethodGenerator with SharedGeneratorCode {
 
   Code buildSingletonRegisterFun(DependencyConfig dep) {
     String funcReferName;
-    var asFactory = true;
     final hasAsyncDep = dependencies.hasAsyncDependency(dep);
     if (dep.isAsync || hasAsyncDep) {
       funcReferName = 'singletonAsync';
     } else if (dep.dependsOn.isNotEmpty) {
       funcReferName = 'singletonWithDependencies';
     } else {
-      asFactory = false;
       funcReferName = 'singleton';
     }
 
@@ -588,12 +586,10 @@ class InitMethodGenerator with SharedGeneratorCode {
         dep.isFromModule ? _buildInstanceForModule(dep) : _buildInstance(dep);
     final instanceBuilderCode = _buildInstanceBuilderCode(instanceBuilder, dep);
     final registerExpression = _ghLocalRefer.property(funcReferName).call([
-      asFactory
-          ? Method((b) => b
-            ..lambda = instanceBuilderCode is! Block
-            ..modifier = hasAsyncDep ? MethodModifier.async : null
-            ..body = instanceBuilderCode).closure
-          : CodeExpression(instanceBuilderCode)
+      Method((b) => b
+        ..lambda = instanceBuilderCode is! Block
+        ..modifier = hasAsyncDep ? MethodModifier.async : null
+        ..body = instanceBuilderCode).closure
     ], {
       if (dep.instanceName != null)
         'instanceName': literalString(dep.instanceName!),
