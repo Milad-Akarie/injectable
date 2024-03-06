@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.4.2]
+- Fix Postpone singleton initialisation to respect environment filters by @lrampazzo
 ## [2.4.1]
 - Add option to pass instance callback function to the init function by @Adam-Langley
 ## [2.4.0]

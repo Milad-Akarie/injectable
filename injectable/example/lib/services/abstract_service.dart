@@ -1,7 +1,7 @@
 import 'package:example/injector/injector.dart';
 import 'package:injectable/injectable.dart';
 
-@Injectable()
+@Singleton()
 class ConstService {
   const ConstService();
 }
