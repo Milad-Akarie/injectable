@@ -12,20 +12,17 @@ class GetItHelper {
   late final EnvironmentFilter _environmentFilter;
 
   /// creates a new instance of GetItHelper
-  GetItHelper(this.getIt,
-      [String? environment, EnvironmentFilter? environmentFilter])
+  GetItHelper(this.getIt, [String? environment, EnvironmentFilter? environmentFilter])
       : assert(environmentFilter == null || environment == null) {
     // register current EnvironmentsFilter as lazy singleton
-    if (!getIt.isRegistered<EnvironmentFilter>(
-        instanceName: kEnvironmentsFilterName)) {
+    if (!getIt.isRegistered<EnvironmentFilter>(instanceName: kEnvironmentsFilterName)) {
       _environmentFilter = environmentFilter ?? NoEnvOrContains(environment);
       getIt.registerLazySingleton<EnvironmentFilter>(
         () => _environmentFilter,
         instanceName: kEnvironmentsFilterName,
       );
     } else {
-      _environmentFilter =
-          getIt<EnvironmentFilter>(instanceName: kEnvironmentsFilterName);
+      _environmentFilter = getIt<EnvironmentFilter>(instanceName: kEnvironmentsFilterName);
     }
 
     // register current Environments as lazy singleton
@@ -215,12 +212,10 @@ class GetItHelper {
     if (_canRegister(registerFor)) {
       if (preResolve) {
         return factoryFunc().then(
-          (instance) => singleton(
+          (instance) => getIt.registerSingleton(
             () => instance,
             instanceName: instanceName,
             signalsReady: signalsReady,
-            registerFor: registerFor,
-            dispose: dispose,
           ),
         );
       } else {
@@ -260,8 +255,7 @@ class GetItHelper {
   /// a helper method to push a new scope and init it's dependencies
   /// asynchronously inside of [GetIt]
   Future<GetIt> initScopeAsync(String name,
-      {required Future<void> Function(GetItHelper gh) init,
-      ScopeDisposeFunc? dispose}) {
+      {required Future<void> Function(GetItHelper gh) init, ScopeDisposeFunc? dispose}) {
     final completer = Completer<GetIt>();
     getIt.pushNewScope(
       scopeName: name,
@@ -276,9 +270,7 @@ class GetItHelper {
 
   /// a helper method to push a new scope and init it's dependencies
   /// inside of [GetIt]
-  GetIt initScope(String name,
-      {required void Function(GetItHelper gh) init,
-      ScopeDisposeFunc? dispose}) {
+  GetIt initScope(String name, {required void Function(GetItHelper gh) init, ScopeDisposeFunc? dispose}) {
     getIt.pushNewScope(
       scopeName: name,
       init: (_) => init(this),
