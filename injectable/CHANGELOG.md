@@ -1,4 +1,8 @@
 # ChangeLog
+## [2.3.4]
+- HotFix for Postpone singleton initialisation to respect environment filters
+## [2.3.3] (skip)
+- Fix Postpone singleton initialisation to respect environment filters by @lrampazzo
 ## [2.3.2]
 - Add option to pass instance callback function to the init function by @Adam-Langley
 ## [2.3.1]
