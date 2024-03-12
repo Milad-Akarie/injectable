@@ -58,7 +58,6 @@ class InjectableGenerator implements Generator {
         ).resolve(clazz));
       }
     }
-
     return allDepsInStep.isNotEmpty ? jsonEncode(allDepsInStep) : null;
   }
 

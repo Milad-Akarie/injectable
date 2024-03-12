@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.5.0]
+- Feat: add support for passing records as @factoryParam
 ## [2.4.2]
 - Fix Postpone singleton initialisation to respect environment filters by @lrampazzo
 ## [2.4.1]
