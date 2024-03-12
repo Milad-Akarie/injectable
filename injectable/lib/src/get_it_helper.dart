@@ -215,7 +215,7 @@ class GetItHelper {
     if (_canRegister(registerFor)) {
       if (preResolve) {
         return factoryFunc().then(
-          (instance) => getIt.registerSingleton(
+          (instance) => getIt.registerSingleton<T>(
             instance,
             instanceName: instanceName,
             signalsReady: signalsReady,
