@@ -1,4 +1,3 @@
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -11,7 +10,8 @@ abstract class ImportableTypeResolver {
 
   ImportableType resolveType(DartType type);
 
-  ImportableType resolveFunctionType(FunctionType function, [ExecutableElement? executableElement]);
+  ImportableType resolveFunctionType(FunctionType function,
+      [ExecutableElement? executableElement]);
 
   static String? relative(String? path, Uri? to) {
     if (path == null || to == null) {
@@ -19,12 +19,16 @@ abstract class ImportableTypeResolver {
     }
     var fileUri = Uri.parse(path);
     var libName = to.pathSegments.first;
-    if ((to.scheme == 'package' && fileUri.scheme == 'package' && fileUri.pathSegments.first == libName) ||
+    if ((to.scheme == 'package' &&
+            fileUri.scheme == 'package' &&
+            fileUri.pathSegments.first == libName) ||
         (to.scheme == 'asset' && fileUri.scheme != 'package')) {
       if (fileUri.path == to.path) {
         return fileUri.pathSegments.last;
       } else {
-        return p.posix.relative(fileUri.path, from: to.path).replaceFirst('../', '');
+        return p.posix
+            .relative(fileUri.path, from: to.path)
+            .replaceFirst('../', '');
       }
     } else {
       return path;
@@ -57,7 +61,8 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
     }
     libs.where((e) => e.exportNamespace.definedNames.values.contains(element));
     for (var lib in libs) {
-      if (!_isCoreDartType(lib) && lib.exportNamespace.definedNames.values.contains(element)) {
+      if (!_isCoreDartType(lib) &&
+          lib.exportNamespace.definedNames.values.contains(element)) {
         imports.add(lib.identifier);
       }
     }
@@ -69,8 +74,10 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
   }
 
   @override
-  ImportableType resolveFunctionType(FunctionType function, [ExecutableElement? executableElement]) {
-    final functionElement = executableElement ?? function.element ?? function.alias?.element;
+  ImportableType resolveFunctionType(FunctionType function,
+      [ExecutableElement? executableElement]) {
+    final functionElement =
+        executableElement ?? function.element ?? function.alias?.element;
     if (functionElement == null) {
       throw 'Can not resolve function type \nTry using an alias e.g typedef MyFunction = ${function.getDisplayString(withNullability: false)};';
     }
@@ -102,7 +109,8 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
           name: recordField.type.element?.name ?? 'void',
           import: imports.firstOrNull,
           otherImports: imports.skip(1).toSet(),
-          isNullable: recordField.type.nullabilitySuffix == NullabilitySuffix.question,
+          isNullable:
+              recordField.type.nullabilitySuffix == NullabilitySuffix.question,
           typeArguments: _resolveTypeArguments(recordField.type),
         ));
       }
@@ -112,7 +120,8 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
           name: recordField.type.element?.name ?? 'void',
           import: imports.firstOrNull,
           otherImports: imports.skip(1).toSet(),
-          isNullable: recordField.type.nullabilitySuffix == NullabilitySuffix.question,
+          isNullable:
+              recordField.type.nullabilitySuffix == NullabilitySuffix.question,
           typeArguments: _resolveTypeArguments(recordField.type),
           nameInRecord: recordField.name,
         ));
@@ -132,7 +141,8 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
           importableTypes.add(ImportableType(name: 'dynamic'));
         } else {
           importableTypes.add(ImportableType(
-            name: type.element?.name ?? type.getDisplayString(withNullability: false),
+            name: type.element?.name ??
+                type.getDisplayString(withNullability: false),
             import: imports.firstOrNull,
             otherImports: imports.skip(1).toSet(),
             isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
@@ -158,7 +168,8 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
       );
     }
     return ImportableType(
-      name: effectiveElement?.displayName ?? type.getDisplayString(withNullability: false),
+      name: effectiveElement?.displayName ??
+          type.getDisplayString(withNullability: false),
       isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
       import: imports.firstOrNull,
       otherImports: imports.skip(1).toSet(),

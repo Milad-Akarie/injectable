@@ -44,7 +44,8 @@ class DependencySet with IterableMixin<DependencyConfig> {
 
       final did = dep.id;
       hasAsyncDepsMap[did] = hasAsyncDeps;
-      isAsyncOrHasAsyncDepsMap[did] = (dep.isAsync && !dep.preResolve) || hasAsyncDeps;
+      isAsyncOrHasAsyncDepsMap[did] =
+          (dep.isAsync && !dep.preResolve) || hasAsyncDeps;
     }
 
     _hasAsyncDeps = hasAsyncDepsMap;
@@ -101,7 +102,8 @@ Set<DependencyConfig> sortDependencies(Iterable<DependencyConfig> it) {
   return s;
 }
 
-void _sortByDependents(Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
+void _sortByDependents(
+    Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
   for (var dep in unSorted) {
     if (dep.dependencies.every(
       (iDep) {
@@ -109,11 +111,14 @@ void _sortByDependents(Set<DependencyConfig> unSorted, Set<DependencyConfig> sor
           return true;
         }
         // if dep is already in sorted return true
-        if (lookupDependencyWithNoEnvOrHasAny(iDep, sorted, dep.environments) != null) {
+        if (lookupDependencyWithNoEnvOrHasAny(iDep, sorted, dep.environments) !=
+            null) {
           return true;
         }
         // if dep is in unSorted we skip it in this iteration, if not we include it
-        return lookupDependencyWithNoEnvOrHasAny(iDep, unSorted, dep.environments) == null;
+        return lookupDependencyWithNoEnvOrHasAny(
+                iDep, unSorted, dep.environments) ==
+            null;
       },
     )) {
       sorted.add(dep);
@@ -124,7 +129,8 @@ void _sortByDependents(Set<DependencyConfig> unSorted, Set<DependencyConfig> sor
   }
 }
 
-DependencyConfig? lookupDependency(InjectedDependency iDep, Set<DependencyConfig> allDeps) {
+DependencyConfig? lookupDependency(
+    InjectedDependency iDep, Set<DependencyConfig> allDeps) {
   return allDeps.firstWhereOrNull(
     (d) => d.type == iDep.type && d.instanceName == iDep.instanceName,
   );
@@ -147,8 +153,11 @@ DependencyConfig? lookupDependencyWithNoEnvOrHasAny(
   );
 }
 
-Set<DependencyConfig> lookupPossibleDeps(InjectedDependency iDep, Iterable<DependencyConfig> allDeps) {
-  return allDeps.where((d) => d.type == iDep.type && d.instanceName == iDep.instanceName).toSet();
+Set<DependencyConfig> lookupPossibleDeps(
+    InjectedDependency iDep, Iterable<DependencyConfig> allDeps) {
+  return allDeps
+      .where((d) => d.type == iDep.type && d.instanceName == iDep.instanceName)
+      .toSet();
 }
 
 bool hasPreResolvedDependencies(Iterable<DependencyConfig> deps) {
@@ -165,7 +174,8 @@ TypeReference nullableRefer(
       ..url = url
       ..isNullable = nullable);
 
-Reference typeRefer(ImportableType type, [Uri? targetFile, bool withNullabilitySuffix = true]) {
+Reference typeRefer(ImportableType type,
+    [Uri? targetFile, bool withNullabilitySuffix = true]) {
   final import = targetFile == null
       ? ImportableTypeResolver.resolveAssetImport(type.import)
       : ImportableTypeResolver.relative(type.import, targetFile);
@@ -179,7 +189,9 @@ Reference typeRefer(ImportableType type, [Uri? targetFile, bool withNullabilityS
           type.typeArguments.where((e) => !e.isNamedRecordField).map(typeRefer),
         )
         ..namedFieldTypes.addAll({
-          for (final entry in [...type.typeArguments.where((e) => e.isNamedRecordField)])
+          for (final entry in [
+            ...type.typeArguments.where((e) => e.isNamedRecordField)
+          ])
             entry.nameInRecord!: typeRefer(entry)
         }),
     );
