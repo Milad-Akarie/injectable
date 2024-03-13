@@ -1,6 +1,6 @@
-/// a simple filter function to be used inside [SimpleEnvironmentFilter]
 
 typedef EnvironmentFilterFunc = bool Function(Set<String>);
+/// a simple filter function to be used inside [SimpleEnvironmentFilter]
 
 /// filter for whether to register for the given set of environments
 /// clients can extend this class to maker
@@ -49,7 +49,7 @@ class NoEnvOrContains extends EnvironmentFilter {
 /// This filter validates dependencies with no environment
 /// keys, or the ones containing all the provided [environments]
 class NoEnvOrContainsAll extends EnvironmentFilter {
-  const NoEnvOrContainsAll(Set<String> environments) : super(environments);
+  const NoEnvOrContainsAll(super.environments);
 
   @override
   bool canRegister(Set<String> depEnvironments) {
@@ -61,7 +61,7 @@ class NoEnvOrContainsAll extends EnvironmentFilter {
 /// This filter validates dependencies with no environment
 /// keys, or the ones containing one of the provided [environments]
 class NoEnvOrContainsAny extends EnvironmentFilter {
-  const NoEnvOrContainsAny(Set<String> environments) : super(environments);
+  const NoEnvOrContainsAny(super.environments);
 
   @override
   bool canRegister(Set<String> depEnvironments) {

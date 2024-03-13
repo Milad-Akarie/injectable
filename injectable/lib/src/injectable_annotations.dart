@@ -175,16 +175,11 @@ class Singleton extends Injectable {
     this.signalsReady,
     this.dependsOn,
     this.dispose,
-    Type? as,
-    List<String>? env,
-    String? scope,
-    int? order,
-  }) : super(
-          as: as,
-          env: env,
-          order: order,
-          scope: scope,
-        );
+    super.as,
+    super.env,
+    super.scope,
+    super.order,
+  });
 }
 
 /// const instance of [Singleton]
@@ -196,17 +191,12 @@ const singleton = Singleton();
 class LazySingleton extends Injectable {
   /// default constructor
   const LazySingleton({
-    Type? as,
-    List<String>? env,
+    super.as,
+    super.env,
     this.dispose,
-    String? scope,
-    int? order,
-  }) : super(
-          as: as,
-          env: env,
-          scope: scope,
-          order: order,
-        );
+    super.scope,
+    super.order,
+  });
 
   /// a dispose callback function to be
   /// passed to [GetIt]
