@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.3.5]
+Fix: add generic type annotation to registerSingleton() call #436
 ## [2.3.4]
 - HotFix for Postpone singleton initialisation to respect environment filters
 ## [2.3.3] (skip)
