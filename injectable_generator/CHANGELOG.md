@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.5.1]
+Fix: Type Alias error on generation #437
 ## [2.5.0]
 - Feat: add support for passing records as @factoryParam
 ## [2.4.2]

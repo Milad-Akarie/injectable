@@ -1,6 +1,4 @@
 # ChangeLog
-## [2.3.6]
-Fix: Type Alias error on generation #437
 ## [2.3.5]
 Fix: add generic type annotation to registerSingleton() call #436
 ## [2.3.4]
