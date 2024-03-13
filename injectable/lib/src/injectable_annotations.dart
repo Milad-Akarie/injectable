@@ -1,5 +1,8 @@
-/// Marks a top-level function as an initializer function
+import 'package:meta/meta_meta.dart' show Target, TargetKind;
+
+/// // Marks a top-level function as an initializer function
 /// for configuring Get_it
+@Target({TargetKind.function})
 class InjectableInit {
   /// Only files exist in provided directories will be processed
   final List<String> generateForDir;
@@ -57,12 +60,6 @@ class InjectableInit {
   final bool throwOnMissingDependencies;
 
   /// a List of external package modules to be registered
-  /// in the default package initializer
-  /// classes passed here must extend [MicroPackageModule]
-  @Deprecated('use externalPackageModulesBefore instead')
-  final List<Type>? externalPackageModules;
-
-  /// a List of external package modules to be registered
   /// in the default package initializer before root dependencies
   /// classes passed here must extend [MicroPackageModule]
   final List<ExternalModule>? externalPackageModulesBefore;
@@ -91,7 +88,6 @@ class InjectableInit {
     this.ignoreUnregisteredTypesInPackages = const [],
     this.asExtension = true,
     this.usesNullSafety = true,
-    this.externalPackageModules,
     this.throwOnMissingDependencies = false,
     this.includeMicroPackages = true,
     this.externalPackageModulesAfter,
@@ -104,7 +100,6 @@ class InjectableInit {
     this.generateForDir = const ['lib'],
     this.preferRelativeImports = false,
     this.ignoreUnregisteredTypes = const [],
-    this.externalPackageModules,
     this.externalPackageModulesAfter,
     this.externalPackageModulesBefore,
     this.usesConstructorCallback = false,
@@ -128,6 +123,8 @@ const microPackageInit = InjectableInit.microPackage();
 
 /// Marks a class as an injectable
 /// dependency and generates
+
+@Target({TargetKind.classType, TargetKind.method, TargetKind.getter})
 class Injectable {
   /// The type to bind your implementation to,
   /// typically, an abstract class which is implemented by the
@@ -156,6 +153,7 @@ const injectable = Injectable();
 
 /// Classes annotated with @Singleton
 /// will generate registerSingleton function
+@Target({TargetKind.classType, TargetKind.method, TargetKind.getter})
 class Singleton extends Injectable {
   /// passed to singlesReady property
   /// in registerSingleton function
@@ -188,6 +186,7 @@ const singleton = Singleton();
 
 /// Classes annotated with @LazySingleton
 /// will generate registerLazySingleton func
+@Target({TargetKind.classType, TargetKind.method, TargetKind.getter})
 class LazySingleton extends Injectable {
   /// default constructor
   const LazySingleton({
@@ -211,6 +210,12 @@ const lazySingleton = LazySingleton();
 /// Used to register a dependency under a name
 /// instead of type also used to annotated
 /// named injected dependencies in constructors
+@Target({
+  TargetKind.classType,
+  TargetKind.parameter,
+  TargetKind.method,
+  TargetKind.getter
+})
 class Named {
   /// The name in which an instance is registered
   final String? name;
@@ -233,6 +238,7 @@ const named = Named('');
 
 /// Used to annotate dependencies which are
 /// registered under certain environments
+@Target({TargetKind.classType, TargetKind.method, TargetKind.getter})
 class Environment {
   /// name of the environment
   final String name;
@@ -267,11 +273,12 @@ const test = Environment(Environment.test);
 
 /// Marks a factory, a named constructor or a static create
 /// function as an injectable constructor
-/// if not added the default constructor will be used.
+/// if not added the default constructor will be used
 class FactoryMethod {
   /// return value will be pre-awaited before it's
   /// registered inside of GetIt
   final bool preResolve;
+
   // default constructor
   const FactoryMethod({this.preResolve = false});
 }
@@ -283,6 +290,7 @@ const factoryMethod = FactoryMethod();
 /// Marks a constructor param as
 /// factoryParam so it can be passed
 /// to the resolver function
+@Target({TargetKind.parameter})
 class FactoryParam {
   const FactoryParam._();
 }
@@ -291,9 +299,21 @@ class FactoryParam {
 /// with default arguments
 const factoryParam = FactoryParam._();
 
+/// Constructor params annotated with [IgnoreParam]
+/// will be ignored by when generating the
+/// resolver function
+@Target({TargetKind.parameter})
+class IgnoreParam {
+  const IgnoreParam._();
+}
+
+/// const instance of [IgnoreParam]
+const ignoreParam = IgnoreParam._();
+
 /// marks a class as a register module where all
 /// property accessors rerun types are considered factories
 /// unless annotated with @singleton/lazySingleton.
+@Target({TargetKind.classType})
 class Module {
   const Module._();
 }
@@ -305,6 +325,7 @@ const module = Module._();
 /// Futures annotated with [preResolve]
 /// will be pre-awaited before they're
 /// registered inside of GetIt
+@Target({TargetKind.method})
 class PreResolve {
   const PreResolve._();
 }
@@ -316,10 +337,12 @@ const preResolve = PreResolve._();
 /// methods annotated with [postConstruct]
 /// will be called in a cascade manner
 /// after being constructed
+@Target({TargetKind.method})
 class PostConstruct {
   /// return value will be pre-awaited before it's
   /// registered inside of GetIt
   final bool preResolve;
+
   // default constructor
   const PostConstruct({this.preResolve = false});
 }
@@ -330,6 +353,7 @@ const postConstruct = PostConstruct();
 
 /// marks an instance method as a dispose
 /// call back to be passed to [GetIt]
+@Target({TargetKind.method})
 class DisposeMethod {
   const DisposeMethod._();
 }
@@ -340,6 +364,7 @@ const disposeMethod = DisposeMethod._();
 
 /// Classes annotated with @Order will overwrite
 /// the automatically generated position of the
+@Target({TargetKind.classType})
 class Order {
   /// determines the position in the order of generated GetIt functions
   final int position;
@@ -354,6 +379,7 @@ const order = Order(0);
 
 /// Used to annotate dependencies which are
 /// registered under a different scope than main-scope
+@Target({TargetKind.classType})
 class Scope {
   /// name of the scope
   final String name;

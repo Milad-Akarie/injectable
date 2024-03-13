@@ -82,6 +82,14 @@ class ConstServiceWithDeps {
   const ConstServiceWithDeps(SimpleFactory simpleFactory);
 }
 
+@injectable
+class FactoryWithIgnoredParam {
+  const FactoryWithIgnoredParam(
+    SimpleFactory simpleFactory, {
+    @ignoreParam String? ignored,
+  });
+}
+
 typedef NamedRecord = ({SimpleFactory x, int y});
 
 @Injectable()

@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.4.0]
+Feat: add @ignoreParam annotation to ignore optional parameters in factory methods
 ## [2.3.5]
 Fix: add generic type annotation to registerSingleton() call #436
 ## [2.3.4]

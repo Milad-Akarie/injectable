@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.6.0]
+Feat: add @ignoreParam annotation to ignore optional parameters in factory methods
 ## [2.5.1]
 Fix: Type Alias error on generation #437
 ## [2.5.0]

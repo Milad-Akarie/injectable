@@ -1,5 +1,5 @@
-
 typedef EnvironmentFilterFunc = bool Function(Set<String>);
+
 /// a simple filter function to be used inside [SimpleEnvironmentFilter]
 
 /// filter for whether to register for the given set of environments

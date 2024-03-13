@@ -131,6 +131,34 @@ void main() async {
       );
     });
 
+    test('Factory with @ignoreParam', () {
+      final factoryWithDeps =
+          resolvedInput!.library.findType('FactoryWithIgnoredParam')!;
+      final type = ImportableType(
+        name: 'FactoryWithIgnoredParam',
+        import: 'source.dart',
+      );
+
+      final dependencyType = ImportableType(
+        name: 'SimpleFactory',
+        import: 'source.dart',
+      );
+      expect(
+        DependencyConfig(
+            type: type,
+            typeImpl: type,
+            injectableType: InjectableType.factory,
+            dependencies: [
+              InjectedDependency(
+                type: dependencyType,
+                paramName: 'simpleFactory',
+                isPositional: true,
+              )
+            ]),
+        dependencyResolver!.resolve(factoryWithDeps),
+      );
+    });
+
     test('Factory with factoryParams', () {
       final factoryWithDeps =
           resolvedInput!.library.findType('FactoryWithFactoryParams')!;
@@ -150,10 +178,10 @@ void main() async {
             injectableType: InjectableType.factory,
             dependencies: [
               InjectedDependency(
-                type: dependencyType,
-                paramName: 'simpleFactory',
-                isFactoryParam: true,
-              )
+                  type: dependencyType,
+                  paramName: 'simpleFactory',
+                  isFactoryParam: true,
+                  isPositional: true)
             ]),
         dependencyResolver!.resolve(factoryWithDeps),
       );
