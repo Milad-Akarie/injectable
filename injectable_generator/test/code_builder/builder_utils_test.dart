@@ -382,7 +382,7 @@ void main() {
         type: ImportableType(name: 'Fizz'),
         paramName: 'fizz',
       );
-      final allDeps = <DependencyConfig>{};
+      final allDeps = <DependencyConfig>[];
       expect(lookupDependency(iDep, allDeps), isNull);
     });
 
@@ -396,7 +396,7 @@ void main() {
         typeImpl: ImportableType(name: 'Fizz'),
         injectableType: InjectableType.factory,
       );
-      final allDeps = {dep};
+      final allDeps = [dep];
       expect(lookupDependency(iDep, allDeps), same(dep));
     });
 
@@ -412,7 +412,7 @@ void main() {
         injectableType: InjectableType.factory,
         instanceName: 'fizzBuzz',
       );
-      final allDeps = {dep};
+      final allDeps = [dep];
       expect(lookupDependency(iDep, allDeps), isNull);
     });
 
@@ -428,7 +428,7 @@ void main() {
         injectableType: InjectableType.factory,
         instanceName: 'fizzImpl',
       );
-      final allDeps = {dep};
+      final allDeps = [dep];
       expect(lookupDependency(iDep, allDeps), same(dep));
     });
   });

@@ -92,18 +92,18 @@ extension _InjectedDependencyX on InjectedDependency {
 
 @visibleForTesting
 Set<DependencyConfig> sortDependencies(Iterable<DependencyConfig> it) {
-  // sort dependencies alphabetically
-  final deps = it.toList()..sortBy((e) => e.type.name);
+  // sort dependencies alphabetically by all the various attributes that may make them unique
+  final deps = it.toList()..sortBy((e) => e.toString());
   // sort dependencies by their register order
-  final Set<DependencyConfig> sorted = {};
-  _sortByDependents(deps.toSet(), sorted);
+  final List<DependencyConfig> sorted = [];
+  _sortByDependents(deps, sorted);
   // sort dependencies by their orderPosition
   final s = sorted.sortedBy<num>((e) => e.orderPosition).toSet();
   return s;
 }
 
 void _sortByDependents(
-    Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
+    List<DependencyConfig> unSorted, List<DependencyConfig> sorted) {
   for (var dep in unSorted) {
     if (dep.dependencies.every(
       (iDep) {
@@ -125,12 +125,14 @@ void _sortByDependents(
     }
   }
   if (unSorted.isNotEmpty) {
-    _sortByDependents(unSorted.difference(sorted), sorted);
+    var difference = unSorted.where((element) => !sorted.contains(element)).toList();
+    
+    _sortByDependents(difference, sorted);
   }
 }
 
 DependencyConfig? lookupDependency(
-    InjectedDependency iDep, Set<DependencyConfig> allDeps) {
+    InjectedDependency iDep, List<DependencyConfig> allDeps) {
   return allDeps.firstWhereOrNull(
     (d) => d.type == iDep.type && d.instanceName == iDep.instanceName,
   );
@@ -138,7 +140,7 @@ DependencyConfig? lookupDependency(
 
 DependencyConfig? lookupDependencyWithNoEnvOrHasAny(
   InjectedDependency iDep,
-  Set<DependencyConfig> allDeps,
+  List<DependencyConfig> allDeps,
   List<String> envs,
 ) {
   return allDeps.firstWhereOrNull(
