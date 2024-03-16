@@ -6,6 +6,7 @@ import 'package:injectable_generator/models/dependency_config.dart';
 import 'package:injectable_generator/models/importable_type.dart';
 import 'package:injectable_generator/models/injected_dependency.dart';
 import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
+import 'package:injectable_generator/utils.dart';
 import 'package:meta/meta.dart';
 
 class DependencySet with IterableMixin<DependencyConfig> {
@@ -102,8 +103,7 @@ Set<DependencyConfig> sortDependencies(Iterable<DependencyConfig> it) {
   return s;
 }
 
-void _sortByDependents(
-    Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
+void _sortByDependents(Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
   for (var dep in unSorted) {
     if (dep.dependencies.every(
       (iDep) {
@@ -111,21 +111,25 @@ void _sortByDependents(
           return true;
         }
         // if dep is already in sorted return true
-        if (lookupDependencyWithNoEnvOrHasAny(iDep, sorted, dep.environments) !=
-            null) {
+        if (lookupDependencyWithNoEnvOrHasAny(iDep, sorted, dep.environments) != null) {
           return true;
         }
         // if dep is in unSorted we skip it in this iteration, if not we include it
-        return lookupDependencyWithNoEnvOrHasAny(
-                iDep, unSorted, dep.environments) ==
-            null;
+        return lookupDependencyWithNoEnvOrHasAny(iDep, unSorted, dep.environments) == null;
       },
     )) {
       sorted.add(dep);
     }
   }
   if (unSorted.isNotEmpty) {
-    _sortByDependents(unSorted.difference(sorted), sorted);
+    final diff = unSorted.difference(sorted);
+    if (unSorted.length == diff.length) {
+      final loop = _findLoop(unSorted, {}).toList();
+      loop.add(loop.first);
+      final loopMessage = 'loop: ${loop.map((e) => e.type.name).join(' -> ')}';
+      throwError('Circular dependency detected!\n$loopMessage');
+    }
+    _sortByDependents(diff, sorted);
   }
 }
 
@@ -208,4 +212,30 @@ Reference typeRefer(ImportableType type,
       );
     }
   });
+}
+
+Set<DependencyConfig> _findLoop(
+  Set<DependencyConfig> unsorted,
+  Set<DependencyConfig> loop,
+) {
+  if (loop.isEmpty) {
+    loop.add(unsorted.first);
+  }
+  final dependency = loop.last;
+  for (final item in dependency.dependencies) {
+    final next = lookupDependencyWithNoEnvOrHasAny(item, unsorted.toSet(), dependency.environments);
+    if (next != null) {
+      if (loop.contains(next)) {
+        return loop;
+      }
+      loop.add(next);
+      return _findLoop(unsorted, loop);
+    }
+  }
+  throwError(
+    "We shouldn't get there because previous sorting guarantees that for each "
+    "dependecny in unsorted list there's at least one unresolved dependency hence it lies in "
+    "unsorted according to _sortByDependents invariants. If you see this, report a bug.",
+  );
+  return {};
 }
