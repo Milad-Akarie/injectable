@@ -32,7 +32,7 @@ class DependencyConfig {
   final int orderPosition;
   final String? scope;
 
-  const DependencyConfig({
+  DependencyConfig({
     required this.type,
     required this.typeImpl,
     this.injectableType = InjectableType.factory,
@@ -143,6 +143,16 @@ class DependencyConfig {
       postConstruct.hashCode ^
       postConstructReturnsSelf.hashCode ^
       scope.hashCode;
+
+ late final int identityHash = type.identity.hashCode ^
+     typeImpl.identity.hashCode ^
+     injectableType.hashCode ^
+     instanceName.hashCode ^
+     orderPosition.hashCode ^
+     scope.hashCode ^
+     const ListEquality().hash(dependencies) ^
+     const ListEquality().hash(dependsOn) ^
+     const ListEquality().hash(environments);
 
   factory DependencyConfig.fromJson(Map<dynamic, dynamic> json) {
     ModuleConfig? moduleConfig;
