@@ -55,7 +55,7 @@ extension GetItInjectableX on GetIt {
 
 String generate(List<DependencyConfig> input, {bool asExt = false}) {
   final library = LibraryGenerator(
-    dependencies: Set.of(input),
+    dependencies: List.of(input),
     initializerName: 'init',
     asExtension: asExt,
   ).generate();

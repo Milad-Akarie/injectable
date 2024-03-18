@@ -155,7 +155,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     }
 
     final generator = LibraryGenerator(
-      dependencies: Set.of(deps),
+      dependencies: List.of(deps),
       targetFile: preferRelativeImports ? targetFile : null,
       initializerName: initializerName,
       asExtension: asExtension,

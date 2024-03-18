@@ -137,7 +137,7 @@ void main() {
 String generate(DependencyConfig input, {List<DependencyConfig>? allDeps}) {
   final generator = InitMethodGenerator(
     scopeDependencies: allDeps ?? [],
-    allDependencies: DependencySet(dependencies: allDeps?.toSet() ?? {}),
+    allDependencies: DependencyList(dependencies: allDeps ?? []),
     initializerName: 'init',
   );
   final statement = generator.buildLazyRegisterFun(input);

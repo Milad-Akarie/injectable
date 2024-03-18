@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.6.1]
+Fix: make register order more predictable to avoid unnecessary code churns in source control by @Adam-Langley
 ## [2.6.0]
 Feat: add @ignoreParam annotation to ignore optional parameters in factory methods
 ## [2.5.1]

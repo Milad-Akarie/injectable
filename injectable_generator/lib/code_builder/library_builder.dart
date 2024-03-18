@@ -16,7 +16,7 @@ const _ghRefer = Reference('GetItHelper', _injectableImport);
 const _ghLocalRefer = Reference('gh');
 
 mixin SharedGeneratorCode {
-  DependencySet get dependencies;
+  DependencyList get dependencies;
 
   Uri? get targetFile;
 
@@ -82,7 +82,7 @@ mixin SharedGeneratorCode {
 
 class LibraryGenerator with SharedGeneratorCode {
   @override
-  late DependencySet dependencies;
+  late DependencyList dependencies;
   @override
   final Uri? targetFile;
   @override
@@ -94,7 +94,7 @@ class LibraryGenerator with SharedGeneratorCode {
       microPackagesModulesAfter;
 
   LibraryGenerator({
-    required Set<DependencyConfig> dependencies,
+    required List<DependencyConfig> dependencies,
     required this.initializerName,
     this.targetFile,
     this.asExtension = false,
@@ -102,7 +102,7 @@ class LibraryGenerator with SharedGeneratorCode {
     this.microPackagesModulesBefore = const {},
     this.microPackagesModulesAfter = const {},
     this.usesConstructorCallback = false,
-  }) : dependencies = DependencySet(dependencies: dependencies);
+  }) : dependencies = DependencyList(dependencies: dependencies);
 
   Library generate() {
     // all environment keys used
@@ -261,13 +261,13 @@ class LibraryGenerator with SharedGeneratorCode {
 
 class InitMethodGenerator with SharedGeneratorCode {
   @override
-  late DependencySet dependencies;
+  late DependencyList dependencies;
   @override
   final Uri? targetFile;
   @override
   final bool asExtension;
 
-  final DependencySet allDependencies;
+  final DependencyList allDependencies;
   final String initializerName;
   final String? scopeName;
   final bool isMicroPackage;
@@ -287,7 +287,7 @@ class InitMethodGenerator with SharedGeneratorCode {
     this.microPackagesModulesAfter = const {},
     this.usesConstructorCallback = false,
   })  : assert(microPackagesModulesBefore.isEmpty || scopeName == null),
-        dependencies = DependencySet(dependencies: scopeDependencies);
+        dependencies = DependencyList(dependencies: scopeDependencies);
 
   Method generate() {
     // if true use an awaited initializer

@@ -144,6 +144,7 @@ class DependencyConfig {
       postConstructReturnsSelf.hashCode ^
       scope.hashCode;
 
+
  late final int identityHash = type.identity.hashCode ^
      typeImpl.identity.hashCode ^
      injectableType.hashCode ^
