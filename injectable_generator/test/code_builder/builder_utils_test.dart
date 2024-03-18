@@ -265,7 +265,7 @@ void main() {
         type: ImportableType(name: 'Fizz'),
         paramName: 'fizz',
       );
-      final depSet = DependencyList(dependencies:  <DependencyConfig>[]);
+      final depSet = DependencyList(dependencies: <DependencyConfig>[]);
       expect(depSet.isAsyncOrHasAsyncDependency(iDep), isFalse);
     });
 

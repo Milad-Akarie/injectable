@@ -144,16 +144,15 @@ class DependencyConfig {
       postConstructReturnsSelf.hashCode ^
       scope.hashCode;
 
-
- late final int identityHash = type.identity.hashCode ^
-     typeImpl.identity.hashCode ^
-     injectableType.hashCode ^
-     instanceName.hashCode ^
-     orderPosition.hashCode ^
-     scope.hashCode ^
-     const ListEquality().hash(dependencies) ^
-     const ListEquality().hash(dependsOn) ^
-     const ListEquality().hash(environments);
+  late final int identityHash = type.identity.hashCode ^
+      typeImpl.identity.hashCode ^
+      injectableType.hashCode ^
+      instanceName.hashCode ^
+      orderPosition.hashCode ^
+      scope.hashCode ^
+      const ListEquality().hash(dependencies) ^
+      const ListEquality().hash(dependsOn) ^
+      const ListEquality().hash(environments);
 
   factory DependencyConfig.fromJson(Map<dynamic, dynamic> json) {
     ModuleConfig? moduleConfig;
