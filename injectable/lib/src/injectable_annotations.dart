@@ -325,7 +325,7 @@ const module = Module._();
 /// Futures annotated with [preResolve]
 /// will be pre-awaited before they're
 /// registered inside of GetIt
-@Target({TargetKind.method})
+@Target({TargetKind.method, TargetKind.getter})
 class PreResolve {
   const PreResolve._();
 }
