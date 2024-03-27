@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.4.1]
+Revert: Pin meta version to 1.11.0 so it's compatible with flutter_test
 ## [2.4.0]
 Feat: add @ignoreParam annotation to ignore optional parameters in factory methods
 ## [2.3.5]
