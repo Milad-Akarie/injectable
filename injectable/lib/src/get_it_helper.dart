@@ -219,6 +219,7 @@ class GetItHelper {
             instance,
             instanceName: instanceName,
             signalsReady: signalsReady,
+            dispose: dispose,
           ),
         );
       } else {
