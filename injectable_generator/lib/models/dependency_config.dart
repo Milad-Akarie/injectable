@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:injectable_generator/models/module_config.dart';
+import 'package:meta/meta.dart';
 
 import '../injectable_types.dart';
 import 'dispose_function_config.dart';
@@ -53,7 +54,7 @@ class DependencyConfig {
     this.postConstruct,
   });
 
-  // used for testing
+  @visibleForTesting
   factory DependencyConfig.factory(String type,
       {List<String> deps = const [],
       List<String> envs = const [],
@@ -74,7 +75,7 @@ class DependencyConfig {
     );
   }
 
-  // used for testing
+  @visibleForTesting
   factory DependencyConfig.singleton(String type,
       {List<String> deps = const [], int order = 0}) {
     return DependencyConfig(
