@@ -168,7 +168,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
 
     final generatedLib = generator.generate();
     final emitter = DartEmitter(
-      allocator: Allocator.simplePrefixing(),
+      allocator: _HashedAllocator(),
       orderDirectives: true,
       useNullSafetySyntax: usesNullSafety,
     );
@@ -308,4 +308,29 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       }
     }
   }
+}
+
+class _HashedAllocator implements Allocator {
+  static const _doNotPrefix = ['dart:core'];
+
+  final _imports = <String, int>{};
+
+  String? _url;
+  @override
+  String allocate(Reference reference) {
+    final symbol = reference.symbol;
+    _url = reference.url;
+    if (_url == null || _doNotPrefix.contains(_url)) {
+      return symbol!;
+    }
+
+    return '_i${_imports.putIfAbsent(_url!, _hashedUrl)}.$symbol';
+  }
+
+  int _hashedUrl() => _url.hashCode;
+
+  @override
+  Iterable<Directive> get imports => _imports.keys.map(
+        (u) => Directive.import(u, as: '_i${_imports[u]}'),
+      );
 }
