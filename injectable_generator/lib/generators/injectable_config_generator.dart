@@ -310,6 +310,9 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   }
 }
 
+/// The reason to use this allocator is to avoid changing in the alias of the imports
+/// With this allocator, we can hash the url of the import and use it as an alias
+/// This will make sure that the alias is consistent across multiple runs avoiding conflicts
 class _HashedAllocator implements Allocator {
   static const _doNotPrefix = ['dart:core'];
 
