@@ -38,6 +38,10 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final targetFile = element.source?.uri;
     final preferRelativeImports =
         annotation.read("preferRelativeImports").boolValue;
+    final generateForEnvironments = annotation
+        .read('generateForEnvironments')
+        .setValue
+        .map((e) => e.getField('name')?.toStringValue());
 
     final includeMicroPackages =
         annotation.read("includeMicroPackages").boolValue;
@@ -153,9 +157,16 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
         'Dependencies of type [${entry.key.$1}] must either all be async or all be sync\n',
       );
     }
-
+    final filteredDeps = generateForEnvironments.isEmpty
+        ? deps
+        : deps
+            .where((element) =>
+                element.environments.isEmpty ||
+                element.environments
+                    .any((e) => generateForEnvironments.contains(e)))
+            .toList();
     final generator = LibraryGenerator(
-      dependencies: List.of(deps),
+      dependencies: List.of(filteredDeps),
       targetFile: preferRelativeImports ? targetFile : null,
       initializerName: initializerName,
       asExtension: asExtension,
