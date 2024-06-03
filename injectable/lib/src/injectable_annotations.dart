@@ -59,6 +59,11 @@ class InjectableInit {
   /// defaults to false
   final bool throwOnMissingDependencies;
 
+  /// throw an error and abort generation
+  /// in case of duplicate dependencies
+  /// defaults to true
+  final bool throwOnDuplicateDependencies;
+
   /// a List of external package modules to be registered
   /// in the default package initializer before root dependencies
   /// classes passed here must extend [MicroPackageModule]
@@ -89,6 +94,7 @@ class InjectableInit {
     this.asExtension = true,
     this.usesNullSafety = true,
     this.throwOnMissingDependencies = false,
+    this.throwOnDuplicateDependencies = true,
     this.includeMicroPackages = true,
     this.externalPackageModulesAfter,
     this.externalPackageModulesBefore,
@@ -104,6 +110,7 @@ class InjectableInit {
     this.externalPackageModulesBefore,
     this.usesConstructorCallback = false,
     this.throwOnMissingDependencies = false,
+    this.throwOnDuplicateDependencies = true,
     this.ignoreUnregisteredTypesInPackages = const [],
     this.usesNullSafety = true,
   })  : _isMicroPackage = true,
