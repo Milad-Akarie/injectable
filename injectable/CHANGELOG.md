@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.4.2]
+chore: unpin meta version
 ## [2.4.1]
 Revert: Pin meta version to 1.11.0 so it's compatible with flutter_test
 ## [2.4.0]
