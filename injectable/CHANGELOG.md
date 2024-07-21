@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.4.4]
+- Fix: Fix dispose not passed to getIt.registerSingleton
 ## [2.4.3]
 - Feat: Improve Code Generation consistency using hash in alias imports
 - Fix: Fix @preResolve only works for methods warning

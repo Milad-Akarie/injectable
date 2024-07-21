@@ -1,4 +1,5 @@
 # ChangeLog
+
 ## [2.6.2]
 - Feat: Improve Code Generation consistency using hash in alias imports
 - Fix: Fix @preResolve only works for methods warning
