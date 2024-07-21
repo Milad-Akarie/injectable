@@ -330,7 +330,7 @@ class _HashedAllocator implements Allocator {
     return '_i${_imports.putIfAbsent(_url!, _hashedUrl)}.$symbol';
   }
 
-  int _hashedUrl() => _url.hashCode;
+  int _hashedUrl() => _url.hashCode / 1000000 ~/ 1;
 
   @override
   Iterable<Directive> get imports => _imports.keys.map(

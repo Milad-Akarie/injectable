@@ -1,4 +1,7 @@
 # ChangeLog
+## [2.4.3]
+- Feat: Improve Code Generation consistency using hash in alias imports
+- Fix: Fix @preResolve only works for methods warning
 ## [2.4.2]
 chore: unpin meta version
 ## [2.4.1]
