@@ -35,6 +35,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
         annotation.read('usesConstructorCallback').boolValue;
     final throwOnMissingDependencies =
         annotation.read('throwOnMissingDependencies').boolValue;
+    final throwOnDuplicateDependencies =
+        annotation.read('throwOnDuplicateDependencies').boolValue;
     final targetFile = element.source?.uri;
     final preferRelativeImports =
         annotation.read("preferRelativeImports").boolValue;
@@ -141,7 +143,10 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       targetFile,
       throwOnMissingDependencies,
     );
-    _validateDuplicateDependencies(deps);
+
+    if (throwOnDuplicateDependencies) {
+      _validateDuplicateDependencies(deps);
+    }
 
     /// don't allow registering of the same dependency with both async and sync factories
     final groupedByType = deps.groupListsBy((d) => (d.type, d.instanceName));
