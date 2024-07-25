@@ -1,4 +1,8 @@
 # ChangeLog
+
+## [2.6.2]
+- Feat: Improve Code Generation consistency using hash in alias imports
+- Fix: Fix @preResolve only works for methods warning
 ## [2.6.1]
 Fix: make register order more predictable to avoid unnecessary code churns in source control by @Adam-Langley
 ## [2.6.0]
