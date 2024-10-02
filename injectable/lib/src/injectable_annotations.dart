@@ -379,7 +379,7 @@ const order = Order(0);
 
 /// Used to annotate dependencies which are
 /// registered under a different scope than main-scope
-@Target({TargetKind.classType})
+@Target({TargetKind.classType, TargetKind.method, TargetKind.getter})
 class Scope {
   /// name of the scope
   final String name;
