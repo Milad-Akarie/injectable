@@ -205,10 +205,10 @@ packages:
     dependency: transitive
     description:
       name: get_it
-      sha256: "529de303c739fca98cd7ece5fca500d8ff89649f1bb4b4e94fb20954abcd7468"
+      sha256: ff97e5e7b2e82e63c82f5658c6ba2605ea831f0f7489b0d2fb255d817ec4eb5e
       url: "https://pub.dev"
     source: hosted
-    version: "7.6.0"
+    version: "8.0.0"
   glob:
     dependency: "direct main"
     description:
@@ -252,11 +252,10 @@ packages:
   injectable:
     dependency: "direct main"
     description:
-      name: injectable
-      sha256: c4de6dd43981f02ecdd1d4c0d4b386d712a7ab306af44c2de290d3932370aba2
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.3"
+      path: "../injectable"
+      relative: true
+    source: path
+    version: "2.4.4"
   io:
     dependency: transitive
     description:

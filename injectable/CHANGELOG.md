@@ -1,4 +1,7 @@
 # ChangeLog
+## [2.5.0]
+- Chore: update get_it constraint to 7.2.0 <= 9.0.0
+- Fix: scope annotation does not work with getters
 ## [2.4.4]
 - Fix: Fix dispose not passed to getIt.registerSingleton
 ## [2.4.3]
