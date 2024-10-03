@@ -109,11 +109,25 @@ void _sortByDependents(
         if (iDep.isFactoryParam) {
           return true;
         }
-        // if dep is already in sorted return true
-        if (lookupDependencyWithNoEnvOrHasAny(iDep, sorted, dep.environments) !=
+
+        /// for empty environments we check to see if all the dependencies from
+        /// all the environments are already in sorted
+        if (dep.environments.isEmpty) {
+          final List<DependencyConfig> deps = unSorted
+              .where((d) =>
+          d.type == iDep.type && d.instanceName == iDep.instanceName)
+              .toList(growable: false);
+
+          if (deps.every(sorted.contains)) {
+            return true;
+          }
+        } else if (lookupDependencyWithNoEnvOrHasAny(
+            iDep, sorted, dep.environments) !=
             null) {
+          // if dep is already in sorted return true
           return true;
         }
+
         // if dep is in unSorted we skip it in this iteration, if not we include it
         return lookupDependencyWithNoEnvOrHasAny(
                 iDep, unSorted, dep.environments) ==
