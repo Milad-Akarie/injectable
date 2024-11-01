@@ -1,4 +1,18 @@
 # ChangeLog
+
+## [2.6.2]
+- Feat: Improve Code Generation consistency using hash in alias imports
+- Fix: Fix @preResolve only works for methods warning
+## [2.6.1]
+Fix: make register order more predictable to avoid unnecessary code churns in source control by @Adam-Langley
+## [2.6.0]
+Feat: add @ignoreParam annotation to ignore optional parameters in factory methods
+## [2.5.1]
+Fix: Type Alias error on generation #437
+## [2.5.0]
+- Feat: add support for passing records as @factoryParam
+## [2.4.2]
+- Fix Postpone singleton initialisation to respect environment filters by @lrampazzo
 ## [2.4.1]
 - Add option to pass instance callback function to the init function by @Adam-Langley
 ## [2.4.0]

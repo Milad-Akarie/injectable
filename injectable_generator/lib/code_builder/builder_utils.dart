@@ -8,11 +8,11 @@ import 'package:injectable_generator/models/injected_dependency.dart';
 import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
 import 'package:meta/meta.dart';
 
-class DependencySet with IterableMixin<DependencyConfig> {
-  final Set<DependencyConfig> _dependencies;
+class DependencyList with IterableMixin<DependencyConfig> {
+  final List<DependencyConfig> _dependencies;
 
-  DependencySet({
-    required Iterable<DependencyConfig> dependencies,
+  DependencyList({
+    required List<DependencyConfig> dependencies,
   }) : _dependencies = sortDependencies(dependencies);
 
   bool hasAsyncDependency(DependencyConfig dep) {
@@ -91,19 +91,18 @@ extension _InjectedDependencyX on InjectedDependency {
 }
 
 @visibleForTesting
-Set<DependencyConfig> sortDependencies(Iterable<DependencyConfig> it) {
-  // sort dependencies alphabetically
-  final deps = it.toList()..sortBy((e) => e.type.name);
+List<DependencyConfig> sortDependencies(List<DependencyConfig> it) {
+  // sort dependencies alphabetically by all the various attributes that may make them unique
+  final deps = it.sortedBy<num>((e) => e.identityHash);
   // sort dependencies by their register order
-  final Set<DependencyConfig> sorted = {};
-  _sortByDependents(deps.toSet(), sorted);
+  final List<DependencyConfig> sorted = [];
+  _sortByDependents(deps, sorted);
   // sort dependencies by their orderPosition
-  final s = sorted.sortedBy<num>((e) => e.orderPosition).toSet();
-  return s;
+  return sorted.sortedBy<num>((e) => e.orderPosition);
 }
 
 void _sortByDependents(
-    Set<DependencyConfig> unSorted, Set<DependencyConfig> sorted) {
+    List<DependencyConfig> unSorted, List<DependencyConfig> sorted) {
   for (var dep in unSorted) {
     if (dep.dependencies.every(
       (iDep) {
@@ -125,12 +124,15 @@ void _sortByDependents(
     }
   }
   if (unSorted.isNotEmpty) {
-    _sortByDependents(unSorted.difference(sorted), sorted);
+    var difference =
+        unSorted.where((element) => !sorted.contains(element)).toList();
+
+    _sortByDependents(difference, sorted);
   }
 }
 
 DependencyConfig? lookupDependency(
-    InjectedDependency iDep, Set<DependencyConfig> allDeps) {
+    InjectedDependency iDep, List<DependencyConfig> allDeps) {
   return allDeps.firstWhereOrNull(
     (d) => d.type == iDep.type && d.instanceName == iDep.instanceName,
   );
@@ -138,7 +140,7 @@ DependencyConfig? lookupDependency(
 
 DependencyConfig? lookupDependencyWithNoEnvOrHasAny(
   InjectedDependency iDep,
-  Set<DependencyConfig> allDeps,
+  List<DependencyConfig> allDeps,
   List<String> envs,
 ) {
   return allDeps.firstWhereOrNull(
@@ -176,13 +178,31 @@ TypeReference nullableRefer(
 
 Reference typeRefer(ImportableType type,
     [Uri? targetFile, bool withNullabilitySuffix = true]) {
-  final relativeImport = targetFile == null
+  final import = targetFile == null
       ? ImportableTypeResolver.resolveAssetImport(type.import)
       : ImportableTypeResolver.relative(type.import, targetFile);
+
+  if (type.isRecordType) {
+    return RecordType(
+      (b) => b
+        ..url = import
+        ..isNullable = type.isNullable
+        ..positionalFieldTypes.addAll(
+          type.typeArguments.where((e) => !e.isNamedRecordField).map(typeRefer),
+        )
+        ..namedFieldTypes.addAll({
+          for (final entry in [
+            ...type.typeArguments.where((e) => e.isNamedRecordField)
+          ])
+            entry.nameInRecord!: typeRefer(entry)
+        }),
+    );
+  }
+
   return TypeReference((reference) {
     reference
       ..symbol = type.name
-      ..url = relativeImport
+      ..url = import
       ..isNullable = withNullabilitySuffix && type.isNullable;
     if (type.typeArguments.isNotEmpty) {
       reference.types.addAll(

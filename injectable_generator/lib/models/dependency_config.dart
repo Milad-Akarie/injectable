@@ -1,6 +1,8 @@
 // holds extracted data from annotation & element
 // to be used later when generating the register function
 
+import 'dart:convert';
+
 import 'package:collection/collection.dart';
 import 'package:injectable_generator/models/module_config.dart';
 
@@ -30,7 +32,7 @@ class DependencyConfig {
   final int orderPosition;
   final String? scope;
 
-  const DependencyConfig({
+  DependencyConfig({
     required this.type,
     required this.typeImpl,
     this.injectableType = InjectableType.factory,
@@ -93,7 +95,8 @@ class DependencyConfig {
 
   @override
   String toString() {
-    return 'DependencyConfig{type: $type, typeImpl: $typeImpl, injectableType: $injectableType, dependencies: $dependencies, instanceName: $instanceName, signalsReady: $signalsReady, environments: $environments, constructorName: $constructorName, postConstruct: $postConstruct, isAsync: $isAsync, postConstructReturnsSelf: $postConstructReturnsSelf, dependsOn: $dependsOn, preResolve: $preResolve, canBeConst: $canBeConst, moduleConfig: $moduleConfig, disposeFunction: $disposeFunction, orderPosition: $orderPosition, scope: $scope}';
+    final prettyJson = JsonEncoder.withIndent(' ').convert(toJson());
+    return 'DependencyConfig $prettyJson';
   }
 
   @override
@@ -140,6 +143,16 @@ class DependencyConfig {
       postConstruct.hashCode ^
       postConstructReturnsSelf.hashCode ^
       scope.hashCode;
+
+  late final int identityHash = type.identity.hashCode ^
+      typeImpl.identity.hashCode ^
+      injectableType.hashCode ^
+      instanceName.hashCode ^
+      orderPosition.hashCode ^
+      scope.hashCode ^
+      const ListEquality().hash(dependencies) ^
+      const ListEquality().hash(dependsOn) ^
+      const ListEquality().hash(environments);
 
   factory DependencyConfig.fromJson(Map<dynamic, dynamic> json) {
     ModuleConfig? moduleConfig;

@@ -131,6 +131,34 @@ void main() async {
       );
     });
 
+    test('Factory with @ignoreParam', () {
+      final factoryWithDeps =
+          resolvedInput!.library.findType('FactoryWithIgnoredParam')!;
+      final type = ImportableType(
+        name: 'FactoryWithIgnoredParam',
+        import: 'source.dart',
+      );
+
+      final dependencyType = ImportableType(
+        name: 'SimpleFactory',
+        import: 'source.dart',
+      );
+      expect(
+        DependencyConfig(
+            type: type,
+            typeImpl: type,
+            injectableType: InjectableType.factory,
+            dependencies: [
+              InjectedDependency(
+                type: dependencyType,
+                paramName: 'simpleFactory',
+                isPositional: true,
+              )
+            ]),
+        dependencyResolver!.resolve(factoryWithDeps),
+      );
+    });
+
     test('Factory with factoryParams', () {
       final factoryWithDeps =
           resolvedInput!.library.findType('FactoryWithFactoryParams')!;
@@ -150,11 +178,140 @@ void main() async {
             injectableType: InjectableType.factory,
             dependencies: [
               InjectedDependency(
-                type: dependencyType,
-                paramName: 'simpleFactory',
-                isFactoryParam: true,
-              )
+                  type: dependencyType,
+                  paramName: 'simpleFactory',
+                  isFactoryParam: true,
+                  isPositional: true)
             ]),
+        dependencyResolver!.resolve(factoryWithDeps),
+      );
+    });
+
+    test('Factory with typeDef NamedRecord factoryParam', () {
+      final factoryWithDeps =
+          resolvedInput!.library.findType('NamedRecordFactory')!;
+      final type = ImportableType(
+        name: 'NamedRecordFactory',
+        import: 'source.dart',
+      );
+      expect(
+        DependencyConfig(
+          type: type,
+          typeImpl: type,
+          injectableType: InjectableType.factory,
+          dependencies: [
+            InjectedDependency(
+              type: ImportableType(name: 'NamedRecord', import: 'source.dart'),
+              paramName: 'record',
+              isFactoryParam: true,
+              isPositional: true,
+            )
+          ],
+        ),
+        dependencyResolver!.resolve(factoryWithDeps),
+      );
+    });
+
+    test('Factory with Inline NamedRecord factoryParam', () {
+      final factoryWithDeps =
+          resolvedInput!.library.findType('InlineNamedRecord')!;
+      final type = ImportableType(
+        name: 'InlineNamedRecord',
+        import: 'source.dart',
+      );
+      expect(
+        DependencyConfig(
+          type: type,
+          typeImpl: type,
+          injectableType: InjectableType.factory,
+          dependencies: [
+            InjectedDependency(
+              type: ImportableType.record(
+                name: '',
+                import: 'source.dart',
+                typeArguments: [
+                  ImportableType(
+                    name: 'SimpleFactory',
+                    import: 'source.dart',
+                    nameInRecord: 'x',
+                  ),
+                  ImportableType(
+                    name: 'int',
+                    import: 'source.dart',
+                    nameInRecord: 'y',
+                  ),
+                ],
+              ),
+              paramName: 'record',
+              isFactoryParam: true,
+              isPositional: true,
+            )
+          ],
+        ),
+        dependencyResolver!.resolve(factoryWithDeps),
+      );
+    });
+
+    test('Factory with typeDef PositionalRecord factoryParam', () {
+      final factoryWithDeps =
+          resolvedInput!.library.findType('PositionalRecordFactory')!;
+      final type = ImportableType(
+        name: 'PositionalRecordFactory',
+        import: 'source.dart',
+      );
+      expect(
+        DependencyConfig(
+          type: type,
+          typeImpl: type,
+          injectableType: InjectableType.factory,
+          dependencies: [
+            InjectedDependency(
+              type: ImportableType(
+                  name: 'PositionalRecord', import: 'source.dart'),
+              paramName: 'record',
+              isFactoryParam: true,
+              isPositional: true,
+            )
+          ],
+        ),
+        dependencyResolver!.resolve(factoryWithDeps),
+      );
+    });
+
+    test('Factory with Inline PositionalRecord factoryParam', () {
+      final factoryWithDeps =
+          resolvedInput!.library.findType('InlinePositionalRecord')!;
+      final type = ImportableType(
+        name: 'InlinePositionalRecord',
+        import: 'source.dart',
+      );
+      expect(
+        DependencyConfig(
+          type: type,
+          typeImpl: type,
+          injectableType: InjectableType.factory,
+          dependencies: [
+            InjectedDependency(
+              type: ImportableType.record(
+                name: '',
+                import: 'source.dart',
+                typeArguments: [
+                  ImportableType(
+                    name: 'SimpleFactory',
+                    import: 'source.dart',
+                  ),
+                  ImportableType(
+                    name: 'int',
+                    import: 'source.dart',
+                  ),
+                ],
+              ),
+              paramName: 'record',
+              isFactoryParam: true,
+              isPositional: true,
+            )
+          ],
+        ),
         dependencyResolver!.resolve(factoryWithDeps),
       );
     });

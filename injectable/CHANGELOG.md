@@ -1,4 +1,24 @@
 # ChangeLog
+## [2.5.0]
+- Chore: update get_it constraint to 7.2.0 <= 9.0.0
+- Fix: scope annotation does not work with getters
+## [2.4.4]
+- Fix: Fix dispose not passed to getIt.registerSingleton
+## [2.4.3]
+- Feat: Improve Code Generation consistency using hash in alias imports
+- Fix: Fix @preResolve only works for methods warning
+## [2.4.2]
+chore: unpin meta version
+## [2.4.1]
+Revert: Pin meta version to 1.11.0 so it's compatible with flutter_test
+## [2.4.0]
+Feat: add @ignoreParam annotation to ignore optional parameters in factory methods
+## [2.3.5]
+Fix: add generic type annotation to registerSingleton() call #436
+## [2.3.4]
+- HotFix for Postpone singleton initialisation to respect environment filters
+## [2.3.3] (skip)
+- Fix Postpone singleton initialisation to respect environment filters by @lrampazzo
 ## [2.3.2]
 - Add option to pass instance callback function to the init function by @Adam-Langley
 ## [2.3.1]

@@ -102,12 +102,43 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
 
   List<ImportableType> _resolveTypeArguments(DartType typeToCheck) {
     final importableTypes = <ImportableType>[];
-    if (typeToCheck is ParameterizedType) {
-      for (DartType type in typeToCheck.typeArguments) {
-        if (type.element is TypeParameterElement) {
+    if (typeToCheck is RecordType && typeToCheck.alias == null) {
+      for (final recordField in [
+        ...typeToCheck.positionalFields,
+        ...typeToCheck.namedFields
+      ]) {
+        final imports = resolveImports(recordField.type.element);
+        importableTypes.add(ImportableType(
+          name: recordField.type.element?.name ?? 'void',
+          import: imports.firstOrNull,
+          otherImports: imports.skip(1).toSet(),
+          isNullable:
+              recordField.type.nullabilitySuffix == NullabilitySuffix.question,
+          typeArguments: _resolveTypeArguments(recordField.type),
+          nameInRecord:
+              recordField is RecordTypeNamedField ? recordField.name : null,
+        ));
+      }
+    } else if (typeToCheck is ParameterizedType || typeToCheck.alias != null) {
+      final typeArguments = [
+        if (typeToCheck.alias != null)
+          ...typeToCheck.alias!.typeArguments
+        else if (typeToCheck is ParameterizedType)
+          ...typeToCheck.typeArguments
+      ];
+      for (DartType type in typeArguments) {
+        final imports = resolveImports(type.element);
+        if (type is RecordType) {
+          importableTypes.add(ImportableType.record(
+            name: type.element?.name ?? '',
+            import: imports.firstOrNull,
+            otherImports: imports.skip(1).toSet(),
+            isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
+            typeArguments: _resolveTypeArguments(type),
+          ));
+        } else if (type.element is TypeParameterElement) {
           importableTypes.add(ImportableType(name: 'dynamic'));
         } else {
-          final imports = resolveImports(type.element);
           importableTypes.add(ImportableType(
             name: type.element?.name ??
                 type.getDisplayString(withNullability: false),
@@ -124,9 +155,20 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
 
   @override
   ImportableType resolveType(DartType type) {
-    final imports = resolveImports(type.element);
+    final effectiveElement = type.alias?.element ?? type.element;
+    final imports = resolveImports(effectiveElement);
+    if (type is RecordType && type.alias == null) {
+      return ImportableType.record(
+        name: effectiveElement?.displayName ?? '',
+        import: imports.firstOrNull,
+        otherImports: imports.skip(1).toSet(),
+        isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
+        typeArguments: _resolveTypeArguments(type),
+      );
+    }
     return ImportableType(
-      name: type.element?.name ?? type.getDisplayString(withNullability: false),
+      name: effectiveElement?.displayName ??
+          type.getDisplayString(withNullability: false),
       isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
       import: imports.firstOrNull,
       otherImports: imports.skip(1).toSet(),

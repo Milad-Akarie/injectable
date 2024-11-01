@@ -49,6 +49,7 @@ class FactoryWithNullableFactoryParams {
 @injectable
 class AsyncFactoryWithNullableDeps {
   const AsyncFactoryWithNullableDeps(SimpleFactory? simpleFactory);
+
   @factoryMethod
   static Future<AsyncFactoryWithNullableDeps> create(
       @factoryParam SimpleFactory? simpleFactory) async {
@@ -58,6 +59,7 @@ class AsyncFactoryWithNullableDeps {
 
 class AsyncFactoryWithNonNullableDeps {
   const AsyncFactoryWithNonNullableDeps(SimpleFactory simpleFactory);
+
   @factoryMethod
   static Future<AsyncFactoryWithNonNullableDeps> create(
       @factoryParam SimpleFactory simpleFactory) async {
@@ -78,4 +80,36 @@ class ConstService {
 @Injectable()
 class ConstServiceWithDeps {
   const ConstServiceWithDeps(SimpleFactory simpleFactory);
+}
+
+@injectable
+class FactoryWithIgnoredParam {
+  const FactoryWithIgnoredParam(
+    SimpleFactory simpleFactory, {
+    @ignoreParam String? ignored,
+  });
+}
+
+typedef NamedRecord = ({SimpleFactory x, int y});
+
+@Injectable()
+class NamedRecordFactory {
+  const NamedRecordFactory(@factoryParam NamedRecord record);
+}
+
+typedef PositionalRecord = (SimpleFactory x, int y);
+
+@Injectable()
+class PositionalRecordFactory {
+  const PositionalRecordFactory(@factoryParam PositionalRecord record);
+}
+
+@Injectable()
+class InlineNamedRecord {
+  const InlineNamedRecord(@factoryParam ({SimpleFactory x, int y}) record);
+}
+
+@Injectable()
+class InlinePositionalRecord {
+  const InlinePositionalRecord(@factoryParam (SimpleFactory x, int y) record);
 }

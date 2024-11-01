@@ -13,6 +13,7 @@ import '../injectable_types.dart';
 import 'importable_type_resolver.dart';
 
 const TypeChecker _namedChecker = TypeChecker.fromRuntime(Named);
+const TypeChecker _ignoredChecker = TypeChecker.fromRuntime(IgnoreParam);
 const TypeChecker _injectableChecker = TypeChecker.fromRuntime(Injectable);
 const TypeChecker _envChecker = TypeChecker.fromRuntime(Environment);
 const TypeChecker _preResolveChecker = TypeChecker.fromRuntime(PreResolve);
@@ -254,6 +255,16 @@ class DependencyResolver {
     _isAsync = executableInitializer.returnType.isDartAsyncFuture;
     _constructorName = executableInitializer.name;
     for (ParameterElement param in executableInitializer.parameters) {
+      final ignoredAnnotation = _ignoredChecker.firstAnnotationOf(param);
+
+      if (ignoredAnnotation != null) {
+        throwIf(
+          !param.isOptional,
+          'Params annotated with @ignoreParam must be optional',
+          element: param,
+        );
+        continue;
+      }
       final namedAnnotation = _namedChecker.firstAnnotationOf(param);
       final instanceName = namedAnnotation
               ?.getField('type')
