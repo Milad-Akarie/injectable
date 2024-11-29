@@ -89,7 +89,8 @@ class DependencyConfig {
     return DependencyConfig(
       type: ImportableType(name: type),
       typeImpl: ImportableType(name: typeImpl ?? type),
-      injectableType: InjectableType.singleton,
+      injectableType:
+          lazy ? InjectableType.lazySingleton : InjectableType.singleton,
       environments: envs,
       orderPosition: order,
       dependencies: deps
