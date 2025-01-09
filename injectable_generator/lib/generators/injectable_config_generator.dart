@@ -173,8 +173,9 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       useNullSafetySyntax: usesNullSafety,
     );
 
-    final output =
-        DartFormatter().format(generatedLib.accept(emitter).toString());
+    final output = DartFormatter(
+      languageVersion: DartFormatter.latestShortStyleLanguageVersion,
+    ).format(generatedLib.accept(emitter).toString());
 
     if (isMicroPackage) {
       final outputId = buildStep.inputId.changeExtension('.module.dart');

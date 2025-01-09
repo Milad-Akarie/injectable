@@ -1,4 +1,7 @@
 # ChangeLog
+## [2.5.1]
+- Chore update meta: ^1.16.0
+- Chore update lints: ^5.1.1
 ## [2.5.0]
 - Chore: update get_it constraint to 7.2.0 <= 9.0.0
 - Fix: scope annotation does not work with getters

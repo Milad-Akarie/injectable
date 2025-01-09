@@ -79,13 +79,13 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
     final functionElement =
         executableElement ?? function.element ?? function.alias?.element;
     if (functionElement == null) {
-      throw 'Can not resolve function type \nTry using an alias e.g typedef MyFunction = ${function.getDisplayString(withNullability: false)};';
+      throw 'Can not resolve function type \nTry using an alias e.g typedef MyFunction = ${function.getDisplayString()};';
     }
     final displayName = functionElement.displayName;
     var functionName = displayName;
 
     Element elementToImport = functionElement;
-    var enclosingElement = functionElement.enclosingElement;
+    var enclosingElement = functionElement.enclosingElement3;
 
     if (enclosingElement != null && enclosingElement is ClassElement) {
       functionName = '${enclosingElement.displayName}.$displayName';
@@ -141,7 +141,7 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
         } else {
           importableTypes.add(ImportableType(
             name: type.element?.name ??
-                type.getDisplayString(withNullability: false),
+                type.getDisplayString(),
             import: imports.firstOrNull,
             otherImports: imports.skip(1).toSet(),
             isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
@@ -168,7 +168,7 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
     }
     return ImportableType(
       name: effectiveElement?.displayName ??
-          type.getDisplayString(withNullability: false),
+          type.getDisplayString(),
       isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
       import: imports.firstOrNull,
       otherImports: imports.skip(1).toSet(),
