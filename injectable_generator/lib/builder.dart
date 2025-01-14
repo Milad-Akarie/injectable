@@ -1,5 +1,4 @@
 import 'package:build/build.dart';
-import 'package:dart_style/dart_style.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'generators/injectable_config_generator.dart';
@@ -8,8 +7,7 @@ import 'generators/injectable_generator.dart';
 Builder injectableBuilder(BuilderOptions options) {
   return LibraryBuilder(
     InjectableGenerator(options.config),
-    formatOutput: (generated, languageVersion) =>
-        DartFormatter(languageVersion: languageVersion).format(generated.replaceAll(RegExp(r'//.*|\s'), '')),
+    formatOutput: (generated, _) => generated.replaceAll(RegExp(r'//.*|\s'), ''),
     generatedExtension: '.injectable.json',
   );
 }
