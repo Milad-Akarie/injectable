@@ -8,14 +8,14 @@ environment:
 
 dependencies:
   build: ^2.4.1
-  source_gen: ^1.5.0
+  source_gen: ^2.0.0
   path: ^1.9.0
   glob: ^2.1.2
   analyzer: ">=6.4.1 <7.0.0"
   code_builder: ^4.10.0
-  dart_style: ^2.3.6
+  dart_style: ^3.0.0
   injectable: ^2.4.3
-#    path: ../injectable
+  #    path: ../injectable
   collection: ^1.17.1
   recase: ^4.1.0
   meta: ^1.12.0
