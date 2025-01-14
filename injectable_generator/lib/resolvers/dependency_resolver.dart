@@ -66,7 +66,7 @@ class DependencyResolver {
     final returnType = executableElement.returnType;
     throwIf(
       returnType.element is! ClassElement,
-      '${returnType.getDisplayString(withNullability: false)} is not a class element',
+      '${returnType.nameWithoutSuffix} is not a class element',
       element: returnType.element,
     );
 
@@ -148,11 +148,11 @@ class DependencyResolver {
     if (abstractType != null) {
       final abstractChecker = TypeChecker.fromStatic(abstractType);
       var abstractSubtype = clazz.allSupertypes
-          .firstOrNull((type) => abstractChecker.isExactly(type.element));
+          .firstWhereOrNull((type) => abstractChecker.isExactly(type.element));
 
       throwIf(
         abstractSubtype == null,
-        '[${clazz.name}] is not a subtype of [${abstractType.getDisplayString(withNullability: false)}]',
+        '[${clazz.name}] is not a subtype of [${abstractType.nameWithoutSuffix}]',
         element: clazz,
       );
 
@@ -190,7 +190,7 @@ class DependencyResolver {
     }
 
     var disposeMethod = clazz.methods
-        .firstOrNull((m) => _disposeMethodChecker.hasAnnotationOfExact(m));
+        .firstWhereOrNull((m) => _disposeMethodChecker.hasAnnotationOfExact(m));
     if (disposeMethod != null) {
       throwIf(
         _injectableType == InjectableType.factory,
@@ -266,11 +266,9 @@ class DependencyResolver {
         continue;
       }
       final namedAnnotation = _namedChecker.firstAnnotationOf(param);
-      final instanceName = namedAnnotation
-              ?.getField('type')
-              ?.toTypeValue()
-              ?.getDisplayString(withNullability: false) ??
-          namedAnnotation?.getField('name')?.toStringValue();
+      final instanceName =
+          namedAnnotation?.getField('type')?.toTypeValue()?.nameWithoutSuffix ??
+              namedAnnotation?.getField('name')?.toStringValue();
 
       final resolvedType = param.type is FunctionType
           ? _typeResolver.resolveFunctionType(param.type as FunctionType)

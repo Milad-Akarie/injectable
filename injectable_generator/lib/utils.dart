@@ -1,5 +1,6 @@
 // general utils
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 
 String capitalize(String s) {
@@ -49,12 +50,22 @@ void printBoxed(String message,
 }
 
 extension IterableExtenstion<E> on Iterable<E> {
-  E? firstOrNull(bool Function(E element) test) {
+  E? firstWhereOrNull(bool Function(E element) test) {
     for (var e in this) {
       if (test(e)) {
         return e;
       }
     }
     return null;
+  }
+}
+
+/// Extension helpers for [DartType]
+extension DartTypeX on DartType {
+  /// Returns the display string of this type
+  /// without nullability suffix
+  String get nameWithoutSuffix {
+    final name = getDisplayString();
+    return name.endsWith('?') ? name.substring(0, name.length - 1) : name;
   }
 }
