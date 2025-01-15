@@ -54,13 +54,16 @@ class DependencyConfig {
   });
 
   // used for testing
-  factory DependencyConfig.factory(String type,
-      {List<String> deps = const [],
-      List<String> envs = const [],
-      int order = 0}) {
+  factory DependencyConfig.factory(
+    String type, {
+    String? typeImpl,
+    List<String> deps = const [],
+    List<String> envs = const [],
+    int order = 0,
+  }) {
     return DependencyConfig(
-      type: ImportableType(name: type),
-      typeImpl: ImportableType(name: type),
+      type: ImportableType(name: type, import: type),
+      typeImpl: ImportableType(name: typeImpl ?? type),
       environments: envs,
       orderPosition: order,
       dependencies: deps
@@ -75,12 +78,20 @@ class DependencyConfig {
   }
 
   // used for testing
-  factory DependencyConfig.singleton(String type,
-      {List<String> deps = const [], int order = 0}) {
+  factory DependencyConfig.singleton(
+    String type, {
+    String? typeImpl,
+    List<String> deps = const [],
+    List<String> envs = const [],
+    int order = 0,
+    bool lazy = false,
+  }) {
     return DependencyConfig(
       type: ImportableType(name: type),
-      typeImpl: ImportableType(name: type),
-      injectableType: InjectableType.singleton,
+      typeImpl: ImportableType(name: typeImpl ?? type),
+      injectableType:
+          lazy ? InjectableType.lazySingleton : InjectableType.singleton,
+      environments: envs,
       orderPosition: order,
       dependencies: deps
           .map(

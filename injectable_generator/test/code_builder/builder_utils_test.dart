@@ -37,6 +37,22 @@ void main() {
       expect(sortDependencies(deps), expectedResult);
     });
 
+    test('should sort as [Dio,FakeUserApi,UserApi,UserRepository]', () {
+      final deps = [
+        DependencyConfig.singleton('Repository', deps: ['UserApi']),
+        DependencyConfig.singleton('UserApi', typeImpl: 'FakeUserApi', envs: ['test'], lazy: true),
+        DependencyConfig.singleton('UserApi', typeImpl: 'ImplUserApi', envs: ['dev'], deps: ['Dio']),
+        DependencyConfig.singleton('Dio', lazy: true, envs: ['dev']),
+      ];
+      final expectedResult = [
+        DependencyConfig.singleton('Dio', lazy: true, envs: ['dev']),
+        DependencyConfig.singleton('UserApi', typeImpl: 'FakeUserApi', envs: ['test'], lazy: true),
+        DependencyConfig.singleton('UserApi', typeImpl: 'ImplUserApi', envs: ['dev'], deps: ['Dio']),
+        DependencyConfig.singleton('Repository', deps: ['UserApi']),
+      ];
+      expect(sortDependencies(deps).toList(), expectedResult);
+    });
+
     test('should sort as [A,B]', () {
       final deps = [
         DependencyConfig.factory('AppServiceUser', deps: ['Service']),
