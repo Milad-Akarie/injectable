@@ -7,6 +7,7 @@ import 'package:injectable/injectable.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
 import 'package:injectable_generator/resolvers/dependency_resolver.dart';
 import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
+import 'package:injectable_generator/resolvers/executable_resolver.dart';
 import 'package:injectable_generator/utils.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -39,10 +40,7 @@ class InjectableGenerator implements Generator {
           '[${clazz.name}] must be an abstract class!',
           element: clazz,
         );
-        final executables = <ExecutableElement>[
-          ...clazz.accessors,
-          ...clazz.methods,
-        ];
+        final executables = ExecutableResolver.getAllExecutables(clazz);
         for (var element in executables) {
           if (element.isPrivate) continue;
           allDepsInStep.add(
