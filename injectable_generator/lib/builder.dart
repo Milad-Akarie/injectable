@@ -15,6 +15,6 @@ Builder injectableBuilder(BuilderOptions options) {
 
 Builder injectableConfigBuilder(BuilderOptions options) {
   return LibraryBuilder(InjectableConfigGenerator(),
-      generatedExtension: '.config.dart',
+      generatedExtension: '.g.dart',
       additionalOutputExtensions: ['.module.dart']);
 }
