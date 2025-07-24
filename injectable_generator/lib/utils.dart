@@ -1,5 +1,5 @@
 // general utils
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -27,14 +27,14 @@ void throwSourceError(String message) {
   throw ("\n${pre.padRight(72, '-')}\n$message\n${''.padRight(72, '-')} \n");
 }
 
-void throwError(String message, {Element? element}) {
+void throwError(String message, {Element2? element}) {
   throw InvalidGenerationSourceError(
     message,
     element: element,
   );
 }
 
-void throwIf(bool condition, String message, {Element? element}) {
+void throwIf(bool condition, String message, {Element2? element}) {
   if (condition) {
     throw InvalidGenerationSourceError(
       message,

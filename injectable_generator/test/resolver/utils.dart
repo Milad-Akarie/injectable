@@ -12,11 +12,15 @@ Future<ResolvedInput> resolveInput(String sourceFile) async {
   final files = [File(sourceFile)];
   final fileMap = Map<String, String>.fromEntries(files.map(
       (f) => MapEntry('pkg|lib/${p.basename(f.path)}', f.readAsStringSync())));
-  return await resolveSources<ResolvedInput>(fileMap, (resolver) async {
-    final assetId = AssetId.parse(fileMap.keys.first);
-    final library = await resolver.libraryFor(assetId);
-    return ResolvedInput(LibraryReader(library), resolver);
-  });
+  return await resolveSources<ResolvedInput>(
+    fileMap,
+    (resolver) async {
+      final assetId = AssetId.parse(fileMap.keys.first);
+      final library = await resolver.libraryFor(assetId);
+      return ResolvedInput(LibraryReader(library), resolver);
+    },
+    readAllSourcesFromFilesystem: true,
+  );
 }
 
 Future<ResolvedInput> resolveRawSource(String source) async {

@@ -1,5 +1,5 @@
 // Todo add more resolver tests
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:injectable_generator/injectable_types.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
 import 'package:injectable_generator/models/importable_type.dart';
@@ -15,7 +15,7 @@ class MockTypeResolver extends ImportableTypeResolverImpl {
   MockTypeResolver() : super([]);
 
   @override
-  Set<String> resolveImports(Element? element) {
+  Set<String> resolveImports(Element2? element) {
     return {'source.dart'};
   }
 }
