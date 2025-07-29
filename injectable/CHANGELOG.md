@@ -1,4 +1,8 @@
 # ChangeLog
+## [2.5.1]
+- Feat: handle and pass on exception for async scope initialization
+- Feat: Add generateForEnvironments option
+- Fix: Add missing dispose param to getIt.registerSingleton when preResolve is true
 ## [2.5.0]
 - Chore: update get_it constraint to 7.2.0 <= 9.0.0
 - Fix: scope annotation does not work with getters

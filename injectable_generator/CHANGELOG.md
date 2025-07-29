@@ -1,6 +1,8 @@
 # ChangeLog
-## [2.7.1]
+## [2.8.0]
 - Chore: Update dependencies, source_gen (v3), build (v3), build_runner (v2.6)
+- Feat: Add generateForEnvironments option
+- Fix: fex dependency sort when dependencies have multiple environments
 ## [2.7.0]
 - Chore: Update dependencies, source_gen (v2), analyzer (<8.0.0), dart_style (v3)
 ## [2.6.2]
