@@ -78,6 +78,11 @@ class InjectableInit {
   /// defaults to false
   final bool usesConstructorCallback;
 
+  /// a Set of environments to generate for.
+  /// if not provided, code for all environments will be generated.
+  /// defaults to empty
+  final Set<Environment> generateForEnvironments;
+
   /// default constructor
   const InjectableInit({
     this.generateForDir = const ['lib'],
@@ -93,6 +98,7 @@ class InjectableInit {
     this.externalPackageModulesAfter,
     this.externalPackageModulesBefore,
     this.usesConstructorCallback = false,
+    this.generateForEnvironments = const {},
   }) : _isMicroPackage = false;
 
   /// default constructor
@@ -106,6 +112,7 @@ class InjectableInit {
     this.throwOnMissingDependencies = false,
     this.ignoreUnregisteredTypesInPackages = const [],
     this.usesNullSafety = true,
+    this.generateForEnvironments = const {},
   })  : _isMicroPackage = true,
         asExtension = false,
         includeMicroPackages = false,
