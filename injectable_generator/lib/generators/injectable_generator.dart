@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:build/build.dart';
 import 'package:injectable/injectable.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
@@ -36,12 +36,12 @@ class InjectableGenerator implements Generator {
       if (_moduleChecker.hasAnnotationOfExact(clazz)) {
         throwIf(
           !clazz.isAbstract,
-          '[${clazz.name}] must be an abstract class!',
+          '[${clazz.displayName}] must be an abstract class!',
           element: clazz,
         );
-        final executables = <ExecutableElement>[
-          ...clazz.accessors,
-          ...clazz.methods,
+        final executables = <ExecutableElement2>[
+          ...clazz.getters2,
+          ...clazz.methods2,
         ];
         for (var element in executables) {
           if (element.isPrivate) continue;
@@ -61,21 +61,22 @@ class InjectableGenerator implements Generator {
     return allDepsInStep.isNotEmpty ? jsonEncode(allDepsInStep) : null;
   }
 
-  ImportableTypeResolver getResolver(List<LibraryElement> libs) {
+  ImportableTypeResolver getResolver(List<LibraryElement2> libs) {
     return ImportableTypeResolverImpl(libs);
   }
 
-  bool _hasInjectable(ClassElement element) {
+  bool _hasInjectable(ClassElement2 element) {
     return _typeChecker.hasAnnotationOf(element);
   }
 
-  bool _hasConventionalMatch(ClassElement clazz) {
+  bool _hasConventionalMatch(ClassElement2 clazz) {
     if (clazz.isAbstract) {
       return false;
     }
-    final fileName = clazz.source.shortName.replaceFirst('.dart', '');
+    final fileName = clazz.firstFragment.libraryFragment.source.shortName
+        .replaceFirst('.dart', '');
     return (_classNameMatcher != null &&
-            _classNameMatcher!.hasMatch(clazz.name)) ||
+            _classNameMatcher!.hasMatch(clazz.displayName)) ||
         (_fileNameMatcher != null && _fileNameMatcher!.hasMatch(fileName));
   }
 }
