@@ -254,7 +254,18 @@ class DependencyResolver {
     _preResolve |= _preResolveChecker.hasAnnotationOf(executableInitializer);
 
     _isAsync = executableInitializer.returnType.isDartAsyncFuture;
-    _constructorName = executableInitializer.displayName;
+
+    if (executableInitializer is ConstructorElement2) {
+      // named factory
+      if (executableInitializer.isFactory) {
+        _constructorName = executableInitializer.lookupName ?? '';
+      } else if (executableInitializer.isDefaultConstructor) {
+        // lookupName returns 'new' and displayName display the name of the class
+        _constructorName = '';
+      }
+    } else {
+      _constructorName = executableInitializer.displayName;
+    }
     for (FormalParameterElement param
         in executableInitializer.formalParameters) {
       final ignoredAnnotation =
@@ -367,9 +378,6 @@ class DependencyResolver {
             returnType == _type || returnType == _typeImpl;
         break;
       }
-    }
-    if (_constructorName == _typeImpl.name) {
-      _constructorName = '';
     }
 
     return DependencyConfig(
