@@ -340,6 +340,25 @@ void main() async {
       );
     });
 
+    test('factory with named factory constructor', () {
+      final factoryWithDeps =
+          resolvedInput!.library.findType('FactoryWithFactoryConstructor')!;
+      final type = ImportableType(
+        name: 'FactoryWithFactoryConstructor',
+        import: 'source.dart',
+      );
+      expect(
+        DependencyConfig(
+            type: type,
+            typeImpl: type,
+            injectableType: InjectableType.factory,
+            dependencies: [],
+            isAsync: false,
+            constructorName: 'namedFactory'),
+        dependencyResolver!.resolve(factoryWithDeps),
+      );
+    });
+
     test('Async factory with nullable dependencies', () {
       final factoryWithDeps =
           resolvedInput!.library.findType('AsyncFactoryWithNullableDeps')!;

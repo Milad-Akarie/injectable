@@ -47,6 +47,15 @@ class FactoryWithNullableFactoryParams {
 }
 
 @injectable
+class FactoryWithFactoryConstructor {
+  FactoryWithFactoryConstructor._();
+
+  @factoryMethod
+  factory FactoryWithFactoryConstructor.namedFactory() =>
+      FactoryWithFactoryConstructor._();
+}
+
+@injectable
 class AsyncFactoryWithNullableDeps {
   const AsyncFactoryWithNullableDeps(SimpleFactory? simpleFactory);
 
