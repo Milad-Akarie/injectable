@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.8.1]
+- Fix: Fix @factoryMethod for factory class constructor
 ## [2.8.0]
 - Chore: Update dependencies, source_gen (v3), build (v3), build_runner (v2.6)
 - Feat: Add generateForEnvironments option
