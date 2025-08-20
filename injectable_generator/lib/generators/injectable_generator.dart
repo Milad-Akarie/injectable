@@ -1,17 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:analyzer/dart/element/element2.dart';
 import 'package:build/build.dart';
-import 'package:injectable/injectable.dart';
-import 'package:injectable_generator/models/dependency_config.dart';
-import 'package:injectable_generator/resolvers/dependency_resolver.dart';
-import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
 import 'package:injectable_generator/utils.dart';
 import 'package:source_gen/source_gen.dart';
-
-const TypeChecker _typeChecker = TypeChecker.fromRuntime(Injectable);
-const TypeChecker _moduleChecker = TypeChecker.fromRuntime(Module);
 
 class InjectableGenerator implements Generator {
   RegExp? _classNameMatcher, _fileNameMatcher;
@@ -31,52 +23,14 @@ class InjectableGenerator implements Generator {
 
   @override
   FutureOr<String?> generate(LibraryReader library, BuildStep buildStep) async {
-    final allDepsInStep = <DependencyConfig>[];
-    for (var clazz in library.classes) {
-      if (_moduleChecker.hasAnnotationOfExact(clazz)) {
-        throwIf(
-          !clazz.isAbstract,
-          '[${clazz.displayName}] must be an abstract class!',
-          element: clazz,
-        );
-        final executables = <ExecutableElement2>[
-          ...clazz.getters2,
-          ...clazz.methods2,
-        ];
-        for (var element in executables) {
-          if (element.isPrivate) continue;
-          allDepsInStep.add(
-            DependencyResolver(
-              getResolver(await buildStep.resolver.libraries.toList()),
-            ).resolveModuleMember(clazz, element),
-          );
-        }
-      } else if (_hasInjectable(clazz) ||
-          (_autoRegister && _hasConventionalMatch(clazz))) {
-        allDepsInStep.add(DependencyResolver(
-          getResolver(await buildStep.resolver.libraries.toList()),
-        ).resolve(clazz));
-      }
-    }
+    final allDepsInStep = await generateDependenciesJson(
+      library: library,
+      libs: await buildStep.resolver.libraries.toList(),
+      autoRegister: _autoRegister,
+      classNameMatcher: _classNameMatcher,
+      fileNameMatcher: _fileNameMatcher,
+    );
+
     return allDepsInStep.isNotEmpty ? jsonEncode(allDepsInStep) : null;
-  }
-
-  ImportableTypeResolver getResolver(List<LibraryElement2> libs) {
-    return ImportableTypeResolverImpl(libs);
-  }
-
-  bool _hasInjectable(ClassElement2 element) {
-    return _typeChecker.hasAnnotationOf(element);
-  }
-
-  bool _hasConventionalMatch(ClassElement2 clazz) {
-    if (clazz.isAbstract) {
-      return false;
-    }
-    final fileName = clazz.firstFragment.libraryFragment.source.shortName
-        .replaceFirst('.dart', '');
-    return (_classNameMatcher != null &&
-            _classNameMatcher!.hasMatch(clazz.displayName)) ||
-        (_fileNameMatcher != null && _fileNameMatcher!.hasMatch(fileName));
   }
 }

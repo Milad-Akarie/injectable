@@ -11,8 +11,7 @@ abstract class ImportableTypeResolver {
 
   ImportableType resolveType(DartType type);
 
-  ImportableType resolveFunctionType(FunctionType function,
-      [ExecutableElement2? executableElement]);
+  ImportableType resolveFunctionType(FunctionType function, [ExecutableElement2? executableElement]);
 
   static String? relative(String? path, Uri? to) {
     if (path == null || to == null) {
@@ -20,16 +19,12 @@ abstract class ImportableTypeResolver {
     }
     var fileUri = Uri.parse(path);
     var libName = to.pathSegments.first;
-    if ((to.scheme == 'package' &&
-            fileUri.scheme == 'package' &&
-            fileUri.pathSegments.first == libName) ||
+    if ((to.scheme == 'package' && fileUri.scheme == 'package' && fileUri.pathSegments.first == libName) ||
         (to.scheme == 'asset' && fileUri.scheme != 'package')) {
       if (fileUri.path == to.path) {
         return fileUri.pathSegments.last;
       } else {
-        return p.posix
-            .relative(fileUri.path, from: to.path)
-            .replaceFirst('../', '');
+        return p.posix.relative(fileUri.path, from: to.path).replaceFirst('../', '');
       }
     } else {
       return path;
@@ -56,31 +51,46 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
   @override
   Set<String> resolveImports(Element2? element) {
     final imports = <String>{};
-    // return early if source is null or element is a core type
-    if (element?.firstFragment.libraryFragment == null ||
-        _isCoreDartType(element)) {
+    final maybeElement = element;
+
+    if (maybeElement == null || maybeElement.firstFragment.libraryFragment == null || _isCoreDartType(maybeElement)) {
       return imports;
     }
-    libs.where((e) => e.exportNamespace.definedNames2.values.contains(element));
-    for (var lib in libs) {
-      if (!_isCoreDartType(lib) &&
-          lib.exportNamespace.definedNames2.values.contains(element)) {
+
+    // Matching element name and containing library should be unambiguous
+    final elementContainingLibs = libs.where(
+      (lib) => lib.exportNamespace.definedNames2.values
+          .map((definedName) => (definedName.displayName, definedName.library2?.uri))
+          .contains((maybeElement.displayName, maybeElement.library2?.uri)),
+    );
+
+    for (var lib in elementContainingLibs) {
+      if (!_isCoreDartType(lib)) {
         imports.add(lib.uri.toString());
       }
     }
     return imports;
+    // final imports = <String>{};
+    // // return early if source is null or element is a core type
+    // if (element?.firstFragment.libraryFragment == null || _isCoreDartType(element)) {
+    //   return imports;
+    // }
+    // libs.where((e) => e.exportNamespace.definedNames2.values.contains(element));
+    // for (var lib in libs) {
+    //   if (!_isCoreDartType(lib) && lib.exportNamespace.definedNames2.values.contains(element)) {
+    //     imports.add(lib.uri.toString());
+    //   }
+    // }
+    // return imports;
   }
 
   bool _isCoreDartType(Element2? element) {
-    return element?.firstFragment.libraryFragment?.source.fullName ==
-        'dart:core';
+    return element?.firstFragment.libraryFragment?.source.fullName == 'dart:core';
   }
 
   @override
-  ImportableType resolveFunctionType(FunctionType function,
-      [ExecutableElement2? executableElement]) {
-    final functionElement =
-        executableElement ?? function.element3 ?? function.alias?.element2;
+  ImportableType resolveFunctionType(FunctionType function, [ExecutableElement2? executableElement]) {
+    final functionElement = executableElement ?? function.element3 ?? function.alias?.element2;
     if (functionElement == null) {
       throw 'Can not resolve function type \nTry using an alias e.g typedef MyFunction = ${function.nameWithoutSuffix};';
     }
@@ -106,20 +116,15 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
   List<ImportableType> _resolveTypeArguments(DartType typeToCheck) {
     final importableTypes = <ImportableType>[];
     if (typeToCheck is RecordType && typeToCheck.alias == null) {
-      for (final recordField in [
-        ...typeToCheck.positionalFields,
-        ...typeToCheck.namedFields
-      ]) {
+      for (final recordField in [...typeToCheck.positionalFields, ...typeToCheck.namedFields]) {
         final imports = resolveImports(recordField.type.element3);
         importableTypes.add(ImportableType(
           name: recordField.type.element3?.displayName ?? 'void',
           import: imports.firstOrNull,
           otherImports: imports.skip(1).toSet(),
-          isNullable:
-              recordField.type.nullabilitySuffix == NullabilitySuffix.question,
+          isNullable: recordField.type.nullabilitySuffix == NullabilitySuffix.question,
           typeArguments: _resolveTypeArguments(recordField.type),
-          nameInRecord:
-              recordField is RecordTypeNamedField ? recordField.name : null,
+          nameInRecord: recordField is RecordTypeNamedField ? recordField.name : null,
         ));
       }
     } else if (typeToCheck is ParameterizedType || typeToCheck.alias != null) {

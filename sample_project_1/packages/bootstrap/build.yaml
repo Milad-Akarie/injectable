@@ -1,0 +1,7 @@
+targets:
+  $default:
+    builders:
+      injectable_generator:injectable_builder:
+        enabled: False
+      injectable_generator:injectable_holistic_builder:
+        enabled: True

@@ -6,6 +6,13 @@ builders:
     auto_apply: dependents
     runs_before: ["injectable_generator|injectable_config_builder"]
     build_to: cache
+  injectable_holistic_builder:
+    import: "package:injectable_generator/builder.dart"
+    builder_factories: [ "injectableHolisticBuilder" ]
+    build_extensions: { ".dart": [ ".injectable_holistic.json" ] }
+    auto_apply: none
+    runs_before: [ "injectable_generator|injectable_config_builder" ]
+    build_to: cache
   injectable_config_builder:
     import: "package:injectable_generator/builder.dart"
     builder_factories: ["injectableConfigBuilder"]

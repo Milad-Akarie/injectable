@@ -217,12 +217,7 @@ const lazySingleton = LazySingleton();
 /// Used to register a dependency under a name
 /// instead of type also used to annotated
 /// named injected dependencies in constructors
-@Target({
-  TargetKind.classType,
-  TargetKind.parameter,
-  TargetKind.method,
-  TargetKind.getter
-})
+@Target({TargetKind.classType, TargetKind.parameter, TargetKind.method, TargetKind.getter})
 class Named {
   /// The name in which an instance is registered
   final String? name;
@@ -401,3 +396,11 @@ class ExternalModule {
 
   const ExternalModule(this.module, {this.scope});
 }
+
+/// Marks a bootstrapping library to generate micro module injection
+@Target({TargetKind.library})
+class PackageDependenciesLoader {
+  const PackageDependenciesLoader();
+}
+
+const packageDependenciesLoader = PackageDependenciesLoader();
