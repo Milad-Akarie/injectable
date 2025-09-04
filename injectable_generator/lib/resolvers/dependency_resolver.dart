@@ -255,11 +255,11 @@ class DependencyResolver {
 
     _isAsync = executableInitializer.returnType.isDartAsyncFuture;
 
+    _constructorName = executableInitializer.lookupName ?? '';
+
     if (executableInitializer is ConstructorElement2) {
       // named factory
-      if (executableInitializer.isFactory) {
-        _constructorName = executableInitializer.lookupName ?? '';
-      } else if (executableInitializer.isDefaultConstructor) {
+      if (executableInitializer.isDefaultConstructor) {
         // lookupName returns 'new' and displayName display the name of the class
         _constructorName = '';
       }
