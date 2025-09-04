@@ -82,7 +82,12 @@ class PostConstructableService {
 
 sealed class Model {
   Model get m {
-    return switch (this) { ModelX() => ModelX(), ModelY() => ModelY() };
+    return switch (this) {
+      // TODO: Handle this case.
+      ModelW() => ModelW.from('aa'),
+      ModelX() => ModelX(),
+      ModelY() => ModelY()
+    };
   }
 }
 
@@ -90,3 +95,23 @@ sealed class Model {
 class ModelX extends Model {}
 
 class ModelY extends Model {}
+
+@lazySingleton
+class ModelC {
+  @factoryMethod
+  ModelC.from();
+}
+
+@lazySingleton
+class ModelW extends Model {
+  final String name;
+  @factoryMethod
+  ModelW.from(this.name);
+}
+
+@lazySingleton
+class ModelZ {
+  final ModelW model;
+  @factoryMethod
+  ModelZ.from(this.model);
+}
