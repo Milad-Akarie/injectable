@@ -10,8 +10,8 @@ import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
 import 'package:injectable_generator/utils.dart';
 import 'package:source_gen/source_gen.dart';
 
-const TypeChecker _typeChecker = TypeChecker.fromRuntime(Injectable);
-const TypeChecker _moduleChecker = TypeChecker.fromRuntime(Module);
+const TypeChecker _typeChecker = TypeChecker.typeNamed(Injectable, inPackage: 'injectable');
+const TypeChecker _moduleChecker = TypeChecker.typeNamed(Module, inPackage: 'injectable');
 
 class InjectableGenerator implements Generator {
   RegExp? _classNameMatcher, _fileNameMatcher;

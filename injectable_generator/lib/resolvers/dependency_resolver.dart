@@ -12,21 +12,21 @@ import 'package:source_gen/source_gen.dart';
 import '../injectable_types.dart';
 import 'importable_type_resolver.dart';
 
-const TypeChecker _namedChecker = TypeChecker.fromRuntime(Named);
-const TypeChecker _ignoredChecker = TypeChecker.fromRuntime(IgnoreParam);
-const TypeChecker _injectableChecker = TypeChecker.fromRuntime(Injectable);
-const TypeChecker _envChecker = TypeChecker.fromRuntime(Environment);
-const TypeChecker _preResolveChecker = TypeChecker.fromRuntime(PreResolve);
-const TypeChecker _factoryParamChecker = TypeChecker.fromRuntime(FactoryParam);
-const TypeChecker _scopeChecker = TypeChecker.fromRuntime(Scope);
+const TypeChecker _namedChecker = TypeChecker.typeNamed(Named, inPackage: 'injectable');
+const TypeChecker _ignoredChecker = TypeChecker.typeNamed(IgnoreParam, inPackage: 'injectable');
+const TypeChecker _injectableChecker = TypeChecker.typeNamed(Injectable, inPackage: 'injectable');
+const TypeChecker _envChecker = TypeChecker.typeNamed(Environment, inPackage: 'injectable');
+const TypeChecker _preResolveChecker = TypeChecker.typeNamed(PreResolve, inPackage: 'injectable');
+const TypeChecker _factoryParamChecker = TypeChecker.typeNamed(FactoryParam, inPackage: 'injectable');
+const TypeChecker _scopeChecker = TypeChecker.typeNamed(Scope, inPackage: 'injectable');
 const TypeChecker _factoryMethodChecker =
-    TypeChecker.fromRuntime(FactoryMethod);
+    TypeChecker.typeNamed(FactoryMethod, inPackage: 'injectable');
 const TypeChecker _disposeMethodChecker =
-    TypeChecker.fromRuntime(DisposeMethod);
+    TypeChecker.typeNamed(DisposeMethod, inPackage: 'injectable');
 const TypeChecker _postConstructChecker =
-    TypeChecker.fromRuntime(PostConstruct);
+    TypeChecker.typeNamed(PostConstruct, inPackage: 'injectable');
 
-const TypeChecker _orderChecker = TypeChecker.fromRuntime(Order);
+const TypeChecker _orderChecker = TypeChecker.typeNamed(Order);
 
 class DependencyResolver {
   final ImportableTypeResolver _typeResolver;
@@ -115,11 +115,11 @@ class DependencyResolver {
     List<String>? inlineEnv;
     if (injectableAnnotation != null) {
       final injectable = ConstantReader(injectableAnnotation);
-      if (injectable.instanceOf(TypeChecker.fromRuntime(LazySingleton))) {
+      if (injectable.instanceOf(TypeChecker.typeNamed(LazySingleton, inPackage: 'injectable'))) {
         _injectableType = InjectableType.lazySingleton;
         disposeFuncFromAnnotation =
             injectable.peek('dispose')?.objectValue.toFunctionValue2();
-      } else if (injectable.instanceOf(TypeChecker.fromRuntime(Singleton))) {
+      } else if (injectable.instanceOf(TypeChecker.typeNamed(Singleton, inPackage: 'injectable'))) {
         _injectableType = InjectableType.singleton;
         _signalsReady = injectable.peek('signalsReady')?.boolValue;
         disposeFuncFromAnnotation =
