@@ -1,4 +1,4 @@
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:collection/collection.dart';
@@ -7,12 +7,14 @@ import 'package:injectable_generator/utils.dart';
 import 'package:path/path.dart' as p;
 
 abstract class ImportableTypeResolver {
-  Set<String> resolveImports(Element2 element);
+  Set<String> resolveImports(Element element);
 
   ImportableType resolveType(DartType type);
 
-  ImportableType resolveFunctionType(FunctionType function,
-      [ExecutableElement2? executableElement]);
+  ImportableType resolveFunctionType(
+    FunctionType function, [
+    ExecutableElement? executableElement,
+  ]);
 
   static String? relative(String? path, Uri? to) {
     if (path == null || to == null) {
@@ -49,12 +51,12 @@ abstract class ImportableTypeResolver {
 }
 
 class ImportableTypeResolverImpl extends ImportableTypeResolver {
-  final List<LibraryElement2> libs;
+  final List<LibraryElement> libs;
 
   ImportableTypeResolverImpl(this.libs);
 
   @override
-  Set<String> resolveImports(Element2? element) {
+  Set<String> resolveImports(Element? element) {
     final imports = <String>{};
     // return early if source is null or element is a core type
     if (element?.firstFragment.libraryFragment == null ||
@@ -71,26 +73,28 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
     return imports;
   }
 
-  bool _isCoreDartType(Element2? element) {
+  bool _isCoreDartType(Element? element) {
     return element?.firstFragment.libraryFragment?.source.fullName ==
         'dart:core';
   }
 
   @override
-  ImportableType resolveFunctionType(FunctionType function,
-      [ExecutableElement2? executableElement]) {
+  ImportableType resolveFunctionType(
+    FunctionType function, [
+    ExecutableElement? executableElement,
+  ]) {
     final functionElement =
-        executableElement ?? function.element3 ?? function.alias?.element2;
+        executableElement ?? function.element ?? function.alias?.element;
     if (functionElement == null) {
       throw 'Can not resolve function type \nTry using an alias e.g typedef MyFunction = ${function.nameWithoutSuffix};';
     }
     final displayName = functionElement.displayName;
     var functionName = displayName;
 
-    Element2 elementToImport = functionElement;
-    var enclosingElement = functionElement.enclosingElement2;
+    Element elementToImport = functionElement;
+    var enclosingElement = functionElement.enclosingElement;
 
-    if (enclosingElement != null && enclosingElement is ClassElement2) {
+    if (enclosingElement != null && enclosingElement is ClassElement) {
       functionName = '${enclosingElement.displayName}.$displayName';
       elementToImport = enclosingElement;
     }
@@ -108,47 +112,56 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
     if (typeToCheck is RecordType && typeToCheck.alias == null) {
       for (final recordField in [
         ...typeToCheck.positionalFields,
-        ...typeToCheck.namedFields
+        ...typeToCheck.namedFields,
       ]) {
-        final imports = resolveImports(recordField.type.element3);
-        importableTypes.add(ImportableType(
-          name: recordField.type.element3?.displayName ?? 'void',
-          import: imports.firstOrNull,
-          otherImports: imports.skip(1).toSet(),
-          isNullable:
-              recordField.type.nullabilitySuffix == NullabilitySuffix.question,
-          typeArguments: _resolveTypeArguments(recordField.type),
-          nameInRecord:
-              recordField is RecordTypeNamedField ? recordField.name : null,
-        ));
+        final imports = resolveImports(recordField.type.element);
+        importableTypes.add(
+          ImportableType(
+            name: recordField.type.element?.displayName ?? 'void',
+            import: imports.firstOrNull,
+            otherImports: imports.skip(1).toSet(),
+            isNullable:
+                recordField.type.nullabilitySuffix ==
+                NullabilitySuffix.question,
+            typeArguments: _resolveTypeArguments(recordField.type),
+            nameInRecord: recordField is RecordTypeNamedField
+                ? recordField.name
+                : null,
+          ),
+        );
       }
     } else if (typeToCheck is ParameterizedType || typeToCheck.alias != null) {
       final typeArguments = [
         if (typeToCheck.alias != null)
           ...typeToCheck.alias!.typeArguments
         else if (typeToCheck is ParameterizedType)
-          ...typeToCheck.typeArguments
+          ...typeToCheck.typeArguments,
       ];
       for (DartType type in typeArguments) {
-        final imports = resolveImports(type.element3);
+        final imports = resolveImports(type.element);
         if (type is RecordType) {
-          importableTypes.add(ImportableType.record(
-            name: type.element3?.displayName ?? '',
-            import: imports.firstOrNull,
-            otherImports: imports.skip(1).toSet(),
-            isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
-            typeArguments: _resolveTypeArguments(type),
-          ));
-        } else if (type.element3 is TypeParameterElement2) {
+          final effectiveElement = type.alias?.element ?? type.element;
+          importableTypes.add(
+            ImportableType.record(
+              name: effectiveElement?.displayName ?? '',
+              import: imports.firstOrNull,
+              otherImports: imports.skip(1).toSet(),
+              isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
+              typeArguments: _resolveTypeArguments(type),
+            ),
+          );
+        } else if (type.element is TypeParameterElement) {
           importableTypes.add(ImportableType(name: 'dynamic'));
         } else {
-          importableTypes.add(ImportableType(
-            name: type.element3?.displayName ?? type.nameWithoutSuffix,
-            import: imports.firstOrNull,
-            otherImports: imports.skip(1).toSet(),
-            isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
-            typeArguments: _resolveTypeArguments(type),
-          ));
+          importableTypes.add(
+            ImportableType(
+              name: type.element?.displayName ?? type.nameWithoutSuffix,
+              import: imports.firstOrNull,
+              otherImports: imports.skip(1).toSet(),
+              isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
+              typeArguments: _resolveTypeArguments(type),
+            ),
+          );
         }
       }
     }
@@ -157,7 +170,7 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
 
   @override
   ImportableType resolveType(DartType type) {
-    final effectiveElement = type.alias?.element2 ?? type.element3;
+    final effectiveElement = type.alias?.element ?? type.element;
     final imports = resolveImports(effectiveElement);
     if (type is RecordType && type.alias == null) {
       return ImportableType.record(

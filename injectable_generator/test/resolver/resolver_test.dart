@@ -1,5 +1,5 @@
 // Todo add more resolver tests
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:injectable_generator/injectable_types.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
 import 'package:injectable_generator/models/importable_type.dart';
@@ -15,7 +15,7 @@ class MockTypeResolver extends ImportableTypeResolverImpl {
   MockTypeResolver() : super([]);
 
   @override
-  Set<String> resolveImports(Element2? element) {
+  Set<String> resolveImports(Element? element) {
     return {'source.dart'};
   }
 }
@@ -340,11 +340,33 @@ void main() async {
       );
     });
 
-    test('factory with named factory constructor', () {
-      final factoryWithDeps =
-          resolvedInput!.library.findType('FactoryWithFactoryConstructor')!;
+    test('factory with named static factory constructor', () {
+      final factoryWithDeps = resolvedInput!.library.findType(
+        'FactoryWithFactoryStaticConstructor',
+      )!;
       final type = ImportableType(
-        name: 'FactoryWithFactoryConstructor',
+        name: 'FactoryWithFactoryStaticConstructor',
+        import: 'source.dart',
+      );
+      expect(
+        DependencyConfig(
+          type: type,
+          typeImpl: type,
+          injectableType: InjectableType.factory,
+          dependencies: [],
+          isAsync: false,
+          constructorName: 'namedFactory',
+        ),
+        dependencyResolver!.resolve(factoryWithDeps),
+      );
+    });
+
+    test('factory with named constructor', () {
+      final factoryWithDeps = resolvedInput!.library.findType(
+        'FactoryWithNamedConstructor',
+      )!;
+      final type = ImportableType(
+        name: 'FactoryWithNamedConstructor',
         import: 'source.dart',
       );
       expect(
@@ -354,7 +376,8 @@ void main() async {
             injectableType: InjectableType.factory,
             dependencies: [],
             isAsync: false,
-            constructorName: 'namedFactory'),
+          constructorName: 'namedFactory',
+        ),
         dependencyResolver!.resolve(factoryWithDeps),
       );
     });

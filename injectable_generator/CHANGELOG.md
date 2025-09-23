@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.9.0]
+- Chore: Update dependencies, source_gen (v4), build (v4), analyzer (v8)
 ## [2.8.1]
 - Fix: Fix @factoryMethod for factory class constructor
 ## [2.8.0]

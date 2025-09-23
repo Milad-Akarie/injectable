@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:injectable/injectable.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
@@ -10,8 +10,14 @@ import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
 import 'package:injectable_generator/utils.dart';
 import 'package:source_gen/source_gen.dart';
 
-const TypeChecker _typeChecker = TypeChecker.fromRuntime(Injectable);
-const TypeChecker _moduleChecker = TypeChecker.fromRuntime(Module);
+const TypeChecker _typeChecker = TypeChecker.typeNamed(
+  Injectable,
+  inPackage: 'injectable',
+);
+const TypeChecker _moduleChecker = TypeChecker.typeNamed(
+  Module,
+  inPackage: 'injectable',
+);
 
 class InjectableGenerator implements Generator {
   RegExp? _classNameMatcher, _fileNameMatcher;
@@ -39,9 +45,9 @@ class InjectableGenerator implements Generator {
           '[${clazz.displayName}] must be an abstract class!',
           element: clazz,
         );
-        final executables = <ExecutableElement2>[
-          ...clazz.getters2,
-          ...clazz.methods2,
+        final executables = <ExecutableElement>[
+          ...clazz.getters,
+          ...clazz.methods,
         ];
         for (var element in executables) {
           if (element.isPrivate) continue;
@@ -61,15 +67,15 @@ class InjectableGenerator implements Generator {
     return allDepsInStep.isNotEmpty ? jsonEncode(allDepsInStep) : null;
   }
 
-  ImportableTypeResolver getResolver(List<LibraryElement2> libs) {
+  ImportableTypeResolver getResolver(List<LibraryElement> libs) {
     return ImportableTypeResolverImpl(libs);
   }
 
-  bool _hasInjectable(ClassElement2 element) {
+  bool _hasInjectable(ClassElement element) {
     return _typeChecker.hasAnnotationOf(element);
   }
 
-  bool _hasConventionalMatch(ClassElement2 clazz) {
+  bool _hasConventionalMatch(ClassElement clazz) {
     if (clazz.isAbstract) {
       return false;
     }
