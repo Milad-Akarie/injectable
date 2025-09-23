@@ -221,7 +221,7 @@ const lazySingleton = LazySingleton();
   TargetKind.classType,
   TargetKind.parameter,
   TargetKind.method,
-  TargetKind.getter
+  TargetKind.getter,
 })
 class Named {
   /// The name in which an instance is registered

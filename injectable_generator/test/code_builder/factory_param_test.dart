@@ -11,7 +11,8 @@ void main() {
   group('Factory param generator Test group', () {
     test("One factory param generator test", () {
       expect(
-          generate(DependencyConfig(
+        generate(
+          DependencyConfig(
             injectableType: InjectableType.factory,
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
@@ -21,15 +22,18 @@ void main() {
                 paramName: 'storage',
                 isFactoryParam: true,
                 isPositional: true,
-              )
+              ),
             ],
-          )),
-          'gh.factoryParam<Demo, Storage, dynamic>((storage, _, ) => Demo(storage));');
+          ),
+        ),
+        'gh.factoryParam<Demo, Storage, dynamic>((storage, _, ) => Demo(storage));',
+      );
     });
 
     test("Two factory param generator test", () {
       expect(
-          generate(DependencyConfig(
+        generate(
+          DependencyConfig(
             injectableType: InjectableType.factory,
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
@@ -45,15 +49,18 @@ void main() {
                 paramName: 'url',
                 isFactoryParam: true,
                 isPositional: true,
-              )
+              ),
             ],
-          )),
-          'gh.factoryParam<Demo, Storage, Url>((storage, url, ) => Demo(storage, url, ));');
+          ),
+        ),
+        'gh.factoryParam<Demo, Storage, Url>((storage, url, ) => Demo(storage, url, ));',
+      );
     });
 
     test("Two named factory param generator test", () {
       expect(
-          generate(DependencyConfig(
+        generate(
+          DependencyConfig(
             injectableType: InjectableType.factory,
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
@@ -69,15 +76,18 @@ void main() {
                 paramName: 'url',
                 isFactoryParam: true,
                 isPositional: false,
-              )
+              ),
             ],
-          )),
-          'gh.factoryParam<Demo, Storage, Url>((storage, url, ) => Demo(storage: storage, url: url, ));');
+          ),
+        ),
+        'gh.factoryParam<Demo, Storage, Url>((storage, url, ) => Demo(storage: storage, url: url, ));',
+      );
     });
 
     test("One factory param with injected dependencies test", () {
       expect(
-          generate(DependencyConfig(
+        generate(
+          DependencyConfig(
             injectableType: InjectableType.factory,
             type: ImportableType(name: 'Demo'),
             typeImpl: ImportableType(name: 'Demo'),
@@ -93,10 +103,12 @@ void main() {
                 paramName: 'url',
                 isFactoryParam: true,
                 isPositional: true,
-              )
+              ),
             ],
-          )),
-          'gh.factoryParam<Demo, String, dynamic>((url, _, ) => Demo(gh<Storage>(), url, ));');
+          ),
+        ),
+        'gh.factoryParam<Demo, String, dynamic>((url, _, ) => Demo(gh<Storage>(), url, ));',
+      );
     });
 
     test("One factory param with injected async dependencies test", () {
@@ -116,7 +128,7 @@ void main() {
             paramName: 'url',
             isFactoryParam: true,
             isPositional: true,
-          )
+          ),
         ],
       );
       final allDeps = [
@@ -128,8 +140,10 @@ void main() {
           isAsync: true,
         ),
       ];
-      expect(generate(dep, allDeps: allDeps),
-          'gh.factoryParamAsync<Demo, String, dynamic>((url, _, ) async  => Demo( await gh.getAsync<Storage>(), url, ));');
+      expect(
+        generate(dep, allDeps: allDeps),
+        'gh.factoryParamAsync<Demo, String, dynamic>((url, _, ) async  => Demo( await gh.getAsync<Storage>(), url, ));',
+      );
     });
   });
 }

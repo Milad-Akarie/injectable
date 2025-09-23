@@ -59,9 +59,11 @@ class InjectableGenerator implements Generator {
         }
       } else if (_hasInjectable(clazz) ||
           (_autoRegister && _hasConventionalMatch(clazz))) {
-        allDepsInStep.add(DependencyResolver(
-          getResolver(await buildStep.resolver.libraries.toList()),
-        ).resolve(clazz));
+        allDepsInStep.add(
+          DependencyResolver(
+            getResolver(await buildStep.resolver.libraries.toList()),
+          ).resolve(clazz),
+        );
       }
     }
     return allDepsInStep.isNotEmpty ? jsonEncode(allDepsInStep) : null;

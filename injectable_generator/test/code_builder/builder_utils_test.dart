@@ -22,32 +22,53 @@ void main() {
     });
 
     test(
-        'Sorting with environments in mind, should sort as [B{prod},B{dev}},A{dev}]',
-        () {
-      final deps = [
-        DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
-        DependencyConfig.factory('B', envs: ['prod']),
-        DependencyConfig.factory('B', envs: ['dev']),
-      ];
-      final expectedResult = [
-        DependencyConfig.factory('B', envs: ['dev']),
-        DependencyConfig.factory('B', envs: ['prod']),
-        DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
-      ];
-      expect(sortDependencies(deps), expectedResult);
-    });
+      'Sorting with environments in mind, should sort as [B{prod},B{dev}},A{dev}]',
+      () {
+        final deps = [
+          DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
+          DependencyConfig.factory('B', envs: ['prod']),
+          DependencyConfig.factory('B', envs: ['dev']),
+        ];
+        final expectedResult = [
+          DependencyConfig.factory('B', envs: ['dev']),
+          DependencyConfig.factory('B', envs: ['prod']),
+          DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
+        ];
+        expect(sortDependencies(deps), expectedResult);
+      },
+    );
 
     test('should sort as [Dio,FakeUserApi,UserApi,UserRepository]', () {
       final deps = [
         DependencyConfig.singleton('Repository', deps: ['UserApi']),
-        DependencyConfig.singleton('UserApi', typeImpl: 'FakeUserApi', envs: ['test'], lazy: true),
-        DependencyConfig.singleton('UserApi', typeImpl: 'ImplUserApi', envs: ['dev'], deps: ['Dio']),
+        DependencyConfig.singleton(
+          'UserApi',
+          typeImpl: 'FakeUserApi',
+          envs: ['test'],
+          lazy: true,
+        ),
+        DependencyConfig.singleton(
+          'UserApi',
+          typeImpl: 'ImplUserApi',
+          envs: ['dev'],
+          deps: ['Dio'],
+        ),
         DependencyConfig.singleton('Dio', lazy: true, envs: ['dev']),
       ];
       final expectedResult = [
         DependencyConfig.singleton('Dio', lazy: true, envs: ['dev']),
-        DependencyConfig.singleton('UserApi', typeImpl: 'FakeUserApi', envs: ['test'], lazy: true),
-        DependencyConfig.singleton('UserApi', typeImpl: 'ImplUserApi', envs: ['dev'], deps: ['Dio']),
+        DependencyConfig.singleton(
+          'UserApi',
+          typeImpl: 'FakeUserApi',
+          envs: ['test'],
+          lazy: true,
+        ),
+        DependencyConfig.singleton(
+          'UserApi',
+          typeImpl: 'ImplUserApi',
+          envs: ['dev'],
+          deps: ['Dio'],
+        ),
         DependencyConfig.singleton('Repository', deps: ['UserApi']),
       ];
       expect(sortDependencies(deps).toList(), expectedResult);
@@ -96,20 +117,21 @@ void main() {
     });
 
     test(
-        'Sorting with environments in mind, should sort as [B{prd},B{dev}},A{dev}]',
-        () {
-      final deps = [
-        DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
-        DependencyConfig.factory('B', envs: ['prod'], order: 1),
-        DependencyConfig.factory('B', envs: ['dev'], order: -1),
-      ];
-      final expectedResult = [
-        DependencyConfig.factory('B', envs: ['dev'], order: -1),
-        DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
-        DependencyConfig.factory('B', envs: ['prod'], order: 1),
-      ];
-      expect(sortDependencies(deps).toList(), expectedResult);
-    });
+      'Sorting with environments in mind, should sort as [B{prd},B{dev}},A{dev}]',
+      () {
+        final deps = [
+          DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
+          DependencyConfig.factory('B', envs: ['prod'], order: 1),
+          DependencyConfig.factory('B', envs: ['dev'], order: -1),
+        ];
+        final expectedResult = [
+          DependencyConfig.factory('B', envs: ['dev'], order: -1),
+          DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
+          DependencyConfig.factory('B', envs: ['prod'], order: 1),
+        ];
+        expect(sortDependencies(deps).toList(), expectedResult);
+      },
+    );
   });
 
   group('hasAsyncDependency', () {
@@ -133,7 +155,7 @@ void main() {
           InjectedDependency(
             type: ImportableType(name: 'Fizz'),
             paramName: 'fizz',
-          )
+          ),
         ],
       );
       final allDeps = [
@@ -157,7 +179,7 @@ void main() {
           InjectedDependency(
             type: ImportableType(name: 'Fizz'),
             paramName: 'fizz',
-          )
+          ),
         ],
       );
       final allDeps = <DependencyConfig>[dep];
@@ -252,16 +274,17 @@ void main() {
       final allDeps = [
         dep,
         DependencyConfig(
-            type: ImportableType(name: 'Fizz'),
-            typeImpl: ImportableType(name: 'Fizz'),
-            injectableType: InjectableType.factory,
-            dependencies: [
-              InjectedDependency(
-                type: ImportableType(name: 'Buzz'),
-                paramName: 'buzz',
-                instanceName: 'buzzImpl',
-              ),
-            ]),
+          type: ImportableType(name: 'Fizz'),
+          typeImpl: ImportableType(name: 'Fizz'),
+          injectableType: InjectableType.factory,
+          dependencies: [
+            InjectedDependency(
+              type: ImportableType(name: 'Buzz'),
+              paramName: 'buzz',
+              instanceName: 'buzzImpl',
+            ),
+          ],
+        ),
         DependencyConfig(
           type: ImportableType(name: 'Buzz'),
           typeImpl: ImportableType(name: 'Buzz'),
@@ -346,7 +369,7 @@ void main() {
           InjectedDependency(
             type: ImportableType(name: 'Buzz'),
             paramName: 'buzz',
-          )
+          ),
         ],
       );
       final allDeps = [
@@ -355,7 +378,7 @@ void main() {
           type: ImportableType(name: 'Buzz'),
           typeImpl: ImportableType(name: 'Buzz'),
           injectableType: InjectableType.factory,
-        )
+        ),
       ];
       final depSet = DependencyList(dependencies: allDeps);
       expect(depSet.isAsyncOrHasAsyncDependency(iDep), isFalse);
@@ -374,7 +397,7 @@ void main() {
           InjectedDependency(
             type: ImportableType(name: 'Buzz'),
             paramName: 'buzz',
-          )
+          ),
         ],
       );
       final allDeps = [
@@ -384,7 +407,7 @@ void main() {
           typeImpl: ImportableType(name: 'Buzz'),
           injectableType: InjectableType.factory,
           isAsync: true,
-        )
+        ),
       ];
       final depSet = DependencyList(dependencies: allDeps);
       expect(depSet.isAsyncOrHasAsyncDependency(iDep), isTrue);

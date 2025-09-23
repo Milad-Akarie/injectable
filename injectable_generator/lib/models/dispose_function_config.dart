@@ -62,11 +62,10 @@ class DisposeFunctionConfig {
   }
 
   Map<String, dynamic> toJson() {
-    // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'isInstance': isInstance,
       'name': name,
       if (importableType != null) 'importableType': importableType!.toJson(),
-    } as Map<String, dynamic>;
+    };
   }
 }

@@ -70,7 +70,8 @@ class AsyncFactoryWithNullableDeps {
 
   @factoryMethod
   static Future<AsyncFactoryWithNullableDeps> create(
-      @factoryParam SimpleFactory? simpleFactory) async {
+    @factoryParam SimpleFactory? simpleFactory,
+  ) async {
     return AsyncFactoryWithNullableDeps(simpleFactory);
   }
 }
@@ -80,7 +81,8 @@ class AsyncFactoryWithNonNullableDeps {
 
   @factoryMethod
   static Future<AsyncFactoryWithNonNullableDeps> create(
-      @factoryParam SimpleFactory simpleFactory) async {
+    @factoryParam SimpleFactory simpleFactory,
+  ) async {
     return AsyncFactoryWithNonNullableDeps(simpleFactory);
   }
 }

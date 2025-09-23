@@ -89,8 +89,9 @@ class DependencyConfig {
     return DependencyConfig(
       type: ImportableType(name: type),
       typeImpl: ImportableType(name: typeImpl ?? type),
-      injectableType:
-          lazy ? InjectableType.lazySingleton : InjectableType.singleton,
+      injectableType: lazy
+          ? InjectableType.lazySingleton
+          : InjectableType.singleton,
       environments: envs,
       orderPosition: order,
       dependencies: deps
@@ -155,7 +156,8 @@ class DependencyConfig {
       postConstructReturnsSelf.hashCode ^
       scope.hashCode;
 
-  late final int identityHash = type.identity.hashCode ^
+  late final int identityHash =
+      type.identity.hashCode ^
       typeImpl.identity.hashCode ^
       injectableType.hashCode ^
       instanceName.hashCode ^
@@ -215,26 +217,25 @@ class DependencyConfig {
   }
 
   Map<String, dynamic> toJson() => {
-        'type': type.toJson(),
-        'typeImpl': typeImpl.toJson(),
-        "isAsync": isAsync,
-        "postConstructReturnsSelf": postConstructReturnsSelf,
-        "preResolve": preResolve,
-        "canBeConst": canBeConst,
-        "injectableType": injectableType,
-        if (moduleConfig != null) 'moduleConfig': moduleConfig!.toJson(),
-        if (disposeFunction != null)
-          'disposeFunction': disposeFunction!.toJson(),
-        "dependsOn": dependsOn.map((v) => v.toJson()).toList(),
-        "environments": environments,
-        "dependencies": dependencies.map((v) => v.toJson()).toList(),
-        if (instanceName != null) "instanceName": instanceName,
-        if (signalsReady != null) "signalsReady": signalsReady,
-        if (constructorName != null) "constructorName": constructorName,
-        if (postConstruct != null) "postConstruct": postConstruct,
-        "orderPosition": orderPosition,
-        if (scope != null) "scope": scope,
-      };
+    'type': type.toJson(),
+    'typeImpl': typeImpl.toJson(),
+    "isAsync": isAsync,
+    "postConstructReturnsSelf": postConstructReturnsSelf,
+    "preResolve": preResolve,
+    "canBeConst": canBeConst,
+    "injectableType": injectableType,
+    if (moduleConfig != null) 'moduleConfig': moduleConfig!.toJson(),
+    if (disposeFunction != null) 'disposeFunction': disposeFunction!.toJson(),
+    "dependsOn": dependsOn.map((v) => v.toJson()).toList(),
+    "environments": environments,
+    "dependencies": dependencies.map((v) => v.toJson()).toList(),
+    if (instanceName != null) "instanceName": instanceName,
+    if (signalsReady != null) "signalsReady": signalsReady,
+    if (constructorName != null) "constructorName": constructorName,
+    if (postConstruct != null) "postConstruct": postConstruct,
+    "orderPosition": orderPosition,
+    if (scope != null) "scope": scope,
+  };
 
   bool get isFromModule => moduleConfig != null;
 
