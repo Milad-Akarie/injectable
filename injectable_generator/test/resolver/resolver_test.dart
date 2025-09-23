@@ -30,6 +30,26 @@ void main() async {
       dependencyResolver = DependencyResolver(MockTypeResolver());
     });
 
+    test('Factory without annotation', () {
+      var factoryWithoutAnnotationType = resolvedInput!.library.findType(
+        'FactoryWithoutAnnotation',
+      )!;
+
+      final type = ImportableType(
+        name: 'FactoryWithoutAnnotation',
+        import: 'source.dart',
+      );
+      expect(
+        DependencyConfig(
+          type: type,
+          typeImpl: type,
+          injectableType: InjectableType.factory,
+          constructorName: 'valid',
+        ),
+        equals(dependencyResolver!.resolve(factoryWithoutAnnotationType)),
+      );
+    });
+
     test('Simple Factory no dependencies', () {
       var simpleFactoryType = resolvedInput!.library.findType('SimpleFactory')!;
 

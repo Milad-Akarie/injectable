@@ -203,9 +203,7 @@ class DependencyResolver {
         inlineEnv ??
         _envChecker
             .annotationsOf(annotatedElement, throwOnUnresolved: false)
-            .map<String>(
-              (e) => e.getField('name')!.toStringValue()!,
-            )
+            .map<String>((e) => e.getField('name')!.toStringValue()!)
             .toList();
     _scope ??= _scopeChecker
         .firstAnnotationOfExact(annotatedElement, throwOnUnresolved: false)
@@ -291,12 +289,23 @@ class DependencyResolver {
           return false;
         },
         orElse: () {
+          final constructor =
+              clazz.unnamedConstructor ??
+              clazz.constructors.firstWhereOrNull(
+                (element) => element.lookupName?.startsWith('_') == false,
+              );
           throwIf(
-            clazz.isAbstract,
+            clazz.isAbstract || constructor == null,
             '''[${clazz.displayName}] is abstract and can not be registered directly! \nif it has a factory or a create method annotate it with @factoryMethod''',
             element: clazz,
           );
-          return clazz.unnamedConstructor as ExecutableElement;
+          if (clazz.unnamedConstructor == null &&
+              constructor!.lookupName != 'new') {
+            print(
+              '''[${clazz.displayName}] has no constructor annotated with @factoryMethod we wil use the first available constructor [${constructor.displayName}]''',
+            );
+          }
+          return constructor!;
         },
       );
     }

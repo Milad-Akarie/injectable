@@ -4,6 +4,14 @@ import 'package:injectable/injectable.dart';
 class SimpleFactory {}
 
 @injectable
+class FactoryWithoutAnnotation {
+  FactoryWithoutAnnotation._internal();
+  // not annotated with @factoryMethod in order to take fist available
+  FactoryWithoutAnnotation.valid() : this._internal();
+  FactoryWithoutAnnotation.second() : this._internal();
+}
+
+@injectable
 class FactoryWithDeps {
   const FactoryWithDeps(SimpleFactory simpleFactory);
 }
