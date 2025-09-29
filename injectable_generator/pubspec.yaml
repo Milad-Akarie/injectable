@@ -14,7 +14,7 @@ dependencies:
   analyzer: ">=8.1.1 <9.0.0"
   code_builder: ^4.10.1
   dart_style: ^3.1.0
-  injectable: ^2.5.0
+  injectable: ^2.5.2
 #      path: ../injectable
   collection: ^1.17.1
   recase: ^4.1.0
