@@ -2,12 +2,12 @@ name: example
 description: A simple command-line application.
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ">=3.8.0 <4.0.0"
 
 dependencies:
   get_it:  ">=7.0.0 <9.0.0"
-  injectable:
-    path: ../../injectable
+  injectable: ^2.5.0
+#    path: ../../injectable
 
 
 dev_dependencies:

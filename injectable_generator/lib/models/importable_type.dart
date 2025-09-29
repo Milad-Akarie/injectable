@@ -90,8 +90,9 @@ class ImportableType {
       import: json['import'],
       name: json['name'],
       isNullable: json['isNullable'],
-      otherImports:
-          (json['otherImports'] as List<dynamic>?)?.toSet().cast<String>(),
+      otherImports: (json['otherImports'] as List<dynamic>?)
+          ?.toSet()
+          .cast<String>(),
       typeArguments: typeArguments,
       isRecordType: json['isRecordType'],
       nameInRecord: json['nameInRecord'],
@@ -99,8 +100,7 @@ class ImportableType {
   }
 
   Map<String, dynamic> toJson() {
-// ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'import': import,
       'name': name,
       'isNullable': isNullable,
@@ -110,6 +110,6 @@ class ImportableType {
         "typeArguments": typeArguments.map((v) => v.toJson()).toList(),
       if (otherImports?.isNotEmpty == true)
         "otherImports": otherImports?.toList(),
-    } as Map<String, dynamic>;
+    };
   }
 }

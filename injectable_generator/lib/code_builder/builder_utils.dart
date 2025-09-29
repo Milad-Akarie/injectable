@@ -102,51 +102,61 @@ List<DependencyConfig> sortDependencies(List<DependencyConfig> it) {
 }
 
 void _sortByDependents(
-    List<DependencyConfig> unSorted, List<DependencyConfig> sorted) {
+  List<DependencyConfig> unSorted,
+  List<DependencyConfig> sorted,
+) {
   for (var dep in unSorted) {
-    if (dep.dependencies.every(
-      (iDep) {
-        if (iDep.isFactoryParam) {
+    if (dep.dependencies.every((iDep) {
+      if (iDep.isFactoryParam) {
+        return true;
+      }
+
+      /// for empty environments we check to see if all the dependencies from
+      /// all the environments are already in sorted
+      if (dep.environments.isEmpty) {
+        final List<DependencyConfig> deps = unSorted
+            .where(
+              (d) => d.type == iDep.type && d.instanceName == iDep.instanceName,
+            )
+            .toList(growable: false);
+
+        if (deps.every(sorted.contains)) {
           return true;
         }
+      } else if (lookupDependencyWithNoEnvOrHasAny(
+            iDep,
+            sorted,
+            dep.environments,
+          ) !=
+          null) {
+        // if dep is already in sorted return true
+        return true;
+      }
 
-        /// for empty environments we check to see if all the dependencies from
-        /// all the environments are already in sorted
-        if (dep.environments.isEmpty) {
-          final List<DependencyConfig> deps = unSorted
-              .where((d) =>
-          d.type == iDep.type && d.instanceName == iDep.instanceName)
-              .toList(growable: false);
-
-          if (deps.every(sorted.contains)) {
-            return true;
-          }
-        } else if (lookupDependencyWithNoEnvOrHasAny(
-            iDep, sorted, dep.environments) !=
-            null) {
-          // if dep is already in sorted return true
-          return true;
-        }
-
-        // if dep is in unSorted we skip it in this iteration, if not we include it
-        return lookupDependencyWithNoEnvOrHasAny(
-                iDep, unSorted, dep.environments) ==
-            null;
-      },
-    )) {
+      // if dep is in unSorted we skip it in this iteration, if not we include it
+      return lookupDependencyWithNoEnvOrHasAny(
+            iDep,
+            unSorted,
+            dep.environments,
+          ) ==
+          null;
+    })) {
       sorted.add(dep);
     }
   }
   if (unSorted.isNotEmpty) {
-    var difference =
-        unSorted.where((element) => !sorted.contains(element)).toList();
+    var difference = unSorted
+        .where((element) => !sorted.contains(element))
+        .toList();
 
     _sortByDependents(difference, sorted);
   }
 }
 
 DependencyConfig? lookupDependency(
-    InjectedDependency iDep, List<DependencyConfig> allDeps) {
+  InjectedDependency iDep,
+  List<DependencyConfig> allDeps,
+) {
   return allDeps.firstWhereOrNull(
     (d) => d.type == iDep.type && d.instanceName == iDep.instanceName,
   );
@@ -170,7 +180,9 @@ DependencyConfig? lookupDependencyWithNoEnvOrHasAny(
 }
 
 Set<DependencyConfig> lookupPossibleDeps(
-    InjectedDependency iDep, Iterable<DependencyConfig> allDeps) {
+  InjectedDependency iDep,
+  Iterable<DependencyConfig> allDeps,
+) {
   return allDeps
       .where((d) => d.type == iDep.type && d.instanceName == iDep.instanceName)
       .toSet();
@@ -184,14 +196,18 @@ TypeReference nullableRefer(
   String symbol, {
   String? url,
   bool nullable = false,
-}) =>
-    TypeReference((b) => b
-      ..symbol = symbol
-      ..url = url
-      ..isNullable = nullable);
+}) => TypeReference(
+  (b) => b
+    ..symbol = symbol
+    ..url = url
+    ..isNullable = nullable,
+);
 
-Reference typeRefer(ImportableType type,
-    [Uri? targetFile, bool withNullabilitySuffix = true]) {
+Reference typeRefer(
+  ImportableType type, [
+  Uri? targetFile,
+  bool withNullabilitySuffix = true,
+]) {
   final import = targetFile == null
       ? ImportableTypeResolver.resolveAssetImport(type.import)
       : ImportableTypeResolver.relative(type.import, targetFile);
@@ -206,9 +222,9 @@ Reference typeRefer(ImportableType type,
         )
         ..namedFieldTypes.addAll({
           for (final entry in [
-            ...type.typeArguments.where((e) => e.isNamedRecordField)
+            ...type.typeArguments.where((e) => e.isNamedRecordField),
           ])
-            entry.nameInRecord!: typeRefer(entry)
+            entry.nameInRecord!: typeRefer(entry),
         }),
     );
   }

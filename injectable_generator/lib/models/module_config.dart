@@ -60,12 +60,11 @@ class ModuleConfig {
   }
 
   Map<String, dynamic> toJson() {
-    // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'isAbstract': isAbstract,
       'isMethod': isMethod,
       'type': type,
       'initializerName': initializerName,
-    } as Map<String, dynamic>;
+    };
   }
 }

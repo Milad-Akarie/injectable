@@ -1,4 +1,7 @@
 # ChangeLog
+## [2.9.0]
+- Chore: Update dependencies, source_gen (v4), build (v4), analyzer (v8)
+- Update dart constrains to ">=3.8.0 <4.0.0"
 ## [2.8.1]
 - Fix: Fix @factoryMethod for factory class constructor
 ## [2.8.0]
@@ -51,7 +54,7 @@ Fix: Type Alias error on generation #437
 ## [2.1.0]
 - Add support for micro package modules order [before,after]
 - Add support for micro package modules scopes
-## [2.0.1] 
+## [2.0.1]
 - Fix registration order #324
 ## [2.0.0] [Minor breaking changes]
 - Add support for micro packages
@@ -76,12 +79,12 @@ Fix yet another registration order issue #244
 Fix auto-async factory bug #237
 Fix passing dispose function throws #240
 Fix initialization order doesn't respect environments #238
-Add generator prints warning when an injected dependency is not available under the same environment 
+Add generator prints warning when an injected dependency is not available under the same environment
 ## [1.5.0]
 Use getAsync for async injected dependencies, fixes #230
 Add support for function factory params, fixes #224
 Update analyzer version #228
-Add ignore types in packages support 
+Add ignore types in packages support
 Fix some readme typos
 ## [1.4.1]
 - Bump up build_runner version to 2.0.3
@@ -91,13 +94,13 @@ Fix some readme typos
 - Bump up build_runner version to 2.0.2
 ## [1.3.0]
 - Include merge that fixes #194
-- Bump up versions of build_runner -> 2.0.1, code_builder -> 4.0.0, analyzer -> 1.5.0 
+- Bump up versions of build_runner -> 2.0.1, code_builder -> 4.0.0, analyzer -> 1.5.0
 ## [1.2.2]
 - Fix generator crash after 1.2.1 update
 - Add option to ignore missing type warning for specified types
 ## [1.2.1]
 - Bump up versions of build, build_runner, dart_style and source_gen
-- Fix named instances are ignored when sorting dependencies. 
+- Fix named instances are ignored when sorting dependencies.
 - Clean up some code
 ## [1.2.0]
 - push nullSafety version to the main section
