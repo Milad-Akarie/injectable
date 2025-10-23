@@ -25,8 +25,14 @@ class DependencyList with IterableMixin<DependencyConfig> {
     return _isAsyncOrHasAsyncDeps![iDep.id] ?? false;
   }
 
+  bool hasFactoryParams(DependencyConfig dep) {
+    _ensureFactoryParamsMapInitialized();
+    return _hasFactoryParams![dep.id] ?? false;
+  }
+
   Map<_DependencyId, bool>? _hasAsyncDeps;
   Map<_DependencyId, bool>? _isAsyncOrHasAsyncDeps;
+  Map<_DependencyId, bool>? _hasFactoryParams;
 
   void _ensureAsyncDepsMapInitialized() {
     if (_hasAsyncDeps != null) {
@@ -50,6 +56,26 @@ class DependencyList with IterableMixin<DependencyConfig> {
 
     _hasAsyncDeps = hasAsyncDepsMap;
     _isAsyncOrHasAsyncDeps = isAsyncOrHasAsyncDepsMap;
+  }
+
+  void _ensureFactoryParamsMapInitialized() {
+    if (_hasFactoryParams != null) {
+      return;
+    }
+
+    final hasFactoryParamsMap = <_DependencyId, bool>{};
+
+    for (final dep in _dependencies) {
+      final hasFactoryParams = dep.dependencies.any((childDependency) {
+        final cid = childDependency.id;
+        return childDependency.isFactoryParam || (hasFactoryParamsMap[cid] ?? false);
+      });
+
+      final did = dep.id;
+      hasFactoryParamsMap[did] = hasFactoryParams;
+    }
+
+    _hasFactoryParams = hasFactoryParamsMap;
   }
 
   @override

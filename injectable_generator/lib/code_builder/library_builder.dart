@@ -26,14 +26,17 @@ mixin SharedGeneratorCode {
     DependencyConfig dep, {
     String? getAsyncMethodName,
     String? getMethodName,
+    Map<String, String> typeToParamName = const {},
   }) {
+
     final positionalParams = dep.positionalDependencies.map(
       (iDep) => _buildParamAssignment(
         iDep,
         getAsyncReferName: getAsyncMethodName,
         getReferName: getMethodName,
+        typeToParamName: typeToParamName,
       ),
-    );
+    ).toList();
 
     final namedParams = Map.fromEntries(
       dep.namedDependencies.map(
@@ -43,6 +46,7 @@ mixin SharedGeneratorCode {
             iDep,
             getAsyncReferName: getAsyncMethodName,
             getReferName: getMethodName,
+            typeToParamName: typeToParamName,
           ),
         ),
       ),
@@ -68,6 +72,7 @@ mixin SharedGeneratorCode {
     InjectedDependency iDep, {
     String? getAsyncReferName,
     String? getReferName,
+    required Map<String, String> typeToParamName,
   }) {
     if (iDep.isFactoryParam) {
       return refer(iDep.paramName);
@@ -75,17 +80,62 @@ mixin SharedGeneratorCode {
     getAsyncReferName ??= asExtension ? 'getAsync' : 'gh.getAsync';
     getReferName ??= 'gh';
     final isAsync = dependencies.isAsyncOrHasAsyncDependency(iDep);
+
+    final depConfig = lookupDependency(iDep, dependencies.toList());
+
+    final namedParams = <String, Expression>{
+      if (iDep.instanceName != null)
+        'instanceName': literalString(iDep.instanceName!),
+    };
+
+    if (depConfig != null && dependencies.hasFactoryParams(depConfig)) {
+      final childParams = _collectFactoryParams(depConfig, <String>{});
+
+      if (childParams.isNotEmpty) {
+        for (int i = 0; i < childParams.length; i++) {
+          final childParam = childParams[i];
+          final typeIdentity = childParam.type.type.identity;
+          final parentParamName = typeToParamName[typeIdentity];
+
+          if (parentParamName != null) {
+            namedParams['param${i + 1}'] = refer(parentParamName);
+          }
+        }
+      }
+    }
+
     final expression = refer(isAsync ? getAsyncReferName : getReferName).call(
       [],
-      {
-        if (iDep.instanceName != null)
-          'instanceName': literalString(iDep.instanceName!),
-      },
+      namedParams,
       [
         typeRefer(iDep.type, targetFile, false),
       ],
     );
     return isAsync ? expression.awaited : expression;
+  }
+
+  List<_FactoryParam> _collectFactoryParams(DependencyConfig dep, Set<String> visited) {
+    final depId = '${dep.type.name}_${dep.instanceName ?? ''}';
+    if (visited.contains(depId)) {
+      return [];
+    }
+    visited.add(depId);
+    List<_FactoryParam> params = [];
+    for (final d in dep.dependencies.where((d) => d.isFactoryParam)) {
+      params.add(_FactoryParam(
+        name: d.paramName,
+        type: d,
+        typeRef: typeRefer(d.type, targetFile),
+      ));
+    }
+
+    for (final childDep in dep.dependencies.where((d) => !d.isFactoryParam)) {
+      final childConfig = lookupDependency(childDep, dependencies.toList());
+      if (childConfig != null && dependencies.hasFactoryParams(childConfig)) {
+        params.addAll(_collectFactoryParams(childConfig, visited));
+      }
+    }
+    return params;
   }
 }
 
@@ -520,14 +570,20 @@ class InitMethodGenerator with SharedGeneratorCode {
   Code buildLazyRegisterFun(DependencyConfig dep) {
     String? funcReferName;
     Map<String, Reference> factoryParams = {};
+    Map<String, String> typeToParamName = {};
     final hasAsyncDep = dependencies.hasAsyncDependency(dep);
     final isOrHasAsyncDep = dep.isAsync || hasAsyncDep;
 
     if (dep.injectableType == InjectableType.factory) {
-      final hasFactoryParams = dep.dependencies.any((d) => d.isFactoryParam);
+      final hasDirectFactoryParams = dep.dependencies.any((d) => d.isFactoryParam);
+      final hasTransitiveFactoryParams = dependencies.hasFactoryParams(dep);
+      final hasFactoryParams = hasDirectFactoryParams || hasTransitiveFactoryParams;
+
       if (hasFactoryParams) {
         funcReferName = isOrHasAsyncDep ? 'factoryParamAsync' : 'factoryParam';
-        factoryParams.addAll(_resolveFactoryParams(dep));
+        final resolved = _resolveFactoryParams(dep);
+        factoryParams = resolved.params;
+        typeToParamName = resolved.typeToParamName;
       } else {
         funcReferName = isOrHasAsyncDep ? 'factoryAsync' : 'factory';
       }
@@ -537,8 +593,8 @@ class InitMethodGenerator with SharedGeneratorCode {
     throwIf(funcReferName == null, 'Injectable type is not supported');
 
     final instanceBuilder = dep.isFromModule
-        ? _buildInstanceForModule(dep)
-        : _buildInstance(dep);
+        ? _buildInstanceForModule(dep, typeToParamName: typeToParamName)
+        : _buildInstance(dep, typeToParamName: typeToParamName);
     final instanceBuilderCode = _buildInstanceBuilderCode(instanceBuilder, dep);
     final registerExpression = _ghLocalRefer.property(funcReferName!).call(
       [
@@ -624,15 +680,56 @@ class InitMethodGenerator with SharedGeneratorCode {
     return instanceBuilderCode;
   }
 
-  Map<String, Reference> _resolveFactoryParams(DependencyConfig dep) {
+  _ResolvedFactoryParams _resolveFactoryParams(DependencyConfig dep) {
+    final directParams = <_FactoryParam>[];
+    for (final d in dep.dependencies.where((d) => d.isFactoryParam)) {
+      directParams.add(_FactoryParam(
+        name: d.paramName,
+        type: d,
+        typeRef: typeRefer(d.type, targetFile),
+      ));
+    }
+
+    final allParams = _collectFactoryParams(dep, {});
+    final uniqueTypeRefs = <String, Reference>{};
+    for (final param in allParams) {
+      final typeIdentity = param.type.type.identity;
+      if (!uniqueTypeRefs.containsKey(typeIdentity)) {
+        uniqueTypeRefs[typeIdentity] = param.typeRef;
+      }
+    }
+
     final params = <String, Reference>{};
-    dep.dependencies.where((d) => d.isFactoryParam).forEach((d) {
-      params[d.paramName] = typeRefer(d.type, targetFile);
-    });
+    final typeToParamName = <String, String>{};
+
+    int paramIndex = 0;
+    final directParamTypes = <String>{};
+    for (final param in directParams) {
+      paramIndex++;
+      params[param.name] = param.typeRef;
+      directParamTypes.add(param.type.type.identity);
+      typeToParamName[param.type.type.identity] = param.name;
+    }
+
+    for (final entry in uniqueTypeRefs.entries) {
+      final typeIdentity = entry.key;
+      if (directParamTypes.contains(typeIdentity)) {
+        continue;
+      }
+
+      paramIndex++;
+      final paramName = 'param$paramIndex';
+      params[paramName] = entry.value;
+      typeToParamName[typeIdentity] = paramName;
+    }
+
     if (params.length < 2) {
       params['_'] = refer('dynamic');
     }
-    return params;
+    return _ResolvedFactoryParams(
+      params: params,
+      typeToParamName: typeToParamName,
+    );
   }
 
   Code buildSingletonRegisterFun(DependencyConfig dep) {
@@ -686,7 +783,11 @@ class InitMethodGenerator with SharedGeneratorCode {
         : registerExpression.statement;
   }
 
-  Expression _buildInstanceForModule(DependencyConfig dep) {
+  Expression _buildInstanceForModule(
+    DependencyConfig dep, {
+    Map<String, String> typeToParamName = const {},
+  }) {
+
     final module = dep.moduleConfig!;
     if (!module.isMethod) {
       return refer(
@@ -697,13 +798,13 @@ class InitMethodGenerator with SharedGeneratorCode {
     return refer(toCamelCase(module.type.name)).newInstanceNamed(
       module.initializerName,
       dep.positionalDependencies.map(
-        (iDep) => _buildParamAssignment(iDep),
+        (iDep) => _buildParamAssignment(iDep, typeToParamName: typeToParamName),
       ),
       Map.fromEntries(
         dep.namedDependencies.map(
           (iDep) => MapEntry(
             iDep.paramName,
-            _buildParamAssignment(iDep),
+            _buildParamAssignment(iDep, typeToParamName: typeToParamName),
           ),
         ),
       ),
@@ -731,4 +832,26 @@ bool moduleHasOverrides(Iterable<DependencyConfig> deps) {
       .any(
         (d) => d.dependencies.isNotEmpty == true,
       );
+}
+
+class _FactoryParam {
+  final String name;
+  final InjectedDependency type;
+  final Reference typeRef;
+
+  _FactoryParam({
+    required this.name,
+    required this.type,
+    required this.typeRef,
+  });
+}
+
+class _ResolvedFactoryParams {
+  final Map<String, Reference> params;
+  final Map<String, String> typeToParamName;
+
+  _ResolvedFactoryParams({
+    required this.params,
+    required this.typeToParamName,
+  });
 }
