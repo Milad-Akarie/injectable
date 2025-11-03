@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.6.0]
+- Chore: update get_it constraint to 7.2.0 < 10.0.0
 ## [2.5.2]
 - Update dart constrains to ">=3.8.0 <4.0.0"
 ## [2.5.1]
