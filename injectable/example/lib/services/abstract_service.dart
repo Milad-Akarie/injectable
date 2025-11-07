@@ -36,15 +36,12 @@ class AsyncService extends AbstractService {
   @override
   final Set<String> environments;
 
-  AsyncService(
-    @Named(kEnvironmentsName) this.environments,
-  );
+  AsyncService(@Named(kEnvironmentsName) this.environments);
 
   @FactoryMethod(preResolve: true)
   static Future<AsyncService> create(
     @Named(kEnvironmentsName) Set<String> envs,
-  ) =>
-      Future.value(AsyncService(envs));
+  ) => Future.value(AsyncService(envs));
 }
 
 abstract class IService {}
@@ -82,7 +79,10 @@ class PostConstructableService {
 
 sealed class Model {
   Model get m {
-    return switch (this) { ModelX() => ModelX(), ModelY() => ModelY() };
+    return switch (this) {
+      ModelX() => ModelX(),
+      ModelY() => ModelY(),
+    };
   }
 }
 

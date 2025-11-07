@@ -216,9 +216,7 @@ void main() {
             injectableType: InjectableType.factory,
             type: ImportableType(
               name: 'Demo',
-              typeArguments: [
-                ImportableType(name: 'String'),
-              ],
+              typeArguments: [ImportableType(name: 'String')],
             ),
             typeImpl: ImportableType(name: 'Demo'),
             dependencies: [

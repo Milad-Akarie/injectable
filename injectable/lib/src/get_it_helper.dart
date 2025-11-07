@@ -12,20 +12,24 @@ class GetItHelper {
   late final EnvironmentFilter _environmentFilter;
 
   /// creates a new instance of GetItHelper
-  GetItHelper(this.getIt,
-      [String? environment, EnvironmentFilter? environmentFilter])
-      : assert(environmentFilter == null || environment == null) {
+  GetItHelper(
+    this.getIt, [
+    String? environment,
+    EnvironmentFilter? environmentFilter,
+  ]) : assert(environmentFilter == null || environment == null) {
     // register current EnvironmentsFilter as lazy singleton
     if (!getIt.isRegistered<EnvironmentFilter>(
-        instanceName: kEnvironmentsFilterName)) {
+      instanceName: kEnvironmentsFilterName,
+    )) {
       _environmentFilter = environmentFilter ?? NoEnvOrContains(environment);
       getIt.registerLazySingleton<EnvironmentFilter>(
         () => _environmentFilter,
         instanceName: kEnvironmentsFilterName,
       );
     } else {
-      _environmentFilter =
-          getIt<EnvironmentFilter>(instanceName: kEnvironmentsFilterName);
+      _environmentFilter = getIt<EnvironmentFilter>(
+        instanceName: kEnvironmentsFilterName,
+      );
     }
 
     // register current Environments as lazy singleton
@@ -42,22 +46,17 @@ class GetItHelper {
     dynamic param1,
     dynamic param2,
   }) =>
-      getIt.get<T>(
-        instanceName: instanceName,
-        param1: param1,
-        param2: param2,
-      );
+      getIt.get<T>(instanceName: instanceName, param1: param1, param2: param2);
 
   Future<T> getAsync<T extends Object>({
     String? instanceName,
     dynamic param1,
     dynamic param2,
-  }) =>
-      getIt.getAsync<T>(
-        instanceName: instanceName,
-        param1: param1,
-        param2: param2,
-      );
+  }) => getIt.getAsync<T>(
+    instanceName: instanceName,
+    param1: param1,
+    param2: param2,
+  );
 
   bool _canRegister(Set<String>? registerFor) {
     return _environmentFilter.canRegister(registerFor ?? {});
@@ -71,10 +70,7 @@ class GetItHelper {
     Set<String>? registerFor,
   }) {
     if (_canRegister(registerFor)) {
-      getIt.registerFactory<T>(
-        factoryFunc,
-        instanceName: instanceName,
-      );
+      getIt.registerFactory<T>(factoryFunc, instanceName: instanceName);
     }
   }
 
@@ -96,10 +92,7 @@ class GetItHelper {
           ),
         );
       } else {
-        getIt.registerFactoryAsync<T>(
-          factoryFunc,
-          instanceName: instanceName,
-        );
+        getIt.registerFactoryAsync<T>(factoryFunc, instanceName: instanceName);
       }
     }
     return Future.value(null);
@@ -258,9 +251,11 @@ class GetItHelper {
 
   /// a helper method to push a new scope and init it's dependencies
   /// asynchronously inside of [GetIt]
-  Future<GetIt> initScopeAsync(String name,
-      {required Future<void> Function(GetItHelper gh) init,
-      ScopeDisposeFunc? dispose}) {
+  Future<GetIt> initScopeAsync(
+    String name, {
+    required Future<void> Function(GetItHelper gh) init,
+    ScopeDisposeFunc? dispose,
+  }) {
     final completer = Completer<GetIt>();
     getIt.pushNewScope(
       scopeName: name,
@@ -279,9 +274,11 @@ class GetItHelper {
 
   /// a helper method to push a new scope and init it's dependencies
   /// inside of [GetIt]
-  GetIt initScope(String name,
-      {required void Function(GetItHelper gh) init,
-      ScopeDisposeFunc? dispose}) {
+  GetIt initScope(
+    String name, {
+    required void Function(GetItHelper gh) init,
+    ScopeDisposeFunc? dispose,
+  }) {
     getIt.pushNewScope(
       scopeName: name,
       init: (_) => init(this),

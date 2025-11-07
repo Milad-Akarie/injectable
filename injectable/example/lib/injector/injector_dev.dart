@@ -9,8 +9,5 @@ configDevInjector(
   String? env,
   EnvironmentFilter? environmentFilter,
 }) {
-  return getIt.init(
-    environmentFilter: environmentFilter,
-    environment: env,
-  );
+  return getIt.init(environmentFilter: environmentFilter, environment: env);
 }

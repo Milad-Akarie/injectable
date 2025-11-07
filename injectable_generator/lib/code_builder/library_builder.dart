@@ -53,11 +53,7 @@ mixin SharedGeneratorCode {
       final constructor = dep.canBeConst
           ? ref.constInstanceNamed
           : ref.newInstanceNamed;
-      return constructor(
-        dep.constructorName!,
-        positionalParams,
-        namedParams,
-      );
+      return constructor(dep.constructorName!, positionalParams, namedParams);
     } else {
       final constructor = dep.canBeConst ? ref.constInstance : ref.newInstance;
       return constructor(positionalParams, namedParams);
@@ -81,9 +77,7 @@ mixin SharedGeneratorCode {
         if (iDep.instanceName != null)
           'instanceName': literalString(iDep.instanceName!),
       },
-      [
-        typeRefer(iDep.type, targetFile, false),
-      ],
+      [typeRefer(iDep.type, targetFile, false)],
     );
     return isAsync ? expression.awaited : expression;
   }
@@ -184,49 +178,44 @@ class LibraryGenerator with SharedGeneratorCode {
           'ignore_for_file: type=lint',
           'coverage:ignore-file',
         ])
-        ..body.addAll(
-          [
-            ...environments.map(
-              (env) => Field(
-                (b) => b
-                  ..name = '_$env'
-                  ..type = refer('String')
-                  ..assignment = literalString(env).code
-                  ..modifier = FieldModifier.constant,
-              ),
+        ..body.addAll([
+          ...environments.map(
+            (env) => Field(
+              (b) => b
+                ..name = '_$env'
+                ..type = refer('String')
+                ..assignment = literalString(env).code
+                ..modifier = FieldModifier.constant,
             ),
-            if (!isMicroPackage) ...[
-              if (asExtension)
-                Extension(
-                  (b) => b
-                    ..name = 'GetItInjectableX'
-                    ..on = _getItRefer
-                    ..methods.addAll(initMethods),
-                )
-              else
-                ...initMethods,
-            ],
-
-            if (isMicroPackage)
-              Class(
+          ),
+          if (!isMicroPackage) ...[
+            if (asExtension)
+              Extension(
                 (b) => b
-                  ..name = '${capitalize(microPackageName!)}PackageModule'
-                  ..extend = refer(
-                    'MicroPackageModule',
-                    _injectableImport,
-                  )
-                  ..methods.add(initMethods.first),
-              ),
-
-            // build modules
-            ...modules.map(
-              (module) => _buildModule(
-                module,
-                dependencies.where((e) => e.moduleConfig == module),
-              ),
-            ),
+                  ..name = 'GetItInjectableX'
+                  ..on = _getItRefer
+                  ..methods.addAll(initMethods),
+              )
+            else
+              ...initMethods,
           ],
-        ),
+
+          if (isMicroPackage)
+            Class(
+              (b) => b
+                ..name = '${capitalize(microPackageName!)}PackageModule'
+                ..extend = refer('MicroPackageModule', _injectableImport)
+                ..methods.add(initMethods.first),
+            ),
+
+          // build modules
+          ...modules.map(
+            (module) => _buildModule(
+              module,
+              dependencies.where((e) => e.moduleConfig == module),
+            ),
+          ),
+        ]),
     );
   }
 
@@ -328,10 +317,7 @@ class InitMethodGenerator with SharedGeneratorCode {
 
     final ghStatements = [
       for (final pckModule in microPackagesModulesBefore.map((e) => e.module))
-        refer(
-              pckModule.name,
-              pckModule.import,
-            )
+        refer(pckModule.name, pckModule.import)
             .newInstance(const [])
             .property('init')
             .call([_ghLocalRefer])
@@ -357,10 +343,7 @@ class InitMethodGenerator with SharedGeneratorCode {
         }
       }),
       for (final pckModule in microPackagesModulesAfter.map((e) => e.module))
-        refer(
-              pckModule.name,
-              pckModule.import,
-            )
+        refer(pckModule.name, pckModule.import)
             .newInstance(const [])
             .property('init')
             .call([_ghLocalRefer])
@@ -386,13 +369,11 @@ class InitMethodGenerator with SharedGeneratorCode {
           : _getItRefer;
     }
 
-    final ghBuilder = refer('GetItHelper', _injectableImport).newInstance(
-      [
-        getInstanceRefer,
-        refer('environment'),
-        refer('environmentFilter'),
-      ],
-    );
+    final ghBuilder = refer('GetItHelper', _injectableImport).newInstance([
+      getInstanceRefer,
+      refer('environment'),
+      refer('environmentFilter'),
+    ]);
 
     return Method(
       (b) => b
@@ -423,10 +404,7 @@ class InitMethodGenerator with SharedGeneratorCode {
               (b) => b
                 ..named = true
                 ..name = 'environment'
-                ..type = nullableRefer(
-                  'String',
-                  nullable: true,
-                ),
+                ..type = nullableRefer('String', nullable: true),
             ),
             Parameter(
               (b) => b
@@ -443,10 +421,7 @@ class InitMethodGenerator with SharedGeneratorCode {
                 (b) => b
                   ..named = true
                   ..name = 'constructorCallback'
-                  ..type = nullableRefer(
-                    'T Function<T>(T)',
-                    nullable: true,
-                  ),
+                  ..type = nullableRefer('T Function<T>(T)', nullable: true),
               ),
           ] else if (!isMicroPackage)
             Parameter(
@@ -547,9 +522,7 @@ class InitMethodGenerator with SharedGeneratorCode {
             ..lambda = instanceBuilderCode is! Block
             ..modifier = hasAsyncDep ? MethodModifier.async : null
             ..requiredParameters.addAll(
-              factoryParams.keys.map(
-                (name) => Parameter((b) => b.name = name),
-              ),
+              factoryParams.keys.map((name) => Parameter((b) => b.name = name)),
             )
             ..body = instanceBuilderCode,
         ).closure,
@@ -558,9 +531,7 @@ class InitMethodGenerator with SharedGeneratorCode {
         if (dep.instanceName != null)
           'instanceName': literalString(dep.instanceName!),
         if (dep.environments.isNotEmpty == true)
-          'registerFor': literalSet(
-            dep.environments.map((e) => refer('_$e')),
-          ),
+          'registerFor': literalSet(dep.environments.map((e) => refer('_$e'))),
         if (dep.preResolve == true) 'preResolve': literalBool(true),
         if (dep.disposeFunction != null)
           'dispose': _getDisposeFunctionAssignment(dep.disposeFunction!),
@@ -664,14 +635,10 @@ class InitMethodGenerator with SharedGeneratorCode {
           'instanceName': literalString(dep.instanceName!),
         if (dep.dependsOn.isNotEmpty)
           'dependsOn': literalList(
-            dep.dependsOn.map(
-              (e) => typeRefer(e, targetFile),
-            ),
+            dep.dependsOn.map((e) => typeRefer(e, targetFile)),
           ),
         if (dep.environments.isNotEmpty)
-          'registerFor': literalSet(
-            dep.environments.map((e) => refer('_$e')),
-          ),
+          'registerFor': literalSet(dep.environments.map((e) => refer('_$e'))),
         if (dep.signalsReady != null)
           'signalsReady': literalBool(dep.signalsReady!),
         if (dep.preResolve == true) 'preResolve': literalBool(true),
@@ -696,15 +663,10 @@ class InitMethodGenerator with SharedGeneratorCode {
 
     return refer(toCamelCase(module.type.name)).newInstanceNamed(
       module.initializerName,
-      dep.positionalDependencies.map(
-        (iDep) => _buildParamAssignment(iDep),
-      ),
+      dep.positionalDependencies.map((iDep) => _buildParamAssignment(iDep)),
       Map.fromEntries(
         dep.namedDependencies.map(
-          (iDep) => MapEntry(
-            iDep.paramName,
-            _buildParamAssignment(iDep),
-          ),
+          (iDep) => MapEntry(iDep.paramName, _buildParamAssignment(iDep)),
         ),
       ),
     );
@@ -728,7 +690,5 @@ class InitMethodGenerator with SharedGeneratorCode {
 bool moduleHasOverrides(Iterable<DependencyConfig> deps) {
   return deps
       .where((d) => d.moduleConfig?.isAbstract == true)
-      .any(
-        (d) => d.dependencies.isNotEmpty == true,
-      );
+      .any((d) => d.dependencies.isNotEmpty == true);
 }

@@ -28,18 +28,12 @@ void throwSourceError(String message) {
 }
 
 void throwError(String message, {Element? element}) {
-  throw InvalidGenerationSourceError(
-    message,
-    element: element,
-  );
+  throw InvalidGenerationSourceError(message, element: element);
 }
 
 void throwIf(bool condition, String message, {Element? element}) {
   if (condition) {
-    throw InvalidGenerationSourceError(
-      message,
-      element: element,
-    );
+    throw InvalidGenerationSourceError(message, element: element);
   }
 }
 

@@ -82,9 +82,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final ignoredTypes = annotation
         .read('ignoreUnregisteredTypes')
         .listValue
-        .map(
-          (e) => typeResolver.resolveType(e.toTypeValue()!),
-        );
+        .map((e) => typeResolver.resolveType(e.toTypeValue()!));
 
     final microPackageModulesBefore = _getMicroPackageModules(
       annotation.peek('externalPackageModulesBefore'),
@@ -119,10 +117,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
           final segments = commentAnnotation.split(';');
           if (segments.length == 3) {
             final externalModule = ExternalModuleConfig(
-              ImportableType(
-                name: segments[1],
-                import: segments[2],
-              ),
+              ImportableType(name: segments[1], import: segments[2]),
             );
             if (!microPackagesModules.any(
               (e) => externalModule.module == e.module,
@@ -223,25 +218,23 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     ConstantReader? constList,
     ImportableTypeResolverImpl typeResolver,
   ) {
-    return constList?.listValue.map(
-          (e) {
-            final reader = ConstantReader(e);
-            final typeValue = reader.read('module').typeValue;
-            final scope = reader.peek('scope')?.stringValue;
-            throwIf(
-              typeValue.element is! ClassElement ||
-                  !TypeChecker.typeNamed(
-                    MicroPackageModule,
-                    inPackage: 'injectable',
-                  ).isSuperOf(typeValue.element!),
-              'ExternalPackageModule must be a class that extends MicroPackageModule',
-            );
-            return ExternalModuleConfig(
-              typeResolver.resolveType(typeValue),
-              scope,
-            );
-          },
-        ).toSet() ??
+    return constList?.listValue.map((e) {
+          final reader = ConstantReader(e);
+          final typeValue = reader.read('module').typeValue;
+          final scope = reader.peek('scope')?.stringValue;
+          throwIf(
+            typeValue.element is! ClassElement ||
+                !TypeChecker.typeNamed(
+                  MicroPackageModule,
+                  inPackage: 'injectable',
+                ).isSuperOf(typeValue.element!),
+            'ExternalPackageModule must be a class that extends MicroPackageModule',
+          );
+          return ExternalModuleConfig(
+            typeResolver.resolveType(typeValue),
+            scope,
+          );
+        }).toSet() ??
         <ExternalModuleConfig>{};
   }
 
@@ -249,20 +242,18 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     ConstantReader? constList,
     ImportableTypeResolverImpl typeResolver,
   ) {
-    return constList?.listValue.map(
-          (e) {
-            final typeValue = e.toTypeValue()!;
-            throwIf(
-              typeValue.element is! ClassElement ||
-                  !TypeChecker.typeNamed(
-                    MicroPackageModule,
-                    inPackage: 'injectable',
-                  ).isSuperOf(typeValue.element!),
-              'ExternalPackageModule must be a class that extends MicroPackageModule',
-            );
-            return ExternalModuleConfig(typeResolver.resolveType(typeValue));
-          },
-        ).toSet() ??
+    return constList?.listValue.map((e) {
+          final typeValue = e.toTypeValue()!;
+          throwIf(
+            typeValue.element is! ClassElement ||
+                !TypeChecker.typeNamed(
+                  MicroPackageModule,
+                  inPackage: 'injectable',
+                ).isSuperOf(typeValue.element!),
+            'ExternalPackageModule must be a class that extends MicroPackageModule',
+          );
+          return ExternalModuleConfig(typeResolver.resolveType(typeValue));
+        }).toSet() ??
         <ExternalModuleConfig>{};
   }
 
@@ -377,7 +368,6 @@ class _HashedAllocator implements Allocator {
   int _hashedUrl() => _url.hashCode / 1000000 ~/ 1;
 
   @override
-  Iterable<Directive> get imports => _imports.keys.map(
-    (u) => Directive.import(u, as: '_i${_imports[u]}'),
-  );
+  Iterable<Directive> get imports =>
+      _imports.keys.map((u) => Directive.import(u, as: '_i${_imports[u]}'));
 }

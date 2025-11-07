@@ -113,11 +113,11 @@ class InjectableInit {
     this.ignoreUnregisteredTypesInPackages = const [],
     this.usesNullSafety = true,
     this.generateForEnvironments = const {},
-  })  : _isMicroPackage = true,
-        asExtension = false,
-        includeMicroPackages = false,
-        initializerName = 'init',
-        rootDir = null;
+  }) : _isMicroPackage = true,
+       asExtension = false,
+       includeMicroPackages = false,
+       initializerName = 'init',
+       rootDir = null;
 }
 
 /// const instance of [InjectableInit]

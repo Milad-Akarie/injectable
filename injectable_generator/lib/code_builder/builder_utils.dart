@@ -11,9 +11,8 @@ import 'package:meta/meta.dart';
 class DependencyList with IterableMixin<DependencyConfig> {
   final List<DependencyConfig> _dependencies;
 
-  DependencyList({
-    required List<DependencyConfig> dependencies,
-  }) : _dependencies = sortDependencies(dependencies);
+  DependencyList({required List<DependencyConfig> dependencies})
+    : _dependencies = sortDependencies(dependencies);
 
   bool hasAsyncDependency(DependencyConfig dep) {
     _ensureAsyncDepsMapInitialized();
@@ -60,10 +59,7 @@ class _DependencyId {
   final ImportableType type;
   final String? instanceName;
 
-  const _DependencyId({
-    required this.type,
-    required this.instanceName,
-  });
+  const _DependencyId({required this.type, required this.instanceName});
 
   @override
   String toString() {
@@ -173,9 +169,7 @@ DependencyConfig? lookupDependencyWithNoEnvOrHasAny(
         d.instanceName == iDep.instanceName &&
         (d.environments.isEmpty ||
             envs.isEmpty ||
-            d.environments.any(
-              (e) => envs.contains(e),
-            )),
+            d.environments.any((e) => envs.contains(e))),
   );
 }
 
