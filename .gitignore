@@ -15,10 +15,9 @@
 *.iws
 .idea/
 .dart_tool/
-.vscode/
+# .vscode/
 .idea/
 build/
-
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
@@ -76,3 +75,6 @@ pubspec.lock
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+
+# FVM Version Cache
+.fvm/

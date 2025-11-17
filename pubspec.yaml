@@ -1,0 +1,9 @@
+name: injectable_workspace
+
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+
+workspace:
+  - injectable/example
+  - injectable
+  - injectable_generator
