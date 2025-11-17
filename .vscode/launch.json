@@ -1,0 +1,21 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "injectable_builder on example",
+            "cwd": "injectable/example",
+            "request": "launch",
+            "type": "dart",
+            "customTool": "${workspaceRoot}/.vscode/debug.sh",
+        },
+        {
+            "name": "example",
+            "cwd": "injectable/example",
+            "request": "launch",
+            "type": "dart",
+        },
+    ]
+}

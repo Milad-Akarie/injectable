@@ -50,6 +50,12 @@ extension GetItInjectableX on _i174.GetIt {
       registerFor: {_dev},
       preResolve: true,
     );
+    gh.singletonAsync<_i889.PostConstructableService>(() {
+      final i = _i889.PostConstructableService(
+        gh<_i889.IService>(instanceName: 'ServiceImpl'),
+      );
+      return i.init().then((_) => i);
+    });
     gh.lazySingletonAsync<_i995.Repo>(
       () => registerModule.getRepo(
         gh<_i889.IService>(instanceName: 'ServiceImpl'),
@@ -63,12 +69,6 @@ extension GetItInjectableX on _i174.GetIt {
       instanceName: 'WebService',
       registerFor: {_platformWeb},
     );
-    gh.singletonAsync<_i889.PostConstructableService>(() async {
-      final i = _i889.PostConstructableService(
-        await getAsync<_i889.IService>(),
-      );
-      return i.init().then((_) => i);
-    });
     gh.factory<_i889.AbstractService>(
       () => _i889.MobileService.fromService(
         gh<Set<String>>(instanceName: '__environments__'),
