@@ -1,4 +1,7 @@
 # ChangeLog
+## [2.10.0]
+- Chore: Update dependencies, analyzer (v9), glob (v2.1.3), code_builder (v4.11.0), dart_style (v3.1.3)
+
 ## [2.9.0]
 - Chore: Update dependencies, source_gen (v4), build (v4), analyzer (v8)
 - Update dart constrains to ">=3.8.0 <4.0.0"
