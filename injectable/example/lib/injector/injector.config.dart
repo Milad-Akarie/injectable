@@ -15,8 +15,8 @@ import 'package:injectable/injectable.dart' as _i526;
 import '../module/register_module.dart' as _i995;
 import '../services/abstract_service.dart' as _i889;
 
-const String _test = 'test';
 const String _dev = 'dev';
+const String _test = 'test';
 const String _platformWeb = 'platformWeb';
 const String _platformMobile = 'platformMobile';
 
@@ -33,13 +33,8 @@ extension GetItInjectableX on _i174.GetIt {
       dispose: (i) => i.dispose(),
     );
     gh.singleton<_i889.ConstService>(() => const _i889.ConstService());
-    gh.factoryParamAsync<_i889.IService, String?, dynamic>(
-      (param, _) => _i889.LazyServiceImpl.create(param),
-      registerFor: {_test},
-    );
     gh.factoryParam<_i889.IService, String?, dynamic>(
       (param, _) => _i889.ServiceImpl(param),
-      instanceName: 'ServiceImpl',
       registerFor: {_dev},
     );
     gh.factory<_i889.Model>(() => _i889.ModelX());
@@ -58,15 +53,17 @@ extension GetItInjectableX on _i174.GetIt {
       registerFor: {_dev},
       dispose: _i995.disposeRepo,
     );
+    gh.factory<_i889.IService>(
+      () => _i889.TestServiceImpl(gh<String>()),
+      registerFor: {_test},
+    );
     gh.lazySingleton<_i889.AbstractService>(
       () => _i889.WebService(gh<Set<String>>(instanceName: '__environments__')),
       instanceName: 'WebService',
       registerFor: {_platformWeb},
     );
-    gh.singletonAsync<_i889.PostConstructableService>(() async {
-      final i = _i889.PostConstructableService(
-        await getAsync<_i889.IService>(),
-      );
+    gh.singletonAsync<_i889.PostConstructableService>(() {
+      final i = _i889.PostConstructableService(gh<_i889.IService>());
       return i.init().then((_) => i);
     });
     gh.factory<_i889.AbstractService>(

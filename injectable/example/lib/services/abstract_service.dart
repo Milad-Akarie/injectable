@@ -39,14 +39,11 @@ class AsyncService extends AbstractService {
   AsyncService(@Named(kEnvironmentsName) this.environments);
 
   @FactoryMethod(preResolve: true)
-  static Future<AsyncService> create(
-    @Named(kEnvironmentsName) Set<String> envs,
-  ) => Future.value(AsyncService(envs));
+  static Future<AsyncService> create(@Named(kEnvironmentsName) Set<String> envs) => Future.value(AsyncService(envs));
 }
 
 abstract class IService {}
 
-@named
 @dev
 @Injectable(as: IService)
 class ServiceImpl extends IService {
@@ -55,13 +52,8 @@ class ServiceImpl extends IService {
 
 @test
 @Injectable(as: IService)
-class LazyServiceImpl extends IService {
-  LazyServiceImpl._(String? param);
-
-  @factoryMethod
-  static Future<IService> create(@factoryParam String? param) {
-    return Future.value(LazyServiceImpl._(param));
-  }
+class TestServiceImpl extends IService {
+  TestServiceImpl(String? param);
 }
 
 @singleton

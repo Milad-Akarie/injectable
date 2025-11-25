@@ -31,7 +31,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i978.ConstService>(() => const _i978.ConstService());
     gh.factoryParam<_i978.IService, String?, dynamic>(
       (param, _) => _i978.ServiceImpl(param),
-      instanceName: 'ServiceImpl',
       registerFor: {_dev},
     );
     gh.factory<_i978.Model>(() => _i978.ModelX());
