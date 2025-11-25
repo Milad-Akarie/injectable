@@ -44,16 +44,9 @@ class AsyncService extends AbstractService {
 
 abstract class IService {}
 
-@dev
 @Injectable(as: IService)
 class ServiceImpl extends IService {
-  ServiceImpl(@factoryParam String? param);
-}
-
-@test
-@Injectable(as: IService)
-class TestServiceImpl extends IService {
-  TestServiceImpl(String? param);
+  ServiceImpl();
 }
 
 @singleton

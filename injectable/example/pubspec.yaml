@@ -2,18 +2,18 @@ name: example
 description: A simple command-line application.
 
 environment:
-  sdk: ">=3.8.0 <4.0.0"
+  sdk: ">=3.10.0 <4.0.0"
 
 dependencies:
   get_it:  ">=7.0.0 <9.0.0"
-  injectable: ^2.5.0
+  injectable: ^2.6.0
 #    path: ../../injectable
 
 
 dev_dependencies:
   pedantic: ^1.11.1
-  build_runner: ^2.4.14
+  build_runner: ^2.10.4
   effective_dart: ^1.3.2
-  lints: ^5.1.1
+  lints: ^6.0.0
   injectable_generator:
     path: ../../injectable_generator
