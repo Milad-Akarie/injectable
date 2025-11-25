@@ -486,22 +486,20 @@ class InitMethodGenerator with SharedGeneratorCode {
     if (dep.injectableType == InjectableType.factory) {
       final hasFactoryParams = dep.dependencies.any((d) => d.isFactoryParam);
       if (hasFactoryParams) {
-        funcReferName = switch ([isOrHasAsyncDep, dep.cache == true]) {
-          [true, true] => 'factoryCachedParamAsync',
-          [false, true] => 'factoryCachedParam',
-          [false, false] => 'factoryParam',
-          [true, false] => 'factoryParamAsync',
-          _ => funcReferName,
+        funcReferName = switch ((isOrHasAsyncDep, dep.cache == true)) {
+          (true, true) => 'factoryCachedParamAsync',
+          (false, true) => 'factoryCachedParam',
+          (false, false) => 'factoryParam',
+          (true, false) => 'factoryParamAsync',
         };
 
         factoryParams.addAll(_resolveFactoryParams(dep));
       } else {
-        funcReferName = switch ([isOrHasAsyncDep, dep.cache == true]) {
-          [true, true] => 'factoryCachedAsync',
-          [false, true] => 'factoryCached',
-          [false, false] => 'factory',
-          [true, false] => 'factoryAsync',
-          _ => funcReferName,
+        funcReferName = switch ((isOrHasAsyncDep, dep.cache == true)) {
+          (true, true) => 'factoryCachedAsync',
+          (false, true) => 'factoryCached',
+          (false, false) => 'factory',
+          (true, false) => 'factoryAsync',
         };
       }
     } else if (dep.injectableType == InjectableType.lazySingleton) {
