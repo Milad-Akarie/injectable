@@ -344,6 +344,238 @@ void main() {
       );
     },
   );
+
+  group('Cached factory Test group', () {
+    test("factory generator with cache enabled (no factory params)", () {
+      expect(
+        generate(
+          DependencyConfig(
+            injectableType: InjectableType.factory,
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
+            cache: true,
+          ),
+        ),
+        'gh.factoryCached<Demo>(() => Demo());',
+      );
+    });
+
+    test("factory generator with cache disabled (no factory params)", () {
+      expect(
+        generate(
+          DependencyConfig(
+            injectableType: InjectableType.factory,
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
+            cache: false,
+          ),
+        ),
+        'gh.factory<Demo>(() => Demo());',
+      );
+    });
+
+    test("async factory generator with cache enabled (no factory params)", () {
+      expect(
+        generate(
+          DependencyConfig(
+            injectableType: InjectableType.factory,
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
+            isAsync: true,
+            cache: true,
+          ),
+        ),
+        'gh.factoryCachedAsync<Demo>(() => Demo());',
+      );
+    });
+
+    test("async factory generator with cache disabled (no factory params)", () {
+      expect(
+        generate(
+          DependencyConfig(
+            injectableType: InjectableType.factory,
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
+            isAsync: true,
+            cache: false,
+          ),
+        ),
+        'gh.factoryAsync<Demo>(() => Demo());',
+      );
+    });
+
+    test("factory generator with cache enabled and dependencies (no factory params)", () {
+      expect(
+        generate(
+          DependencyConfig(
+            injectableType: InjectableType.factory,
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
+            cache: true,
+            dependencies: [
+              InjectedDependency(
+                type: ImportableType(name: 'Storage'),
+                paramName: 'storage',
+                isFactoryParam: false,
+                isPositional: true,
+              ),
+            ],
+          ),
+        ),
+        'gh.factoryCached<Demo>(() => Demo(gh<Storage>()));',
+      );
+    });
+
+    test("factory generator with cache enabled and factory params", () {
+      expect(
+        generate(
+          DependencyConfig(
+            injectableType: InjectableType.factory,
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
+            cache: true,
+            dependencies: [
+              InjectedDependency(
+                type: ImportableType(name: 'String'),
+                paramName: 'id',
+                isFactoryParam: true,
+                isPositional: true,
+              ),
+              InjectedDependency(
+                type: ImportableType(name: 'int'),
+                paramName: 'count',
+                isFactoryParam: true,
+                isPositional: false,
+              ),
+            ],
+          ),
+        ),
+        'gh.factoryCachedParam<Demo, String, int>((id, count, ) => Demo(id, count: count, ));',
+      );
+    });
+
+    test("factory generator with cache disabled and factory params", () {
+      expect(
+        generate(
+          DependencyConfig(
+            injectableType: InjectableType.factory,
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
+            cache: false,
+            dependencies: [
+              InjectedDependency(
+                type: ImportableType(name: 'String'),
+                paramName: 'id',
+                isFactoryParam: true,
+                isPositional: true,
+              ),
+              InjectedDependency(
+                type: ImportableType(name: 'int'),
+                paramName: 'count',
+                isFactoryParam: true,
+                isPositional: false,
+              ),
+            ],
+          ),
+        ),
+        'gh.factoryParam<Demo, String, int>((id, count, ) => Demo(id, count: count, ));',
+      );
+    });
+
+    test("async factory generator with cache enabled and factory params", () {
+      final dep = DependencyConfig(
+        injectableType: InjectableType.factory,
+        type: ImportableType(name: 'Demo'),
+        typeImpl: ImportableType(name: 'Demo'),
+        cache: true,
+        dependencies: [
+          InjectedDependency(
+            type: ImportableType(name: 'String'),
+            paramName: 'id',
+            isFactoryParam: true,
+            isPositional: true,
+          ),
+          InjectedDependency(
+            type: ImportableType(name: 'Storage'),
+            paramName: 'storage',
+            isFactoryParam: false,
+            isPositional: true,
+          ),
+        ],
+      );
+      final allDeps = [
+        dep,
+        DependencyConfig(
+          injectableType: InjectableType.factory,
+          type: ImportableType(name: 'Storage'),
+          typeImpl: ImportableType(name: 'Storage'),
+          isAsync: true,
+        ),
+      ];
+      expect(
+        generate(dep, allDeps: allDeps),
+        'gh.factoryCachedParamAsync<Demo, String, dynamic>((id, _, ) async  => Demo(id,  await gh.getAsync<Storage>(), ));',
+      );
+    });
+
+    test("async factory generator with cache disabled and factory params", () {
+      final dep = DependencyConfig(
+        injectableType: InjectableType.factory,
+        type: ImportableType(name: 'Demo'),
+        typeImpl: ImportableType(name: 'Demo'),
+        cache: false,
+        dependencies: [
+          InjectedDependency(
+            type: ImportableType(name: 'String'),
+            paramName: 'id',
+            isFactoryParam: true,
+            isPositional: true,
+          ),
+          InjectedDependency(
+            type: ImportableType(name: 'Storage'),
+            paramName: 'storage',
+            isFactoryParam: false,
+            isPositional: true,
+          ),
+        ],
+      );
+      final allDeps = [
+        dep,
+        DependencyConfig(
+          injectableType: InjectableType.factory,
+          type: ImportableType(name: 'Storage'),
+          typeImpl: ImportableType(name: 'Storage'),
+          isAsync: true,
+        ),
+      ];
+      expect(
+        generate(dep, allDeps: allDeps),
+        'gh.factoryParamAsync<Demo, String, dynamic>((id, _, ) async  => Demo(id,  await gh.getAsync<Storage>(), ));',
+      );
+    });
+
+    test("factory generator with cache enabled and single factory param", () {
+      expect(
+        generate(
+          DependencyConfig(
+            injectableType: InjectableType.factory,
+            type: ImportableType(name: 'Demo'),
+            typeImpl: ImportableType(name: 'Demo'),
+            cache: true,
+            dependencies: [
+              InjectedDependency(
+                type: ImportableType(name: 'String'),
+                paramName: 'id',
+                isFactoryParam: true,
+                isPositional: true,
+              ),
+            ],
+          ),
+        ),
+        'gh.factoryCachedParam<Demo, String, dynamic>((id, _, ) => Demo(id));',
+      );
+    });
+  });
 }
 
 String generate(DependencyConfig input, {List<DependencyConfig>? allDeps}) {

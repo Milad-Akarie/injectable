@@ -74,6 +74,18 @@ class GetItHelper {
     }
   }
 
+  /// a conditional wrapper method for getIt.registerCachedFactory
+  /// it only registers if [_canRegister] returns true
+  void factoryCached<T extends Object>(
+    FactoryFunc<T> factoryFunc, {
+    String? instanceName,
+    Set<String>? registerFor,
+  }) {
+    if (_canRegister(registerFor)) {
+      getIt.registerCachedFactory<T>(factoryFunc, instanceName: instanceName);
+    }
+  }
+
   /// a conditional wrapper method for getIt.registerFactoryAsync
   /// it only registers if [_canRegister] returns true
   Future<void> factoryAsync<T extends Object>(
@@ -98,6 +110,33 @@ class GetItHelper {
     return Future.value(null);
   }
 
+  /// a conditional wrapper method for getIt.registerCachedFactoryAsync
+  /// it only registers if [_canRegister] returns true
+  Future<void> factoryCachedAsync<T extends Object>(
+    FactoryFuncAsync<T> factoryFunc, {
+    String? instanceName,
+    bool preResolve = false,
+    Set<String>? registerFor,
+  }) {
+    if (_canRegister(registerFor)) {
+      if (preResolve) {
+        return factoryFunc().then(
+          (instance) => factoryCached(
+            () => instance,
+            instanceName: instanceName,
+            registerFor: registerFor,
+          ),
+        );
+      } else {
+        getIt.registerCachedFactoryAsync<T>(
+          factoryFunc,
+          instanceName: instanceName,
+        );
+      }
+    }
+    return Future.value(null);
+  }
+
   /// a conditional wrapper method for getIt.registerFactoryParam
   /// it only registers if [_canRegister] returns true
   void factoryParam<T extends Object, P1, P2>(
@@ -113,6 +152,21 @@ class GetItHelper {
     }
   }
 
+  /// a conditional wrapper method for getIt.registerCachedFactoryParam
+  /// it only registers if [_canRegister] returns true
+  void factoryCachedParam<T extends Object, P1, P2>(
+    FactoryFuncParam<T, P1, P2> factoryFunc, {
+    String? instanceName,
+    Set<String>? registerFor,
+  }) {
+    if (_canRegister(registerFor)) {
+      getIt.registerCachedFactoryParam<T, P1, P2>(
+        factoryFunc,
+        instanceName: instanceName,
+      );
+    }
+  }
+
   /// a conditional wrapper method for getIt.registerFactoryParamAsync
   /// it only registers if [_canRegister] returns true
   void factoryParamAsync<T extends Object, P1, P2>(
@@ -122,6 +176,21 @@ class GetItHelper {
   }) {
     if (_canRegister(registerFor)) {
       getIt.registerFactoryParamAsync<T, P1, P2>(
+        factoryFunc,
+        instanceName: instanceName,
+      );
+    }
+  }
+
+  /// a conditional wrapper method for getIt.registerCachedFactoryParamAsync
+  /// it only registers if [_canRegister] returns true
+  void factoryCachedParamAsync<T extends Object, P1, P2>(
+    FactoryFuncParamAsync<T, P1?, P2?> factoryFunc, {
+    String? instanceName,
+    Set<String>? registerFor,
+  }) {
+    if (_canRegister(registerFor)) {
+      getIt.registerCachedFactoryParamAsync<T, P1, P2>(
         factoryFunc,
         instanceName: instanceName,
       );

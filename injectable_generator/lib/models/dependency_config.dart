@@ -31,6 +31,7 @@ class DependencyConfig {
   final DisposeFunctionConfig? disposeFunction;
   final int orderPosition;
   final String? scope;
+  final bool? cache;
 
   DependencyConfig({
     required this.type,
@@ -51,6 +52,7 @@ class DependencyConfig {
     this.scope,
     this.postConstructReturnsSelf = false,
     this.postConstruct,
+    this.cache,
   });
 
   // used for testing
@@ -60,12 +62,14 @@ class DependencyConfig {
     List<String> deps = const [],
     List<String> envs = const [],
     int order = 0,
+    bool? cache,
   }) {
     return DependencyConfig(
       type: ImportableType(name: type, import: type),
       typeImpl: ImportableType(name: typeImpl ?? type),
       environments: envs,
       orderPosition: order,
+      cache: cache,
       dependencies: deps
           .map(
             (e) => InjectedDependency(
@@ -89,9 +93,7 @@ class DependencyConfig {
     return DependencyConfig(
       type: ImportableType(name: type),
       typeImpl: ImportableType(name: typeImpl ?? type),
-      injectableType: lazy
-          ? InjectableType.lazySingleton
-          : InjectableType.singleton,
+      injectableType: lazy ? InjectableType.lazySingleton : InjectableType.singleton,
       environments: envs,
       orderPosition: order,
       dependencies: deps
@@ -131,6 +133,7 @@ class DependencyConfig {
           disposeFunction == other.disposeFunction &&
           scope == other.scope &&
           moduleConfig == other.moduleConfig &&
+          cache == other.cache &&
           postConstruct == other.postConstruct &&
           postConstructReturnsSelf == other.postConstructReturnsSelf &&
           orderPosition == other.orderPosition);
@@ -153,6 +156,7 @@ class DependencyConfig {
       canBeConst.hashCode ^
       orderPosition.hashCode ^
       postConstruct.hashCode ^
+      cache.hashCode ^
       postConstructReturnsSelf.hashCode ^
       scope.hashCode;
 
@@ -201,6 +205,7 @@ class DependencyConfig {
       injectableType: json['injectableType'],
       instanceName: json['instanceName'],
       signalsReady: json['signalsReady'],
+      cache: json['cache'] as bool?,
       environments: json['environments']?.cast<String>(),
       constructorName: json['constructorName'],
       postConstruct: json['postConstruct'],
@@ -230,6 +235,7 @@ class DependencyConfig {
     "environments": environments,
     "dependencies": dependencies.map((v) => v.toJson()).toList(),
     if (instanceName != null) "instanceName": instanceName,
+    if (cache != null) "cache": cache,
     if (signalsReady != null) "signalsReady": signalsReady,
     if (constructorName != null) "constructorName": constructorName,
     if (postConstruct != null) "postConstruct": postConstruct,
@@ -239,9 +245,7 @@ class DependencyConfig {
 
   bool get isFromModule => moduleConfig != null;
 
-  List<InjectedDependency> get positionalDependencies =>
-      dependencies.where((d) => d.isPositional).toList();
+  List<InjectedDependency> get positionalDependencies => dependencies.where((d) => d.isPositional).toList();
 
-  List<InjectedDependency> get namedDependencies =>
-      dependencies.where((d) => !d.isPositional).toList();
+  List<InjectedDependency> get namedDependencies => dependencies.where((d) => !d.isPositional).toList();
 }

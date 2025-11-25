@@ -33,6 +33,9 @@ class InjectableInit {
 
   /// weather to include null-safety
   /// suffixes to the generated code;
+  @Deprecated(
+    'Null-safety is now default in Dart, this flag will be removed in future releases',
+  )
   final bool usesNullSafety;
 
   ///  generator will not show warning for unregistered types
@@ -92,6 +95,9 @@ class InjectableInit {
     this.ignoreUnregisteredTypes = const [],
     this.ignoreUnregisteredTypesInPackages = const [],
     this.asExtension = true,
+    @Deprecated(
+      'Null-safety is now default in Dart, this flag will be removed in future releases',
+    )
     this.usesNullSafety = true,
     this.throwOnMissingDependencies = false,
     this.includeMicroPackages = true,
@@ -150,8 +156,18 @@ class Injectable {
   /// of annotating the element with @Scope
   final String? scope;
 
+  /// whether to cache the instance created by this
+  /// injectable. Only applicable for factory registrations.
+  final bool cache;
+
   /// default constructor
-  const Injectable({this.as, this.env, this.scope, this.order});
+  const Injectable({
+    this.as,
+    this.env,
+    this.scope,
+    this.order,
+    this.cache = false,
+  });
 }
 
 /// const instance of [Injectable]

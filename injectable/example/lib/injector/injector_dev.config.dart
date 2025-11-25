@@ -30,7 +30,7 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.singleton<_i978.ConstService>(() => const _i978.ConstService());
     gh.factory<_i978.IService>(() => _i978.ServiceImpl());
-    gh.factory<_i978.Model>(() => _i978.ModelX());
+    gh.factoryCached<_i978.Model>(() => _i978.ModelX());
     await gh.factoryAsync<_i978.AbstractService>(
       () => _i978.AsyncService.create(
         gh<Set<String>>(instanceName: '__environments__'),

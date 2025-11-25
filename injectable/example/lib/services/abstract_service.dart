@@ -71,7 +71,7 @@ sealed class Model {
   }
 }
 
-@Injectable(as: Model)
+@Injectable(as: Model, cache: true)
 class ModelX extends Model {}
 
 class ModelY extends Model {}
