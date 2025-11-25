@@ -5,7 +5,7 @@ import 'package:injectable/injectable.dart';
 abstract class RegisterModule {
   @Named("Repo")
   @LazySingleton(dispose: disposeRepo)
-  Future<Repo> getRepo(@Named.from(ServiceImpl) IService service) {
+  Future<Repo> getRepo(IService service) {
     return Repo.asyncRepo(service);
   }
 }

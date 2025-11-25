@@ -40,13 +40,6 @@ extension GetItInjectableX on _i174.GetIt {
       registerFor: {_dev},
       preResolve: true,
     );
-    gh.lazySingletonAsync<_i253.Repo>(
-      () => registerModule.getRepo(
-        gh<_i978.IService>(instanceName: 'ServiceImpl'),
-      ),
-      instanceName: 'Repo',
-      dispose: _i253.disposeRepo,
-    );
     gh.lazySingleton<_i978.AbstractService>(
       () => _i978.WebService(gh<Set<String>>(instanceName: '__environments__')),
       instanceName: 'WebService',
@@ -64,6 +57,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<Set<String>>(instanceName: '__environments__'),
       ),
       registerFor: {_platformMobile},
+    );
+    gh.lazySingletonAsync<_i253.Repo>(
+      () => registerModule.getRepo(gh<_i978.IService>()),
+      instanceName: 'Repo',
+      dispose: _i253.disposeRepo,
     );
     return this;
   }

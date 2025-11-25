@@ -38,19 +38,17 @@ extension GetItInjectableX on _i174.GetIt {
       registerFor: {_dev},
       preResolve: true,
     );
-    gh.lazySingletonAsync<_i253.Repo>(
-      () => registerModule.getRepo(
-        gh<_i978.IService>(instanceName: 'ServiceImpl'),
-      ),
-      instanceName: 'Repo',
-      dispose: _i253.disposeRepo,
-    );
     gh.singletonAsync<_i978.PostConstructableService>(() {
       final i = _i978.PostConstructableService(gh<_i978.IService>());
       return i.init().then((_) => i);
     });
     gh.factoryAsync<_i253.Repo>(
       () => _i253.Repo.asyncRepo(gh<_i978.IService>()),
+    );
+    gh.lazySingletonAsync<_i253.Repo>(
+      () => registerModule.getRepo(gh<_i978.IService>()),
+      instanceName: 'Repo',
+      dispose: _i253.disposeRepo,
     );
     return this;
   }
