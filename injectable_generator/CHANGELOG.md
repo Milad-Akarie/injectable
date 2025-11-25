@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.11.0]
+- Feat: Add support to cached factories introduced in get_it 8.0.0
 ## [2.10.0]
 - Chore: Update dependencies, analyzer (v9), glob (v2.1.3), code_builder (v4.11.0), dart_style (v3.1.3)
 

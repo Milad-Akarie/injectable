@@ -27,24 +27,37 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) async {
-    final generateForDir = annotation.read('generateForDir').listValue.map((e) => e.toStringValue());
+    final generateForDir = annotation
+        .read('generateForDir')
+        .listValue
+        .map((e) => e.toStringValue());
 
     final usesNullSafety = annotation.read('usesNullSafety').boolValue;
     final isMicroPackage = annotation.read('_isMicroPackage').boolValue;
-    final usesConstructorCallback = annotation.read('usesConstructorCallback').boolValue;
-    final throwOnMissingDependencies = annotation.read('throwOnMissingDependencies').boolValue;
+    final usesConstructorCallback = annotation
+        .read('usesConstructorCallback')
+        .boolValue;
+    final throwOnMissingDependencies = annotation
+        .read('throwOnMissingDependencies')
+        .boolValue;
     final targetFile = element.firstFragment.libraryFragment?.source.uri;
-    final preferRelativeImports = annotation.read("preferRelativeImports").boolValue;
+    final preferRelativeImports = annotation
+        .read("preferRelativeImports")
+        .boolValue;
     final generateForEnvironments = annotation
         .read('generateForEnvironments')
         .setValue
         .map((e) => e.getField('name')?.toStringValue());
 
-    final includeMicroPackages = annotation.read("includeMicroPackages").boolValue;
+    final includeMicroPackages = annotation
+        .read("includeMicroPackages")
+        .boolValue;
 
     final rootDir = annotation.peek('rootDir')?.stringValue;
 
-    final dirPattern = generateForDir.length > 1 ? '{${generateForDir.join(',')}}' : '${generateForDir.first}';
+    final dirPattern = generateForDir.length > 1
+        ? '{${generateForDir.join(',')}}'
+        : '${generateForDir.first}';
 
     final injectableConfigFiles = Glob("$dirPattern/**.injectable.json");
 
@@ -168,7 +181,9 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       targetFile: preferRelativeImports ? targetFile : null,
       initializerName: initializerName,
       asExtension: asExtension,
-      microPackageName: isMicroPackage ? buildStep.inputId.package.pascalCase : null,
+      microPackageName: isMicroPackage
+          ? buildStep.inputId.package.pascalCase
+          : null,
       microPackagesModulesBefore: microPackageModulesBefore,
       microPackagesModulesAfter: microPackageModulesAfter,
       usesConstructorCallback: usesConstructorCallback,
@@ -269,7 +284,10 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
             "[${dep.typeImpl}] depends on unregistered type [${iDep.type}] ${iDep.instanceName == null ? '' : '@Named(${iDep.instanceName})'}, ${iDep.type.import == null ? '' : 'from ${iDep.type.import}'}",
           );
         } else {
-          final availableEnvs = possibleDeps.map((e) => e.environments).reduce((a, b) => a + b).toSet();
+          final availableEnvs = possibleDeps
+              .map((e) => e.environments)
+              .reduce((a, b) => a + b)
+              .toSet();
           if (availableEnvs.isNotEmpty) {
             final missingEnvs = dep.environments.toSet().difference(
               availableEnvs,
@@ -300,7 +318,10 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final validatedDeps = <DependencyConfig>[];
     for (var dep in deps) {
       var registered = validatedDeps.where(
-        (elm) => elm.type == dep.type && elm.instanceName == dep.instanceName && elm.scope == dep.scope,
+        (elm) =>
+            elm.type == dep.type &&
+            elm.instanceName == dep.instanceName &&
+            elm.scope == dep.scope,
       );
 
       if (registered.isEmpty) {
@@ -347,5 +368,6 @@ class _HashedAllocator implements Allocator {
   int _hashedUrl() => _url.hashCode / 1000000 ~/ 1;
 
   @override
-  Iterable<Directive> get imports => _imports.keys.map((u) => Directive.import(u, as: '_i${_imports[u]}'));
+  Iterable<Directive> get imports =>
+      _imports.keys.map((u) => Directive.import(u, as: '_i${_imports[u]}'));
 }

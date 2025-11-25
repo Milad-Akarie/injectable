@@ -93,7 +93,9 @@ class DependencyConfig {
     return DependencyConfig(
       type: ImportableType(name: type),
       typeImpl: ImportableType(name: typeImpl ?? type),
-      injectableType: lazy ? InjectableType.lazySingleton : InjectableType.singleton,
+      injectableType: lazy
+          ? InjectableType.lazySingleton
+          : InjectableType.singleton,
       environments: envs,
       orderPosition: order,
       dependencies: deps
@@ -245,7 +247,9 @@ class DependencyConfig {
 
   bool get isFromModule => moduleConfig != null;
 
-  List<InjectedDependency> get positionalDependencies => dependencies.where((d) => d.isPositional).toList();
+  List<InjectedDependency> get positionalDependencies =>
+      dependencies.where((d) => d.isPositional).toList();
 
-  List<InjectedDependency> get namedDependencies => dependencies.where((d) => !d.isPositional).toList();
+  List<InjectedDependency> get namedDependencies =>
+      dependencies.where((d) => !d.isPositional).toList();
 }

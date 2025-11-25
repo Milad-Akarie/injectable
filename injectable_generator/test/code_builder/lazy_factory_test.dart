@@ -404,27 +404,30 @@ void main() {
       );
     });
 
-    test("factory generator with cache enabled and dependencies (no factory params)", () {
-      expect(
-        generate(
-          DependencyConfig(
-            injectableType: InjectableType.factory,
-            type: ImportableType(name: 'Demo'),
-            typeImpl: ImportableType(name: 'Demo'),
-            cache: true,
-            dependencies: [
-              InjectedDependency(
-                type: ImportableType(name: 'Storage'),
-                paramName: 'storage',
-                isFactoryParam: false,
-                isPositional: true,
-              ),
-            ],
+    test(
+      "factory generator with cache enabled and dependencies (no factory params)",
+      () {
+        expect(
+          generate(
+            DependencyConfig(
+              injectableType: InjectableType.factory,
+              type: ImportableType(name: 'Demo'),
+              typeImpl: ImportableType(name: 'Demo'),
+              cache: true,
+              dependencies: [
+                InjectedDependency(
+                  type: ImportableType(name: 'Storage'),
+                  paramName: 'storage',
+                  isFactoryParam: false,
+                  isPositional: true,
+                ),
+              ],
+            ),
           ),
-        ),
-        'gh.factoryCached<Demo>(() => Demo(gh<Storage>()));',
-      );
-    });
+          'gh.factoryCached<Demo>(() => Demo(gh<Storage>()));',
+        );
+      },
+    );
 
     test("factory generator with cache enabled and factory params", () {
       expect(

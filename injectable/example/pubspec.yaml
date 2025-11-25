@@ -6,7 +6,7 @@ environment:
 
 dependencies:
   get_it:  ">=8.3.0 <10.0.0"
-  injectable: ^2.6.0
+  injectable: ^2.7.0
 #    path: ../../injectable
 
 

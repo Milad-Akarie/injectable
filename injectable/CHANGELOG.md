@@ -1,4 +1,7 @@
 # ChangeLog
+## [2.7.0]
+- Feat: Add support to cached factories introduced in get_it 8.0.0
+- Chore: update get_it constraint to 8.3.0 <= 10.0.0
 ## [2.6.0]
 - Chore: update get_it constraint to 7.2.0 < 10.0.0
 ## [2.5.2]

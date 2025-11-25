@@ -57,7 +57,8 @@ class InjectableGenerator implements Generator {
             DependencyResolver(resolver).resolveModuleMember(clazz, element),
           );
         }
-      } else if (_hasInjectable(clazz) || (_autoRegister && _hasConventionalMatch(clazz))) {
+      } else if (_hasInjectable(clazz) ||
+          (_autoRegister && _hasConventionalMatch(clazz))) {
         allDepsInStep.add(
           DependencyResolver(resolver).resolve(clazz),
         );
@@ -78,8 +79,10 @@ class InjectableGenerator implements Generator {
     if (clazz.isAbstract) {
       return false;
     }
-    final fileName = clazz.firstFragment.libraryFragment.source.shortName.replaceFirst('.dart', '');
-    return (_classNameMatcher != null && _classNameMatcher!.hasMatch(clazz.displayName)) ||
+    final fileName = clazz.firstFragment.libraryFragment.source.shortName
+        .replaceFirst('.dart', '');
+    return (_classNameMatcher != null &&
+            _classNameMatcher!.hasMatch(clazz.displayName)) ||
         (_fileNameMatcher != null && _fileNameMatcher!.hasMatch(fileName));
   }
 }
