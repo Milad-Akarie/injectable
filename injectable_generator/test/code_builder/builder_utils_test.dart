@@ -22,17 +22,54 @@ void main() {
     });
 
     test(
-        'Sorting with environments in mind, should sort as [B{prd},B{dev}},A{dev}]',
-        () {
+      'Sorting with environments in mind, should sort as [B{prod},B{dev}},A{dev}]',
+      () {
+        final deps = [
+          DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
+          DependencyConfig.factory('B', envs: ['prod']),
+          DependencyConfig.factory('B', envs: ['dev']),
+        ];
+        final expectedResult = [
+          DependencyConfig.factory('B', envs: ['dev']),
+          DependencyConfig.factory('B', envs: ['prod']),
+          DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
+        ];
+        expect(sortDependencies(deps), expectedResult);
+      },
+    );
+
+    test('should sort as [Dio,FakeUserApi,UserApi,UserRepository]', () {
       final deps = [
-        DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
-        DependencyConfig.factory('B', envs: ['prod']),
-        DependencyConfig.factory('B', envs: ['dev']),
+        DependencyConfig.singleton('Repository', deps: ['UserApi']),
+        DependencyConfig.singleton(
+          'UserApi',
+          typeImpl: 'FakeUserApi',
+          envs: ['test'],
+          lazy: true,
+        ),
+        DependencyConfig.singleton(
+          'UserApi',
+          typeImpl: 'ImplUserApi',
+          envs: ['dev'],
+          deps: ['Dio'],
+        ),
+        DependencyConfig.singleton('Dio', lazy: true, envs: ['dev']),
       ];
       final expectedResult = [
-        DependencyConfig.factory('B', envs: ['prod']),
-        DependencyConfig.factory('B', envs: ['dev']),
-        DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
+        DependencyConfig.singleton('Dio', lazy: true, envs: ['dev']),
+        DependencyConfig.singleton(
+          'UserApi',
+          typeImpl: 'FakeUserApi',
+          envs: ['test'],
+          lazy: true,
+        ),
+        DependencyConfig.singleton(
+          'UserApi',
+          typeImpl: 'ImplUserApi',
+          envs: ['dev'],
+          deps: ['Dio'],
+        ),
+        DependencyConfig.singleton('Repository', deps: ['UserApi']),
       ];
       expect(sortDependencies(deps).toList(), expectedResult);
     });
@@ -80,20 +117,21 @@ void main() {
     });
 
     test(
-        'Sorting with environments in mind, should sort as [B{prd},B{dev}},A{dev}]',
-        () {
-      final deps = [
-        DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
-        DependencyConfig.factory('B', envs: ['prod'], order: 1),
-        DependencyConfig.factory('B', envs: ['dev'], order: -1),
-      ];
-      final expectedResult = [
-        DependencyConfig.factory('B', envs: ['dev'], order: -1),
-        DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
-        DependencyConfig.factory('B', envs: ['prod'], order: 1),
-      ];
-      expect(sortDependencies(deps).toList(), expectedResult);
-    });
+      'Sorting with environments in mind, should sort as [B{prd},B{dev}},A{dev}]',
+      () {
+        final deps = [
+          DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
+          DependencyConfig.factory('B', envs: ['prod'], order: 1),
+          DependencyConfig.factory('B', envs: ['dev'], order: -1),
+        ];
+        final expectedResult = [
+          DependencyConfig.factory('B', envs: ['dev'], order: -1),
+          DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
+          DependencyConfig.factory('B', envs: ['prod'], order: 1),
+        ];
+        expect(sortDependencies(deps).toList(), expectedResult);
+      },
+    );
   });
 
   group('hasAsyncDependency', () {
@@ -103,8 +141,8 @@ void main() {
         typeImpl: ImportableType(name: 'Demo'),
         injectableType: InjectableType.factory,
       );
-      final allDeps = {dep};
-      final depSet = DependencySet(dependencies: allDeps);
+      final allDeps = [dep];
+      final depSet = DependencyList(dependencies: allDeps);
       expect(depSet.hasAsyncDependency(dep), isFalse);
     });
 
@@ -117,18 +155,18 @@ void main() {
           InjectedDependency(
             type: ImportableType(name: 'Fizz'),
             paramName: 'fizz',
-          )
+          ),
         ],
       );
-      final allDeps = {
+      final allDeps = [
         dep,
         DependencyConfig(
           type: ImportableType(name: 'Fizz'),
           typeImpl: ImportableType(name: 'Fizz'),
           injectableType: InjectableType.factory,
         ),
-      };
-      final depSet = DependencySet(dependencies: allDeps);
+      ];
+      final depSet = DependencyList(dependencies: allDeps);
       expect(depSet.hasAsyncDependency(dep), isFalse);
     });
 
@@ -141,11 +179,11 @@ void main() {
           InjectedDependency(
             type: ImportableType(name: 'Fizz'),
             paramName: 'fizz',
-          )
+          ),
         ],
       );
-      final allDeps = <DependencyConfig>{dep};
-      final depSet = DependencySet(dependencies: allDeps);
+      final allDeps = <DependencyConfig>[dep];
+      final depSet = DependencyList(dependencies: allDeps);
       expect(depSet.hasAsyncDependency(dep), isFalse);
     });
 
@@ -166,7 +204,7 @@ void main() {
           ),
         ],
       );
-      final allDeps = {
+      final allDeps = [
         dep,
         DependencyConfig(
           type: ImportableType(name: 'Fizz'),
@@ -180,8 +218,8 @@ void main() {
           injectableType: InjectableType.factory,
           instanceName: 'buzzImpl',
         ),
-      };
-      final depSet = DependencySet(dependencies: allDeps);
+      ];
+      final depSet = DependencyList(dependencies: allDeps);
       expect(depSet.hasAsyncDependency(dep), isTrue);
     });
 
@@ -202,7 +240,7 @@ void main() {
           ),
         ],
       );
-      final allDeps = {
+      final allDeps = [
         dep,
         DependencyConfig(
           type: ImportableType(name: 'Fizz'),
@@ -216,8 +254,8 @@ void main() {
           instanceName: 'buzzImpl',
           isAsync: true,
         ),
-      };
-      final depSet = DependencySet(dependencies: allDeps);
+      ];
+      final depSet = DependencyList(dependencies: allDeps);
       expect(depSet.hasAsyncDependency(dep), isTrue);
     });
 
@@ -233,19 +271,20 @@ void main() {
           ),
         ],
       );
-      final allDeps = {
+      final allDeps = [
         dep,
         DependencyConfig(
-            type: ImportableType(name: 'Fizz'),
-            typeImpl: ImportableType(name: 'Fizz'),
-            injectableType: InjectableType.factory,
-            dependencies: [
-              InjectedDependency(
-                type: ImportableType(name: 'Buzz'),
-                paramName: 'buzz',
-                instanceName: 'buzzImpl',
-              ),
-            ]),
+          type: ImportableType(name: 'Fizz'),
+          typeImpl: ImportableType(name: 'Fizz'),
+          injectableType: InjectableType.factory,
+          dependencies: [
+            InjectedDependency(
+              type: ImportableType(name: 'Buzz'),
+              paramName: 'buzz',
+              instanceName: 'buzzImpl',
+            ),
+          ],
+        ),
         DependencyConfig(
           type: ImportableType(name: 'Buzz'),
           typeImpl: ImportableType(name: 'Buzz'),
@@ -253,8 +292,8 @@ void main() {
           instanceName: 'buzzImpl',
           isAsync: true,
         ),
-      };
-      final depSet = DependencySet(dependencies: allDeps);
+      ];
+      final depSet = DependencyList(dependencies: allDeps);
       expect(depSet.hasAsyncDependency(dep), isTrue);
     });
   });
@@ -265,8 +304,7 @@ void main() {
         type: ImportableType(name: 'Fizz'),
         paramName: 'fizz',
       );
-      final allDeps = <DependencyConfig>{};
-      final depSet = DependencySet(dependencies: allDeps);
+      final depSet = DependencyList(dependencies: <DependencyConfig>[]);
       expect(depSet.isAsyncOrHasAsyncDependency(iDep), isFalse);
     });
 
@@ -281,8 +319,8 @@ void main() {
         injectableType: InjectableType.factory,
         isAsync: false,
       );
-      final allDeps = {dep};
-      final depSet = DependencySet(dependencies: allDeps);
+      final allDeps = [dep];
+      final depSet = DependencyList(dependencies: allDeps);
       expect(depSet.isAsyncOrHasAsyncDependency(iDep), isFalse);
     });
     test('should return `false` when async but preResolve is true', () {
@@ -297,8 +335,8 @@ void main() {
         isAsync: true,
         preResolve: true,
       );
-      final allDeps = {dep};
-      final depSet = DependencySet(dependencies: allDeps);
+      final allDeps = [dep];
+      final depSet = DependencyList(dependencies: allDeps);
       expect(depSet.isAsyncOrHasAsyncDependency(iDep), isFalse);
     });
 
@@ -313,8 +351,8 @@ void main() {
         injectableType: InjectableType.factory,
         isAsync: true,
       );
-      final allDeps = {dep};
-      final depSet = DependencySet(dependencies: allDeps);
+      final allDeps = [dep];
+      final depSet = DependencyList(dependencies: allDeps);
       expect(depSet.isAsyncOrHasAsyncDependency(iDep), isTrue);
     });
 
@@ -331,18 +369,18 @@ void main() {
           InjectedDependency(
             type: ImportableType(name: 'Buzz'),
             paramName: 'buzz',
-          )
+          ),
         ],
       );
-      final allDeps = {
+      final allDeps = [
         dep,
         DependencyConfig(
           type: ImportableType(name: 'Buzz'),
           typeImpl: ImportableType(name: 'Buzz'),
           injectableType: InjectableType.factory,
-        )
-      };
-      final depSet = DependencySet(dependencies: allDeps);
+        ),
+      ];
+      final depSet = DependencyList(dependencies: allDeps);
       expect(depSet.isAsyncOrHasAsyncDependency(iDep), isFalse);
     });
 
@@ -359,19 +397,19 @@ void main() {
           InjectedDependency(
             type: ImportableType(name: 'Buzz'),
             paramName: 'buzz',
-          )
+          ),
         ],
       );
-      final allDeps = {
+      final allDeps = [
         dep,
         DependencyConfig(
           type: ImportableType(name: 'Buzz'),
           typeImpl: ImportableType(name: 'Buzz'),
           injectableType: InjectableType.factory,
           isAsync: true,
-        )
-      };
-      final depSet = DependencySet(dependencies: allDeps);
+        ),
+      ];
+      final depSet = DependencyList(dependencies: allDeps);
       expect(depSet.isAsyncOrHasAsyncDependency(iDep), isTrue);
     });
   });
@@ -382,7 +420,7 @@ void main() {
         type: ImportableType(name: 'Fizz'),
         paramName: 'fizz',
       );
-      final allDeps = <DependencyConfig>{};
+      final allDeps = <DependencyConfig>[];
       expect(lookupDependency(iDep, allDeps), isNull);
     });
 
@@ -396,7 +434,7 @@ void main() {
         typeImpl: ImportableType(name: 'Fizz'),
         injectableType: InjectableType.factory,
       );
-      final allDeps = {dep};
+      final allDeps = [dep];
       expect(lookupDependency(iDep, allDeps), same(dep));
     });
 
@@ -412,7 +450,7 @@ void main() {
         injectableType: InjectableType.factory,
         instanceName: 'fizzBuzz',
       );
-      final allDeps = {dep};
+      final allDeps = [dep];
       expect(lookupDependency(iDep, allDeps), isNull);
     });
 
@@ -428,7 +466,7 @@ void main() {
         injectableType: InjectableType.factory,
         instanceName: 'fizzImpl',
       );
-      final allDeps = {dep};
+      final allDeps = [dep];
       expect(lookupDependency(iDep, allDeps), same(dep));
     });
   });

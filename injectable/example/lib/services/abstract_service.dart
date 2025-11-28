@@ -1,7 +1,7 @@
 import 'package:example/injector/injector.dart';
 import 'package:injectable/injectable.dart';
 
-@Injectable()
+@Singleton()
 class ConstService {
   const ConstService();
 }
@@ -36,35 +36,17 @@ class AsyncService extends AbstractService {
   @override
   final Set<String> environments;
 
-  AsyncService(
-    @Named(kEnvironmentsName) this.environments,
-  );
+  AsyncService(@Named(kEnvironmentsName) this.environments);
 
   @FactoryMethod(preResolve: true)
-  static Future<AsyncService> create(
-    @Named(kEnvironmentsName) Set<String> envs,
-  ) =>
-      Future.value(AsyncService(envs));
+  static Future<AsyncService> create(@Named(kEnvironmentsName) Set<String> envs) => Future.value(AsyncService(envs));
 }
 
 abstract class IService {}
 
-@named
-@dev
 @Injectable(as: IService)
 class ServiceImpl extends IService {
-  ServiceImpl(@factoryParam String? param);
-}
-
-@test
-@Injectable(as: IService)
-class LazyServiceImpl extends IService {
-  LazyServiceImpl._(String? param);
-
-  @factoryMethod
-  static Future<IService> create(@factoryParam String? param) {
-    return Future.value(LazyServiceImpl._(param));
-  }
+  ServiceImpl();
 }
 
 @singleton
@@ -82,11 +64,14 @@ class PostConstructableService {
 
 sealed class Model {
   Model get m {
-    return switch (this) { ModelX() => ModelX(), ModelY() => ModelY() };
+    return switch (this) {
+      ModelX() => ModelX(),
+      ModelY() => ModelY(),
+    };
   }
 }
 
-@Injectable(as: Model)
+@Injectable(as: Model, cache: true)
 class ModelX extends Model {}
 
 class ModelY extends Model {}

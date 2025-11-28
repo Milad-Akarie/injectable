@@ -50,13 +50,12 @@ class InjectedDependency {
   }
 
   Map<String, dynamic> toJson() {
-    // ignore: unnecessary_cast
-    return {
+    return <String, dynamic>{
       'type': type,
       'instanceName': instanceName,
       'paramName': paramName,
       'isFactoryParam': isFactoryParam,
       'isPositional': isPositional,
-    } as Map<String, dynamic>;
+    };
   }
 }

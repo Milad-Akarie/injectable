@@ -1,12 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'injector.config.dart';
 
-const platformMobile = Environment('platformMobile');
-const platformWeb = Environment('platformWeb');
+import 'injector_dev.config.dart';
 
-@InjectableInit()
-Future<GetIt> configInjector(
+@InjectableInit(preferRelativeImports: false, generateForEnvironments: {dev})
+Future<GetIt> configDevInjector(
   GetIt getIt, {
   String? env,
   EnvironmentFilter? environmentFilter,

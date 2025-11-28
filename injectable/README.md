@@ -105,6 +105,17 @@ class ServiceB {
   
 ```  
 
+### Cached Factories
+To register cached factories pass true to the `cache` property inside of the `@Injectable` annotation.
+
+```dart
+
+@Injectable(cache: true)
+class ServiceA {}
+  
+```
+to read more about cached factories check the [GetIt docs](https://flutter-it.dev/documentation/get_it/object_registration#cached-factories)
+
 ### Run the generator
 
 Use the [watch] flag to watch the files' system for edits and rebuild as necessary.
