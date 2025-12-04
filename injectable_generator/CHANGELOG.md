@@ -1,4 +1,9 @@
 # ChangeLog
+## [2.11.1]
+- Feat: Add support for `generateAccessors` option to generate GetIt extension getters
+- Feat: Improve dependency sorting logic for more predictable registration order
+- Feat: Add comprehensive test coverage
+- Chore: Update injectable dependency to ^2.7.2
 ## [2.11.0]
 - Feat: Add support to cached factories introduced in get_it 8.0.0
 ## [2.10.0]
