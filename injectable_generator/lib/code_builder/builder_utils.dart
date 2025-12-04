@@ -117,23 +117,23 @@ void _sortByDependents(
         if (deps.every(sorted.contains)) {
           return true;
         }
-      } else if (lookupDependencyWithNoEnvOrHasAny(
-            iDep,
-            sorted,
-            dep.environments,
-          ) !=
-          null) {
-        // if dep is already in sorted return true
-        return true;
+      } else {
+        int foundForEnvs = 0;
+        for (final env in dep.environments) {
+          if (lookupDependencyWithNoEnvOrHasAny(iDep, sorted, [env]) == null) {
+            return false;
+          } else {
+            foundForEnvs++;
+          }
+        }
+        // if all deps for all environments are found we can proceed
+        if (foundForEnvs == dep.environments.length) {
+          return true;
+        }
       }
 
       // if dep is in unSorted we skip it in this iteration, if not we include it
-      return lookupDependencyWithNoEnvOrHasAny(
-            iDep,
-            unSorted,
-            dep.environments,
-          ) ==
-          null;
+      return lookupDependencyWithNoEnvOrHasAny(iDep, unSorted, dep.environments) == null;
     })) {
       sorted.add(dep);
     }
@@ -163,7 +163,7 @@ DependencyConfig? lookupDependencyWithNoEnvOrHasAny(
     (d) =>
         d.type == iDep.type &&
         d.instanceName == iDep.instanceName &&
-        (d.environments.isEmpty || envs.isEmpty || d.environments.any((e) => envs.contains(e))),
+        (d.environments.isEmpty || envs.isEmpty || d.environments.any(envs.contains)),
   );
 }
 

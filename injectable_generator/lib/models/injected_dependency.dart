@@ -14,12 +14,12 @@ class InjectedDependency {
     this.instanceName,
     this.isFactoryParam = false,
     this.isPositional = true,
-    this.isRequired = false,
+    this.isRequired = true,
   });
 
   @override
   String toString() {
-    return 'InjectedDependency{type: $type, instanceName: $instanceName, paramName: $paramName, isFactoryParam: $isFactoryParam, isPositional: $isPositional}';
+    return 'InjectedDependency{type: $type, instanceName: $instanceName, paramName: $paramName, isFactoryParam: $isFactoryParam, isPositional: $isPositional}, isRequired: $isRequired';
   }
 
   @override

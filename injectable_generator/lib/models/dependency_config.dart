@@ -52,7 +52,7 @@ class DependencyConfig {
     this.scope,
     this.postConstructReturnsSelf = false,
     this.postConstruct,
-    this.cache,
+    this.cache = false,
   });
 
   // used for testing
@@ -65,7 +65,7 @@ class DependencyConfig {
     bool cache = false,
   }) {
     return DependencyConfig(
-      type: ImportableType(name: type, import: type),
+      type: ImportableType(name: type),
       typeImpl: ImportableType(name: typeImpl ?? type),
       environments: envs,
       orderPosition: order,
