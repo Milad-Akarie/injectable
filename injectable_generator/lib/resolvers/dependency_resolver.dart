@@ -151,19 +151,13 @@ class DependencyResolver {
         TypeChecker.typeNamed(LazySingleton, inPackage: 'injectable'),
       )) {
         _injectableType = InjectableType.lazySingleton;
-        disposeFuncFromAnnotation = injectable
-            .peek('dispose')
-            ?.objectValue
-            .toFunctionValue();
+        disposeFuncFromAnnotation = injectable.peek('dispose')?.objectValue.toFunctionValue();
       } else if (injectable.instanceOf(
         TypeChecker.typeNamed(Singleton, inPackage: 'injectable'),
       )) {
         _injectableType = InjectableType.singleton;
         _signalsReady = injectable.peek('signalsReady')?.boolValue;
-        disposeFuncFromAnnotation = injectable
-            .peek('dispose')
-            ?.objectValue
-            .toFunctionValue();
+        disposeFuncFromAnnotation = injectable.peek('dispose')?.objectValue.toFunctionValue();
         var dependsOn = injectable
             .peek('dependsOn')
             ?.listValue
@@ -178,11 +172,7 @@ class DependencyResolver {
         }
       }
       abstractType = injectable.peek('as')?.typeValue;
-      inlineEnv = injectable
-          .peek('env')
-          ?.listValue
-          .map((e) => e.toStringValue()!)
-          .toList();
+      inlineEnv = injectable.peek('env')?.listValue.map((e) => e.toStringValue()!).toList();
       _scope = injectable.peek('scope')?.stringValue;
       _order = injectable.peek('order')?.intValue;
     }
@@ -262,8 +252,7 @@ class DependencyResolver {
     } else if (disposeFuncFromAnnotation != null) {
       final params = disposeFuncFromAnnotation.formalParameters;
       throwIf(
-        params.length != 1 ||
-            _typeResolver.resolveType(params.first.type) != _type,
+        params.length != 1 || _typeResolver.resolveType(params.first.type) != _type,
         'Dispose function for $_type must have the same signature as FutureOr Function($_type instance)',
         element: disposeFuncFromAnnotation,
       );
@@ -289,8 +278,7 @@ class DependencyResolver {
         (m) {
           final annotation = _factoryMethodChecker.firstAnnotationOf(m);
           if (annotation != null) {
-            _preResolve |=
-                annotation.getField('preResolve')!.toBoolValue() ?? false;
+            _preResolve |= annotation.getField('preResolve')!.toBoolValue() ?? false;
             return true;
           }
           return false;
@@ -306,8 +294,7 @@ class DependencyResolver {
             '''[${clazz.displayName}] is abstract and can not be registered directly! \nif it has a factory or a create method annotate it with @factoryMethod''',
             element: clazz,
           );
-          if (clazz.unnamedConstructor == null &&
-              constructor!.lookupName != 'new') {
+          if (clazz.unnamedConstructor == null && constructor!.lookupName != 'new') {
             print(
               '''[${clazz.displayName}] has no constructor annotated with @factoryMethod we wil use the first available constructor [${constructor.displayName}]''',
             );
@@ -326,8 +313,7 @@ class DependencyResolver {
     } else {
       _constructorName = '';
     }
-    for (FormalParameterElement param
-        in executableInitializer.formalParameters) {
+    for (FormalParameterElement param in executableInitializer.formalParameters) {
       final ignoredAnnotation = _ignoredChecker.firstAnnotationOf(
         param,
         throwOnUnresolved: false,
@@ -370,17 +356,14 @@ class DependencyResolver {
           isFactoryParam: isFactoryParam,
           paramName: param.displayName,
           isPositional: param.isPositional,
+          isRequired: param.isRequired,
         ),
       );
     }
 
     _canBeConst =
-        (executableInitializer is ConstructorElement &&
-            executableInitializer.isConst) &&
-        _dependencies.isEmpty;
-    final factoryParamsCount = _dependencies
-        .where((d) => d.isFactoryParam)
-        .length;
+        (executableInitializer is ConstructorElement && executableInitializer.isConst) && _dependencies.isEmpty;
+    final factoryParamsCount = _dependencies.where((d) => d.isFactoryParam).length;
 
     throwIf(
       _preResolve && factoryParamsCount != 0,
@@ -442,13 +425,10 @@ class DependencyResolver {
           postConstructAnnotation,
         ).read('preResolve').boolValue;
         final returnType = _typeResolver.resolveType(
-          _isAsync
-              ? (method.returnType as ParameterizedType).typeArguments.first
-              : method.returnType,
+          _isAsync ? (method.returnType as ParameterizedType).typeArguments.first : method.returnType,
         );
 
-        postConstructReturnsSelf =
-            returnType == _type || returnType == _typeImpl;
+        postConstructReturnsSelf = returnType == _type || returnType == _typeImpl;
         break;
       }
     }

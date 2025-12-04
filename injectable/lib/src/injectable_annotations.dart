@@ -81,6 +81,11 @@ class InjectableInit {
   /// defaults to false
   final bool usesConstructorCallback;
 
+  /// Whether to generate small helper accessors for registered
+  /// types (GetIt extension getters). Example: `Service get service => get<Service>()`.
+  /// Defaults to false.
+  final bool generateAccessors;
+
   /// a Set of environments to generate for.
   /// if not provided, code for all environments will be generated.
   /// defaults to empty
@@ -104,6 +109,7 @@ class InjectableInit {
     this.externalPackageModulesAfter,
     this.externalPackageModulesBefore,
     this.usesConstructorCallback = false,
+    this.generateAccessors = false,
     this.generateForEnvironments = const {},
   }) : _isMicroPackage = false;
 
@@ -123,7 +129,8 @@ class InjectableInit {
        asExtension = false,
        includeMicroPackages = false,
        initializerName = 'init',
-       rootDir = null;
+       rootDir = null,
+       generateAccessors = false;
 }
 
 /// const instance of [InjectableInit]

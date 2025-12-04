@@ -6,6 +6,7 @@ class InjectedDependency {
   String paramName;
   bool isFactoryParam;
   bool isPositional;
+  bool isRequired;
 
   InjectedDependency({
     required this.type,
@@ -13,6 +14,7 @@ class InjectedDependency {
     this.instanceName,
     this.isFactoryParam = false,
     this.isPositional = true,
+    this.isRequired = false,
   });
 
   @override
@@ -29,6 +31,7 @@ class InjectedDependency {
           instanceName == other.instanceName &&
           paramName == other.paramName &&
           isFactoryParam == other.isFactoryParam &&
+          isRequired == other.isRequired &&
           isPositional == other.isPositional);
 
   @override
@@ -36,6 +39,7 @@ class InjectedDependency {
       type.hashCode ^
       instanceName.hashCode ^
       paramName.hashCode ^
+      isRequired.hashCode ^
       isFactoryParam.hashCode ^
       isPositional.hashCode;
 
@@ -46,6 +50,7 @@ class InjectedDependency {
       paramName: json['paramName'],
       isFactoryParam: json['isFactoryParam'],
       isPositional: json['isPositional'],
+      isRequired: json['isRequired'] ?? false,
     );
   }
 
@@ -56,6 +61,7 @@ class InjectedDependency {
       'paramName': paramName,
       'isFactoryParam': isFactoryParam,
       'isPositional': isPositional,
+      'isRequired': isRequired,
     };
   }
 }

@@ -62,7 +62,7 @@ class DependencyConfig {
     List<String> deps = const [],
     List<String> envs = const [],
     int order = 0,
-    bool? cache,
+    bool cache = false,
   }) {
     return DependencyConfig(
       type: ImportableType(name: type, import: type),
@@ -93,11 +93,10 @@ class DependencyConfig {
     return DependencyConfig(
       type: ImportableType(name: type),
       typeImpl: ImportableType(name: typeImpl ?? type),
-      injectableType: lazy
-          ? InjectableType.lazySingleton
-          : InjectableType.singleton,
+      injectableType: lazy ? InjectableType.lazySingleton : InjectableType.singleton,
       environments: envs,
       orderPosition: order,
+      cache: false,
       dependencies: deps
           .map(
             (e) => InjectedDependency(
@@ -247,9 +246,7 @@ class DependencyConfig {
 
   bool get isFromModule => moduleConfig != null;
 
-  List<InjectedDependency> get positionalDependencies =>
-      dependencies.where((d) => d.isPositional).toList();
+  List<InjectedDependency> get positionalDependencies => dependencies.where((d) => d.isPositional).toList();
 
-  List<InjectedDependency> get namedDependencies =>
-      dependencies.where((d) => !d.isPositional).toList();
+  List<InjectedDependency> get namedDependencies => dependencies.where((d) => !d.isPositional).toList();
 }

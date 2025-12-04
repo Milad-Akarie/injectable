@@ -32,7 +32,11 @@ void main() {
         final expectedResult = [
           DependencyConfig.factory('B', envs: ['dev']),
           DependencyConfig.factory('B', envs: ['prod']),
-          DependencyConfig.factory('A', deps: ['B'], envs: ['dev', 'prod']),
+          DependencyConfig.factory(
+            'A',
+            deps: ['B'],
+            envs: ['dev', 'prod'],
+          ),
         ];
         expect(sortDependencies(deps), expectedResult);
       },

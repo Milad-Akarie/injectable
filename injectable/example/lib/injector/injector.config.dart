@@ -14,9 +14,9 @@ import 'package:example/services/abstract_service.dart' as _i978;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
+const String _platformMobile = 'platformMobile';
 const String _dev = 'dev';
 const String _platformWeb = 'platformWeb';
-const String _platformMobile = 'platformMobile';
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
@@ -33,6 +33,19 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i978.ConstService>(() => const _i978.ConstService());
     gh.factory<_i978.IService>(() => _i978.ServiceImpl());
     gh.factoryCached<_i978.Model>(() => _i978.ModelX());
+    gh.factory<_i978.AbstractService>(
+      () => _i978.MobileService.fromService(
+        gh<Set<String>>(instanceName: '__environments__'),
+      ),
+      registerFor: {_platformMobile},
+    );
+    gh.factoryAsync<_i253.Repo>(
+      () => _i253.Repo.asyncRepo(gh<_i978.IService>()),
+    );
+    gh.singletonAsync<_i978.PostConstructableService>(() {
+      final i = _i978.PostConstructableService(gh<_i978.IService>());
+      return i.init().then((_) => i);
+    });
     await gh.factoryAsync<_i978.AbstractService>(
       () => _i978.AsyncService.create(
         gh<Set<String>>(instanceName: '__environments__'),
@@ -40,31 +53,39 @@ extension GetItInjectableX on _i174.GetIt {
       registerFor: {_dev},
       preResolve: true,
     );
-    gh.lazySingleton<_i978.AbstractService>(
-      () => _i978.WebService(gh<Set<String>>(instanceName: '__environments__')),
-      instanceName: 'WebService',
-      registerFor: {_platformWeb},
-    );
-    gh.singletonAsync<_i978.PostConstructableService>(() {
-      final i = _i978.PostConstructableService(gh<_i978.IService>());
-      return i.init().then((_) => i);
-    });
-    gh.factoryAsync<_i253.Repo>(
-      () => _i253.Repo.asyncRepo(gh<_i978.IService>()),
-    );
-    gh.factory<_i978.AbstractService>(
-      () => _i978.MobileService.fromService(
-        gh<Set<String>>(instanceName: '__environments__'),
-      ),
-      registerFor: {_platformMobile},
-    );
     gh.lazySingletonAsync<_i253.Repo>(
       () => registerModule.getRepo(gh<_i978.IService>()),
       instanceName: 'Repo',
       dispose: _i253.disposeRepo,
     );
+    gh.lazySingleton<_i978.AbstractService>(
+      () => _i978.WebService(gh<Set<String>>(instanceName: '__environments__')),
+      instanceName: 'WebService',
+      registerFor: {_platformWeb},
+    );
     return this;
   }
+
+  _i253.DisposableSingleton get disposableSingleton =>
+      get<_i253.DisposableSingleton>();
+
+  _i978.ConstService get constService => get<_i978.ConstService>();
+
+  _i978.ServiceImpl get serviceImpl => get<_i978.ServiceImpl>();
+
+  _i978.ModelX get modelX => get<_i978.ModelX>();
+
+  _i978.MobileService get mobileService => get<_i978.MobileService>();
+
+  Future<_i253.Repo> get repo => getAsync<_i253.Repo>();
+
+  Future<_i978.PostConstructableService> get postConstructableService =>
+      getAsync<_i978.PostConstructableService>();
+
+  Future<_i978.AsyncService> get asyncService => getAsync<_i978.AsyncService>();
+
+  _i978.WebService webService({String? instanceName}) =>
+      get<_i978.WebService>(instanceName: instanceName);
 }
 
 class _$RegisterModule extends _i253.RegisterModule {}
