@@ -24,3 +24,4 @@ dev_dependencies:
   build_test: ^3.5.4
   test: ^1.28.0
   lints: ^6.0.0
+  coverage: ^1.15.0

@@ -1,0 +1,6 @@
+# Files to exclude from coverage
+*.g.dart
+*.config.dart
+**/*.g.dart
+**/*.config.dart
+
