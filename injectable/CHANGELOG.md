@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.7.1+2]
+- Fix: fix coverage badge alignment in readme
 ## [2.7.1+1]
 - Chore: add test coverage badge to readme
 ## [2.7.1]
