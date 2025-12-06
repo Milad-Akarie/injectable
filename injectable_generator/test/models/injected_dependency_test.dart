@@ -323,25 +323,28 @@ void main() {
         expect(dep.instanceName, isNull);
       });
 
-      test('should deserialize with missing isRequired (backwards compatibility)', () {
-        final json = {
-          'type': {
-            'name': 'String',
-            'import': 'dart:core',
-            'isNullable': false,
-            'isRecordType': false,
-            'nameInRecord': null,
-          },
-          'paramName': 'value',
-          'instanceName': null,
-          'isFactoryParam': false,
-          'isPositional': true,
-        };
+      test(
+        'should deserialize with missing isRequired (backwards compatibility)',
+        () {
+          final json = {
+            'type': {
+              'name': 'String',
+              'import': 'dart:core',
+              'isNullable': false,
+              'isRecordType': false,
+              'nameInRecord': null,
+            },
+            'paramName': 'value',
+            'instanceName': null,
+            'isFactoryParam': false,
+            'isPositional': true,
+          };
 
-        final dep = InjectedDependency.fromJson(json);
+          final dep = InjectedDependency.fromJson(json);
 
-        expect(dep.isRequired, isFalse); // defaults to false when missing
-      });
+          expect(dep.isRequired, isFalse); // defaults to false when missing
+        },
+      );
 
       test('should round-trip through JSON', () {
         final original = InjectedDependency(

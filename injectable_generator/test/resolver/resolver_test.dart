@@ -251,7 +251,10 @@ void main() async {
             injectableType: InjectableType.factory,
             dependencies: [
               InjectedDependency(
-                type: ImportableType(name: 'NamedRecord', import: 'source.dart'),
+                type: ImportableType(
+                  name: 'NamedRecord',
+                  import: 'source.dart',
+                ),
                 paramName: 'record',
                 isFactoryParam: true,
                 isPositional: true,
@@ -360,7 +363,10 @@ void main() async {
                   name: '',
                   import: 'source.dart',
                   typeArguments: [
-                    ImportableType(name: 'SimpleFactory', import: 'source.dart'),
+                    ImportableType(
+                      name: 'SimpleFactory',
+                      import: 'source.dart',
+                    ),
                     ImportableType(name: 'int', import: 'source.dart'),
                   ],
                 ),
@@ -625,8 +631,13 @@ void main() async {
     });
 
     test('Simple Singleton', () {
-      var simpleSingletonType = resolvedInput!.library.findType('SimpleSingleton')!;
-      final type = ImportableType(name: 'SimpleSingleton', import: 'source.dart');
+      var simpleSingletonType = resolvedInput!.library.findType(
+        'SimpleSingleton',
+      )!;
+      final type = ImportableType(
+        name: 'SimpleSingleton',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(simpleSingletonType),
         equals(
@@ -641,8 +652,13 @@ void main() async {
     });
 
     test('Singleton with signalsReady', () {
-      var singletonType = resolvedInput!.library.findType('SingletonWithSignalsReady')!;
-      final type = ImportableType(name: 'SingletonWithSignalsReady', import: 'source.dart');
+      var singletonType = resolvedInput!.library.findType(
+        'SingletonWithSignalsReady',
+      )!;
+      final type = ImportableType(
+        name: 'SingletonWithSignalsReady',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(singletonType),
         equals(
@@ -658,8 +674,13 @@ void main() async {
     });
 
     test('Singleton with dependsOn', () {
-      var singletonType = resolvedInput!.library.findType('SingletonWithDependsOn')!;
-      final type = ImportableType(name: 'SingletonWithDependsOn', import: 'source.dart');
+      var singletonType = resolvedInput!.library.findType(
+        'SingletonWithDependsOn',
+      )!;
+      final type = ImportableType(
+        name: 'SingletonWithDependsOn',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(singletonType),
         equals(
@@ -677,8 +698,13 @@ void main() async {
     });
 
     test('Singleton with signalsReady and dependsOn', () {
-      var singletonType = resolvedInput!.library.findType('SingletonWithSignalsReadyAndDependsOn')!;
-      final type = ImportableType(name: 'SingletonWithSignalsReadyAndDependsOn', import: 'source.dart');
+      var singletonType = resolvedInput!.library.findType(
+        'SingletonWithSignalsReadyAndDependsOn',
+      )!;
+      final type = ImportableType(
+        name: 'SingletonWithSignalsReadyAndDependsOn',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(singletonType),
         equals(
@@ -697,8 +723,13 @@ void main() async {
     });
 
     test('Simple LazySingleton', () {
-      var lazySingletonType = resolvedInput!.library.findType('SimpleLazySingleton')!;
-      final type = ImportableType(name: 'SimpleLazySingleton', import: 'source.dart');
+      var lazySingletonType = resolvedInput!.library.findType(
+        'SimpleLazySingleton',
+      )!;
+      final type = ImportableType(
+        name: 'SimpleLazySingleton',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(lazySingletonType),
         equals(
@@ -713,8 +744,13 @@ void main() async {
     });
 
     test('LazySingleton with dependencies', () {
-      var lazySingletonType = resolvedInput!.library.findType('LazySingletonWithDeps')!;
-      final type = ImportableType(name: 'LazySingletonWithDeps', import: 'source.dart');
+      var lazySingletonType = resolvedInput!.library.findType(
+        'LazySingletonWithDeps',
+      )!;
+      final type = ImportableType(
+        name: 'LazySingletonWithDeps',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(lazySingletonType),
         equals(
@@ -724,7 +760,10 @@ void main() async {
             injectableType: InjectableType.lazySingleton,
             dependencies: [
               InjectedDependency(
-                type: ImportableType(name: 'SimpleFactory', import: 'source.dart'),
+                type: ImportableType(
+                  name: 'SimpleFactory',
+                  import: 'source.dart',
+                ),
                 paramName: 'simpleFactory',
                 isRequired: true,
               ),
@@ -753,8 +792,13 @@ void main() async {
     });
 
     test('Named factory from type', () {
-      var namedFactoryType = resolvedInput!.library.findType('NamedFromTypeFactory')!;
-      final type = ImportableType(name: 'NamedFromTypeFactory', import: 'source.dart');
+      var namedFactoryType = resolvedInput!.library.findType(
+        'NamedFromTypeFactory',
+      )!;
+      final type = ImportableType(
+        name: 'NamedFromTypeFactory',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(namedFactoryType),
         equals(
@@ -770,7 +814,10 @@ void main() async {
 
     test('Factory with single environment', () {
       var factoryType = resolvedInput!.library.findType('DevOnlyFactory')!;
-      final type = ImportableType(name: 'DevOnlyFactory', import: 'source.dart');
+      final type = ImportableType(
+        name: 'DevOnlyFactory',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(factoryType),
         equals(
@@ -787,7 +834,10 @@ void main() async {
 
     test('Factory with multiple environments', () {
       var factoryType = resolvedInput!.library.findType('DevAndTestFactory')!;
-      final type = ImportableType(name: 'DevAndTestFactory', import: 'source.dart');
+      final type = ImportableType(
+        name: 'DevAndTestFactory',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(factoryType),
         equals(
@@ -804,7 +854,10 @@ void main() async {
 
     test('Factory with inline environments', () {
       var factoryType = resolvedInput!.library.findType('InlineEnvFactory')!;
-      final type = ImportableType(name: 'InlineEnvFactory', import: 'source.dart');
+      final type = ImportableType(
+        name: 'InlineEnvFactory',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(factoryType),
         equals(
@@ -821,7 +874,10 @@ void main() async {
 
     test('PreResolve factory', () {
       var factoryType = resolvedInput!.library.findType('PreResolveFactory')!;
-      final type = ImportableType(name: 'PreResolveFactory', import: 'source.dart');
+      final type = ImportableType(
+        name: 'PreResolveFactory',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(factoryType),
         DependencyConfig(
@@ -836,8 +892,13 @@ void main() async {
     });
 
     test('Factory method with preResolve in annotation', () {
-      var factoryType = resolvedInput!.library.findType('FactoryMethodWithPreResolve')!;
-      final type = ImportableType(name: 'FactoryMethodWithPreResolve', import: 'source.dart');
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryMethodWithPreResolve',
+      )!;
+      final type = ImportableType(
+        name: 'FactoryMethodWithPreResolve',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(factoryType),
         DependencyConfig(
@@ -852,8 +913,13 @@ void main() async {
     });
 
     test('Factory with PostConstruct', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithPostConstruct')!;
-      final type = ImportableType(name: 'FactoryWithPostConstruct', import: 'source.dart');
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithPostConstruct',
+      )!;
+      final type = ImportableType(
+        name: 'FactoryWithPostConstruct',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(factoryType),
         DependencyConfig(
@@ -867,8 +933,13 @@ void main() async {
     });
 
     test('Factory with async PostConstruct', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithAsyncPostConstruct')!;
-      final type = ImportableType(name: 'FactoryWithAsyncPostConstruct', import: 'source.dart');
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithAsyncPostConstruct',
+      )!;
+      final type = ImportableType(
+        name: 'FactoryWithAsyncPostConstruct',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(factoryType),
         DependencyConfig(
@@ -883,8 +954,13 @@ void main() async {
     });
 
     test('Factory with PostConstruct that returns self', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithPostConstructReturnsSelf')!;
-      final type = ImportableType(name: 'FactoryWithPostConstructReturnsSelf', import: 'source.dart');
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithPostConstructReturnsSelf',
+      )!;
+      final type = ImportableType(
+        name: 'FactoryWithPostConstructReturnsSelf',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(factoryType),
         equals(
@@ -900,25 +976,33 @@ void main() async {
       );
     });
 
-    test('Factory with async PostConstruct that returns self with preResolve', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithAsyncPostConstructReturnsSelf')!;
-      final type = ImportableType(name: 'FactoryWithAsyncPostConstructReturnsSelf', import: 'source.dart');
-      expect(
-        dependencyResolver!.resolve(factoryType),
-        equals(
-          DependencyConfig(
-            type: type,
-            typeImpl: type,
-            injectableType: InjectableType.factory,
-            postConstruct: 'init',
-            postConstructReturnsSelf: true,
-            isAsync: true,
-            preResolve: true,
-            canBeConst: false,
+    test(
+      'Factory with async PostConstruct that returns self with preResolve',
+      () {
+        var factoryType = resolvedInput!.library.findType(
+          'FactoryWithAsyncPostConstructReturnsSelf',
+        )!;
+        final type = ImportableType(
+          name: 'FactoryWithAsyncPostConstructReturnsSelf',
+          import: 'source.dart',
+        );
+        expect(
+          dependencyResolver!.resolve(factoryType),
+          equals(
+            DependencyConfig(
+              type: type,
+              typeImpl: type,
+              injectableType: InjectableType.factory,
+              postConstruct: 'init',
+              postConstructReturnsSelf: true,
+              isAsync: true,
+              preResolve: true,
+              canBeConst: false,
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
 
     test('Cached factory', () {
       var factoryType = resolvedInput!.library.findType('CachedFactory')!;
@@ -938,8 +1022,13 @@ void main() async {
     });
 
     test('Factory with two factory params', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithTwoFactoryParams')!;
-      final type = ImportableType(name: 'FactoryWithTwoFactoryParams', import: 'source.dart');
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithTwoFactoryParams',
+      )!;
+      final type = ImportableType(
+        name: 'FactoryWithTwoFactoryParams',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(factoryType),
         equals(
@@ -949,7 +1038,10 @@ void main() async {
             injectableType: InjectableType.factory,
             dependencies: [
               InjectedDependency(
-                type: ImportableType(name: 'SimpleFactory', import: 'source.dart'),
+                type: ImportableType(
+                  name: 'SimpleFactory',
+                  import: 'source.dart',
+                ),
                 paramName: 'simpleFactory',
                 isFactoryParam: true,
                 isPositional: true,
@@ -969,8 +1061,13 @@ void main() async {
     });
 
     test('Factory with named dependency', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithNamedDependency')!;
-      final type = ImportableType(name: 'FactoryWithNamedDependency', import: 'source.dart');
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithNamedDependency',
+      )!;
+      final type = ImportableType(
+        name: 'FactoryWithNamedDependency',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(factoryType),
         equals(
@@ -980,7 +1077,10 @@ void main() async {
             injectableType: InjectableType.factory,
             dependencies: [
               InjectedDependency(
-                type: ImportableType(name: 'SimpleFactory', import: 'source.dart'),
+                type: ImportableType(
+                  name: 'SimpleFactory',
+                  import: 'source.dart',
+                ),
                 paramName: 'simpleFactory',
                 instanceName: 'myName',
                 isRequired: true,
@@ -992,8 +1092,13 @@ void main() async {
     });
 
     test('Factory with named type dependency', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithNamedTypeDependency')!;
-      final type = ImportableType(name: 'FactoryWithNamedTypeDependency', import: 'source.dart');
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithNamedTypeDependency',
+      )!;
+      final type = ImportableType(
+        name: 'FactoryWithNamedTypeDependency',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(factoryType),
         equals(
@@ -1003,7 +1108,10 @@ void main() async {
             injectableType: InjectableType.factory,
             dependencies: [
               InjectedDependency(
-                type: ImportableType(name: 'SimpleFactory', import: 'source.dart'),
+                type: ImportableType(
+                  name: 'SimpleFactory',
+                  import: 'source.dart',
+                ),
                 paramName: 'simpleFactory',
                 instanceName: 'SimpleFactory',
                 isRequired: true,
@@ -1015,8 +1123,13 @@ void main() async {
     });
 
     test('Factory with optional positional params', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithOptionalParams')!;
-      final type = ImportableType(name: 'FactoryWithOptionalParams', import: 'source.dart');
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithOptionalParams',
+      )!;
+      final type = ImportableType(
+        name: 'FactoryWithOptionalParams',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(factoryType),
         equals(
@@ -1026,13 +1139,20 @@ void main() async {
             injectableType: InjectableType.factory,
             dependencies: [
               InjectedDependency(
-                type: ImportableType(name: 'SimpleFactory', import: 'source.dart'),
+                type: ImportableType(
+                  name: 'SimpleFactory',
+                  import: 'source.dart',
+                ),
                 paramName: 'simpleFactory',
                 isPositional: true,
                 isRequired: true,
               ),
               InjectedDependency(
-                type: ImportableType(name: 'int', import: 'source.dart', isNullable: true),
+                type: ImportableType(
+                  name: 'int',
+                  import: 'source.dart',
+                  isNullable: true,
+                ),
                 paramName: 'optional',
                 isPositional: true,
                 isRequired: false,
@@ -1044,8 +1164,13 @@ void main() async {
     });
 
     test('Factory with optional named params', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithOptionalNamedParams')!;
-      final type = ImportableType(name: 'FactoryWithOptionalNamedParams', import: 'source.dart');
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithOptionalNamedParams',
+      )!;
+      final type = ImportableType(
+        name: 'FactoryWithOptionalNamedParams',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(factoryType),
         equals(
@@ -1055,13 +1180,20 @@ void main() async {
             injectableType: InjectableType.factory,
             dependencies: [
               InjectedDependency(
-                type: ImportableType(name: 'SimpleFactory', import: 'source.dart'),
+                type: ImportableType(
+                  name: 'SimpleFactory',
+                  import: 'source.dart',
+                ),
                 paramName: 'simpleFactory',
                 isPositional: true,
                 isRequired: true,
               ),
               InjectedDependency(
-                type: ImportableType(name: 'int', import: 'source.dart', isNullable: true),
+                type: ImportableType(
+                  name: 'int',
+                  import: 'source.dart',
+                  isNullable: true,
+                ),
                 paramName: 'optional',
                 isPositional: false,
                 isRequired: false,
@@ -1073,8 +1205,13 @@ void main() async {
     });
 
     test('LazySingleton with dispose method', () {
-      var lazySingletonType = resolvedInput!.library.findType('LazySingletonWithDisposeMethod')!;
-      final type = ImportableType(name: 'LazySingletonWithDisposeMethod', import: 'source.dart');
+      var lazySingletonType = resolvedInput!.library.findType(
+        'LazySingletonWithDisposeMethod',
+      )!;
+      final type = ImportableType(
+        name: 'LazySingletonWithDisposeMethod',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(lazySingletonType),
         equals(
@@ -1093,8 +1230,13 @@ void main() async {
     });
 
     test('Singleton with dispose method', () {
-      var singletonType = resolvedInput!.library.findType('SingletonWithDisposeMethod')!;
-      final type = ImportableType(name: 'SingletonWithDisposeMethod', import: 'source.dart');
+      var singletonType = resolvedInput!.library.findType(
+        'SingletonWithDisposeMethod',
+      )!;
+      final type = ImportableType(
+        name: 'SingletonWithDisposeMethod',
+        import: 'source.dart',
+      );
       expect(
         dependencyResolver!.resolve(singletonType),
         equals(
@@ -1113,8 +1255,13 @@ void main() async {
     });
 
     test('Factory with dependencies and default values', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithOptionalNamedParams')!;
-      final type = ImportableType(name: 'FactoryWithOptionalNamedParams', import: 'source.dart');
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithOptionalNamedParams',
+      )!;
+      final type = ImportableType(
+        name: 'FactoryWithOptionalNamedParams',
+        import: 'source.dart',
+      );
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.type, equals(type));
       expect(result.dependencies.length, equals(2));
@@ -1130,20 +1277,26 @@ void main() async {
     });
 
     test('Singleton with both signalsReady and dependsOn should have both', () {
-      var singletonType = resolvedInput!.library.findType('SingletonWithSignalsReadyAndDependsOn')!;
+      var singletonType = resolvedInput!.library.findType(
+        'SingletonWithSignalsReadyAndDependsOn',
+      )!;
       final result = dependencyResolver!.resolve(singletonType);
       expect(result.signalsReady, isTrue);
       expect(result.dependsOn.length, equals(2));
     });
 
     test('Factory with named dependency should preserve instance name', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithNamedDependency')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithNamedDependency',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.dependencies.first.instanceName, equals('myName'));
     });
 
     test('Factory with named type dependency should use type name', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithNamedTypeDependency')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithNamedTypeDependency',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.dependencies.first.instanceName, equals('SimpleFactory'));
     });
@@ -1156,38 +1309,50 @@ void main() async {
     });
 
     test('FactoryMethod with preResolve in annotation', () {
-      var factoryType = resolvedInput!.library.findType('FactoryMethodWithPreResolve')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryMethodWithPreResolve',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.preResolve, isTrue);
       expect(result.isAsync, isTrue);
     });
 
     test('Named factory from type should use class name', () {
-      var factoryType = resolvedInput!.library.findType('NamedFromTypeFactory')!;
+      var factoryType = resolvedInput!.library.findType(
+        'NamedFromTypeFactory',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.instanceName, equals('NamedFromTypeFactory'));
     });
 
     test('Factory with inline scope should have scope set', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithInlineScope')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithInlineScope',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.scope, equals('scope'));
     });
 
     test('Factory with annotation scope should have scope set', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithAnnotationScope')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithAnnotationScope',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.scope, equals('scope'));
     });
 
     test('Factory with inline order should have order set', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithInlineOrder')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithInlineOrder',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.orderPosition, equals(1));
     });
 
     test('Factory with annotation order should have order set', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithAnnotationOrder')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithAnnotationOrder',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.orderPosition, equals(1));
     });
@@ -1199,34 +1364,44 @@ void main() async {
     });
 
     test('Factory with two factory params should have both params', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithTwoFactoryParams')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithTwoFactoryParams',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.dependencies.length, equals(2));
       expect(result.dependencies.every((d) => d.isFactoryParam), isTrue);
     });
 
     test('Factory with ignored param should skip ignored param', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithIgnoredParam')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithIgnoredParam',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.dependencies.length, equals(1));
       expect(result.dependencies.first.paramName, equals('simpleFactory'));
     });
 
     test('LazySingleton with dependencies should preserve dependencies', () {
-      var lazySingletonType = resolvedInput!.library.findType('LazySingletonWithDeps')!;
+      var lazySingletonType = resolvedInput!.library.findType(
+        'LazySingletonWithDeps',
+      )!;
       final result = dependencyResolver!.resolve(lazySingletonType);
       expect(result.injectableType, equals(InjectableType.lazySingleton));
       expect(result.dependencies.length, equals(1));
     });
 
     test('Singleton with signalsReady should have flag set', () {
-      var singletonType = resolvedInput!.library.findType('SingletonWithSignalsReady')!;
+      var singletonType = resolvedInput!.library.findType(
+        'SingletonWithSignalsReady',
+      )!;
       final result = dependencyResolver!.resolve(singletonType);
       expect(result.signalsReady, isTrue);
     });
 
     test('Singleton with dependsOn should have dependencies', () {
-      var singletonType = resolvedInput!.library.findType('SingletonWithDependsOn')!;
+      var singletonType = resolvedInput!.library.findType(
+        'SingletonWithDependsOn',
+      )!;
       final result = dependencyResolver!.resolve(singletonType);
       expect(result.dependsOn.length, equals(1));
       expect(result.dependsOn.first.name, equals('SimpleFactory'));
@@ -1240,17 +1415,24 @@ void main() async {
     });
 
     test('Factory with nullable dependencies should preserve nullability', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithNullableDeps')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithNullableDeps',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.dependencies.first.type.isNullable, isTrue);
     });
 
-    test('Factory with nullable factory params should preserve nullability', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithNullableFactoryParams')!;
-      final result = dependencyResolver!.resolve(factoryType);
-      expect(result.dependencies.first.isFactoryParam, isTrue);
-      expect(result.dependencies.first.type.isNullable, isTrue);
-    });
+    test(
+      'Factory with nullable factory params should preserve nullability',
+      () {
+        var factoryType = resolvedInput!.library.findType(
+          'FactoryWithNullableFactoryParams',
+        )!;
+        final result = dependencyResolver!.resolve(factoryType);
+        expect(result.dependencies.first.isFactoryParam, isTrue);
+        expect(result.dependencies.first.type.isNullable, isTrue);
+      },
+    );
 
     test('Named record factory should resolve correctly', () {
       var factoryType = resolvedInput!.library.findType('NamedRecordFactory')!;
@@ -1260,7 +1442,9 @@ void main() async {
     });
 
     test('Positional record factory should resolve correctly', () {
-      var factoryType = resolvedInput!.library.findType('PositionalRecordFactory')!;
+      var factoryType = resolvedInput!.library.findType(
+        'PositionalRecordFactory',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.dependencies.first.isFactoryParam, isTrue);
       expect(result.dependencies.first.type.name, equals('PositionalRecord'));
@@ -1274,23 +1458,32 @@ void main() async {
     });
 
     test('Inline positional record should resolve with empty name', () {
-      var factoryType = resolvedInput!.library.findType('InlinePositionalRecord')!;
+      var factoryType = resolvedInput!.library.findType(
+        'InlinePositionalRecord',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.dependencies.first.type.name, isEmpty);
       expect(result.dependencies.first.type.isRecordType, isTrue);
     });
 
     test('Factory with named constructor should set constructorName', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithNamedConstructor')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithNamedConstructor',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.constructorName, equals('namedFactory'));
     });
 
-    test('Factory with static factory constructor should set constructorName', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithFactoryStaticConstructor')!;
-      final result = dependencyResolver!.resolve(factoryType);
-      expect(result.constructorName, equals('namedFactory'));
-    });
+    test(
+      'Factory with static factory constructor should set constructorName',
+      () {
+        var factoryType = resolvedInput!.library.findType(
+          'FactoryWithFactoryStaticConstructor',
+        )!;
+        final result = dependencyResolver!.resolve(factoryType);
+        expect(result.constructorName, equals('namedFactory'));
+      },
+    );
 
     test('Simple factory should have default order of 0', () {
       var factoryType = resolvedInput!.library.findType('SimpleFactory')!;
@@ -1305,18 +1498,25 @@ void main() async {
     });
 
     test('Const service with deps should not be canBeConst', () {
-      var serviceType = resolvedInput!.library.findType('ConstServiceWithDeps')!;
+      var serviceType = resolvedInput!.library.findType(
+        'ConstServiceWithDeps',
+      )!;
       final result = dependencyResolver!.resolve(serviceType);
       expect(result.canBeConst, isFalse);
     });
 
-    test('Factory with optional positional params should mark optional correctly', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithOptionalParams')!;
-      final result = dependencyResolver!.resolve(factoryType);
-      expect(result.dependencies[0].isRequired, isTrue);
-      expect(result.dependencies[1].isRequired, isFalse);
-      expect(result.dependencies[1].isPositional, isTrue);
-    });
+    test(
+      'Factory with optional positional params should mark optional correctly',
+      () {
+        var factoryType = resolvedInput!.library.findType(
+          'FactoryWithOptionalParams',
+        )!;
+        final result = dependencyResolver!.resolve(factoryType);
+        expect(result.dependencies[0].isRequired, isTrue);
+        expect(result.dependencies[1].isRequired, isFalse);
+        expect(result.dependencies[1].isPositional, isTrue);
+      },
+    );
 
     test('Inline env factory should have both environments', () {
       var factoryType = resolvedInput!.library.findType('InlineEnvFactory')!;
@@ -1330,42 +1530,57 @@ void main() async {
       expect(result.environments, equals(['dev']));
     });
 
-    test('Factory without annotation should pick first available constructor', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithoutAnnotation')!;
-      final result = dependencyResolver!.resolve(factoryType);
-      expect(result.constructorName, equals('valid'));
-    });
+    test(
+      'Factory without annotation should pick first available constructor',
+      () {
+        var factoryType = resolvedInput!.library.findType(
+          'FactoryWithoutAnnotation',
+        )!;
+        final result = dependencyResolver!.resolve(factoryType);
+        expect(result.constructorName, equals('valid'));
+      },
+    );
 
     test('Async factory with nullable deps should be async', () {
-      var factoryType = resolvedInput!.library.findType('AsyncFactoryWithNullableDeps')!;
+      var factoryType = resolvedInput!.library.findType(
+        'AsyncFactoryWithNullableDeps',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.isAsync, isTrue);
       expect(result.dependencies.first.type.isNullable, isTrue);
     });
 
     test('PostConstruct method should be detected', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithPostConstruct')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithPostConstruct',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.postConstruct, equals('init'));
       expect(result.postConstructReturnsSelf, isFalse);
     });
 
     test('Async PostConstruct should make factory async', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithAsyncPostConstruct')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithAsyncPostConstruct',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.postConstruct, equals('init'));
       expect(result.isAsync, isTrue);
     });
 
     test('PostConstruct returning self should set flag', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithPostConstructReturnsSelf')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithPostConstructReturnsSelf',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.postConstruct, equals('init'));
       expect(result.postConstructReturnsSelf, isTrue);
     });
 
     test('Async PostConstruct returning self with preResolve', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithAsyncPostConstructReturnsSelf')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithAsyncPostConstructReturnsSelf',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.postConstruct, equals('init'));
       expect(result.postConstructReturnsSelf, isTrue);
@@ -1381,14 +1596,18 @@ void main() async {
     });
 
     test('Simple lazy singleton should not be const', () {
-      var lazySingletonType = resolvedInput!.library.findType('SimpleLazySingleton')!;
+      var lazySingletonType = resolvedInput!.library.findType(
+        'SimpleLazySingleton',
+      )!;
       final result = dependencyResolver!.resolve(lazySingletonType);
       expect(result.canBeConst, isFalse);
       expect(result.injectableType, equals(InjectableType.lazySingleton));
     });
 
     test('LazySingleton with dispose should have dispose config', () {
-      var lazySingletonType = resolvedInput!.library.findType('LazySingletonWithDisposeMethod')!;
+      var lazySingletonType = resolvedInput!.library.findType(
+        'LazySingletonWithDisposeMethod',
+      )!;
       final result = dependencyResolver!.resolve(lazySingletonType);
       expect(result.disposeFunction, isNotNull);
       expect(result.disposeFunction!.isInstance, isTrue);
@@ -1402,12 +1621,17 @@ void main() async {
     });
 
     test('Factory with generic list dependencies', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithGenericDeps')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithGenericDeps',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.dependencies.length, equals(1));
       expect(result.dependencies.first.type.name, equals('List'));
       expect(result.dependencies.first.type.typeArguments.length, equals(1));
-      expect(result.dependencies.first.type.typeArguments.first.name, equals('SimpleFactory'));
+      expect(
+        result.dependencies.first.type.typeArguments.first.name,
+        equals('SimpleFactory'),
+      );
     });
 
     test('Factory with map dependencies', () {
@@ -1419,7 +1643,9 @@ void main() async {
     });
 
     test('Factory with required named params', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithRequiredNamedParams')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithRequiredNamedParams',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.dependencies.length, equals(1));
       expect(result.dependencies.first.isRequired, isTrue);
@@ -1427,7 +1653,9 @@ void main() async {
     });
 
     test('Factory with mixed parameters', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithMixedParams')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithMixedParams',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.dependencies.length, equals(4));
       expect(result.dependencies[0].isPositional, isTrue);
@@ -1450,7 +1678,9 @@ void main() async {
     });
 
     test('LazySingleton with async dispose', () {
-      var lazySingletonType = resolvedInput!.library.findType('LazySingletonWithAsyncDispose')!;
+      var lazySingletonType = resolvedInput!.library.findType(
+        'LazySingletonWithAsyncDispose',
+      )!;
       final result = dependencyResolver!.resolve(lazySingletonType);
       expect(result.disposeFunction, isNotNull);
       expect(result.disposeFunction!.isInstance, isTrue);
@@ -1458,7 +1688,9 @@ void main() async {
     });
 
     test('Factory with function parameter', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithFunctionParam')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithFunctionParam',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.dependencies.length, equals(1));
       // Function types defined with typedef should have the typedef name
@@ -1466,16 +1698,23 @@ void main() async {
     });
 
     test('Factory with complex generic map', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithComplexGeneric')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithComplexGeneric',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.dependencies.length, equals(1));
       expect(result.dependencies.first.type.name, equals('Map'));
       expect(result.dependencies.first.type.typeArguments.length, equals(2));
-      expect(result.dependencies.first.type.typeArguments[1].name, equals('List'));
+      expect(
+        result.dependencies.first.type.typeArguments[1].name,
+        equals('List'),
+      );
     });
 
     test('Factory with default value parameter', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithDefaultValue')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithDefaultValue',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.dependencies.length, equals(2));
       expect(result.dependencies[0].isRequired, isTrue);
@@ -1483,12 +1722,18 @@ void main() async {
     });
 
     test('Singleton with multiple dependsOn', () {
-      var singletonType = resolvedInput!.library.findType('SingletonWithMultipleDependsOn')!;
+      var singletonType = resolvedInput!.library.findType(
+        'SingletonWithMultipleDependsOn',
+      )!;
       final result = dependencyResolver!.resolve(singletonType);
       expect(result.dependsOn.length, equals(3));
       expect(
         result.dependsOn.map((e) => e.name),
-        containsAll(['SimpleFactory', 'SimpleSingleton', 'SimpleLazySingleton']),
+        containsAll([
+          'SimpleFactory',
+          'SimpleSingleton',
+          'SimpleLazySingleton',
+        ]),
       );
     });
 
@@ -1499,7 +1744,9 @@ void main() async {
     });
 
     test('Factory with multiple named parameters', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithMultipleNamedParams')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithMultipleNamedParams',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.dependencies.length, equals(3));
       expect(result.dependencies.every((d) => !d.isPositional), isTrue);
@@ -1507,7 +1754,9 @@ void main() async {
     });
 
     test('Factory with both positional and named params', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithBothPositionalAndNamed')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithBothPositionalAndNamed',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.dependencies.length, equals(2));
       expect(result.dependencies[0].isPositional, isTrue);
@@ -1515,7 +1764,9 @@ void main() async {
     });
 
     test('Factory with nullable generic', () {
-      var factoryType = resolvedInput!.library.findType('FactoryWithNullableGeneric')!;
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithNullableGeneric',
+      )!;
       final result = dependencyResolver!.resolve(factoryType);
       expect(result.dependencies.length, equals(1));
       expect(result.dependencies.first.type.isNullable, isTrue);
@@ -1571,17 +1822,22 @@ void main() async {
     });
 
     test('Singleton with dispose should have async dispose function', () {
-      var singletonType = resolvedInput!.library.findType('SingletonWithDisposeMethod')!;
+      var singletonType = resolvedInput!.library.findType(
+        'SingletonWithDisposeMethod',
+      )!;
       final result = dependencyResolver!.resolve(singletonType);
       expect(result.disposeFunction, isNotNull);
       expect(result.disposeFunction!.name, equals('dispose'));
     });
 
-    test('Simple factory without dependencies should have empty dependencies', () {
-      var factoryType = resolvedInput!.library.findType('SimpleFactory')!;
-      final result = dependencyResolver!.resolve(factoryType);
-      expect(result.dependencies, isEmpty);
-    });
+    test(
+      'Simple factory without dependencies should have empty dependencies',
+      () {
+        var factoryType = resolvedInput!.library.findType('SimpleFactory')!;
+        final result = dependencyResolver!.resolve(factoryType);
+        expect(result.dependencies, isEmpty);
+      },
+    );
 
     test('Singleton without dependsOn should have empty dependsOn', () {
       var singletonType = resolvedInput!.library.findType('SimpleSingleton')!;
@@ -1601,14 +1857,19 @@ void main() async {
       expect(result.isAsync, isFalse);
     });
 
-    test('Factory with unnamed constructor should have empty constructorName', () {
-      var factoryType = resolvedInput!.library.findType('SimpleFactory')!;
-      final result = dependencyResolver!.resolve(factoryType);
-      expect(result.constructorName, isEmpty);
-    });
+    test(
+      'Factory with unnamed constructor should have empty constructorName',
+      () {
+        var factoryType = resolvedInput!.library.findType('SimpleFactory')!;
+        final result = dependencyResolver!.resolve(factoryType);
+        expect(result.constructorName, isEmpty);
+      },
+    );
 
     test('LazySingleton should have correct injectable type', () {
-      var lazySingletonType = resolvedInput!.library.findType('SimpleLazySingleton')!;
+      var lazySingletonType = resolvedInput!.library.findType(
+        'SimpleLazySingleton',
+      )!;
       final result = dependencyResolver!.resolve(lazySingletonType);
       expect(result.injectableType, equals(InjectableType.lazySingleton));
     });
@@ -1672,7 +1933,10 @@ void main() async {
       expect(result.dependencies, hasLength(1));
       expect(result.dependencies.first.type.name, equals('List'));
       expect(result.dependencies.first.type.typeArguments, hasLength(1));
-      expect(result.dependencies.first.type.typeArguments.first.isRecordType, isTrue);
+      expect(
+        result.dependencies.first.type.typeArguments.first.isRecordType,
+        isTrue,
+      );
     });
 
     test('Factory with nullable record param', () {

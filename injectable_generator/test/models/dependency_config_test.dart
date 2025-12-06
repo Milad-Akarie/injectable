@@ -36,14 +36,20 @@ void main() {
     });
 
     test('should create factory with different implementation', () {
-      final config = DependencyConfig.factory('IService', typeImpl: 'ServiceImpl');
+      final config = DependencyConfig.factory(
+        'IService',
+        typeImpl: 'ServiceImpl',
+      );
 
       expect(config.type.name, equals('IService'));
       expect(config.typeImpl.name, equals('ServiceImpl'));
     });
 
     test('should create factory with dependencies', () {
-      final config = DependencyConfig.factory('Service', deps: ['Dependency1', 'Dependency2']);
+      final config = DependencyConfig.factory(
+        'Service',
+        deps: ['Dependency1', 'Dependency2'],
+      );
 
       expect(config.dependencies.length, equals(2));
       expect(config.dependencies[0].type.name, equals('Dependency1'));

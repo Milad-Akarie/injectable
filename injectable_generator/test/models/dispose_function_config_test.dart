@@ -130,8 +130,14 @@ void main() {
       });
 
       test('should not be equal when isInstance differs', () {
-        const config1 = DisposeFunctionConfig(name: 'dispose', isInstance: true);
-        const config2 = DisposeFunctionConfig(name: 'dispose', isInstance: false);
+        const config1 = DisposeFunctionConfig(
+          name: 'dispose',
+          isInstance: true,
+        );
+        const config2 = DisposeFunctionConfig(
+          name: 'dispose',
+          isInstance: false,
+        );
 
         expect(config1, isNot(equals(config2)));
       });
@@ -139,8 +145,14 @@ void main() {
       test('should not be equal when importableType differs', () {
         const type1 = ImportableType(name: 'Handler1');
         const type2 = ImportableType(name: 'Handler2');
-        const config1 = DisposeFunctionConfig(name: 'dispose', importableType: type1);
-        const config2 = DisposeFunctionConfig(name: 'dispose', importableType: type2);
+        const config1 = DisposeFunctionConfig(
+          name: 'dispose',
+          importableType: type1,
+        );
+        const config2 = DisposeFunctionConfig(
+          name: 'dispose',
+          importableType: type2,
+        );
 
         expect(config1, isNot(equals(config2)));
       });
@@ -170,8 +182,14 @@ void main() {
 
     group('hashCode', () {
       test('should be same for equal configs', () {
-        const config1 = DisposeFunctionConfig(name: 'dispose', isInstance: true);
-        const config2 = DisposeFunctionConfig(name: 'dispose', isInstance: true);
+        const config1 = DisposeFunctionConfig(
+          name: 'dispose',
+          isInstance: true,
+        );
+        const config2 = DisposeFunctionConfig(
+          name: 'dispose',
+          isInstance: true,
+        );
 
         expect(config1.hashCode, equals(config2.hashCode));
       });
@@ -184,8 +202,14 @@ void main() {
       });
 
       test('should be different when isInstance differs', () {
-        const config1 = DisposeFunctionConfig(name: 'dispose', isInstance: true);
-        const config2 = DisposeFunctionConfig(name: 'dispose', isInstance: false);
+        const config1 = DisposeFunctionConfig(
+          name: 'dispose',
+          isInstance: true,
+        );
+        const config2 = DisposeFunctionConfig(
+          name: 'dispose',
+          isInstance: false,
+        );
 
         expect(config1.hashCode, isNot(equals(config2.hashCode)));
       });
@@ -256,7 +280,10 @@ void main() {
         expect(config.isInstance, isFalse);
         expect(config.importableType, isNotNull);
         expect(config.importableType!.name, equals('DisposeHandler'));
-        expect(config.importableType!.import, equals('package:test/dispose.dart'));
+        expect(
+          config.importableType!.import,
+          equals('package:test/dispose.dart'),
+        );
       });
 
       test('should round-trip through JSON', () {

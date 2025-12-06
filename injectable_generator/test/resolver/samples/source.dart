@@ -60,7 +60,8 @@ class FactoryWithFactoryStaticConstructor {
   FactoryWithFactoryStaticConstructor._();
 
   @factoryMethod
-  factory FactoryWithFactoryStaticConstructor.namedFactory() => FactoryWithFactoryStaticConstructor._();
+  factory FactoryWithFactoryStaticConstructor.namedFactory() =>
+      FactoryWithFactoryStaticConstructor._();
 }
 
 @injectable
@@ -261,12 +262,16 @@ class FactoryWithTwoFactoryParams {
 
 @injectable
 class FactoryWithNamedDependency {
-  const FactoryWithNamedDependency(@Named('myName') SimpleFactory simpleFactory);
+  const FactoryWithNamedDependency(
+    @Named('myName') SimpleFactory simpleFactory,
+  );
 }
 
 @injectable
 class FactoryWithNamedTypeDependency {
-  const FactoryWithNamedTypeDependency(@Named.from(SimpleFactory) SimpleFactory simpleFactory);
+  const FactoryWithNamedTypeDependency(
+    @Named.from(SimpleFactory) SimpleFactory simpleFactory,
+  );
 }
 
 // Optional parameters
@@ -278,7 +283,10 @@ class FactoryWithOptionalParams {
 
 @injectable
 class FactoryWithOptionalNamedParams {
-  const FactoryWithOptionalNamedParams(SimpleFactory simpleFactory, {int? optional});
+  const FactoryWithOptionalNamedParams(
+    SimpleFactory simpleFactory, {
+    int? optional,
+  });
 }
 
 // Dispose tests

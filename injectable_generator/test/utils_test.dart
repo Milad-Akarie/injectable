@@ -211,10 +211,13 @@ void main() {
       expect(type.nameWithoutSuffix, equals('String'));
     });
 
-    test('nameWithoutSuffix should handle complex types with nullable suffix', () {
-      final type = MockDartType('Map<String, int>?');
-      expect(type.nameWithoutSuffix, equals('Map<String, int>'));
-    });
+    test(
+      'nameWithoutSuffix should handle complex types with nullable suffix',
+      () {
+        final type = MockDartType('Map<String, int>?');
+        expect(type.nameWithoutSuffix, equals('Map<String, int>'));
+      },
+    );
 
     test('nameWithoutSuffix should handle generic types without suffix', () {
       final type = MockDartType('List<String>');
@@ -236,9 +239,12 @@ void main() {
       expect(type.nameWithoutSuffix, equals(''));
     });
 
-    test('nameWithoutSuffix should handle type ending with multiple question marks', () {
-      final type = MockDartType('String??');
-      expect(type.nameWithoutSuffix, equals('String?'));
-    });
+    test(
+      'nameWithoutSuffix should handle type ending with multiple question marks',
+      () {
+        final type = MockDartType('String??');
+        expect(type.nameWithoutSuffix, equals('String?'));
+      },
+    );
   });
 }

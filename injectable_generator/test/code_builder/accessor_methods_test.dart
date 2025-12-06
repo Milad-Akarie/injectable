@@ -25,7 +25,10 @@ void main() {
 
     test("Simple singleton with accessor getter", () {
       final result = generate(DependencyConfig.singleton('UserService'));
-      expect(result, contains('UserService get userService => get<UserService>()'));
+      expect(
+        result,
+        contains('UserService get userService => get<UserService>()'),
+      );
     });
 
     test("Simple lazy singleton with accessor getter", () {
@@ -35,18 +38,21 @@ void main() {
       expect(result, contains('ApiClient get apiClient => get<ApiClient>()'));
     });
 
-    test("Factory with instance name generates method with optional parameter", () {
-      final result = generate(
-        DependencyConfig(
-          type: ImportableType(name: 'Database'),
-          typeImpl: ImportableType(name: 'Database'),
-          injectableType: InjectableType.factory,
-          instanceName: 'primary',
-        ),
-      );
-      expect(result, contains('Database database({String? instanceName})'));
-      expect(result, contains('get<Database>(instanceName: instanceName)'));
-    });
+    test(
+      "Factory with instance name generates method with optional parameter",
+      () {
+        final result = generate(
+          DependencyConfig(
+            type: ImportableType(name: 'Database'),
+            typeImpl: ImportableType(name: 'Database'),
+            injectableType: InjectableType.factory,
+            instanceName: 'primary',
+          ),
+        );
+        expect(result, contains('Database database({String? instanceName})'));
+        expect(result, contains('get<Database>(instanceName: instanceName)'));
+      },
+    );
 
     test("Factory with factory params generates method with parameters", () {
       final result = generate(
@@ -65,38 +71,49 @@ void main() {
           ],
         ),
       );
-      expect(result, contains('UserRepository userRepository({required String userId})'));
+      expect(
+        result,
+        contains('UserRepository userRepository({required String userId})'),
+      );
       expect(result, contains('get<UserRepository>(param1: userId)'));
     });
 
-    test("Factory with multiple factory params generates method with all parameters", () {
-      final result = generate(
-        DependencyConfig(
-          type: ImportableType(name: 'DataService'),
-          typeImpl: ImportableType(name: 'DataService'),
-          injectableType: InjectableType.factory,
-          dependencies: [
-            InjectedDependency(
-              type: ImportableType(name: 'String'),
-              paramName: 'apiKey',
-              isFactoryParam: true,
-              isPositional: false,
-              isRequired: true,
-            ),
-            InjectedDependency(
-              type: ImportableType(name: 'int'),
-              paramName: 'timeout',
-              isFactoryParam: true,
-              isPositional: false,
-              isRequired: false,
-            ),
-          ],
-        ),
-      );
-      expect(result, contains('DataService dataService({required String apiKey, int timeout,'));
-      expect(result, contains('param1: apiKey'));
-      expect(result, contains('param2: timeout'));
-    });
+    test(
+      "Factory with multiple factory params generates method with all parameters",
+      () {
+        final result = generate(
+          DependencyConfig(
+            type: ImportableType(name: 'DataService'),
+            typeImpl: ImportableType(name: 'DataService'),
+            injectableType: InjectableType.factory,
+            dependencies: [
+              InjectedDependency(
+                type: ImportableType(name: 'String'),
+                paramName: 'apiKey',
+                isFactoryParam: true,
+                isPositional: false,
+                isRequired: true,
+              ),
+              InjectedDependency(
+                type: ImportableType(name: 'int'),
+                paramName: 'timeout',
+                isFactoryParam: true,
+                isPositional: false,
+                isRequired: false,
+              ),
+            ],
+          ),
+        );
+        expect(
+          result,
+          contains(
+            'DataService dataService({required String apiKey, int timeout,',
+          ),
+        );
+        expect(result, contains('param1: apiKey'));
+        expect(result, contains('param2: timeout'));
+      },
+    );
 
     test("Factory with optional nullable factory param", () {
       final result = generate(
@@ -127,7 +144,12 @@ void main() {
         isAsync: true,
       );
       final result = generate(dep, allDeps: [dep]);
-      expect(result, contains('Future<AuthService> get authService => getAsync<AuthService>()'));
+      expect(
+        result,
+        contains(
+          'Future<AuthService> get authService => getAsync<AuthService>()',
+        ),
+      );
     });
 
     test("Factory with async dependency generates Future return type", () {
@@ -138,7 +160,12 @@ void main() {
         isAsync: true,
       );
       final result = generate(dep, allDeps: [dep]);
-      expect(result, contains('Future<DataManager> get dataManager => getAsync<DataManager>()'));
+      expect(
+        result,
+        contains(
+          'Future<DataManager> get dataManager => getAsync<DataManager>()',
+        ),
+      );
     });
 
     test("Factory with both instance name and factory params", () {
@@ -159,7 +186,10 @@ void main() {
           ],
         ),
       );
-      expect(result, contains('Cache cache({String? instanceName, required int maxSize,'));
+      expect(
+        result,
+        contains('Cache cache({String? instanceName, required int maxSize,'),
+      );
       expect(result, contains('instanceName: instanceName'));
       expect(result, contains('param1: maxSize'));
     });
@@ -186,12 +216,22 @@ void main() {
           injectableType: InjectableType.factory,
         ),
       );
-      expect(result, contains('AuthServiceImpl get authServiceImpl => get<AuthServiceImpl>()'));
+      expect(
+        result,
+        contains(
+          'AuthServiceImpl get authServiceImpl => get<AuthServiceImpl>()',
+        ),
+      );
     });
 
     test("CamelCase conversion for multi-word types", () {
       final result = generate(DependencyConfig.factory('UserAuthService'));
-      expect(result, contains('UserAuthService get userAuthService => get<UserAuthService>()'));
+      expect(
+        result,
+        contains(
+          'UserAuthService get userAuthService => get<UserAuthService>()',
+        ),
+      );
     });
 
     test("Factory with non-factory dependency should still be a getter", () {
@@ -209,7 +249,10 @@ void main() {
           ],
         ),
       );
-      expect(result, contains('Controller get controller => get<Controller>()'));
+      expect(
+        result,
+        contains('Controller get controller => get<Controller>()'),
+      );
     });
 
     test("Factory with three or more factory params", () {
@@ -245,7 +288,9 @@ void main() {
       );
       expect(
         result,
-        contains('ComplexService complexService({required String param1, required int param2, bool param3,'),
+        contains(
+          'ComplexService complexService({required String param1, required int param2, bool param3,',
+        ),
       );
       expect(result, contains('param1: param1'));
       expect(result, contains('param2: param2'));
@@ -274,7 +319,10 @@ void main() {
           ],
         ),
       );
-      expect(result, contains('MixedService mixedService({required String userId})'));
+      expect(
+        result,
+        contains('MixedService mixedService({required String userId})'),
+      );
       expect(result, contains('param1: userId'));
     });
 
@@ -286,19 +334,25 @@ void main() {
           injectableType: InjectableType.factory,
         ),
       );
-      expect(result, contains('UserRepository get userRepository => get<UserRepository>()'));
+      expect(
+        result,
+        contains('UserRepository get userRepository => get<UserRepository>()'),
+      );
     });
 
-    test("Type starting with lowercase should be converted to camelCase properly", () {
-      final result = generate(
-        DependencyConfig(
-          type: ImportableType(name: 'myService'),
-          typeImpl: ImportableType(name: 'myService'),
-          injectableType: InjectableType.factory,
-        ),
-      );
-      expect(result, contains('myService get myService => get<myService>()'));
-    });
+    test(
+      "Type starting with lowercase should be converted to camelCase properly",
+      () {
+        final result = generate(
+          DependencyConfig(
+            type: ImportableType(name: 'myService'),
+            typeImpl: ImportableType(name: 'myService'),
+            injectableType: InjectableType.factory,
+          ),
+        );
+        expect(result, contains('myService get myService => get<myService>()'));
+      },
+    );
 
     test("Type with underscores", () {
       final result = generate(
@@ -308,7 +362,12 @@ void main() {
           injectableType: InjectableType.factory,
         ),
       );
-      expect(result, contains('My_Service_Impl get my_Service_Impl => get<My_Service_Impl>()'));
+      expect(
+        result,
+        contains(
+          'My_Service_Impl get my_Service_Impl => get<My_Service_Impl>()',
+        ),
+      );
     });
 
     test("Single character type name", () {
@@ -330,7 +389,12 @@ void main() {
         isAsync: true,
       );
       final result = generate(dep, allDeps: [dep]);
-      expect(result, contains('Future<DatabaseConnection> get databaseConnection => getAsync<DatabaseConnection>()'));
+      expect(
+        result,
+        contains(
+          'Future<DatabaseConnection> get databaseConnection => getAsync<DatabaseConnection>()',
+        ),
+      );
     });
 
     test("Async singleton generates Future return type", () {
@@ -341,7 +405,10 @@ void main() {
         isAsync: true,
       );
       final result = generate(dep, allDeps: [dep]);
-      expect(result, contains('Future<AppConfig> get appConfig => getAsync<AppConfig>()'));
+      expect(
+        result,
+        contains('Future<AppConfig> get appConfig => getAsync<AppConfig>()'),
+      );
     });
 
     test("Factory with multiple async dependencies", () {
@@ -352,7 +419,12 @@ void main() {
         isAsync: true,
       );
       final result = generate(dep, allDeps: [dep]);
-      expect(result, contains('Future<MultiDbService> get multiDbService => getAsync<MultiDbService>()'));
+      expect(
+        result,
+        contains(
+          'Future<MultiDbService> get multiDbService => getAsync<MultiDbService>()',
+        ),
+      );
     });
 
     test("Factory with async factory param still generates sync accessor", () {
@@ -372,43 +444,53 @@ void main() {
           ],
         ),
       );
-      expect(result, contains('AsyncParamService asyncParamService({required Future<String> asyncValue})'));
+      expect(
+        result,
+        contains(
+          'AsyncParamService asyncParamService({required Future<String> asyncValue})',
+        ),
+      );
       expect(result, contains('get<AsyncParamService>(param1: asyncValue)'));
     });
 
-    test("Instance name with special instance names and multiple factory params", () {
-      final result = generate(
-        DependencyConfig(
-          type: ImportableType(name: 'HttpClient'),
-          typeImpl: ImportableType(name: 'HttpClient'),
-          injectableType: InjectableType.factory,
-          instanceName: 'authenticated',
-          dependencies: [
-            InjectedDependency(
-              type: ImportableType(name: 'String'),
-              paramName: 'baseUrl',
-              isFactoryParam: true,
-              isPositional: false,
-              isRequired: true,
-            ),
-            InjectedDependency(
-              type: ImportableType(name: 'Duration'),
-              paramName: 'timeout',
-              isFactoryParam: true,
-              isPositional: false,
-              isRequired: false,
-            ),
-          ],
-        ),
-      );
-      expect(
-        result,
-        contains('HttpClient httpClient({String? instanceName, required String baseUrl, Duration timeout,'),
-      );
-      expect(result, contains('instanceName: instanceName'));
-      expect(result, contains('param1: baseUrl'));
-      expect(result, contains('param2: timeout'));
-    });
+    test(
+      "Instance name with special instance names and multiple factory params",
+      () {
+        final result = generate(
+          DependencyConfig(
+            type: ImportableType(name: 'HttpClient'),
+            typeImpl: ImportableType(name: 'HttpClient'),
+            injectableType: InjectableType.factory,
+            instanceName: 'authenticated',
+            dependencies: [
+              InjectedDependency(
+                type: ImportableType(name: 'String'),
+                paramName: 'baseUrl',
+                isFactoryParam: true,
+                isPositional: false,
+                isRequired: true,
+              ),
+              InjectedDependency(
+                type: ImportableType(name: 'Duration'),
+                paramName: 'timeout',
+                isFactoryParam: true,
+                isPositional: false,
+                isRequired: false,
+              ),
+            ],
+          ),
+        );
+        expect(
+          result,
+          contains(
+            'HttpClient httpClient({String? instanceName, required String baseUrl, Duration timeout,',
+          ),
+        );
+        expect(result, contains('instanceName: instanceName'));
+        expect(result, contains('param1: baseUrl'));
+        expect(result, contains('param2: timeout'));
+      },
+    );
 
     test("All required factory params", () {
       final result = generate(
@@ -434,7 +516,12 @@ void main() {
           ],
         ),
       );
-      expect(result, contains('StrictService strictService({required String required1, required int required2,'));
+      expect(
+        result,
+        contains(
+          'StrictService strictService({required String required1, required int required2,',
+        ),
+      );
     });
 
     test("All optional factory params", () {
@@ -461,7 +548,12 @@ void main() {
           ],
         ),
       );
-      expect(result, contains('FlexibleService flexibleService({String? optional1, int? optional2,'));
+      expect(
+        result,
+        contains(
+          'FlexibleService flexibleService({String? optional1, int? optional2,',
+        ),
+      );
     });
 
     test("Nullable type with required param", () {
@@ -481,7 +573,10 @@ void main() {
           ],
         ),
       );
-      expect(result, contains('NullableService nullableService({String? value})'));
+      expect(
+        result,
+        contains('NullableService nullableService({String? value})'),
+      );
       expect(result, contains('get<NullableService>(param1: value)'));
     });
 
@@ -504,7 +599,10 @@ void main() {
         isAsync: true,
       );
       final result = generate(level1, allDeps: [level1]);
-      expect(result, contains('Future<Level1> get level1 => getAsync<Level1>()'));
+      expect(
+        result,
+        contains('Future<Level1> get level1 => getAsync<Level1>()'),
+      );
     });
 
     test("Type name with numbers", () {
@@ -515,14 +613,21 @@ void main() {
           injectableType: InjectableType.factory,
         ),
       );
-      expect(result, contains('Service2FA get service2FA => get<Service2FA>()'));
+      expect(
+        result,
+        contains('Service2FA get service2FA => get<Service2FA>()'),
+      );
     });
 
     test("Very long type name", () {
       final result = generate(
         DependencyConfig(
-          type: ImportableType(name: 'VeryLongServiceNameThatDescribesWhatItDoesInDetail'),
-          typeImpl: ImportableType(name: 'VeryLongServiceNameThatDescribesWhatItDoesInDetail'),
+          type: ImportableType(
+            name: 'VeryLongServiceNameThatDescribesWhatItDoesInDetail',
+          ),
+          typeImpl: ImportableType(
+            name: 'VeryLongServiceNameThatDescribesWhatItDoesInDetail',
+          ),
           injectableType: InjectableType.factory,
         ),
       );
@@ -542,7 +647,10 @@ void main() {
           injectableType: InjectableType.factory,
         ),
       );
-      expect(result, contains('HTTPClient get hTTPClient => get<HTTPClient>()'));
+      expect(
+        result,
+        contains('HTTPClient get hTTPClient => get<HTTPClient>()'),
+      );
     });
 
     test("Factory with instance name only (no factory params)", () {
@@ -554,7 +662,10 @@ void main() {
           instanceName: 'special',
         ),
       );
-      expect(result, contains('NamedService namedService({String? instanceName})'));
+      expect(
+        result,
+        contains('NamedService namedService({String? instanceName})'),
+      );
       expect(result, contains('get<NamedService>(instanceName: instanceName)'));
     });
 
@@ -567,8 +678,14 @@ void main() {
           instanceName: 'primary',
         ),
       );
-      expect(result, contains('SingletonService singletonService({String? instanceName})'));
-      expect(result, contains('get<SingletonService>(instanceName: instanceName)'));
+      expect(
+        result,
+        contains('SingletonService singletonService({String? instanceName})'),
+      );
+      expect(
+        result,
+        contains('get<SingletonService>(instanceName: instanceName)'),
+      );
     });
 
     test("Lazy singleton with instance name", () {
@@ -580,7 +697,10 @@ void main() {
           instanceName: 'lazy',
         ),
       );
-      expect(result, contains('LazyService lazyService({String? instanceName})'));
+      expect(
+        result,
+        contains('LazyService lazyService({String? instanceName})'),
+      );
       expect(result, contains('get<LazyService>(instanceName: instanceName)'));
     });
   });

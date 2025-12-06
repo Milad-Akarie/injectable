@@ -193,7 +193,10 @@ void main() {
 
       test('should not be equal when nameInRecord differs', () {
         const type1 = ImportableType.record(name: 'String', nameInRecord: 'id');
-        const type2 = ImportableType.record(name: 'String', nameInRecord: 'name');
+        const type2 = ImportableType.record(
+          name: 'String',
+          nameInRecord: 'name',
+        );
 
         expect(type1, isNot(equals(type2)));
       });

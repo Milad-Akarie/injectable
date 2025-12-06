@@ -113,7 +113,10 @@ extension GetItInjectableX on GetIt {
         [DependencyConfig.factory('Demo')],
         microPackageName: 'auth',
       );
-      expect(result, contains('class AuthPackageModule extends MicroPackageModule'));
+      expect(
+        result,
+        contains('class AuthPackageModule extends MicroPackageModule'),
+      );
     });
 
     test("Module with abstract method generates override", () {

@@ -45,13 +45,16 @@ void main() {
         expect(result, 'package:other_package/lib/source.dart');
       });
 
-      test('returns original path when schemes do not match package criteria', () {
-        final result = ImportableTypeResolver.relative(
-          'dart:core',
-          Uri.parse('package:my_package/lib/main.dart'),
-        );
-        expect(result, 'dart:core');
-      });
+      test(
+        'returns original path when schemes do not match package criteria',
+        () {
+          final result = ImportableTypeResolver.relative(
+            'dart:core',
+            Uri.parse('package:my_package/lib/main.dart'),
+          );
+          expect(result, 'dart:core');
+        },
+      );
 
       test('handles asset scheme with non-package file uri', () {
         final result = ImportableTypeResolver.relative(

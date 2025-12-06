@@ -75,7 +75,10 @@ void main() {
           initializerName: 'init',
         );
 
-        final newType = const ImportableType(name: 'NewModule', import: 'new.dart');
+        final newType = const ImportableType(
+          name: 'NewModule',
+          import: 'new.dart',
+        );
         final copy = original.copyWith(module: newType);
 
         expect(copy.type, equals(newType));

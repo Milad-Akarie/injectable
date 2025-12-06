@@ -178,11 +178,13 @@ void main() {
       final result = sortDependencies(deps);
       expect(result.length, 4);
       expect(
-        result.indexOf(DependencyConfig.factory('A')) < result.indexOf(DependencyConfig.factory('B', deps: ['A'])),
+        result.indexOf(DependencyConfig.factory('A')) <
+            result.indexOf(DependencyConfig.factory('B', deps: ['A'])),
         isTrue,
       );
       expect(
-        result.indexOf(DependencyConfig.factory('C')) < result.indexOf(DependencyConfig.factory('D', deps: ['C'])),
+        result.indexOf(DependencyConfig.factory('C')) <
+            result.indexOf(DependencyConfig.factory('D', deps: ['C'])),
         isTrue,
       );
     });
@@ -210,15 +212,18 @@ void main() {
       final result = sortDependencies(deps);
       // A and B should come before C and D
       expect(
-        result.indexOf(DependencyConfig.factory('A')) < result.indexOf(DependencyConfig.factory('C', deps: ['A'])),
+        result.indexOf(DependencyConfig.factory('A')) <
+            result.indexOf(DependencyConfig.factory('C', deps: ['A'])),
         isTrue,
       );
       expect(
-        result.indexOf(DependencyConfig.factory('A')) < result.indexOf(DependencyConfig.factory('D', deps: ['A', 'B'])),
+        result.indexOf(DependencyConfig.factory('A')) <
+            result.indexOf(DependencyConfig.factory('D', deps: ['A', 'B'])),
         isTrue,
       );
       expect(
-        result.indexOf(DependencyConfig.factory('B')) < result.indexOf(DependencyConfig.factory('D', deps: ['A', 'B'])),
+        result.indexOf(DependencyConfig.factory('B')) <
+            result.indexOf(DependencyConfig.factory('D', deps: ['A', 'B'])),
         isTrue,
       );
       // C and D should come before E
@@ -236,31 +241,34 @@ void main() {
   });
 
   group('Sort with multiple environments test', () {
-    test('should handle same type in different environments with dependencies', () {
-      final deps = [
-        DependencyConfig.factory('Client', deps: ['Config'], envs: ['prod']),
-        DependencyConfig.factory('Client', deps: ['Config'], envs: ['dev']),
-        DependencyConfig.factory('Config', envs: ['prod']),
-        DependencyConfig.factory('Config', envs: ['dev']),
-      ];
-      final result = sortDependencies(deps);
-      expect(result.length, 4);
-      // Both Config instances should come before both Client instances
-      final configProdIndex = result.indexOf(
-        DependencyConfig.factory('Config', envs: ['prod']),
-      );
-      final configDevIndex = result.indexOf(
-        DependencyConfig.factory('Config', envs: ['dev']),
-      );
-      final clientProdIndex = result.indexOf(
-        DependencyConfig.factory('Client', deps: ['Config'], envs: ['prod']),
-      );
-      final clientDevIndex = result.indexOf(
-        DependencyConfig.factory('Client', deps: ['Config'], envs: ['dev']),
-      );
-      expect(configProdIndex < clientProdIndex, isTrue);
-      expect(configDevIndex < clientDevIndex, isTrue);
-    });
+    test(
+      'should handle same type in different environments with dependencies',
+      () {
+        final deps = [
+          DependencyConfig.factory('Client', deps: ['Config'], envs: ['prod']),
+          DependencyConfig.factory('Client', deps: ['Config'], envs: ['dev']),
+          DependencyConfig.factory('Config', envs: ['prod']),
+          DependencyConfig.factory('Config', envs: ['dev']),
+        ];
+        final result = sortDependencies(deps);
+        expect(result.length, 4);
+        // Both Config instances should come before both Client instances
+        final configProdIndex = result.indexOf(
+          DependencyConfig.factory('Config', envs: ['prod']),
+        );
+        final configDevIndex = result.indexOf(
+          DependencyConfig.factory('Config', envs: ['dev']),
+        );
+        final clientProdIndex = result.indexOf(
+          DependencyConfig.factory('Client', deps: ['Config'], envs: ['prod']),
+        );
+        final clientDevIndex = result.indexOf(
+          DependencyConfig.factory('Client', deps: ['Config'], envs: ['dev']),
+        );
+        expect(configProdIndex < clientProdIndex, isTrue);
+        expect(configDevIndex < clientDevIndex, isTrue);
+      },
+    );
 
     test('should handle cross-environment dependencies', () {
       final deps = [
@@ -282,17 +290,28 @@ void main() {
       expect(bIndex < cIndex, isTrue);
     });
 
-    test('should sort when dependency has no environment but dependent has', () {
-      final deps = [
-        DependencyConfig.factory('Consumer', deps: ['Service'], envs: ['prod']),
-        DependencyConfig.factory('Service'),
-      ];
-      final expectedResult = [
-        DependencyConfig.factory('Service'),
-        DependencyConfig.factory('Consumer', deps: ['Service'], envs: ['prod']),
-      ];
-      expect(sortDependencies(deps), expectedResult);
-    });
+    test(
+      'should sort when dependency has no environment but dependent has',
+      () {
+        final deps = [
+          DependencyConfig.factory(
+            'Consumer',
+            deps: ['Service'],
+            envs: ['prod'],
+          ),
+          DependencyConfig.factory('Service'),
+        ];
+        final expectedResult = [
+          DependencyConfig.factory('Service'),
+          DependencyConfig.factory(
+            'Consumer',
+            deps: ['Service'],
+            envs: ['prod'],
+          ),
+        ];
+        expect(sortDependencies(deps), expectedResult);
+      },
+    );
   });
 
   group('Sort edge cases test', () {
@@ -339,7 +358,9 @@ void main() {
         // Each dependency should come after its dependencies
         if (result[i].dependencies.isNotEmpty) {
           for (var dep in result[i].dependencies) {
-            final depConfig = result.firstWhere((d) => d.type.name == dep.type.name);
+            final depConfig = result.firstWhere(
+              (d) => d.type.name == dep.type.name,
+            );
             expect(result.indexOf(depConfig) < i, isTrue);
           }
         }
@@ -352,32 +373,60 @@ void main() {
       final deps = [
         DependencyConfig.factory('FactoryService', deps: ['SingletonService']),
         DependencyConfig.singleton('SingletonService'),
-        DependencyConfig.singleton('AnotherSingleton', deps: ['FactoryService']),
+        DependencyConfig.singleton(
+          'AnotherSingleton',
+          deps: ['FactoryService'],
+        ),
       ];
       final result = sortDependencies(deps);
       expect(
         result.indexOf(DependencyConfig.singleton('SingletonService')) <
-            result.indexOf(DependencyConfig.factory('FactoryService', deps: ['SingletonService'])),
+            result.indexOf(
+              DependencyConfig.factory(
+                'FactoryService',
+                deps: ['SingletonService'],
+              ),
+            ),
         isTrue,
       );
       expect(
-        result.indexOf(DependencyConfig.factory('FactoryService', deps: ['SingletonService'])) <
-            result.indexOf(DependencyConfig.singleton('AnotherSingleton', deps: ['FactoryService'])),
+        result.indexOf(
+              DependencyConfig.factory(
+                'FactoryService',
+                deps: ['SingletonService'],
+              ),
+            ) <
+            result.indexOf(
+              DependencyConfig.singleton(
+                'AnotherSingleton',
+                deps: ['FactoryService'],
+              ),
+            ),
         isTrue,
       );
     });
 
     test('should sort lazy and eager singletons correctly', () {
       final deps = [
-        DependencyConfig.factory('Consumer', deps: ['LazyService', 'EagerService']),
+        DependencyConfig.factory(
+          'Consumer',
+          deps: ['LazyService', 'EagerService'],
+        ),
         DependencyConfig.singleton('EagerService'),
         DependencyConfig.singleton('LazyService', lazy: true),
       ];
       final result = sortDependencies(deps);
-      final eagerIndex = result.indexOf(DependencyConfig.singleton('EagerService'));
-      final lazyIndex = result.indexOf(DependencyConfig.singleton('LazyService', lazy: true));
+      final eagerIndex = result.indexOf(
+        DependencyConfig.singleton('EagerService'),
+      );
+      final lazyIndex = result.indexOf(
+        DependencyConfig.singleton('LazyService', lazy: true),
+      );
       final consumerIndex = result.indexOf(
-        DependencyConfig.factory('Consumer', deps: ['LazyService', 'EagerService']),
+        DependencyConfig.factory(
+          'Consumer',
+          deps: ['LazyService', 'EagerService'],
+        ),
       );
       expect(eagerIndex < consumerIndex, isTrue);
       expect(lazyIndex < consumerIndex, isTrue);
@@ -418,23 +467,37 @@ void main() {
         DependencyConfig.factory('A', envs: ['test'], order: -5),
       ];
       final result = sortDependencies(deps);
-      expect(result[0], DependencyConfig.factory('A', envs: ['test'], order: -5));
+      expect(
+        result[0],
+        DependencyConfig.factory('A', envs: ['test'], order: -5),
+      );
       expect(result[1], DependencyConfig.factory('B', envs: ['dev'], order: 5));
-      expect(result[2], DependencyConfig.factory('C', envs: ['prod'], order: 10));
+      expect(
+        result[2],
+        DependencyConfig.factory('C', envs: ['prod'], order: 10),
+      );
     });
 
     test('should handle dependencies with order across environments', () {
       final deps = [
         DependencyConfig.factory('Service', envs: ['prod'], order: 1),
         DependencyConfig.factory('Service', envs: ['dev'], order: -1),
-        DependencyConfig.factory('Consumer', deps: ['Service'], envs: ['dev', 'prod']),
+        DependencyConfig.factory(
+          'Consumer',
+          deps: ['Service'],
+          envs: ['dev', 'prod'],
+        ),
       ];
       final result = sortDependencies(deps);
       final devServiceIndex = result.indexOf(
         DependencyConfig.factory('Service', envs: ['dev'], order: -1),
       );
       final consumerIndex = result.indexOf(
-        DependencyConfig.factory('Consumer', deps: ['Service'], envs: ['dev', 'prod']),
+        DependencyConfig.factory(
+          'Consumer',
+          deps: ['Service'],
+          envs: ['dev', 'prod'],
+        ),
       );
       final prodServiceIndex = result.indexOf(
         DependencyConfig.factory('Service', envs: ['prod'], order: 1),
@@ -447,34 +510,67 @@ void main() {
   group('Sort with complex real-world scenarios test', () {
     test('should sort typical app initialization sequence', () {
       final deps = [
-        DependencyConfig.factory('HomePage', deps: ['UserRepository', 'AuthService']),
-        DependencyConfig.factory('UserRepository', deps: ['ApiClient', 'Database']),
+        DependencyConfig.factory(
+          'HomePage',
+          deps: ['UserRepository', 'AuthService'],
+        ),
+        DependencyConfig.factory(
+          'UserRepository',
+          deps: ['ApiClient', 'Database'],
+        ),
         DependencyConfig.singleton('Database', order: -10),
-        DependencyConfig.singleton('ApiClient', deps: ['NetworkConfig'], order: -5),
+        DependencyConfig.singleton(
+          'ApiClient',
+          deps: ['NetworkConfig'],
+          order: -5,
+        ),
         DependencyConfig.singleton('NetworkConfig', order: -20),
-        DependencyConfig.singleton('AuthService', deps: ['ApiClient', 'TokenStorage']),
+        DependencyConfig.singleton(
+          'AuthService',
+          deps: ['ApiClient', 'TokenStorage'],
+        ),
         DependencyConfig.singleton('TokenStorage', order: -15),
       ];
       final result = sortDependencies(deps);
 
       // Network config should be first
-      expect(result.first, DependencyConfig.singleton('NetworkConfig', order: -20));
+      expect(
+        result.first,
+        DependencyConfig.singleton('NetworkConfig', order: -20),
+      );
 
       // HomePage should be last
-      expect(result.last, DependencyConfig.factory('HomePage', deps: ['UserRepository', 'AuthService']));
+      expect(
+        result.last,
+        DependencyConfig.factory(
+          'HomePage',
+          deps: ['UserRepository', 'AuthService'],
+        ),
+      );
 
       // ApiClient should come after NetworkConfig
       final apiIndex = result.indexOf(
-        DependencyConfig.singleton('ApiClient', deps: ['NetworkConfig'], order: -5),
+        DependencyConfig.singleton(
+          'ApiClient',
+          deps: ['NetworkConfig'],
+          order: -5,
+        ),
       );
-      final networkIndex = result.indexOf(DependencyConfig.singleton('NetworkConfig', order: -20));
+      final networkIndex = result.indexOf(
+        DependencyConfig.singleton('NetworkConfig', order: -20),
+      );
       expect(networkIndex < apiIndex, isTrue);
 
       // UserRepository should come after ApiClient and Database
       final repoIndex = result.indexOf(
-        DependencyConfig.factory('UserRepository', deps: ['ApiClient', 'Database']),
+        DependencyConfig.factory(
+          'UserRepository',
+          deps: ['ApiClient', 'Database'],
+        ),
       );
-      final dbIndex = result.indexOf(DependencyConfig.singleton('Database', order: -10));
+      final dbIndex = result.indexOf(
+        DependencyConfig.singleton('Database', order: -10),
+      );
       expect(apiIndex < repoIndex, isTrue);
       expect(dbIndex < repoIndex, isTrue);
     });
@@ -482,7 +578,10 @@ void main() {
     test('should handle multi-module dependency graph', () {
       final deps = [
         // Auth module
-        DependencyConfig.factory('AuthModule', deps: ['TokenManager', 'AuthApi']),
+        DependencyConfig.factory(
+          'AuthModule',
+          deps: ['TokenManager', 'AuthApi'],
+        ),
         DependencyConfig.factory('TokenManager', deps: ['Storage']),
         DependencyConfig.factory('AuthApi', deps: ['HttpClient']),
 
@@ -501,12 +600,19 @@ void main() {
       // Basic dependencies first
       expect(
         result.indexOf(DependencyConfig.singleton('NetworkInterceptor')) <
-            result.indexOf(DependencyConfig.singleton('HttpClient', deps: ['NetworkInterceptor'])),
+            result.indexOf(
+              DependencyConfig.singleton(
+                'HttpClient',
+                deps: ['NetworkInterceptor'],
+              ),
+            ),
         isTrue,
       );
       expect(
         result.indexOf(DependencyConfig.singleton('Storage')) <
-            result.indexOf(DependencyConfig.factory('TokenManager', deps: ['Storage'])),
+            result.indexOf(
+              DependencyConfig.factory('TokenManager', deps: ['Storage']),
+            ),
         isTrue,
       );
 
@@ -553,54 +659,57 @@ void main() {
       expect(primaryIndex < consumerIndex, isTrue);
     });
 
-    test('should handle multiple named instances with complex dependencies', () {
-      final deps = [
-        DependencyConfig(
-          type: ImportableType(name: 'Client'),
-          typeImpl: ImportableType(name: 'Client'),
-          dependencies: [
-            InjectedDependency(
-              type: ImportableType(name: 'Config'),
-              paramName: 'prodConfig',
-              instanceName: 'prod',
-            ),
-            InjectedDependency(
-              type: ImportableType(name: 'Logger'),
-              paramName: 'mainLogger',
-              instanceName: 'main',
-            ),
-          ],
-        ),
-        DependencyConfig(
-          type: ImportableType(name: 'Config'),
-          typeImpl: ImportableType(name: 'ProdConfig'),
-          instanceName: 'prod',
-        ),
-        DependencyConfig(
-          type: ImportableType(name: 'Config'),
-          typeImpl: ImportableType(name: 'DevConfig'),
-          instanceName: 'dev',
-        ),
-        DependencyConfig(
-          type: ImportableType(name: 'Logger'),
-          typeImpl: ImportableType(name: 'ConsoleLogger'),
-          instanceName: 'main',
-        ),
-      ];
-      final result = sortDependencies(deps);
-      expect(result.length, 4);
+    test(
+      'should handle multiple named instances with complex dependencies',
+      () {
+        final deps = [
+          DependencyConfig(
+            type: ImportableType(name: 'Client'),
+            typeImpl: ImportableType(name: 'Client'),
+            dependencies: [
+              InjectedDependency(
+                type: ImportableType(name: 'Config'),
+                paramName: 'prodConfig',
+                instanceName: 'prod',
+              ),
+              InjectedDependency(
+                type: ImportableType(name: 'Logger'),
+                paramName: 'mainLogger',
+                instanceName: 'main',
+              ),
+            ],
+          ),
+          DependencyConfig(
+            type: ImportableType(name: 'Config'),
+            typeImpl: ImportableType(name: 'ProdConfig'),
+            instanceName: 'prod',
+          ),
+          DependencyConfig(
+            type: ImportableType(name: 'Config'),
+            typeImpl: ImportableType(name: 'DevConfig'),
+            instanceName: 'dev',
+          ),
+          DependencyConfig(
+            type: ImportableType(name: 'Logger'),
+            typeImpl: ImportableType(name: 'ConsoleLogger'),
+            instanceName: 'main',
+          ),
+        ];
+        final result = sortDependencies(deps);
+        expect(result.length, 4);
 
-      final prodConfigIndex = result.indexWhere(
-        (d) => d.type.name == 'Config' && d.instanceName == 'prod',
-      );
-      final loggerIndex = result.indexWhere(
-        (d) => d.type.name == 'Logger' && d.instanceName == 'main',
-      );
-      final clientIndex = result.indexWhere((d) => d.type.name == 'Client');
+        final prodConfigIndex = result.indexWhere(
+          (d) => d.type.name == 'Config' && d.instanceName == 'prod',
+        );
+        final loggerIndex = result.indexWhere(
+          (d) => d.type.name == 'Logger' && d.instanceName == 'main',
+        );
+        final clientIndex = result.indexWhere((d) => d.type.name == 'Client');
 
-      expect(prodConfigIndex < clientIndex, isTrue);
-      expect(loggerIndex < clientIndex, isTrue);
-    });
+        expect(prodConfigIndex < clientIndex, isTrue);
+        expect(loggerIndex < clientIndex, isTrue);
+      },
+    );
 
     test('should handle named instances with environments', () {
       final deps = [
@@ -633,7 +742,10 @@ void main() {
       expect(result.length, 3);
 
       final devServiceIndex = result.indexWhere(
-        (d) => d.type.name == 'Service' && d.instanceName == 'primary' && d.environments.contains('dev'),
+        (d) =>
+            d.type.name == 'Service' &&
+            d.instanceName == 'primary' &&
+            d.environments.contains('dev'),
       );
       final consumerIndex = result.indexWhere(
         (d) => d.type.name == 'Consumer' && d.environments.contains('dev'),
@@ -644,18 +756,27 @@ void main() {
   });
 
   group('Sort with mixed configurations test', () {
-    test('should handle dependencies with varying order positions and environments', () {
-      final deps = [
-        DependencyConfig.factory('Z', envs: ['prod'], order: 100),
-        DependencyConfig.factory('A', envs: ['dev'], order: -100),
-        DependencyConfig.factory('M', deps: ['A'], envs: ['dev']),
-        DependencyConfig.singleton('B', order: 50),
-      ];
-      final result = sortDependencies(deps);
+    test(
+      'should handle dependencies with varying order positions and environments',
+      () {
+        final deps = [
+          DependencyConfig.factory('Z', envs: ['prod'], order: 100),
+          DependencyConfig.factory('A', envs: ['dev'], order: -100),
+          DependencyConfig.factory('M', deps: ['A'], envs: ['dev']),
+          DependencyConfig.singleton('B', order: 50),
+        ];
+        final result = sortDependencies(deps);
 
-      expect(result.first, DependencyConfig.factory('A', envs: ['dev'], order: -100));
-      expect(result.last, DependencyConfig.factory('Z', envs: ['prod'], order: 100));
-    });
+        expect(
+          result.first,
+          DependencyConfig.factory('A', envs: ['dev'], order: -100),
+        );
+        expect(
+          result.last,
+          DependencyConfig.factory('Z', envs: ['prod'], order: 100),
+        );
+      },
+    );
 
     test('should sort dependencies with multiple overlapping environments', () {
       final deps = [
@@ -679,22 +800,41 @@ void main() {
       expect(serviceIndex < consumerIndex, isTrue);
     });
 
-    test('should handle mixture of lazy and eager singletons with factories', () {
-      final deps = [
-        DependencyConfig.factory('Factory1', deps: ['EagerSingleton', 'LazySingleton']),
-        DependencyConfig.singleton('EagerSingleton', deps: ['BaseService']),
-        DependencyConfig.singleton('LazySingleton', lazy: true, deps: ['BaseService']),
-        DependencyConfig.singleton('BaseService'),
-      ];
-      final result = sortDependencies(deps);
+    test(
+      'should handle mixture of lazy and eager singletons with factories',
+      () {
+        final deps = [
+          DependencyConfig.factory(
+            'Factory1',
+            deps: ['EagerSingleton', 'LazySingleton'],
+          ),
+          DependencyConfig.singleton('EagerSingleton', deps: ['BaseService']),
+          DependencyConfig.singleton(
+            'LazySingleton',
+            lazy: true,
+            deps: ['BaseService'],
+          ),
+          DependencyConfig.singleton('BaseService'),
+        ];
+        final result = sortDependencies(deps);
 
-      expect(result.first, DependencyConfig.singleton('BaseService'));
-      expect(result.last, DependencyConfig.factory('Factory1', deps: ['EagerSingleton', 'LazySingleton']));
-    });
+        expect(result.first, DependencyConfig.singleton('BaseService'));
+        expect(
+          result.last,
+          DependencyConfig.factory(
+            'Factory1',
+            deps: ['EagerSingleton', 'LazySingleton'],
+          ),
+        );
+      },
+    );
 
     test('should handle wide dependency tree (one parent, many children)', () {
       final deps = [
-        DependencyConfig.factory('Parent', deps: ['Child1', 'Child2', 'Child3', 'Child4']),
+        DependencyConfig.factory(
+          'Parent',
+          deps: ['Child1', 'Child2', 'Child3', 'Child4'],
+        ),
         DependencyConfig.factory('Child1'),
         DependencyConfig.factory('Child2'),
         DependencyConfig.factory('Child3'),
@@ -702,16 +842,37 @@ void main() {
       ];
       final result = sortDependencies(deps);
 
-      expect(result.last, DependencyConfig.factory('Parent', deps: ['Child1', 'Child2', 'Child3', 'Child4']));
+      expect(
+        result.last,
+        DependencyConfig.factory(
+          'Parent',
+          deps: ['Child1', 'Child2', 'Child3', 'Child4'],
+        ),
+      );
 
       // All children should come before parent
       final parentIndex = result.indexOf(
-        DependencyConfig.factory('Parent', deps: ['Child1', 'Child2', 'Child3', 'Child4']),
+        DependencyConfig.factory(
+          'Parent',
+          deps: ['Child1', 'Child2', 'Child3', 'Child4'],
+        ),
       );
-      expect(result.indexOf(DependencyConfig.factory('Child1')) < parentIndex, isTrue);
-      expect(result.indexOf(DependencyConfig.factory('Child2')) < parentIndex, isTrue);
-      expect(result.indexOf(DependencyConfig.factory('Child3')) < parentIndex, isTrue);
-      expect(result.indexOf(DependencyConfig.factory('Child4')) < parentIndex, isTrue);
+      expect(
+        result.indexOf(DependencyConfig.factory('Child1')) < parentIndex,
+        isTrue,
+      );
+      expect(
+        result.indexOf(DependencyConfig.factory('Child2')) < parentIndex,
+        isTrue,
+      );
+      expect(
+        result.indexOf(DependencyConfig.factory('Child3')) < parentIndex,
+        isTrue,
+      );
+      expect(
+        result.indexOf(DependencyConfig.factory('Child4')) < parentIndex,
+        isTrue,
+      );
     });
   });
 
@@ -1074,36 +1235,39 @@ void main() {
       expect(result, contains(dep2));
     });
 
-    test('should handle dependencies with empty environments checking all variants', () {
-      final dep1 = DependencyConfig(
-        type: const ImportableType(name: 'SharedService'),
-        typeImpl: const ImportableType(name: 'SharedService'),
-        environments: const ['dev'],
-      );
-      final dep2 = DependencyConfig(
-        type: const ImportableType(name: 'SharedService'),
-        typeImpl: const ImportableType(name: 'SharedService'),
-        environments: const ['prod'],
-      );
-      final consumer = DependencyConfig(
-        type: const ImportableType(name: 'Consumer'),
-        typeImpl: const ImportableType(name: 'Consumer'),
-        environments: const [], // Empty environments - checks all
-        dependencies: [
-          InjectedDependency(
-            type: const ImportableType(name: 'SharedService'),
-            paramName: 'service',
-          ),
-        ],
-      );
-      final result = sortDependencies([consumer, dep1, dep2]);
-      // Both SharedService variants should come before Consumer
-      final dep1Index = result.indexOf(dep1);
-      final dep2Index = result.indexOf(dep2);
-      final consumerIndex = result.indexOf(consumer);
-      expect(dep1Index < consumerIndex, isTrue);
-      expect(dep2Index < consumerIndex, isTrue);
-    });
+    test(
+      'should handle dependencies with empty environments checking all variants',
+      () {
+        final dep1 = DependencyConfig(
+          type: const ImportableType(name: 'SharedService'),
+          typeImpl: const ImportableType(name: 'SharedService'),
+          environments: const ['dev'],
+        );
+        final dep2 = DependencyConfig(
+          type: const ImportableType(name: 'SharedService'),
+          typeImpl: const ImportableType(name: 'SharedService'),
+          environments: const ['prod'],
+        );
+        final consumer = DependencyConfig(
+          type: const ImportableType(name: 'Consumer'),
+          typeImpl: const ImportableType(name: 'Consumer'),
+          environments: const [], // Empty environments - checks all
+          dependencies: [
+            InjectedDependency(
+              type: const ImportableType(name: 'SharedService'),
+              paramName: 'service',
+            ),
+          ],
+        );
+        final result = sortDependencies([consumer, dep1, dep2]);
+        // Both SharedService variants should come before Consumer
+        final dep1Index = result.indexOf(dep1);
+        final dep2Index = result.indexOf(dep2);
+        final consumerIndex = result.indexOf(consumer);
+        expect(dep1Index < consumerIndex, isTrue);
+        expect(dep2Index < consumerIndex, isTrue);
+      },
+    );
 
     test('should handle partial environment matches - not all envs found', () {
       final dep1 = DependencyConfig(
@@ -1365,18 +1529,21 @@ void main() {
       expect(ref, isA<RecordType>());
     });
 
-    test('should create record type with mixed positional and named fields', () {
-      const type = ImportableType.record(
-        name: '',
-        typeArguments: [
-          ImportableType(name: 'String'),
-          ImportableType(name: 'int', nameInRecord: 'count'),
-          ImportableType(name: 'bool', nameInRecord: 'enabled'),
-        ],
-      );
-      final ref = typeRefer(type);
-      expect(ref, isA<RecordType>());
-    });
+    test(
+      'should create record type with mixed positional and named fields',
+      () {
+        const type = ImportableType.record(
+          name: '',
+          typeArguments: [
+            ImportableType(name: 'String'),
+            ImportableType(name: 'int', nameInRecord: 'count'),
+            ImportableType(name: 'bool', nameInRecord: 'enabled'),
+          ],
+        );
+        final ref = typeRefer(type);
+        expect(ref, isA<RecordType>());
+      },
+    );
 
     test('should create nullable record type', () {
       const type = ImportableType.record(

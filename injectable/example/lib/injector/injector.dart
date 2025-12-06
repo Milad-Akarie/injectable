@@ -6,6 +6,10 @@ const platformMobile = Environment('platformMobile');
 const platformWeb = Environment('platformWeb');
 
 @InjectableInit(generateAccessors: true)
-Future<GetIt> configInjector(GetIt getIt, {String? env, EnvironmentFilter? environmentFilter}) {
+Future<GetIt> configInjector(
+  GetIt getIt, {
+  String? env,
+  EnvironmentFilter? environmentFilter,
+}) {
   return getIt.init(environmentFilter: environmentFilter, environment: env);
 }
