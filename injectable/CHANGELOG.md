@@ -1,11 +1,11 @@
 # ChangeLog
-## [2.7.2]
+## [2.7.1+1]
+- Chore: add test coverage badge to readme
+## [2.7.1]
 - Feat: Add `generateAccessors` option to `@InjectableInit` annotation for generating GetIt extension getters
 - Feat: Improve dependency sorting logic
 - Feat: Add test coverage reporting
 - Feat: Add comprehensive test suite for better code quality
-## [2.7.1]
-- Chore: Update version alignment with injectable_generator
 ## [2.7.0]
 - Feat: Add support to cached factories introduced in get_it 8.0.0
 - Chore: update get_it constraint to 8.3.0 <= 10.0.0

@@ -5,6 +5,9 @@ align="center" src="https://img.shields.io/badge/License-MIT-green" alt="MIT Lic
 <a href="https://github.com/Milad-Akarie/injectable/stargazers"><img align="center" src="https://img.shields.io/github/stars/Milad-Akarie/injectable?style=flat&logo=github&colorB=green&label=stars" alt="stars"></a>      
 <a href="https://pub.dev/packages/injectable"><img     
 align="center" src="https://img.shields.io/pub/v/injectable.svg?" alt="pub version"></a>      
+<a href="https://codecov.io/github/Milad-Akarie/injectable" > 
+ <img src="https://codecov.io/github/Milad-Akarie/injectable/graph/badge.svg?token=G4KCD379JJ"/> 
+ </a>
 <a href="https://www.buymeacoffee.com/miladakarie" target="_blank"><img align="center" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="30px" width= "108px"></a>    
 <p >  
   
