@@ -63,9 +63,8 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./${{ matrix.package }}/coverage/lcov.info
           flags: ${{ matrix.package }}
           name: ${{ matrix.package }}-coverage
