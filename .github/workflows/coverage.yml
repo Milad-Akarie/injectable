@@ -1,22 +1,27 @@
 name: Coverage
-
 on:
   push:
     branches:
       - master
     paths:
-      - 'injectable/**'
-      - 'injectable_generator/**'
+      - 'injectable/lib/**'
+      - 'injectable/test/**'
+      - 'injectable/pubspec.yaml'
+      - 'injectable_generator/lib/**'
+      - 'injectable_generator/test/**'
+      - 'injectable_generator/pubspec.yaml'
       - '.github/workflows/coverage.yml'
-      - '!injectable/example/**'
   pull_request:
     branches:
       - master
     paths:
-      - 'injectable/**'
-      - 'injectable_generator/**'
+      - 'injectable/lib/**'
+      - 'injectable/test/**'
+      - 'injectable/pubspec.yaml'
+      - 'injectable_generator/lib/**'
+      - 'injectable_generator/test/**'
+      - 'injectable_generator/pubspec.yaml'
       - '.github/workflows/coverage.yml'
-      - '!injectable/example/**'
 
 jobs:
   coverage:
@@ -33,6 +38,9 @@ jobs:
         uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
+
+      - name: Remove example directory
+        run: rm -rf injectable/example
 
       - name: Install dependencies
         working-directory: ${{ matrix.package }}
