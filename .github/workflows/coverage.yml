@@ -39,9 +39,6 @@ jobs:
         with:
           sdk: stable
 
-      - name: Remove example directory
-        run: rm -rf injectable/example
-
       - name: Install dependencies
         working-directory: ${{ matrix.package }}
         run: dart pub get
@@ -69,4 +66,6 @@ jobs:
           name: ${{ matrix.package }}-coverage
           fail_ci_if_error: true
           verbose: true
+          exclude: |
+            **/example/**
 
