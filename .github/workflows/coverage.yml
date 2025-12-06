@@ -39,9 +39,8 @@ jobs:
         with:
           sdk: stable
 
-      - name: Remove example directories
-        run: |
-          rm -rf injectable/example
+      - name: Remove example directory
+        run: rm -rf injectable/example
 
       - name: Install dependencies
         working-directory: ${{ matrix.package }}

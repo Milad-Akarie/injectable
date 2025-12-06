@@ -3,4 +3,6 @@
 *.config.dart
 **/*.g.dart
 **/*.config.dart
+example/**
+**/example/**
 
