@@ -20,7 +20,7 @@ class DependencyConfig {
   final String? instanceName;
   final bool? signalsReady;
   final List<String> environments;
-  final String? constructorName;
+  final String constructorName;
   final String? postConstruct;
   final bool isAsync;
   final bool postConstructReturnsSelf;
@@ -31,7 +31,7 @@ class DependencyConfig {
   final DisposeFunctionConfig? disposeFunction;
   final int orderPosition;
   final String? scope;
-  final bool? cache;
+  final bool cache;
 
   DependencyConfig({
     required this.type,
@@ -206,7 +206,7 @@ class DependencyConfig {
       injectableType: json['injectableType'],
       instanceName: json['instanceName'],
       signalsReady: json['signalsReady'],
-      cache: json['cache'] as bool?,
+      cache: (json['cache'] as bool?) ?? false,
       environments: json['environments']?.cast<String>(),
       constructorName: json['constructorName'],
       postConstruct: json['postConstruct'],
@@ -236,9 +236,9 @@ class DependencyConfig {
     "environments": environments,
     "dependencies": dependencies.map((v) => v.toJson()).toList(),
     if (instanceName != null) "instanceName": instanceName,
-    if (cache != null) "cache": cache,
+    "cache": cache,
     if (signalsReady != null) "signalsReady": signalsReady,
-    if (constructorName != null) "constructorName": constructorName,
+    "constructorName": constructorName,
     if (postConstruct != null) "postConstruct": postConstruct,
     "orderPosition": orderPosition,
     if (scope != null) "scope": scope,

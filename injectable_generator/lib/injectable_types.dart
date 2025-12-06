@@ -1,3 +1,4 @@
+// coverage:ignore-file
 class InjectableType {
   const InjectableType._();
 

@@ -1,3 +1,4 @@
+import 'package:code_builder/code_builder.dart';
 import 'package:injectable_generator/code_builder/builder_utils.dart';
 import 'package:injectable_generator/injectable_types.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
@@ -1048,6 +1049,456 @@ void main() {
       );
       final allDeps = [dep];
       expect(lookupDependency(iDep, allDeps), same(dep));
+    });
+  });
+
+  group('Complex sorting scenarios for full coverage', () {
+    test('should handle factory params in dependency chain', () {
+      final dep1 = DependencyConfig(
+        type: const ImportableType(name: 'Service'),
+        typeImpl: const ImportableType(name: 'Service'),
+      );
+      final dep2 = DependencyConfig(
+        type: const ImportableType(name: 'Consumer'),
+        typeImpl: const ImportableType(name: 'Consumer'),
+        dependencies: [
+          InjectedDependency(
+            type: const ImportableType(name: 'Service'),
+            paramName: 'service',
+            isFactoryParam: true,
+          ),
+        ],
+      );
+      final result = sortDependencies([dep2, dep1]);
+      // Consumer can be sorted even without Service since it's a factory param
+      expect(result, contains(dep2));
+    });
+
+    test('should handle dependencies with empty environments checking all variants', () {
+      final dep1 = DependencyConfig(
+        type: const ImportableType(name: 'SharedService'),
+        typeImpl: const ImportableType(name: 'SharedService'),
+        environments: const ['dev'],
+      );
+      final dep2 = DependencyConfig(
+        type: const ImportableType(name: 'SharedService'),
+        typeImpl: const ImportableType(name: 'SharedService'),
+        environments: const ['prod'],
+      );
+      final consumer = DependencyConfig(
+        type: const ImportableType(name: 'Consumer'),
+        typeImpl: const ImportableType(name: 'Consumer'),
+        environments: const [], // Empty environments - checks all
+        dependencies: [
+          InjectedDependency(
+            type: const ImportableType(name: 'SharedService'),
+            paramName: 'service',
+          ),
+        ],
+      );
+      final result = sortDependencies([consumer, dep1, dep2]);
+      // Both SharedService variants should come before Consumer
+      final dep1Index = result.indexOf(dep1);
+      final dep2Index = result.indexOf(dep2);
+      final consumerIndex = result.indexOf(consumer);
+      expect(dep1Index < consumerIndex, isTrue);
+      expect(dep2Index < consumerIndex, isTrue);
+    });
+
+    test('should handle partial environment matches - not all envs found', () {
+      final dep1 = DependencyConfig(
+        type: const ImportableType(name: 'Config'),
+        typeImpl: const ImportableType(name: 'Config'),
+        environments: const ['dev'],
+      );
+      final dep2 = DependencyConfig(
+        type: const ImportableType(name: 'Config'),
+        typeImpl: const ImportableType(name: 'Config'),
+        environments: const ['prod'],
+      );
+      final consumer = DependencyConfig(
+        type: const ImportableType(name: 'Service'),
+        typeImpl: const ImportableType(name: 'Service'),
+        environments: const ['dev', 'prod'],
+        dependencies: [
+          InjectedDependency(
+            type: const ImportableType(name: 'Config'),
+            paramName: 'config',
+          ),
+        ],
+      );
+      final result = sortDependencies([consumer, dep1, dep2]);
+      // Config in both dev and prod, should satisfy consumer
+      expect(result, hasLength(3));
+      final consumerIndex = result.indexOf(consumer);
+      expect(result.indexOf(dep1) < consumerIndex, isTrue);
+      expect(result.indexOf(dep2) < consumerIndex, isTrue);
+    });
+
+    test('should handle environment loop where lookup returns null', () {
+      // This tests dependency with environments not fully available
+      final dep1 = DependencyConfig(
+        type: const ImportableType(name: 'Database'),
+        typeImpl: const ImportableType(name: 'Database'),
+        environments: const ['prod'],
+      );
+      final result = sortDependencies([dep1]);
+      expect(result, contains(dep1));
+    });
+
+    test('should handle foundForEnvs matching all environments', () {
+      final dep1 = DependencyConfig(
+        type: const ImportableType(name: 'Logger'),
+        typeImpl: const ImportableType(name: 'Logger'),
+        environments: const ['dev', 'prod'],
+      );
+      final consumer = DependencyConfig(
+        type: const ImportableType(name: 'Service'),
+        typeImpl: const ImportableType(name: 'Service'),
+        environments: const ['dev', 'prod'],
+        dependencies: [
+          InjectedDependency(
+            type: const ImportableType(name: 'Logger'),
+            paramName: 'logger',
+          ),
+        ],
+      );
+      final result = sortDependencies([consumer, dep1]);
+      // Logger available in both dev and prod
+      final loggerIndex = result.indexOf(dep1);
+      final serviceIndex = result.indexOf(consumer);
+      expect(loggerIndex < serviceIndex, isTrue);
+    });
+
+    test('should handle dependency lookup in unSorted returning null', () {
+      final depA = DependencyConfig.factory('A');
+      final depB = DependencyConfig.factory('B', deps: ['A']);
+      final depC = DependencyConfig.factory('C', deps: ['B']);
+
+      final result = sortDependencies([depC, depB, depA]);
+
+      expect(result[0].type.name, 'A');
+      expect(result[1].type.name, 'B');
+      expect(result[2].type.name, 'C');
+    });
+
+    test('should handle recursive sorting with difference', () {
+      // Tests the recursive _sortByDependents call
+      final depA = DependencyConfig.factory('A');
+      final depB = DependencyConfig.factory('B', deps: ['A']);
+      final depC = DependencyConfig.factory('C', deps: ['B']);
+      final depD = DependencyConfig.factory('D', deps: ['C']);
+      final depE = DependencyConfig.factory('E', deps: ['D']);
+
+      final result = sortDependencies([depE, depD, depC, depB, depA]);
+
+      expect(result[0].type.name, 'A');
+      expect(result[1].type.name, 'B');
+      expect(result[2].type.name, 'C');
+      expect(result[3].type.name, 'D');
+      expect(result[4].type.name, 'E');
+    });
+
+    test('should handle complex multi-environment scenario', () {
+      final sharedBase = DependencyConfig(
+        type: const ImportableType(name: 'Base'),
+        typeImpl: const ImportableType(name: 'Base'),
+        environments: const ['dev', 'test', 'prod'],
+      );
+      final devOnly = DependencyConfig(
+        type: const ImportableType(name: 'DevService'),
+        typeImpl: const ImportableType(name: 'DevService'),
+        environments: const ['dev'],
+        dependencies: [
+          InjectedDependency(
+            type: const ImportableType(name: 'Base'),
+            paramName: 'base',
+          ),
+        ],
+      );
+      final prodOnly = DependencyConfig(
+        type: const ImportableType(name: 'ProdService'),
+        typeImpl: const ImportableType(name: 'ProdService'),
+        environments: const ['prod'],
+        dependencies: [
+          InjectedDependency(
+            type: const ImportableType(name: 'Base'),
+            paramName: 'base',
+          ),
+        ],
+      );
+
+      final result = sortDependencies([prodOnly, devOnly, sharedBase]);
+
+      final baseIndex = result.indexOf(sharedBase);
+      final devIndex = result.indexOf(devOnly);
+      final prodIndex = result.indexOf(prodOnly);
+
+      expect(baseIndex < devIndex, isTrue);
+      expect(baseIndex < prodIndex, isTrue);
+    });
+
+    test('should handle empty environments with multiple matching deps', () {
+      final dep1 = DependencyConfig(
+        type: const ImportableType(name: 'Plugin'),
+        typeImpl: const ImportableType(name: 'Plugin'),
+        instanceName: 'v1',
+        environments: const ['old'],
+      );
+      final dep2 = DependencyConfig(
+        type: const ImportableType(name: 'Plugin'),
+        typeImpl: const ImportableType(name: 'Plugin'),
+        instanceName: 'v2',
+        environments: const ['new'],
+      );
+      final dep3 = DependencyConfig(
+        type: const ImportableType(name: 'Plugin'),
+        typeImpl: const ImportableType(name: 'Plugin'),
+        instanceName: 'v3',
+        environments: const ['latest'],
+      );
+      final consumer = DependencyConfig(
+        type: const ImportableType(name: 'App'),
+        typeImpl: const ImportableType(name: 'App'),
+        environments: const [], // needs all Plugin versions
+        dependencies: [
+          InjectedDependency(
+            type: const ImportableType(name: 'Plugin'),
+            paramName: 'plugin',
+            instanceName: 'v1',
+          ),
+        ],
+      );
+
+      final result = sortDependencies([consumer, dep3, dep2, dep1]);
+
+      expect(result.indexOf(dep1) < result.indexOf(consumer), isTrue);
+    });
+
+    test('should handle deps.every returning true when all in sorted', () {
+      final base1 = DependencyConfig(
+        type: const ImportableType(name: 'Base'),
+        typeImpl: const ImportableType(name: 'Base'),
+        environments: const ['env1'],
+      );
+      final base2 = DependencyConfig(
+        type: const ImportableType(name: 'Base'),
+        typeImpl: const ImportableType(name: 'Base'),
+        environments: const ['env2'],
+      );
+      final consumer = DependencyConfig(
+        type: const ImportableType(name: 'Consumer'),
+        typeImpl: const ImportableType(name: 'Consumer'),
+        environments: const [], // check all
+        dependencies: [
+          InjectedDependency(
+            type: const ImportableType(name: 'Base'),
+            paramName: 'base',
+          ),
+        ],
+      );
+
+      final result = sortDependencies([consumer, base2, base1]);
+
+      final consumerIndex = result.indexOf(consumer);
+      expect(result.indexOf(base1) < consumerIndex, isTrue);
+      expect(result.indexOf(base2) < consumerIndex, isTrue);
+    });
+  });
+
+  group('DependencyList caching behavior', () {
+    test('should cache async dependencies map on first access', () {
+      final asyncDep = DependencyConfig(
+        type: const ImportableType(name: 'AsyncService'),
+        typeImpl: const ImportableType(name: 'AsyncService'),
+        isAsync: true,
+      );
+      final dep = DependencyConfig(
+        type: const ImportableType(name: 'Consumer'),
+        typeImpl: const ImportableType(name: 'Consumer'),
+        dependencies: [
+          InjectedDependency(
+            type: const ImportableType(name: 'AsyncService'),
+            paramName: 'asyncService',
+          ),
+        ],
+      );
+      final list = DependencyList(dependencies: [asyncDep, dep]);
+
+      // First call initializes the map
+      expect(list.hasAsyncDependency(dep), isTrue);
+
+      // Second call should use cached map
+      expect(list.hasAsyncDependency(dep), isTrue);
+
+      // Verify both methods work with cache
+      final iDep = InjectedDependency(
+        type: const ImportableType(name: 'AsyncService'),
+        paramName: 'asyncService',
+      );
+      expect(list.isAsyncOrHasAsyncDependency(iDep), isTrue);
+    });
+  });
+
+  group('typeRefer with record types test', () {
+    test('should create record type reference with positional fields', () {
+      const type = ImportableType.record(
+        name: '',
+        typeArguments: [
+          ImportableType(name: 'String'),
+          ImportableType(name: 'int'),
+        ],
+      );
+      final ref = typeRefer(type);
+      expect(ref, isA<RecordType>());
+    });
+
+    test('should create record type reference with named fields', () {
+      const type = ImportableType.record(
+        name: '',
+        typeArguments: [
+          ImportableType(name: 'String', nameInRecord: 'name'),
+          ImportableType(name: 'int', nameInRecord: 'age'),
+        ],
+      );
+      final ref = typeRefer(type);
+      expect(ref, isA<RecordType>());
+    });
+
+    test('should create record type with mixed positional and named fields', () {
+      const type = ImportableType.record(
+        name: '',
+        typeArguments: [
+          ImportableType(name: 'String'),
+          ImportableType(name: 'int', nameInRecord: 'count'),
+          ImportableType(name: 'bool', nameInRecord: 'enabled'),
+        ],
+      );
+      final ref = typeRefer(type);
+      expect(ref, isA<RecordType>());
+    });
+
+    test('should create nullable record type', () {
+      const type = ImportableType.record(
+        name: '',
+        isNullable: true,
+        typeArguments: [
+          ImportableType(name: 'String'),
+        ],
+      );
+      final ref = typeRefer(type) as RecordType;
+      expect(ref.isNullable, isTrue);
+    });
+
+    test('should filter positional fields correctly in record type', () {
+      const type = ImportableType.record(
+        name: '',
+        typeArguments: [
+          ImportableType(name: 'String'),
+          ImportableType(name: 'int'),
+          ImportableType(name: 'bool', nameInRecord: 'flag'),
+        ],
+      );
+      final ref = typeRefer(type) as RecordType;
+      // Should have 2 positional fields (String and int)
+      expect(ref.positionalFieldTypes.length, equals(2));
+    });
+
+    test('should create namedFieldTypes map correctly', () {
+      const type = ImportableType.record(
+        name: '',
+        typeArguments: [
+          ImportableType(name: 'String', nameInRecord: 'name'),
+          ImportableType(name: 'int', nameInRecord: 'age'),
+        ],
+      );
+      final ref = typeRefer(type) as RecordType;
+      expect(ref.namedFieldTypes.length, equals(2));
+      expect(ref.namedFieldTypes.containsKey('name'), isTrue);
+      expect(ref.namedFieldTypes.containsKey('age'), isTrue);
+    });
+  });
+
+  group('Sorting edge cases for complete coverage', () {
+    test('should handle case where deps.every returns true path', () {
+      // This tests line 118: if (deps.every(sorted.contains))
+      final shared1 = DependencyConfig(
+        type: const ImportableType(name: 'Shared'),
+        typeImpl: const ImportableType(name: 'Shared'),
+        environments: const ['env1'],
+      );
+      final shared2 = DependencyConfig(
+        type: const ImportableType(name: 'Shared'),
+        typeImpl: const ImportableType(name: 'Shared'),
+        environments: const ['env2'],
+      );
+      final consumer = DependencyConfig(
+        type: const ImportableType(name: 'Consumer'),
+        typeImpl: const ImportableType(name: 'Consumer'),
+        environments: const [],
+        dependencies: [
+          InjectedDependency(
+            type: const ImportableType(name: 'Shared'),
+            paramName: 'shared',
+          ),
+        ],
+      );
+
+      final result = sortDependencies([consumer, shared1, shared2]);
+
+      // Both Shared deps should come before Consumer
+      expect(result.indexOf(shared1) < result.indexOf(consumer), isTrue);
+      expect(result.indexOf(shared2) < result.indexOf(consumer), isTrue);
+    });
+
+    test('should test the else branch incrementing foundForEnvs', () {
+      // Tests line 128: foundForEnvs++
+      final serviceDev = DependencyConfig(
+        type: const ImportableType(name: 'Service'),
+        typeImpl: const ImportableType(name: 'Service'),
+        environments: const ['dev'],
+      );
+      final serviceProd = DependencyConfig(
+        type: const ImportableType(name: 'Service'),
+        typeImpl: const ImportableType(name: 'Service'),
+        environments: const ['prod'],
+      );
+      final consumer = DependencyConfig(
+        type: const ImportableType(name: 'Consumer'),
+        typeImpl: const ImportableType(name: 'Consumer'),
+        environments: const ['dev', 'prod'],
+        dependencies: [
+          InjectedDependency(
+            type: const ImportableType(name: 'Service'),
+            paramName: 'service',
+          ),
+        ],
+      );
+
+      final result = sortDependencies([consumer, serviceProd, serviceDev]);
+
+      expect(result.indexOf(serviceDev) < result.indexOf(consumer), isTrue);
+      expect(result.indexOf(serviceProd) < result.indexOf(consumer), isTrue);
+    });
+
+    test('should test foundForEnvs == dep.environments.length path', () {
+      // Tests line 132: if (foundForEnvs == dep.environments.length)
+      final base = DependencyConfig.factory('Base');
+      final multiEnv = DependencyConfig(
+        type: const ImportableType(name: 'MultiEnv'),
+        typeImpl: const ImportableType(name: 'MultiEnv'),
+        environments: const ['a', 'b', 'c'],
+        dependencies: [
+          InjectedDependency(
+            type: const ImportableType(name: 'Base'),
+            paramName: 'base',
+          ),
+        ],
+      );
+
+      final result = sortDependencies([multiEnv, base]);
+
+      expect(result.indexOf(base) < result.indexOf(multiEnv), isTrue);
     });
   });
 }

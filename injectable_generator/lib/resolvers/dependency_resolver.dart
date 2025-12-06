@@ -71,13 +71,13 @@ class DependencyResolver {
   String? _instanceName;
   bool _isAsync = false;
   bool _canBeConst = false;
-  String? _constructorName;
+  String _constructorName = '';
   final List<InjectedDependency> _dependencies = [];
   ModuleConfig? _moduleConfig;
   DisposeFunctionConfig? _disposeFunctionConfig;
   int? _order;
   String? _scope;
-  bool? _cache;
+  bool _cache = false;
 
   DependencyResolver(this._typeResolver);
 
@@ -145,7 +145,7 @@ class DependencyResolver {
     List<String>? inlineEnv;
     if (injectableAnnotation != null) {
       final injectable = ConstantReader(injectableAnnotation);
-      _cache = injectable.peek('cache')?.boolValue;
+      _cache = injectable.peek('cache')?.boolValue == true;
 
       if (injectable.instanceOf(
         TypeChecker.typeNamed(LazySingleton, inPackage: 'injectable'),

@@ -56,7 +56,7 @@ class InjectedDependency {
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'type': type,
+      'type': type.toJson(),
       'instanceName': instanceName,
       'paramName': paramName,
       'isFactoryParam': isFactoryParam,

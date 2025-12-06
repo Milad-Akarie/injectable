@@ -22,8 +22,7 @@ class ModuleConfig {
     if ((isAbstract == null || identical(isAbstract, this.isAbstract)) &&
         (isModuleMethod == null || identical(isModuleMethod, isMethod)) &&
         (module == null || identical(module, type)) &&
-        (initializerName == null ||
-            identical(initializerName, this.initializerName))) {
+        (initializerName == null || identical(initializerName, this.initializerName))) {
       return this;
     }
 
@@ -42,10 +41,7 @@ class ModuleConfig {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is ModuleConfig &&
-          runtimeType == other.runtimeType &&
-          type == other.type);
+      identical(this, other) || (other is ModuleConfig && runtimeType == other.runtimeType && type == other.type);
 
   @override
   int get hashCode => type.hashCode;
@@ -63,7 +59,7 @@ class ModuleConfig {
     return <String, dynamic>{
       'isAbstract': isAbstract,
       'isMethod': isMethod,
-      'type': type,
+      'type': type.toJson(),
       'initializerName': initializerName,
     };
   }

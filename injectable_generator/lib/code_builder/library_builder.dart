@@ -50,9 +50,9 @@ mixin SharedGeneratorCode {
     );
 
     final ref = typeRefer(dep.typeImpl, targetFile);
-    if (dep.constructorName?.isNotEmpty == true) {
+    if (dep.constructorName.isNotEmpty == true) {
       final constructor = dep.canBeConst ? ref.constInstanceNamed : ref.newInstanceNamed;
-      return constructor(dep.constructorName!, positionalParams, namedParams);
+      return constructor(dep.constructorName, positionalParams, namedParams);
     } else {
       final constructor = dep.canBeConst ? ref.constInstance : ref.newInstance;
       return constructor(positionalParams, namedParams);
