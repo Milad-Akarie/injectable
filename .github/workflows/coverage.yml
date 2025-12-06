@@ -1,0 +1,52 @@
+name: Coverage
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - 'injectable/**'
+      - '.github/workflows/coverage.yml'
+  pull_request:
+    branches:
+      - master
+      - main
+    paths:
+      - 'injectable/**'
+      - '.github/workflows/coverage.yml'
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: injectable
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Run tests with coverage
+        run: dart run coverage:test_with_coverage
+
+      - name: Format coverage
+        run: dart run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.dart_tool/package_config.json --report-on=lib
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./injectable/coverage/lcov.info
+          flags: injectable
+          name: injectable-coverage
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
