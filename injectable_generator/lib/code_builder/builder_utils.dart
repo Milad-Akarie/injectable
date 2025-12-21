@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:code_builder/code_builder.dart';
 import 'package:collection/collection.dart';
+import 'package:injectable/injectable.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
 import 'package:injectable_generator/models/importable_type.dart';
 import 'package:injectable_generator/models/injected_dependency.dart';
@@ -11,8 +12,7 @@ import 'package:meta/meta.dart';
 class DependencyList with IterableMixin<DependencyConfig> {
   final List<DependencyConfig> _dependencies;
 
-  DependencyList({required List<DependencyConfig> dependencies})
-    : _dependencies = sortDependencies(dependencies);
+  DependencyList({required List<DependencyConfig> dependencies}) : _dependencies = sortDependencies(dependencies);
 
   bool hasAsyncDependency(DependencyConfig dep) {
     _ensureAsyncDepsMapInitialized();
@@ -43,8 +43,7 @@ class DependencyList with IterableMixin<DependencyConfig> {
 
       final did = dep.id;
       hasAsyncDepsMap[did] = hasAsyncDeps;
-      isAsyncOrHasAsyncDepsMap[did] =
-          (dep.isAsync && !dep.preResolve) || hasAsyncDeps;
+      isAsyncOrHasAsyncDepsMap[did] = (dep.isAsync && !dep.preResolve) || hasAsyncDeps;
     }
 
     _hasAsyncDeps = hasAsyncDepsMap;
@@ -107,6 +106,13 @@ void _sortByDependents(
         return true;
       }
 
+      /// special case for environments set
+      if (iDep.type.name == 'Set' &&
+          iDep.type.typeArguments.firstOrNull?.name == 'String' &&
+          iDep.instanceName == kEnvironmentsName) {
+        return true;
+      }
+
       /// for empty environments we check to see if all the dependencies from
       /// all the environments are already in sorted
       if (dep.environments.isEmpty) {
@@ -146,10 +152,7 @@ void _sortByDependents(
     }
   }
   if (unSorted.isNotEmpty) {
-    var difference = unSorted
-        .where((element) => !sorted.contains(element))
-        .toList();
-
+    var difference = unSorted.where((element) => !sorted.contains(element)).toList();
     _sortByDependents(difference, sorted);
   }
 }
@@ -172,9 +175,7 @@ DependencyConfig? lookupDependencyWithNoEnvOrHasAny(
     (d) =>
         d.type == iDep.type &&
         d.instanceName == iDep.instanceName &&
-        (d.environments.isEmpty ||
-            envs.isEmpty ||
-            d.environments.any(envs.contains)),
+        (d.environments.isEmpty || envs.isEmpty || d.environments.any(envs.contains)),
   );
 }
 
@@ -182,9 +183,7 @@ Set<DependencyConfig> lookupPossibleDeps(
   InjectedDependency iDep,
   Iterable<DependencyConfig> allDeps,
 ) {
-  return allDeps
-      .where((d) => d.type == iDep.type && d.instanceName == iDep.instanceName)
-      .toSet();
+  return allDeps.where((d) => d.type == iDep.type && d.instanceName == iDep.instanceName).toSet();
 }
 
 bool hasPreResolvedDependencies(Iterable<DependencyConfig> deps) {

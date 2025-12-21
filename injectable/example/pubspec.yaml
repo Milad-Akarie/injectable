@@ -6,14 +6,16 @@ environment:
 
 dependencies:
   get_it:  ">=8.3.0 <10.0.0"
-  injectable: ^2.7.1
+  injectable: ^2.7.1+2
 #    path: ../../injectable
 
 
 dev_dependencies:
   pedantic: ^1.11.1
   build_runner: ^2.10.4
+  lean_builder:
+    path: ../../../lean_builder
   effective_dart: ^1.3.2
   lints: ^6.0.0
-  injectable_generator: ^2.11.1
-#    path: ../../injectable_generator
+  injectable_generator: #^2.11.1
+    path: ../../injectable_generator

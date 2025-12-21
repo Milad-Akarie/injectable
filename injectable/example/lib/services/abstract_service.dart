@@ -39,9 +39,7 @@ class AsyncService extends AbstractService {
   AsyncService(@Named(kEnvironmentsName) this.environments);
 
   @FactoryMethod(preResolve: true)
-  static Future<AsyncService> create(
-    @Named(kEnvironmentsName) Set<String> envs,
-  ) => Future.value(AsyncService(envs));
+  static Future<AsyncService> create(@Named(kEnvironmentsName) Set<String> envs) => Future.value(AsyncService(envs));
 }
 
 abstract class IService {}

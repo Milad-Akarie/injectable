@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/type.dart';
+import 'package:injectable_generator/resolvers/utils.dart';
 import 'package:injectable_generator/utils.dart';
 import 'package:test/test.dart';
 

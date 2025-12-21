@@ -24,7 +24,7 @@ void main() async {
   ResolvedInput? resolvedInput;
   DependencyResolver? dependencyResolver;
   setUpAll(() async {
-    resolvedInput = await resolveInput('test/resolver/samples/source.dart');
+    resolvedInput = await resolveInput('test/samples/source.dart');
   });
   setUp(() {
     dependencyResolver = DependencyResolver(MockTypeResolver());

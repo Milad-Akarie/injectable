@@ -1,7 +1,4 @@
 // general utils
-import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
-import 'package:source_gen/source_gen.dart';
 
 String capitalize(String s) {
   if (s.length < 2) {
@@ -27,16 +24,6 @@ void throwSourceError(String message) {
   throw ("\n${pre.padRight(72, '-')}\n$message\n${''.padRight(72, '-')} \n");
 }
 
-void throwError(String message, {Element? element}) {
-  throw InvalidGenerationSourceError(message, element: element);
-}
-
-void throwIf(bool condition, String message, {Element? element}) {
-  if (condition) {
-    throw InvalidGenerationSourceError(message, element: element);
-  }
-}
-
 void printBoxed(
   String message, {
   String header = '--------------------------',
@@ -53,15 +40,5 @@ extension IterableExtenstion<E> on Iterable<E> {
       }
     }
     return null;
-  }
-}
-
-/// Extension helpers for [DartType]
-extension DartTypeX on DartType {
-  /// Returns the display string of this type
-  /// without nullability suffix
-  String get nameWithoutSuffix {
-    final name = getDisplayString();
-    return name.endsWith('?') ? name.substring(0, name.length - 1) : name;
   }
 }
