@@ -47,6 +47,43 @@ dev_dependencies:
   build_runner:  
 ```  
 
+## LeanBuilder support (Experimental) ⚡
+
+injectable_generator (2.12.0+) now supports [LeanBuilder](https://pub.dev/packages/lean_builder) for super-fast incremental builds.
+
+To use lean_builder instead of build_runner, simply add it to your dev_dependencies:
+
+```yaml
+dev_dependencies:
+  injectable_generator: <latest-version>
+  lean_builder: <latest-version>
+```
+
+and then run the builder using:
+
+For one-time build:
+```terminal
+dart run lean_builder build
+```
+
+For watching files and rebuilding on changes:
+```terminal
+dart run lean_builder watch
+```
+
+To disable `injectable_generator` from using build_runner, you can add the following to your `build.yaml` file:
+
+```yaml
+targets:
+  $default:
+    builders:
+      injectable_generator:injectable_builder:
+        enabled: false
+      injectable_generator:injectable_config_builder:
+        enabled: false
+```
+
+
 ## Setup
   
 ---  
@@ -132,6 +169,7 @@ if you want the generator to run one time and exits use
 ```terminal  
 flutter packages pub run build_runner build  
 ```  
+
 
 ### Inside of the generated file
 
@@ -596,7 +634,7 @@ targets:
           # auto registers any class with a name matches the given pattern  
           class_name_pattern:
             "Service$|Repository$|Bloc$"
-            # auto registers any class inside a file with a  
+          # auto registers any class inside a file with a  
           # name matches the given pattern  
           file_name_pattern: "_service$|_repository$|_bloc$"  
 ```  

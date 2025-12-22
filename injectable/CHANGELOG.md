@@ -1,6 +1,8 @@
 # ChangeLog
+## [2.7.1+4]
+- Docs: fix a typo in readme
 ## [2.7.1+3]
-- Chore: update docs to include lean_builder support
+- Docs: update docs to include lean_builder support
 ## [2.7.1+2]
 - Fix: fix coverage badge alignment in readme
 ## [2.7.1+1]
