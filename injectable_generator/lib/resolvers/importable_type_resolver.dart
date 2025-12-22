@@ -22,12 +22,16 @@ abstract class ImportableTypeResolver {
     }
     var fileUri = Uri.parse(path);
     var libName = to.pathSegments.first;
-    if ((to.scheme == 'package' && fileUri.scheme == 'package' && fileUri.pathSegments.first == libName) ||
+    if ((to.scheme == 'package' &&
+            fileUri.scheme == 'package' &&
+            fileUri.pathSegments.first == libName) ||
         (to.scheme == 'asset' && fileUri.scheme != 'package')) {
       if (fileUri.path == to.path) {
         return fileUri.pathSegments.last;
       } else {
-        return p.posix.relative(fileUri.path, from: to.path).replaceFirst('../', '');
+        return p.posix
+            .relative(fileUri.path, from: to.path)
+            .replaceFirst('../', '');
       }
     } else {
       return path;
@@ -55,12 +59,14 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
   Set<String> resolveImports(Element? element) {
     final imports = <String>{};
     // return early if source is null or element is a core type
-    if (element?.firstFragment.libraryFragment == null || _isCoreDartType(element)) {
+    if (element?.firstFragment.libraryFragment == null ||
+        _isCoreDartType(element)) {
       return imports;
     }
     libs.where((e) => e.exportNamespace.definedNames2.values.contains(element));
     for (var lib in libs) {
-      if (!_isCoreDartType(lib) && lib.exportNamespace.definedNames2.values.contains(element)) {
+      if (!_isCoreDartType(lib) &&
+          lib.exportNamespace.definedNames2.values.contains(element)) {
         imports.add(lib.uri.toString());
       }
     }
@@ -68,7 +74,8 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
   }
 
   bool _isCoreDartType(Element? element) {
-    return element?.firstFragment.libraryFragment?.source.fullName == 'dart:core';
+    return element?.firstFragment.libraryFragment?.source.fullName ==
+        'dart:core';
   }
 
   @override
@@ -76,7 +83,8 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
     FunctionType function, [
     ExecutableElement? executableElement,
   ]) {
-    final functionElement = executableElement ?? function.element ?? function.alias?.element;
+    final functionElement =
+        executableElement ?? function.element ?? function.alias?.element;
     if (functionElement == null) {
       throw 'Can not resolve function type \nTry using an alias e.g typedef MyFunction = ${function.nameWithoutSuffix};';
     }
@@ -112,9 +120,13 @@ class ImportableTypeResolverImpl extends ImportableTypeResolver {
             name: recordField.type.element?.displayName ?? 'void',
             import: imports.firstOrNull,
             otherImports: imports.skip(1).toSet(),
-            isNullable: recordField.type.nullabilitySuffix == NullabilitySuffix.question,
+            isNullable:
+                recordField.type.nullabilitySuffix ==
+                NullabilitySuffix.question,
             typeArguments: _resolveTypeArguments(recordField.type),
-            nameInRecord: recordField is RecordTypeNamedField ? recordField.name : null,
+            nameInRecord: recordField is RecordTypeNamedField
+                ? recordField.name
+                : null,
           ),
         );
       }

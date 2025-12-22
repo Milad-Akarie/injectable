@@ -7,7 +7,13 @@ void main() {
     test('throws when condition is true', () {
       expect(
         () => throwIf(true, 'Test error'),
-        throwsA(isA<InvalidGenerationSourceError>().having((e) => e.message, 'message', 'Test error')),
+        throwsA(
+          isA<InvalidGenerationSourceError>().having(
+            (e) => e.message,
+            'message',
+            'Test error',
+          ),
+        ),
       );
     });
 
@@ -20,7 +26,13 @@ void main() {
     test('always throws InvalidGenerationSourceError', () {
       expect(
         () => throwError('Another error'),
-        throwsA(isA<InvalidGenerationSourceError>().having((e) => e.message, 'message', 'Another error')),
+        throwsA(
+          isA<InvalidGenerationSourceError>().having(
+            (e) => e.message,
+            'message',
+            'Another error',
+          ),
+        ),
       );
     });
   });

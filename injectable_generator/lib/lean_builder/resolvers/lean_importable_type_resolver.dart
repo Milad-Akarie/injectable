@@ -21,12 +21,16 @@ abstract class LeanTypeResolver {
     }
     var fileUri = Uri.parse(path);
     var libName = to.pathSegments.first;
-    if ((to.scheme == 'package' && fileUri.scheme == 'package' && fileUri.pathSegments.first == libName) ||
+    if ((to.scheme == 'package' &&
+            fileUri.scheme == 'package' &&
+            fileUri.pathSegments.first == libName) ||
         (to.scheme == 'asset' && fileUri.scheme != 'package')) {
       if (fileUri.path == to.path) {
         return fileUri.pathSegments.last;
       } else {
-        return p.posix.relative(fileUri.path, from: to.path).replaceFirst('../', '');
+        return p.posix
+            .relative(fileUri.path, from: to.path)
+            .replaceFirst('../', '');
       }
     } else {
       return path;
@@ -130,7 +134,9 @@ class LeanTypeResolverImpl extends LeanTypeResolver {
             otherImports: imports.skip(1).toSet(),
             isNullable: recordField.type.isNullable,
             typeArguments: _resolveTypeArguments(recordField.type),
-            nameInRecord: recordField is RecordTypeNamedField ? recordField.name : null,
+            nameInRecord: recordField is RecordTypeNamedField
+                ? recordField.name
+                : null,
           ),
         );
       }

@@ -12,7 +12,8 @@ import 'package:meta/meta.dart';
 class DependencyList with IterableMixin<DependencyConfig> {
   final List<DependencyConfig> _dependencies;
 
-  DependencyList({required List<DependencyConfig> dependencies}) : _dependencies = sortDependencies(dependencies);
+  DependencyList({required List<DependencyConfig> dependencies})
+    : _dependencies = sortDependencies(dependencies);
 
   bool hasAsyncDependency(DependencyConfig dep) {
     _ensureAsyncDepsMapInitialized();
@@ -43,7 +44,8 @@ class DependencyList with IterableMixin<DependencyConfig> {
 
       final did = dep.id;
       hasAsyncDepsMap[did] = hasAsyncDeps;
-      isAsyncOrHasAsyncDepsMap[did] = (dep.isAsync && !dep.preResolve) || hasAsyncDeps;
+      isAsyncOrHasAsyncDepsMap[did] =
+          (dep.isAsync && !dep.preResolve) || hasAsyncDeps;
     }
 
     _hasAsyncDeps = hasAsyncDepsMap;
@@ -152,7 +154,9 @@ void _sortByDependents(
     }
   }
   if (unSorted.isNotEmpty) {
-    var difference = unSorted.where((element) => !sorted.contains(element)).toList();
+    var difference = unSorted
+        .where((element) => !sorted.contains(element))
+        .toList();
     _sortByDependents(difference, sorted);
   }
 }
@@ -175,7 +179,9 @@ DependencyConfig? lookupDependencyWithNoEnvOrHasAny(
     (d) =>
         d.type == iDep.type &&
         d.instanceName == iDep.instanceName &&
-        (d.environments.isEmpty || envs.isEmpty || d.environments.any(envs.contains)),
+        (d.environments.isEmpty ||
+            envs.isEmpty ||
+            d.environments.any(envs.contains)),
   );
 }
 
@@ -183,7 +189,9 @@ Set<DependencyConfig> lookupPossibleDeps(
   InjectedDependency iDep,
   Iterable<DependencyConfig> allDeps,
 ) {
-  return allDeps.where((d) => d.type == iDep.type && d.instanceName == iDep.instanceName).toSet();
+  return allDeps
+      .where((d) => d.type == iDep.type && d.instanceName == iDep.instanceName)
+      .toSet();
 }
 
 bool hasPreResolvedDependencies(Iterable<DependencyConfig> deps) {

@@ -25,26 +25,43 @@ import 'build_utils.dart';
 
 const _configFilesDirectory = '.dart_tool/lean_build/generated';
 
-const _moduleChecker = TypeChecker.typeNamed(MicroPackageModule, inPackage: 'injectable');
+const _moduleChecker = TypeChecker.typeNamed(
+  MicroPackageModule,
+  inPackage: 'injectable',
+);
 
 @LeanGenerator(
   {'.config.dart', '.module.dart'},
   key: 'InjectableConfigGenerator',
   registerTypes: {InjectableInit},
 )
-class InjectableConfigGenerator extends GeneratorForAnnotatedFunction<InjectableInit> {
+class InjectableConfigGenerator
+    extends GeneratorForAnnotatedFunction<InjectableInit> {
   @override
-  dynamic generateForFunction(BuildStep buildStep, FunctionElement element, ElementAnnotation anno) async {
+  dynamic generateForFunction(
+    BuildStep buildStep,
+    FunctionElement element,
+    ElementAnnotation anno,
+  ) async {
     final annotation = anno.constant as ConstObject;
 
-    final generateForDir = annotation.getList('generateForDir')!.literalValue.cast<String>();
+    final generateForDir = annotation
+        .getList('generateForDir')!
+        .literalValue
+        .cast<String>();
 
     final usesNullSafety = annotation.getBool('usesNullSafety')!.value;
     final isMicroPackage = annotation.getBool('_isMicroPackage')!.value;
-    final usesConstructorCallback = annotation.getBool('usesConstructorCallback')!.value;
-    final throwOnMissingDependencies = annotation.getBool('throwOnMissingDependencies')!.value;
+    final usesConstructorCallback = annotation
+        .getBool('usesConstructorCallback')!
+        .value;
+    final throwOnMissingDependencies = annotation
+        .getBool('throwOnMissingDependencies')!
+        .value;
     final targetFile = element.library.src.uri;
-    final preferRelativeImports = annotation.getBool("preferRelativeImports")!.value;
+    final preferRelativeImports = annotation
+        .getBool("preferRelativeImports")!
+        .value;
     final generateForEnvironments =
         annotation
             .getSet('generateForEnvironments')
@@ -53,7 +70,9 @@ class InjectableConfigGenerator extends GeneratorForAnnotatedFunction<Injectable
             .map((e) => e.getString('name')?.value) ??
         {};
 
-    final includeMicroPackages = annotation.getBool("includeMicroPackages")!.value;
+    final includeMicroPackages = annotation
+        .getBool("includeMicroPackages")!
+        .value;
 
     final generateAccessors = annotation.getBool("generateAccessors")!.value;
 
@@ -68,7 +87,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotatedFunction<Injectable
 
     for (final asset in assets) {
       // the location anchor is the path to the root package
-      final locationAnchor = '$_configFilesDirectory/${buildStep.resolver.fileResolver.rootPackage}/';
+      final locationAnchor =
+          '$_configFilesDirectory/${buildStep.resolver.fileResolver.rootPackage}/';
       final location = asset.uri.path.split(locationAnchor).lastOrNull ?? '';
       if (generateForDir.any((dir) => location.startsWith(dir))) {
         final json = jsonDecode(asset.readAsStringSync());
@@ -194,7 +214,9 @@ class InjectableConfigGenerator extends GeneratorForAnnotatedFunction<Injectable
       targetFile: preferRelativeImports ? targetFile : null,
       initializerName: initializerName,
       asExtension: asExtension,
-      microPackageName: isMicroPackage ? buildStep.asset.packageName?.pascalCase : null,
+      microPackageName: isMicroPackage
+          ? buildStep.asset.packageName?.pascalCase
+          : null,
       microPackagesModulesBefore: microPackageModulesBefore,
       microPackagesModulesAfter: microPackageModulesAfter,
       usesConstructorCallback: usesConstructorCallback,
@@ -255,7 +277,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotatedFunction<Injectable
     return constList?.value.whereType<ConstType>().map((e) {
           final typeValue = e.value;
           throwIf(
-            typeValue.element is! ClassElement || !_moduleChecker.isSuperOf(typeValue.element!),
+            typeValue.element is! ClassElement ||
+                !_moduleChecker.isSuperOf(typeValue.element!),
             'ExternalPackageModule must be a class that extends MicroPackageModule',
           );
           return ExternalModuleConfig(typeResolver.resolveType(typeValue));

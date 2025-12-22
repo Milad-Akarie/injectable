@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.12.0]
+- Feat: Add optional support for lean_builder package for blazing fast builds
 ## [2.11.1]
 - Feat: Add support for `generateAccessors` option to generate GetIt extension getters
 - Feat: Improve dependency sorting logic for more predictable registration order

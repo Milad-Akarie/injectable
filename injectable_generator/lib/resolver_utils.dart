@@ -9,7 +9,10 @@ void validateDuplicateDependencies(List<DependencyConfig> deps) {
   final validatedDeps = <DependencyConfig>[];
   for (var dep in deps) {
     var registered = validatedDeps.where(
-      (elm) => elm.type == dep.type && elm.instanceName == dep.instanceName && elm.scope == dep.scope,
+      (elm) =>
+          elm.type == dep.type &&
+          elm.instanceName == dep.instanceName &&
+          elm.scope == dep.scope,
     );
 
     if (registered.isEmpty) {
@@ -59,7 +62,10 @@ void reportMissingDependencies(
           "[${dep.typeImpl}] depends on unregistered type [${iDep.type}] ${iDep.instanceName == null ? '' : '@Named(${iDep.instanceName})'}, ${iDep.type.import == null ? '' : 'from ${iDep.type.import}'}",
         );
       } else {
-        final availableEnvs = possibleDeps.map((e) => e.environments).reduce((a, b) => a + b).toSet();
+        final availableEnvs = possibleDeps
+            .map((e) => e.environments)
+            .reduce((a, b) => a + b)
+            .toSet();
         if (availableEnvs.isNotEmpty) {
           final missingEnvs = dep.environments.toSet().difference(
             availableEnvs,

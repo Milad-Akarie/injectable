@@ -23,7 +23,10 @@ import 'package:injectable_generator/utils.dart';
 
 import '../resolvers/utils.dart' show throwIf;
 
-const _moduleChecker = TypeChecker.typeNamed(MicroPackageModule, inPackage: 'injectable');
+const _moduleChecker = TypeChecker.typeNamed(
+  MicroPackageModule,
+  inPackage: 'injectable',
+);
 
 class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   @override
@@ -32,26 +35,39 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) async {
-    final generateForDir = annotation.read('generateForDir').listValue.map((e) => e.toStringValue());
+    final generateForDir = annotation
+        .read('generateForDir')
+        .listValue
+        .map((e) => e.toStringValue());
 
     final usesNullSafety = annotation.read('usesNullSafety').boolValue;
     final isMicroPackage = annotation.read('_isMicroPackage').boolValue;
-    final usesConstructorCallback = annotation.read('usesConstructorCallback').boolValue;
-    final throwOnMissingDependencies = annotation.read('throwOnMissingDependencies').boolValue;
+    final usesConstructorCallback = annotation
+        .read('usesConstructorCallback')
+        .boolValue;
+    final throwOnMissingDependencies = annotation
+        .read('throwOnMissingDependencies')
+        .boolValue;
     final targetFile = element.firstFragment.libraryFragment?.source.uri;
-    final preferRelativeImports = annotation.read("preferRelativeImports").boolValue;
+    final preferRelativeImports = annotation
+        .read("preferRelativeImports")
+        .boolValue;
     final generateForEnvironments = annotation
         .read('generateForEnvironments')
         .setValue
         .map((e) => e.getField('name')?.toStringValue());
 
-    final includeMicroPackages = annotation.read("includeMicroPackages").boolValue;
+    final includeMicroPackages = annotation
+        .read("includeMicroPackages")
+        .boolValue;
 
     final generateAccessors = annotation.read("generateAccessors").boolValue;
 
     final rootDir = annotation.peek('rootDir')?.stringValue;
 
-    final dirPattern = generateForDir.length > 1 ? '{${generateForDir.join(',')}}' : '${generateForDir.first}';
+    final dirPattern = generateForDir.length > 1
+        ? '{${generateForDir.join(',')}}'
+        : '${generateForDir.first}';
 
     final injectableConfigFiles = Glob("$dirPattern/**.injectable.json");
 
@@ -176,7 +192,9 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       targetFile: preferRelativeImports ? targetFile : null,
       initializerName: initializerName,
       asExtension: asExtension,
-      microPackageName: isMicroPackage ? buildStep.inputId.package.pascalCase : null,
+      microPackageName: isMicroPackage
+          ? buildStep.inputId.package.pascalCase
+          : null,
       microPackagesModulesBefore: microPackageModulesBefore,
       microPackagesModulesAfter: microPackageModulesAfter,
       usesConstructorCallback: usesConstructorCallback,
@@ -238,7 +256,8 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     return constList?.listValue.map((e) {
           final typeValue = e.toTypeValue()!;
           throwIf(
-            typeValue.element is! ClassElement || !_moduleChecker.isSuperOf(typeValue.element!),
+            typeValue.element is! ClassElement ||
+                !_moduleChecker.isSuperOf(typeValue.element!),
             'ExternalPackageModule must be a class that extends MicroPackageModule',
           );
           return ExternalModuleConfig(typeResolver.resolveType(typeValue));
