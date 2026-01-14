@@ -18,6 +18,7 @@ align="center" src="https://img.shields.io/pub/v/injectable.svg?" alt="pub versi
 - [Registering factories](#registering-factories)
 - [Registering singletons](#registering-singletons)
 - [Disposing of singletons](#disposing-of-singletons)
+- [Multiple Registrations](#multiple-registrations)
 - [FactoryMethod and PostConstruct Annotations](#factorymethod-and-postconstruct-annotations)
 - [Registering asynchronous injectables](#registering-asynchronous-injectables)
 - [Pre-Resolving futures](#pre-resolving-futures)
@@ -238,8 +239,35 @@ class DataSource {
 /// dispose function signature must match Function(T instance)  
 FutureOr disposeDataSource(DataSource instance){
   instance.dispose();
-}  
-```  
+}
+```
+
+## Multiple Registrations
+
+GetIt supports registering multiple instances of the same type without names. To enable this feature, set `allowMultipleRegistrations: true` in `@InjectableInit`:
+
+```dart
+@InjectableInit(
+  allowMultipleRegistrations: true,
+)
+void configureDependencies() => getIt.init();
+```
+
+This generates a call to `getIt.enableRegisteringMultipleInstancesOfOneType()` at the start of the init function, allowing you to register multiple implementations as the same type:
+
+```dart
+@Injectable(as: Plugin)
+class PluginA implements Plugin {}
+
+@Injectable(as: Plugin)
+class PluginB implements Plugin {}
+```
+
+Without `allowMultipleRegistrations`, the above would fail with a "type already registered" error since both classes register as `Plugin`.
+
+You can then retrieve all instances using `getIt.getAll<Plugin>()`. Note that `getIt<Plugin>()` returns only the first registered instance.
+
+**Note:** Once enabled, this setting applies globally and cannot be disabled. See [GetIt documentation](https://flutter-it.dev/documentation/get_it/multiple_registrations) for more details.
 
 ## FactoryMethod and PostConstruct Annotations
 

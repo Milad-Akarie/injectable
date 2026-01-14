@@ -274,6 +274,40 @@ extension GetItInjectableX on GetIt {
       expect(result, contains('constructorCallback'));
       expect(result, contains('ccb'));
     });
+
+    test("Multiple registrations generates enablement call", () {
+      final result = generate(
+        [DependencyConfig.factory('Demo')],
+        allowMultipleRegistrations: true,
+      );
+      expect(result, contains('getIt.enableRegisteringMultipleInstancesOfOneType()'));
+    });
+
+    test("Multiple registrations with extension generates enablement call", () {
+      final result = generate(
+        [DependencyConfig.factory('Demo')],
+        asExt: true,
+        allowMultipleRegistrations: true,
+      );
+      expect(result, contains('this.enableRegisteringMultipleInstancesOfOneType()'));
+    });
+
+    test("Multiple registrations is not generated for micro packages", () {
+      final result = generate(
+        [DependencyConfig.factory('Demo')],
+        microPackageName: 'TestPackage',
+        allowMultipleRegistrations: true,
+      );
+      expect(result, isNot(contains('enableRegisteringMultipleInstancesOfOneType')));
+    });
+
+    test("Multiple registrations is not generated when disabled", () {
+      final result = generate(
+        [DependencyConfig.factory('Demo')],
+        allowMultipleRegistrations: false,
+      );
+      expect(result, isNot(contains('enableRegisteringMultipleInstancesOfOneType')));
+    });
   });
 }
 
@@ -285,6 +319,7 @@ String generate(
   Set<ExternalModuleConfig> microPackagesModulesAfter = const {},
   bool generateAccessors = false,
   bool usesConstructorCallback = false,
+  bool allowMultipleRegistrations = false,
 }) {
   final library = LibraryGenerator(
     dependencies: List.of(input),
@@ -295,6 +330,7 @@ String generate(
     microPackagesModulesAfter: microPackagesModulesAfter,
     generateAccessors: generateAccessors,
     usesConstructorCallback: usesConstructorCallback,
+    allowMultipleRegistrations: allowMultipleRegistrations,
   ).generate();
   final emitter = DartEmitter(
     allocator: Allocator.none,

@@ -76,6 +76,9 @@ class InjectableConfigGenerator
 
     final generateAccessors = annotation.getBool("generateAccessors")!.value;
 
+    final allowMultipleRegistrations =
+        annotation.getBool('allowMultipleRegistrations')!.value;
+
     final rootDir = annotation.getString('rootDir')?.value;
 
     final jsonData = <Map>[];
@@ -220,6 +223,7 @@ class InjectableConfigGenerator
       microPackagesModulesBefore: microPackageModulesBefore,
       microPackagesModulesAfter: microPackageModulesAfter,
       usesConstructorCallback: usesConstructorCallback,
+      allowMultipleRegistrations: allowMultipleRegistrations,
     );
 
     final generatedLib = generator.generate();

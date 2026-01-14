@@ -63,6 +63,9 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
 
     final generateAccessors = annotation.read("generateAccessors").boolValue;
 
+    final allowMultipleRegistrations =
+        annotation.read('allowMultipleRegistrations').boolValue;
+
     final rootDir = annotation.peek('rootDir')?.stringValue;
 
     final dirPattern = generateForDir.length > 1
@@ -198,6 +201,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
       microPackagesModulesBefore: microPackageModulesBefore,
       microPackagesModulesAfter: microPackageModulesAfter,
       usesConstructorCallback: usesConstructorCallback,
+      allowMultipleRegistrations: allowMultipleRegistrations,
     );
 
     final generatedLib = generator.generate();
