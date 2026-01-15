@@ -188,7 +188,9 @@ class InjectableConfigGenerator
       targetFile,
       throwOnMissingDependencies,
     );
-    validateDuplicateDependencies(deps);
+    if (!allowMultipleRegistrations) {
+      validateDuplicateDependencies(deps);
+    }
 
     /// don't allow registering of the same dependency with both async and sync factories
     final groupedByType = deps.groupListsBy((d) => (d.type, d.instanceName));
