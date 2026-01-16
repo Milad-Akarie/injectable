@@ -77,3 +77,31 @@ sealed class Model {
 class ModelX extends Model {}
 
 class ModelY extends Model {}
+
+/// Example of a service that accepts factory parameters
+@injectable
+class ConfigurableService {
+  final String apiKey;
+  final String baseUrl;
+
+  ConfigurableService({
+    @factoryParam required this.apiKey,
+    @factoryParam required this.baseUrl,
+  });
+
+  @override
+  String toString() => 'ConfigurableService(apiKey: $apiKey, baseUrl: $baseUrl)';
+}
+
+/// Example of a service with a single parameter
+@injectable
+class LoggerService {
+  final String name;
+
+  LoggerService(@factoryParam this.name);
+
+  void log(String message) {
+    print('[$name] $message');
+  }
+}
+

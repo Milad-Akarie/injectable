@@ -31,6 +31,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i978.ConstService>(() => const _i978.ConstService());
     gh.factory<_i978.IService>(() => _i978.ServiceImpl());
     gh.factoryCached<_i978.Model>(() => _i978.ModelX());
+    gh.factoryParam<_i978.LoggerService, String, dynamic>(
+      (name, _) => _i978.LoggerService(name),
+    );
     gh.factoryAsync<_i253.Repo>(
       () => _i253.Repo.asyncRepo(gh<_i978.IService>()),
     );
@@ -49,6 +52,10 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.getRepo(gh<_i978.IService>()),
       instanceName: 'Repo',
       dispose: _i253.disposeRepo,
+    );
+    gh.factoryParam<_i978.ConfigurableService, String, String>(
+      (apiKey, baseUrl) =>
+          _i978.ConfigurableService(apiKey: apiKey, baseUrl: baseUrl),
     );
     return this;
   }

@@ -39,6 +39,9 @@ extension GetItInjectableX on _i174.GetIt {
       ),
       registerFor: {_platformMobile},
     );
+    gh.factoryParam<_i978.LoggerService, String, dynamic>(
+      (name, _) => _i978.LoggerService(name),
+    );
     gh.factoryAsync<_i253.Repo>(
       () => _i253.Repo.asyncRepo(gh<_i978.IService>()),
     );
@@ -63,6 +66,10 @@ extension GetItInjectableX on _i174.GetIt {
       instanceName: 'WebService',
       registerFor: {_platformWeb},
     );
+    gh.factoryParam<_i978.ConfigurableService, String, String>(
+      (apiKey, baseUrl) =>
+          _i978.ConfigurableService(apiKey: apiKey, baseUrl: baseUrl),
+    );
     return this;
   }
 
@@ -77,6 +84,9 @@ extension GetItInjectableX on _i174.GetIt {
 
   _i978.MobileService get mobileService => get<_i978.MobileService>();
 
+  _i978.LoggerService loggerService({required String name}) =>
+      get<_i978.LoggerService>(param1: name);
+
   Future<_i253.Repo> get repo => getAsync<_i253.Repo>();
 
   Future<_i978.PostConstructableService> get postConstructableService =>
@@ -86,6 +96,11 @@ extension GetItInjectableX on _i174.GetIt {
 
   _i978.WebService webService({String? instanceName}) =>
       get<_i978.WebService>(instanceName: instanceName);
+
+  _i978.ConfigurableService configurableService({
+    required String apiKey,
+    required String baseUrl,
+  }) => get<_i978.ConfigurableService>(param1: apiKey, param2: baseUrl);
 }
 
 class _$RegisterModule extends _i253.RegisterModule {}
