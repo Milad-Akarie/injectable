@@ -16,6 +16,7 @@ align="center" src="https://img.shields.io/pub/v/injectable.svg?" alt="pub versi
 - [Installation](#installation)
 - [Setup](#setup)
 - [Registering factories](#registering-factories)
+- [Generating Accessor Methods](#generating-accessor-methods)
 - [Registering singletons](#registering-singletons)
 - [Disposing of singletons](#disposing-of-singletons)
 - [FactoryMethod and PostConstruct Annotations](#factorymethod-and-postconstruct-annotations)
@@ -105,6 +106,7 @@ final getIt = GetIt.instance;
   initializerName: 'init', // default  
   preferRelativeImports: true, // default  
   asExtension: true, // default  
+  generateAccessors: false, // default  
 )  
 void configureDependencies() => getIt.init();  
 ```  
@@ -195,6 +197,92 @@ extension GetItInjectableX on _i1.GetIt {
   }
 }  
 ```  
+
+## Generating Accessor Methods
+
+---
+
+By default, dependencies are accessed using `getIt.get<Type>()`. However, you can enable the [generateAccessors](#generating-accessor-methods) property in `@InjectableInit` to generate convenient accessor methods that provide a cleaner, more concise API.
+
+### Enabling Accessor Generation
+
+Simply set `generateAccessors: true` in your `@InjectableInit` annotation:
+
+```dart
+@InjectableInit(generateAccessors: true)
+void configureDependencies() => getIt.init();
+```
+
+### Simple Type Access
+
+Without `generateAccessors`, you use the standard GetIt syntax:
+
+```dart
+// Without generateAccessors
+var userService = getIt.get<UserService>();
+var database = getIt.get<Database>();
+```
+
+With `generateAccessors: true`, the generator creates convenient getter methods:
+
+```dart
+// With generateAccessors: true
+var userService = getIt.userService;
+var database = getIt.database;
+```
+
+The generator automatically converts type names to camelCase for the accessor names (`UserService` → `userService`).
+
+### Parameterized Dependencies
+
+For dependencies that accept parameters (factory parameters or instance names), accessor methods are generated with those same parameters:
+
+**Without `generateAccessors`:**
+
+```dart
+@injectable
+class UserRepository {
+  UserRepository(@factoryParam String userId);
+}
+
+// Usage
+var repository = getIt.get<UserRepository>(param1: 'user123');
+var cachedDb = getIt.get<Database>(instanceName: 'primary');
+```
+
+**With `generateAccessors: true`:**
+
+```dart
+// Generated accessors:
+// UserRepository userRepository({required String userId}) =>
+//   get<UserRepository>(param1: userId);
+// Database database({String? instanceName}) =>
+//   get<Database>(instanceName: instanceName);
+
+// Usage
+var repository = getIt.userRepository(userId: 'user123');
+var cachedDb = getIt.database(instanceName: 'primary');
+```
+
+### Generated Extension
+
+Internally, `generateAccessors` generates accessor methods which are added to the generated `GetItInjectableX` extension:
+
+```dart
+extension GetItInjectableX on GetIt {
+  /// init method omitted for readability
+
+  UserService get userService => get<UserService>();
+  
+  Database database({String? instanceName}) =>
+    get<Database>(instanceName: instanceName);
+  
+  UserRepository userRepository({required String userId}) =>
+    get<UserRepository>(param1: userId);
+}
+```
+
+This provides IDE autocomplete support and type safety while keeping your code clean and readable.
 
 ## Registering singletons
   
