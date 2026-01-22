@@ -71,8 +71,11 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
 
     final injectableConfigFiles = Glob("$dirPattern/**.injectable.json");
 
+    final assetIds = await buildStep.findAssets(injectableConfigFiles).toList();
+    assetIds.sortBy((e) => e.path);
+
     final jsonData = <Map>[];
-    await for (final id in buildStep.findAssets(injectableConfigFiles)) {
+    for (final id in assetIds) {
       final json = jsonDecode(await buildStep.readAsString(id));
       jsonData.addAll([...json]);
     }
