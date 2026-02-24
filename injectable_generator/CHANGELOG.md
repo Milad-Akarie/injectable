@@ -1,4 +1,6 @@
 # ChangeLog
+## [2.12.1]
+- Chore: Update analyzer constrains to ">=9.0.0 <11.0.0"
 ## [2.12.0]
 - Feat: Add optional support for lean_builder package for blazing fast builds
 ## [2.11.1]
