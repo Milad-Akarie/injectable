@@ -130,11 +130,15 @@ void _sortByDependents(
       } else {
         int foundForEnvs = 0;
         for (final env in dep.environments) {
-          if (lookupDependencyWithNoEnvOrHasAny(iDep, sorted, [env]) == null) {
-            return false;
-          } else {
+          if (lookupDependencyWithNoEnvOrHasAny(iDep, sorted, [env]) != null ||
+              // External/unregistered deps are resolved by parent packages and
+              // should not block local sorting.
+              (lookupDependency(iDep, unSorted) == null &&
+                  lookupDependency(iDep, sorted) == null)) {
             foundForEnvs++;
+            continue;
           }
+          return false;
         }
         // if all deps for all environments are found we can proceed
         if (foundForEnvs == dep.environments.length) {
