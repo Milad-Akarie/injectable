@@ -1269,6 +1269,45 @@ void main() {
       },
     );
 
+    test(
+      'should terminate sorting when a no-env dependency waits on an unsortable env variant',
+      () {
+        final dep1 = DependencyConfig.factory(
+          'Service',
+          typeImpl: 'ProdService',
+          envs: ['prod'],
+          deps: ['ExternalDependency'],
+        );
+        final dep2 = DependencyConfig.factory(
+          'Service',
+          typeImpl: 'DevService',
+          envs: ['dev'],
+        );
+        final consumer = DependencyConfig.factory(
+          'Consumer',
+          deps: ['Service'],
+        );
+        final deps = [consumer, dep1, dep2];
+
+        expect(
+          lookupDependency(
+            InjectedDependency(
+              type: const ImportableType(name: 'ExternalDependency'),
+              paramName: 'externalDependency',
+            ),
+            deps,
+          ),
+          isNull,
+        );
+        final result = sortDependencies(deps);
+
+        expect(result, unorderedEquals(deps));
+        final consumerIndex = result.indexOf(consumer);
+        expect(result.indexOf(dep1), lessThan(consumerIndex));
+        expect(result.indexOf(dep2), lessThan(consumerIndex));
+      },
+    );
+
     test('should handle partial environment matches - not all envs found', () {
       final dep1 = DependencyConfig(
         type: const ImportableType(name: 'Config'),
