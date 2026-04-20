@@ -90,7 +90,8 @@ class ConfigurableService {
   });
 
   @override
-  String toString() => 'ConfigurableService(apiKey: $apiKey, baseUrl: $baseUrl)';
+  String toString() =>
+      'ConfigurableService(apiKey: $apiKey, baseUrl: $baseUrl)';
 }
 
 /// Example of a service with a single parameter
@@ -104,4 +105,3 @@ class LoggerService {
     print('[$name] $message');
   }
 }
-

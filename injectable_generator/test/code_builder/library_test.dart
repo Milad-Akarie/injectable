@@ -280,7 +280,10 @@ extension GetItInjectableX on GetIt {
         [DependencyConfig.factory('Demo')],
         allowMultipleRegistrations: true,
       );
-      expect(result, contains('getIt.enableRegisteringMultipleInstancesOfOneType()'));
+      expect(
+        result,
+        contains('getIt.enableRegisteringMultipleInstancesOfOneType()'),
+      );
     });
 
     test("Multiple registrations with extension generates enablement call", () {
@@ -289,7 +292,10 @@ extension GetItInjectableX on GetIt {
         asExt: true,
         allowMultipleRegistrations: true,
       );
-      expect(result, contains('this.enableRegisteringMultipleInstancesOfOneType()'));
+      expect(
+        result,
+        contains('this.enableRegisteringMultipleInstancesOfOneType()'),
+      );
     });
 
     test("Multiple registrations is not generated for micro packages", () {
@@ -298,7 +304,10 @@ extension GetItInjectableX on GetIt {
         microPackageName: 'TestPackage',
         allowMultipleRegistrations: true,
       );
-      expect(result, isNot(contains('enableRegisteringMultipleInstancesOfOneType')));
+      expect(
+        result,
+        isNot(contains('enableRegisteringMultipleInstancesOfOneType')),
+      );
     });
 
     test("Multiple registrations is not generated when disabled", () {
@@ -306,7 +315,10 @@ extension GetItInjectableX on GetIt {
         [DependencyConfig.factory('Demo')],
         allowMultipleRegistrations: false,
       );
-      expect(result, isNot(contains('enableRegisteringMultipleInstancesOfOneType')));
+      expect(
+        result,
+        isNot(contains('enableRegisteringMultipleInstancesOfOneType')),
+      );
     });
   });
 }

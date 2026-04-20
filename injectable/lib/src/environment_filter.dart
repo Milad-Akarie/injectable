@@ -37,8 +37,7 @@ class SimpleEnvironmentFilter extends EnvironmentFilter {
 /// This filter validates dependencies with no environment
 /// keys or contain the provided [environment]
 class NoEnvOrContains extends EnvironmentFilter {
-  NoEnvOrContains(String? environment)
-    : super({?environment});
+  NoEnvOrContains(String? environment) : super({?environment});
 
   @override
   bool canRegister(Set<String> depEnvironments) {

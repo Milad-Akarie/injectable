@@ -33,4 +33,3 @@ void main() async {
   final logger = getIt.loggerService(name: 'MyApp');
   logger.log('Application started');
 }
-
