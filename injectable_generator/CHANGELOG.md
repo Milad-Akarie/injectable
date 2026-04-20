@@ -1,4 +1,6 @@
 # ChangeLog
+## [3.0.1]
+- Fix: update lean_builder to 0.1.9 to sync analayzer version
 ## [3.0.0]
 - Breaking: Removed `includeMicroPackages` option. Micro packages must now be explicitly registered using `externalPackageModulesBefore` and `externalPackageModulesAfter` in `@InjectableInit`.
 - Breaking: Removed deprecated `usesNullSafety` option. Null safety is now always assumed.
