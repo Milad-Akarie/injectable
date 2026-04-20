@@ -76,6 +76,9 @@ class InjectableConfigGenerator
 
     final generateAccessors = annotation.getBool("generateAccessors")!.value;
 
+    final allowMultipleRegistrations =
+        annotation.getBool('allowMultipleRegistrations')!.value;
+
     final rootDir = annotation.getString('rootDir')?.value;
 
     final jsonData = <Map>[];
@@ -185,7 +188,9 @@ class InjectableConfigGenerator
       targetFile,
       throwOnMissingDependencies,
     );
-    validateDuplicateDependencies(deps);
+    if (!allowMultipleRegistrations) {
+      validateDuplicateDependencies(deps);
+    }
 
     /// don't allow registering of the same dependency with both async and sync factories
     final groupedByType = deps.groupListsBy((d) => (d.type, d.instanceName));
@@ -220,6 +225,7 @@ class InjectableConfigGenerator
       microPackagesModulesBefore: microPackageModulesBefore,
       microPackagesModulesAfter: microPackageModulesAfter,
       usesConstructorCallback: usesConstructorCallback,
+      allowMultipleRegistrations: allowMultipleRegistrations,
     );
 
     final generatedLib = generator.generate();

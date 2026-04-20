@@ -91,6 +91,14 @@ class InjectableInit {
   /// defaults to empty
   final Set<Environment> generateForEnvironments;
 
+  /// Whether to enable GetIt's multiple registrations feature.
+  /// When true, generates a call to getIt.enableRegisteringMultipleInstancesOfOneType()
+  /// at the start of the init function. This allows registering multiple
+  /// instances of the same type without names.
+  /// See: https://flutter-it.dev/documentation/get_it/multiple_registrations
+  /// Defaults to false.
+  final bool allowMultipleRegistrations;
+
   /// default constructor
   const InjectableInit({
     this.generateForDir = const ['lib'],
@@ -111,6 +119,7 @@ class InjectableInit {
     this.usesConstructorCallback = false,
     this.generateAccessors = false,
     this.generateForEnvironments = const {},
+    this.allowMultipleRegistrations = false,
   }) : _isMicroPackage = false;
 
   /// default constructor
@@ -130,7 +139,8 @@ class InjectableInit {
        includeMicroPackages = false,
        initializerName = 'init',
        rootDir = null,
-       generateAccessors = false;
+       generateAccessors = false,
+       allowMultipleRegistrations = false;
 }
 
 /// const instance of [InjectableInit]
