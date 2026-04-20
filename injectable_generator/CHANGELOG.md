@@ -1,4 +1,6 @@
 # ChangeLog
+## [3.0.2]
+- Fix: update lean_builder to 0.1.9 to sync analayzer version
 ## [3.0.1]
 - Fix: update lean_builder to 0.1.9 to sync analayzer version
 ## [3.0.0]
