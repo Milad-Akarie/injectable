@@ -178,6 +178,7 @@ class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
     final emitter = DartEmitter(
       allocator: HashedAllocator(),
       orderDirectives: true,
+      useNullSafetySyntax: true,
     );
 
     final output = DartFormatter(

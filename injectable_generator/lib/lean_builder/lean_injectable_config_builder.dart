@@ -200,6 +200,7 @@ class InjectableConfigGenerator
     final emitter = DartEmitter(
       allocator: HashedAllocator(),
       orderDirectives: true,
+      useNullSafetySyntax: true,
     );
 
     final output = DartFormatter(
