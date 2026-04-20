@@ -696,37 +696,29 @@ initMicroPackage(){} // will not be called but needed for code generation
 
 #### Generated Code:
 
-```dart  
+```dart
 class AwesomePackageModule extends MicroPackageModule {
   @override
   FutureOr<void> init(_i1.GetItHelper gh) {
     gh.factory<Dep>(() => Dep());
     gh.factory<Calculator>(() => Calculator(gh<Dep>()));
-  }}  
-```  
-
-By default injectable will automatically include all `MicroPackagesModules` in the project directory unless the `includeMicroPackages` flag inside of `@InjectableInit` is set to false.
-
-```dart
-@InjectableInit(includeMicroPackages: false)
+  }}
 ```
 
-it's also possible to include micro local or external modules manually by passing them to the `externalPackageModules` property inside of @injectableInit so they're initialized with the rest of the local dependencies.  
-**Note:**
-Modules assigned to externalPackageModulesBefore will be initialized before the root dependencies;
-Modules assigned to externalPackageModulesAfter will be initialized after the root dependencies;
+To include micro packages, use the `externalPackageModulesBefore` and `externalPackageModulesAfter` properties of `@InjectableInit`:
 
-```dart  
+```dart
 @InjectableInit(
   externalPackageModulesBefore: [
     ExternalModule(AwesomePackageModule),
-    ExternalModule(ThirdPartyMicroModule),
   ],
-  externalPackageModulesAfter: [
-    ExternalModule(CoolPackageModule),
-  ],)
+)
 void configureDependencies() {}
-```  
+```
+
+**Note:**
+Modules assigned to `externalPackageModulesBefore` will be initialized before the root dependencies;
+Modules assigned to `externalPackageModulesAfter` will be initialized after the root dependencies;
 
 #### Initializing modules inside of scopes
 External Modules can be initialized inside of specific scopes by simply assigning a scope to `ExternalModule`.

@@ -31,13 +31,6 @@ class InjectableInit {
   /// defaults to true
   final bool asExtension;
 
-  /// weather to include null-safety
-  /// suffixes to the generated code;
-  @Deprecated(
-    'Null-safety is now default in Dart, this flag will be removed in future releases',
-  )
-  final bool usesNullSafety;
-
   ///  generator will not show warning for unregistered types
   ///  included in this list
   final List<Type> ignoreUnregisteredTypes;
@@ -51,11 +44,6 @@ class InjectableInit {
   /// output will be generated.
   // ignore: unused_field
   final bool _isMicroPackage;
-
-  /// whether or not the main initializers
-  /// should include micro package modules
-  /// defaults to true
-  final bool includeMicroPackages;
 
   /// throw an error and abort generation
   /// in case of missing dependencies
@@ -108,12 +96,7 @@ class InjectableInit {
     this.ignoreUnregisteredTypes = const [],
     this.ignoreUnregisteredTypesInPackages = const [],
     this.asExtension = true,
-    @Deprecated(
-      'Null-safety is now default in Dart, this flag will be removed in future releases',
-    )
-    this.usesNullSafety = true,
     this.throwOnMissingDependencies = false,
-    this.includeMicroPackages = true,
     this.externalPackageModulesAfter,
     this.externalPackageModulesBefore,
     this.usesConstructorCallback = false,
@@ -132,11 +115,9 @@ class InjectableInit {
     this.usesConstructorCallback = false,
     this.throwOnMissingDependencies = false,
     this.ignoreUnregisteredTypesInPackages = const [],
-    this.usesNullSafety = true,
     this.generateForEnvironments = const {},
   }) : _isMicroPackage = true,
        asExtension = false,
-       includeMicroPackages = false,
        initializerName = 'init',
        rootDir = null,
        generateAccessors = false,

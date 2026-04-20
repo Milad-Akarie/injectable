@@ -15,7 +15,6 @@ void main() {
       expect(init.ignoreUnregisteredTypes, isEmpty);
       expect(init.ignoreUnregisteredTypesInPackages, isEmpty);
       expect(init.throwOnMissingDependencies, false);
-      expect(init.includeMicroPackages, true);
       expect(init.externalPackageModulesBefore, isNull);
       expect(init.externalPackageModulesAfter, isNull);
       expect(init.usesConstructorCallback, false);
@@ -33,7 +32,6 @@ void main() {
         ignoreUnregisteredTypes: [String, int],
         ignoreUnregisteredTypesInPackages: ['package:test'],
         throwOnMissingDependencies: true,
-        includeMicroPackages: false,
         usesConstructorCallback: true,
         generateAccessors: true,
         generateForEnvironments: {dev, prod},
@@ -47,7 +45,6 @@ void main() {
       expect(init.ignoreUnregisteredTypes, [String, int]);
       expect(init.ignoreUnregisteredTypesInPackages, ['package:test']);
       expect(init.throwOnMissingDependencies, true);
-      expect(init.includeMicroPackages, false);
       expect(init.usesConstructorCallback, true);
       expect(init.generateAccessors, true);
       expect(init.generateForEnvironments, {dev, prod});
@@ -61,7 +58,6 @@ void main() {
       expect(init.initializerName, 'init');
       expect(init.rootDir, isNull);
       expect(init.asExtension, false);
-      expect(init.includeMicroPackages, false);
       expect(init.generateAccessors, false);
     });
 
@@ -73,7 +69,6 @@ void main() {
     test('microPackageInit const should be InjectableInit.microPackage', () {
       expect(microPackageInit, isA<InjectableInit>());
       expect(microPackageInit.asExtension, false);
-      expect(microPackageInit.includeMicroPackages, false);
     });
   });
 

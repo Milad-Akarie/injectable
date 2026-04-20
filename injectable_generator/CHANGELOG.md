@@ -1,4 +1,9 @@
 # ChangeLog
+## [3.0.0]
+- Breaking: Removed `includeMicroPackages` option. Micro packages must now be explicitly registered using `externalPackageModulesBefore` and `externalPackageModulesAfter` in `@InjectableInit`.
+- Breaking: Removed deprecated `usesNullSafety` option. Null safety is now always assumed.
+- Feat: Add support for multiple registrations via `allowMultipleRegistrations` (#535, #531).
+- Fix: Treat external dependencies as non-blocking in environment sorting (#539, Fixes #532).
 ## [2.12.1]
 - Chore: Update analyzer constrains to ">=9.0.0 <11.0.0"
 ## [2.12.0]
