@@ -38,7 +38,7 @@ class SimpleEnvironmentFilter extends EnvironmentFilter {
 /// keys or contain the provided [environment]
 class NoEnvOrContains extends EnvironmentFilter {
   NoEnvOrContains(String? environment)
-    : super({if (environment != null) environment});
+    : super({?environment});
 
   @override
   bool canRegister(Set<String> depEnvironments) {
