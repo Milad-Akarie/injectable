@@ -7,6 +7,7 @@ class HashedAllocator implements Allocator {
   static const _doNotPrefix = ['dart:core'];
 
   final _imports = <String, int>{};
+  final _usedAliases = <int>{};
 
   String? _url;
 
@@ -21,7 +22,14 @@ class HashedAllocator implements Allocator {
     return '_i${_imports.putIfAbsent(_url!, _hashedUrl)}.$symbol';
   }
 
-  int _hashedUrl() => _url.hashCode / 1000000 ~/ 1;
+  int _hashedUrl() {
+    var alias = _url.hashCode / 1000000 ~/ 1;
+    while (!_usedAliases.add(alias)) {
+      alias++;
+    }
+
+    return alias;
+  }
 
   @override
   Iterable<Directive> get imports =>
