@@ -1,3 +1,4 @@
+// @dart=3.12
 import 'package:injectable/injectable.dart';
 
 @injectable
@@ -421,4 +422,21 @@ class FactoryWithGenericRecordArg {
 @Injectable()
 class FactoryWithNullableRecord {
   const FactoryWithNullableRecord(@factoryParam ({int x, int y})? point);
+}
+
+// Dart 3.12 private named field-formal parameter (`this._x`).
+@Injectable()
+class FactoryWithPrivateNamedFieldFormal {
+  const FactoryWithPrivateNamedFieldFormal({required this._dependency});
+
+  // ignore: unused_field
+  final SimpleFactory _dependency;
+}
+
+// Dart 3.12 private named super-formal parameter (`super.x`) referencing a
+// private named field-formal in the superclass.
+@Injectable()
+class FactoryWithPrivateNamedSuperFormal
+    extends FactoryWithPrivateNamedFieldFormal {
+  const FactoryWithPrivateNamedSuperFormal({required super.dependency});
 }

@@ -1953,5 +1953,67 @@ void main() async {
       expect(result.dependencies.first.type.isNullable, isTrue);
       expect(result.dependencies.first.type.isRecordType, isTrue);
     });
+
+    test('Factory with private named field-formal uses public callsite name', () {
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithPrivateNamedFieldFormal',
+      )!;
+      final result = dependencyResolver!.resolve(factoryType);
+      expect(result.dependencies, hasLength(1));
+      final dep = result.dependencies.first;
+      expect(dep.paramName, equals('dependency'));
+      expect(dep.isPositional, isFalse);
+      expect(dep.type.name, equals('SimpleFactory'));
+    });
+
+    test('Factory with private named super-formal resolves super param type', () {
+      var factoryType = resolvedInput!.library.findType(
+        'FactoryWithPrivateNamedSuperFormal',
+      )!;
+      final result = dependencyResolver!.resolve(factoryType);
+      expect(result.dependencies, hasLength(1));
+      final dep = result.dependencies.first;
+      expect(dep.paramName, equals('dependency'));
+      expect(dep.isPositional, isFalse);
+      expect(dep.type.name, equals('SimpleFactory'));
+    });
+
+    test(
+      'Cross-file: super-formal over generic base with private named field-formal resolves type',
+      () async {
+        final input = await resolveInput(
+          'test/samples/private_named_super_child.dart',
+          extraFiles: ['test/samples/private_named_super_base.dart'],
+        );
+        final factoryType = input.library.findType('PrivateNamedSuperChild')!;
+        final result = DependencyResolver(MockTypeResolver()).resolve(
+          factoryType,
+        );
+        expect(result.dependencies, hasLength(1));
+        final dep = result.dependencies.first;
+        expect(dep.paramName, equals('dependency'));
+        expect(dep.type.name, equals('PrivateNamedDep'));
+      },
+    );
+
+    test(
+      'Cross-file: super-formal forwarded through an intermediate class resolves type',
+      () async {
+        final input = await resolveInput(
+          'test/samples/private_named_super_child.dart',
+          extraFiles: ['test/samples/private_named_super_base.dart'],
+        );
+        final factoryType = input.library.findType(
+          'PrivateNamedSuperGrandchild',
+        )!;
+        final result = DependencyResolver(MockTypeResolver()).resolve(
+          factoryType,
+        );
+        expect(result.dependencies, hasLength(1));
+        final dep = result.dependencies.first;
+        expect(dep.paramName, equals('dependency'));
+        expect(dep.type.name, equals('PrivateNamedDep'));
+      },
+    );
   });
 }

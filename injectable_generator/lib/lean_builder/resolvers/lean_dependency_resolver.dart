@@ -353,7 +353,7 @@ class LeanDependencyResolver {
           type: resolvedType,
           instanceName: instanceName,
           isFactoryParam: isFactoryParam,
-          paramName: param.name,
+          paramName: _publicParamName(param),
           isPositional: param.isPositional,
           isRequired: param.isRequired,
         ),
@@ -464,4 +464,16 @@ class LeanDependencyResolver {
       cache: _cache,
     );
   }
+}
+
+// For Dart 3.9 private named formal parameters (`this._x` / `super._x`) the
+// callsite must use the public name (stripped underscore). Strip the leading
+// underscore for any named parameter so generated code is valid regardless of
+// whether the upstream toolchain has already normalized the name.
+String _publicParamName(ParameterElement param) {
+  final name = param.name;
+  if (param.isNamed && name.startsWith('_') && name.length > 1) {
+    return name.substring(1);
+  }
+  return name;
 }

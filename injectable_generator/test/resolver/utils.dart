@@ -8,8 +8,11 @@ import 'package:path/path.dart' as p;
 import 'package:source_gen/source_gen.dart';
 import 'package:test/test.dart';
 
-Future<ResolvedInput> resolveInput(String sourceFile) async {
-  final files = [File(sourceFile)];
+Future<ResolvedInput> resolveInput(
+  String sourceFile, {
+  List<String> extraFiles = const [],
+}) async {
+  final files = [File(sourceFile), ...extraFiles.map(File.new)];
   final fileMap = Map<String, String>.fromEntries(
     files.map(
       (f) => MapEntry('pkg|lib/${p.basename(f.path)}', f.readAsStringSync()),
