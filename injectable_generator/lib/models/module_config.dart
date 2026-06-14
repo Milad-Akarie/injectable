@@ -1,11 +1,20 @@
 import 'importable_type.dart';
 
+/// Configuration for a module containing abstract dependency registrations.
 class ModuleConfig {
+  /// Whether the module is abstract.
   final bool isAbstract;
+
+  /// Whether the module member is a method rather than a getter.
   final bool isMethod;
+
+  /// The type of the module.
   final ImportableType type;
+
+  /// The name of the initializer method.
   final String initializerName;
 
+  /// Creates a [ModuleConfig] with the given parameters.
   const ModuleConfig({
     required this.isAbstract,
     required this.isMethod,
@@ -13,6 +22,7 @@ class ModuleConfig {
     required this.initializerName,
   });
 
+  /// Creates a copy of this [ModuleConfig] with the given fields replaced.
   ModuleConfig copyWith({
     bool? isAbstract,
     bool? isModuleMethod,
@@ -50,6 +60,7 @@ class ModuleConfig {
   @override
   int get hashCode => type.hashCode;
 
+  /// Creates a [ModuleConfig] from a JSON map.
   factory ModuleConfig.fromJson(Map<String, dynamic> json) {
     return ModuleConfig(
       isAbstract: json['isAbstract'] as bool,
@@ -59,6 +70,7 @@ class ModuleConfig {
     );
   }
 
+  /// Converts this [ModuleConfig] to a JSON map.
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'isAbstract': isAbstract,

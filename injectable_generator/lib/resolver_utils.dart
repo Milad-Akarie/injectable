@@ -5,6 +5,7 @@ import 'code_builder/builder_utils.dart';
 import 'models/dependency_config.dart';
 import 'models/importable_type.dart';
 
+/// Validates that there are no duplicate dependencies in the list of [DependencyConfig]s.
 void validateDuplicateDependencies(List<DependencyConfig> deps) {
   final validatedDeps = <DependencyConfig>[];
   for (var dep in deps) {
@@ -35,6 +36,7 @@ void validateDuplicateDependencies(List<DependencyConfig> deps) {
   }
 }
 
+/// Validates that all dependencies in the list of [DependencyConfig]s are registered and available under the correct environment keys.
 void reportMissingDependencies(
   List<DependencyConfig> deps,
   Iterable<ImportableType> ignoredTypes,

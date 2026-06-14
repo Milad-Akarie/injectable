@@ -1,4 +1,13 @@
 include: package:lints/recommended.yaml
 
+analyzer:
+  errors:
+    public_member_api_docs: error
+    package_api_docs: warning
+
+linter:
+  rules:
+    - public_member_api_docs
+
 formatter:
   trailing_commas: preserve

@@ -6,16 +6,21 @@ import 'package:injectable_generator/models/importable_type.dart';
 import 'package:injectable_generator/resolvers/utils.dart';
 import 'package:path/path.dart' as p;
 
+/// A resolver for determining the import paths and type information for Dart types.
 abstract class ImportableTypeResolver {
+  /// Resolves the import paths for the given element.
   Set<String> resolveImports(Element element);
 
+  /// Resolves a [DartType] to an [ImportableType].
   ImportableType resolveType(DartType type);
 
+  /// Resolves a function type to an [ImportableType].
   ImportableType resolveFunctionType(
     FunctionType function, [
     ExecutableElement? executableElement,
   ]);
 
+  /// Returns the relative path from [to] to [path], or null if not applicable.
   static String? relative(String? path, Uri? to) {
     if (path == null || to == null) {
       return null;
@@ -38,6 +43,7 @@ abstract class ImportableTypeResolver {
     }
   }
 
+  /// Converts an asset URI to a package URI string.
   static String? resolveAssetImport(String? path) {
     if (path == null) {
       return null;
@@ -50,9 +56,12 @@ abstract class ImportableTypeResolver {
   }
 }
 
+/// Implementation of [ImportableTypeResolver] using the analyzer package.
 class ImportableTypeResolverImpl extends ImportableTypeResolver {
+  /// The library elements to search for element imports.
   final List<LibraryElement> libs;
 
+  /// Creates an [ImportableTypeResolverImpl] with the given libraries.
   ImportableTypeResolverImpl(this.libs);
 
   @override

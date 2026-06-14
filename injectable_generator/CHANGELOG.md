@@ -1,8 +1,13 @@
 # ChangeLog
+## [3.1.0]
+- Fix: avoid import alias collisions in HashedAllocator (#544) by @kmslab20
+- Feat: support private named parameters by @jkoenig134
+- Chore: update Dart SDK constraint to ">=3.12.0 <4.0.0"
+- Chore: update analyzer constraint to ">=10.0.0 <14.0.0"
 ## [3.0.2]
-- Fix: update lean_builder to 0.1.9 to sync analayzer version
+- Fix: update lean_builder to 0.1.9 to sync analyzer version
 ## [3.0.1]
-- Fix: update lean_builder to 0.1.9 to sync analayzer version
+- Fix: update lean_builder to 0.1.9 to sync analyzer version
 ## [3.0.0]
 - Breaking: Removed `includeMicroPackages` option. Micro packages must now be explicitly registered using `externalPackageModulesBefore` and `externalPackageModulesAfter` in `@InjectableInit`.
 - Breaking: Removed deprecated `usesNullSafety` option. Null safety is now always assumed.

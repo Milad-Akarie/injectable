@@ -14,14 +14,25 @@ import 'build_utils.dart';
 const _typeChecker = TypeChecker.typeNamed(Injectable, inPackage: 'injectable');
 const _moduleChecker = TypeChecker.typeNamed(Module, inPackage: 'injectable');
 
+/// A lean builder that generates intermediate injection configuration files.
 @LeanBuilder(generateToCache: true, applies: {'InjectableConfigGenerator'})
 class LeanInjectableBuilder extends Builder {
+  /// Pattern matcher for class names when auto-register is enabled.
   RegExp? _classNameMatcher, _fileNameMatcher;
+
+  /// Whether auto-registration is enabled.
   late bool _autoRegister;
+
+  /// Whether auto-registration is enabled.
   bool get autoRegister => _autoRegister;
+
+  /// Pattern matcher for class names when auto-register is enabled.
   RegExp? get classNameMatcher => _classNameMatcher;
+
+  /// Pattern matcher for file names when auto-register is enabled.
   RegExp? get fileNameMatcher => _fileNameMatcher;
 
+  /// Creates a [LeanInjectableBuilder] with the given [options].
   LeanInjectableBuilder(BuilderOptions options) {
     final config = options.config;
     _autoRegister = config['auto_register'] ?? false;
@@ -82,6 +93,7 @@ class LeanInjectableBuilder extends Builder {
     }
   }
 
+  /// Builds a [LeanTypeResolver] for the given [resolver].
   LeanTypeResolver getTypeResolver(Resolver resolver) {
     return LeanTypeResolverImpl(resolver);
   }

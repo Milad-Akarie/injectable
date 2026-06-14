@@ -3,10 +3,12 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 
+/// Throws an [InvalidGenerationSourceError] with the given message and element.
 void throwError(String message, {Element? element}) {
   throw InvalidGenerationSourceError(message, element: element);
 }
 
+/// Throws an [InvalidGenerationSourceError] if the given condition is true.
 void throwIf(bool condition, String message, {Element? element}) {
   if (condition) {
     throw InvalidGenerationSourceError(message, element: element);

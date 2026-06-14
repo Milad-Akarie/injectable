@@ -14,10 +14,15 @@ import '../resolvers/utils.dart';
 const _typeChecker = TypeChecker.typeNamed(Injectable, inPackage: 'injectable');
 const _moduleChecker = TypeChecker.typeNamed(Module, inPackage: 'injectable');
 
+/// Generates intermediate `.injectable.json` files containing serialized dependency configurations.
 class InjectableGenerator implements Generator {
+  /// Pattern matcher for class names when auto-register is enabled.
   RegExp? _classNameMatcher, _fileNameMatcher;
+
+  /// Whether auto-registration is enabled.
   late bool _autoRegister;
 
+  /// Creates an [InjectableGenerator] with the given [options].
   InjectableGenerator(Map options) {
     _autoRegister = options['auto_register'] ?? false;
     if (_autoRegister) {
@@ -30,6 +35,7 @@ class InjectableGenerator implements Generator {
     }
   }
 
+  /// Generates JSON configuration for all injectable classes in [library].
   @override
   FutureOr<String?> generate(LibraryReader library, BuildStep buildStep) async {
     final allDepsInStep = <DependencyConfig>[];
@@ -62,14 +68,17 @@ class InjectableGenerator implements Generator {
     return allDepsInStep.isNotEmpty ? jsonEncode(allDepsInStep) : null;
   }
 
+  /// Returns an [ImportableTypeResolverImpl] for the given libraries.
   ImportableTypeResolver getResolver(List<LibraryElement> libs) {
     return ImportableTypeResolverImpl(libs);
   }
 
+  /// Checks if the given [element] has the @injectable annotation.
   bool _hasInjectable(ClassElement element) {
     return _typeChecker.hasAnnotationOf(element);
   }
 
+  /// Checks if the given [clazz] matches the conventional naming pattern.
   bool _hasConventionalMatch(ClassElement clazz) {
     if (clazz.isAbstract) {
       return false;

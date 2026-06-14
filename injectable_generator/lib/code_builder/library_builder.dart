@@ -16,13 +16,22 @@ const _getItRefer = Reference('GetIt', _getItImport);
 const _ghRefer = Reference('GetItHelper', _injectableImport);
 const _ghLocalRefer = Reference('gh');
 
+/// A library that generates code for registering dependencies in GetIt based on a list of [DependencyConfig]s.
+/// It supports generating code for different scopes, handling asynchronous dependencies, and integrating with external modules.
 mixin SharedGeneratorCode {
+  /// A list of dependencies to be registered, wrapped in a [DependencyList] for additional functionality.
   DependencyList get dependencies;
 
+  /// The target file URI for resolving imports, which can be used to generate relative import paths.
   Uri? get targetFile;
 
+  /// A flag indicating whether to generate extension methods for registration or standalone functions.
   bool get asExtension;
 
+  /// Builds an instance expression for the given dependency.
+  ///
+  /// Uses either positional or named parameters based on the dependency's
+  /// injected dependencies. Handles const constructors if [dep.canBeConst] is true.
   Expression _buildInstance(
     DependencyConfig dep, {
     String? getAsyncMethodName,
@@ -61,6 +70,10 @@ mixin SharedGeneratorCode {
     }
   }
 
+  /// Builds the parameter assignment expression for an injected dependency.
+  ///
+  /// Resolves to either a factory parameter reference or a GetIt async/sync
+  /// retrieval expression depending on the dependency configuration.
   Expression _buildParamAssignment(
     InjectedDependency iDep, {
     String? getAsyncReferName,
@@ -84,6 +97,8 @@ mixin SharedGeneratorCode {
   }
 }
 
+/// Generates the library code containing extension methods, accessor methods,
+/// initialization functions, and module implementations for a set of dependencies.
 class LibraryGenerator with SharedGeneratorCode {
   @override
   late DependencyList dependencies;
@@ -91,15 +106,31 @@ class LibraryGenerator with SharedGeneratorCode {
   final Uri? targetFile;
   @override
   final bool asExtension;
+
+  /// The name of the initializer method to generate for the root scope, which will be called to register dependencies in GetIt.
   final bool usesConstructorCallback;
+
+  /// The name of the initializer method to generate for the root scope, which will be called to register dependencies in GetIt.
   final String initializerName;
+
+  /// The name of the micro-package module being generated, if applicable. If null, this library is not a micro-package module.
   final String? microPackageName;
+
+  /// The sets of external modules that should be initialized before and after registering the dependencies in this library,
+  ///  used for micro-package module chaining. The `microPackagesModulesBefore` set contains modules that should be initialized
+  /// before the dependencies in this library, while the `microPackagesModulesAfter` set contains modules that should be initialized after. These sets are used to generate the appropriate initialization code in the generated library.
   final Set<ExternalModuleConfig> microPackagesModulesBefore,
       microPackagesModulesAfter;
 
+  /// Creates an instance of [LibraryGenerator] with the provided configuration parameters, including the dependencies
+  /// to register, the initializer name, and micro-package module chaining information.
   final bool generateAccessors;
+
+  /// Allows multiple registrations of the same type within this library, which can be useful for certain testing
+  /// scenarios or when using named instances. When true, it enables the `enableRegisteringMultipleInstancesOfOneType` flag on GetIt.
   final bool allowMultipleRegistrations;
 
+  /// Default constructor
   LibraryGenerator({
     required List<DependencyConfig> dependencies,
     required this.initializerName,
@@ -113,6 +144,7 @@ class LibraryGenerator with SharedGeneratorCode {
     this.allowMultipleRegistrations = false,
   }) : dependencies = DependencyList(dependencies: dependencies);
 
+  /// Generates the main library containing scopes, initializers, accessors, and modules.
   Library generate() {
     // all environment keys used
     final environments = <String>{};
@@ -227,6 +259,8 @@ class LibraryGenerator with SharedGeneratorCode {
     );
   }
 
+  /// Generates type-safe accessor methods for each dependency that is not from a module.
+  /// These accessors can be called directly on the GetIt instance.
   void generateAccessorMethods(List<Method> extMethods) {
     if (!generateAccessors) return;
     final usedTypes = <ImportableType>{};
@@ -304,6 +338,8 @@ class LibraryGenerator with SharedGeneratorCode {
     }
   }
 
+  /// Generates a private class that overrides abstract module methods to provide
+  /// concrete implementations using GetIt dependencies.
   Class _buildModule(ModuleConfig module, Iterable<DependencyConfig> deps) {
     final abstractDeps = deps.where((d) => d.moduleConfig!.isAbstract);
     return Class((clazz) {
@@ -353,6 +389,8 @@ class LibraryGenerator with SharedGeneratorCode {
   }
 }
 
+/// Generates the initialization method for a specific scope (or the root scope)
+/// to register all dependencies within that scope into GetIt.
 class InitMethodGenerator with SharedGeneratorCode {
   @override
   late DependencyList dependencies;
@@ -361,15 +399,29 @@ class InitMethodGenerator with SharedGeneratorCode {
   @override
   final bool asExtension;
 
+  /// All dependencies across scopes, used for determining module overrides and async dependencies.
   final DependencyList allDependencies;
+
+  /// The name of the initializer method to generate (e.g., `init
   final String initializerName;
+
+  /// The name of the scope for which this initializer is being generated, or null for the root scope.
   final String? scopeName;
+
+  /// Indicates whether this initializer is being generated for a micro-package module, which affects the return type and method signature.
   final bool isMicroPackage;
+
+  /// Indicates whether to wrap instance creation with a constructor callback, allowing for custom logic to be applied to all instances after construction.
   final bool usesConstructorCallback;
+
+  /// Allows multiple registrations of the same type within this scope, which can be useful for certain testing scenarios or when using named instances. When true, it enables the `enableRegisteringMultipleInstancesOfOneType` flag on GetIt.
   final bool allowMultipleRegistrations;
+
+  /// The set of external modules that should be initialized before registering the dependencies in this scope, used for micro-package module chaining.
   final Set<ExternalModuleConfig> microPackagesModulesBefore,
       microPackagesModulesAfter;
 
+  /// Default constructor
   InitMethodGenerator({
     required List<DependencyConfig> scopeDependencies,
     required this.allDependencies,
@@ -385,6 +437,10 @@ class InitMethodGenerator with SharedGeneratorCode {
   }) : assert(microPackagesModulesBefore.isEmpty || scopeName == null),
        dependencies = DependencyList(dependencies: scopeDependencies);
 
+  /// Generates the initialization method AST node.
+  ///
+  /// Handles async modifiers, micro-package module chaining, and scope-specific
+  /// registration logic.
   Method generate() {
     // if true use an awaited initializer
     final useAsyncModifier =
@@ -590,6 +646,10 @@ class InitMethodGenerator with SharedGeneratorCode {
     );
   }
 
+  /// Builds the code expression for registering a lazy or factory dependency.
+  ///
+  /// Determines the appropriate registration function (e.g., `factory`, `factoryParam`,
+  /// `lazySingleton`) based on the dependency's injectable type, async state, and caching.
   Code buildLazyRegisterFun(DependencyConfig dep) {
     String? funcReferName;
     Map<String, Reference> factoryParams = {};
@@ -657,6 +717,8 @@ class InitMethodGenerator with SharedGeneratorCode {
         : registerExpression.statement;
   }
 
+  /// Wraps the instance builder code with constructor callbacks and post-construction
+  /// logic (e.g., `@postConstruct`) if configured for the dependency.
   Code _buildInstanceBuilderCode(
     Expression instanceBuilder,
     DependencyConfig dep,
@@ -706,6 +768,8 @@ class InitMethodGenerator with SharedGeneratorCode {
     return instanceBuilderCode;
   }
 
+  /// Resolves the factory parameter names and their corresponding type references
+  /// for a dependency that requires factory parameters.
   Map<String, Reference> _resolveFactoryParams(DependencyConfig dep) {
     final params = <String, Reference>{};
     dep.dependencies.where((d) => d.isFactoryParam).forEach((d) {
@@ -717,6 +781,10 @@ class InitMethodGenerator with SharedGeneratorCode {
     return params;
   }
 
+  /// Builds the code expression for registering a singleton dependency.
+  ///
+  /// Selects between regular, async, or dependency-aware singleton registration
+  /// functions based on the dependency's configuration.
   Code buildSingletonRegisterFun(DependencyConfig dep) {
     String funcReferName;
     final hasAsyncDep = dependencies.hasAsyncDependency(dep);
@@ -764,6 +832,9 @@ class InitMethodGenerator with SharedGeneratorCode {
         : registerExpression.statement;
   }
 
+  /// Builds the instance expression for a dependency that is provided by a module.
+  ///
+  /// Differentiates between module properties (getters) and module methods (functions).
   Expression _buildInstanceForModule(DependencyConfig dep) {
     final module = dep.moduleConfig!;
     if (!module.isMethod) {
@@ -783,6 +854,9 @@ class InitMethodGenerator with SharedGeneratorCode {
     );
   }
 
+  /// Generates the disposal function expression for a dependency.
+  ///
+  /// Handles both instance method disposals and standalone disposal function references.
   Expression _getDisposeFunctionAssignment(
     DisposeFunctionConfig disposeFunction,
   ) {
@@ -798,6 +872,8 @@ class InitMethodGenerator with SharedGeneratorCode {
   }
 }
 
+/// Checks if any dependency within a module requires GetIt overrides,
+/// indicating that the module needs a `_getIt` instance field.
 bool moduleHasOverrides(Iterable<DependencyConfig> deps) {
   return deps
       .where((d) => d.moduleConfig?.isAbstract == true)

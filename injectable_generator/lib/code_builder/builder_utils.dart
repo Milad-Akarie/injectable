@@ -9,17 +9,22 @@ import 'package:injectable_generator/models/injected_dependency.dart';
 import 'package:injectable_generator/resolvers/importable_type_resolver.dart';
 import 'package:meta/meta.dart';
 
+/// A utility class that provides methods for sorting dependencies and
+/// looking up dependencies based on their type and instance name.
 class DependencyList with IterableMixin<DependencyConfig> {
   final List<DependencyConfig> _dependencies;
 
+  /// Creates a [DependencyList] from a list of [DependencyConfig]s, sorting them based on their dependencies and order position.
   DependencyList({required List<DependencyConfig> dependencies})
     : _dependencies = sortDependencies(dependencies);
 
+  /// Checks if a given [DependencyConfig] has any asynchronous dependencies.
   bool hasAsyncDependency(DependencyConfig dep) {
     _ensureAsyncDepsMapInitialized();
     return _hasAsyncDeps![dep.id] ?? false;
   }
 
+  /// Checks if a given [InjectedDependency] is asynchronous or has any asynchronous dependencies.
   bool isAsyncOrHasAsyncDependency(InjectedDependency iDep) {
     _ensureAsyncDepsMapInitialized();
     return _isAsyncOrHasAsyncDeps![iDep.id] ?? false;
@@ -87,6 +92,7 @@ extension _InjectedDependencyX on InjectedDependency {
   _DependencyId get id => _DependencyId(type: type, instanceName: instanceName);
 }
 
+/// A resolver that converts [DartType]s into [ImportableType]s, which include information about the type's name, nullability, and required imports. It also handles function types and parameterized types.
 @visibleForTesting
 List<DependencyConfig> sortDependencies(List<DependencyConfig> it) {
   // sort dependencies alphabetically by all the various attributes that may make them unique
@@ -165,6 +171,7 @@ void _sortByDependents(
   }
 }
 
+/// Resolves a [DartType] to an [ImportableType], which includes information about the type's name, nullability, and required imports.
 DependencyConfig? lookupDependency(
   InjectedDependency iDep,
   List<DependencyConfig> allDeps,
@@ -174,6 +181,8 @@ DependencyConfig? lookupDependency(
   );
 }
 
+/// Resolves a [DartType] to an [ImportableType], which includes information about the type's name, nullability,
+/// and required imports. Optionally takes an [ExecutableElement] to provide additional context for resolving the function type.
 DependencyConfig? lookupDependencyWithNoEnvOrHasAny(
   InjectedDependency iDep,
   List<DependencyConfig> allDeps,
@@ -189,6 +198,8 @@ DependencyConfig? lookupDependencyWithNoEnvOrHasAny(
   );
 }
 
+/// A resolver that converts [DartType]s into [ImportableType]s, which include information about the type's name, nullability,
+/// and required imports. It also handles function types and parameterized types.
 Set<DependencyConfig> lookupPossibleDeps(
   InjectedDependency iDep,
   Iterable<DependencyConfig> allDeps,
@@ -198,10 +209,13 @@ Set<DependencyConfig> lookupPossibleDeps(
       .toSet();
 }
 
+/// Checks if a given [DependencyConfig] has any asynchronous dependencies.
 bool hasPreResolvedDependencies(Iterable<DependencyConfig> deps) {
   return deps.any((d) => d.isAsync && d.preResolve);
 }
 
+/// A resolver that converts [DartType]s into [ImportableType]s, which include information about the type's name,
+/// nullability, and required imports. It also handles function types and parameterized types.
 TypeReference nullableRefer(
   String symbol, {
   String? url,
@@ -213,6 +227,7 @@ TypeReference nullableRefer(
     ..isNullable = nullable,
 );
 
+/// A resolver that converts [DartType]s into [ImportableType]s, which include information about the type's name, nullability, and required imports. It also handles function types and parameterized types.
 Reference typeRefer(
   ImportableType type, [
   Uri? targetFile,

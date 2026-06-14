@@ -5,6 +5,8 @@ import 'package:source_gen/source_gen.dart';
 import 'generators/injectable_config_generator.dart';
 import 'generators/injectable_generator.dart';
 
+/// Creates a builder that generates intermediate `.injectable.json` files
+/// containing serialized dependency configurations.
 Builder injectableBuilder(BuilderOptions options) {
   return LibraryBuilder(
     InjectableGenerator(options.config),
@@ -14,6 +16,8 @@ Builder injectableBuilder(BuilderOptions options) {
   );
 }
 
+/// Creates a builder that generates the final `.config.dart` file
+/// with dependency registration code.
 Builder injectableConfigBuilder(BuilderOptions options) {
   return LibraryBuilder(
     InjectableConfigGenerator(),

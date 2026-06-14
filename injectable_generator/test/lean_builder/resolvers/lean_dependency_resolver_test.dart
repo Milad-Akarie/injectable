@@ -895,9 +895,11 @@ void main() {
       expect(result.dependencies[1].isRequired, true);
     });
 
-    test('resolves factory with private named field-formal using public name', () async {
-      final asset = StringAsset(
-        '''
+    test(
+      'resolves factory with private named field-formal using public name',
+      () async {
+        final asset = StringAsset(
+          '''
         import 'package:injectable/injectable.dart';
 
         class Dependency {}
@@ -909,27 +911,28 @@ void main() {
           final Dependency _dependency;
         }
       ''',
-        fileName: 'factory.dart',
-      );
+          fileName: 'factory.dart',
+        );
 
-      final buildStep = buildStepForTestAsset(
-        asset,
-        includePackages: {'injectable'},
-      );
-      final resolver = LeanTypeResolverImpl(buildStep.resolver);
-      final dependencyResolver = LeanDependencyResolver(resolver);
+        final buildStep = buildStepForTestAsset(
+          asset,
+          includePackages: {'injectable'},
+        );
+        final resolver = LeanTypeResolverImpl(buildStep.resolver);
+        final dependencyResolver = LeanDependencyResolver(resolver);
 
-      final library = buildStep.resolver.resolveLibrary(asset);
-      final clazz = library.getClass('FactoryWithPrivateNamedFieldFormal')!;
+        final library = buildStep.resolver.resolveLibrary(asset);
+        final clazz = library.getClass('FactoryWithPrivateNamedFieldFormal')!;
 
-      final result = dependencyResolver.resolve(clazz);
+        final result = dependencyResolver.resolve(clazz);
 
-      expect(result.dependencies.length, 1);
-      final dep = result.dependencies.first;
-      expect(dep.paramName, 'dependency');
-      expect(dep.isPositional, false);
-      expect(dep.type.name, 'Dependency');
-    });
+        expect(result.dependencies.length, 1);
+        final dep = result.dependencies.first;
+        expect(dep.paramName, 'dependency');
+        expect(dep.isPositional, false);
+        expect(dep.type.name, 'Dependency');
+      },
+    );
 
     // Error condition tests
     test('throws error for non-class return type in module member', () async {

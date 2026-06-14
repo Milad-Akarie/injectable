@@ -11,28 +11,69 @@ import 'dispose_function_config.dart';
 import 'importable_type.dart';
 import 'injected_dependency.dart';
 
+/// Configuration for a dependency extracted from annotations and elements.
+///
+/// This class holds all the information needed to generate registration code
+/// for a single injectable dependency.
 class DependencyConfig {
+  /// The abstract type that this dependency is registered as.
   final ImportableType type;
+
+  /// The concrete implementation type.
   final ImportableType typeImpl;
+
+  /// The registration type (factory, singleton, or lazy singleton).
   final int injectableType;
 
+  /// The dependencies required by this dependency's constructor.
   final List<InjectedDependency> dependencies;
+
+  /// The named instance identifier, or null for default registration.
   final String? instanceName;
+
+  /// Whether this singleton signals when it's ready.
   final bool? signalsReady;
+
+  /// The environment keys this dependency is registered for.
   final List<String> environments;
+
+  /// The named constructor to use, or empty string for default.
   final String constructorName;
+
+  /// The name of a post-construct method to call after instantiation.
   final String? postConstruct;
+
+  /// Whether this dependency is registered asynchronously.
   final bool isAsync;
+
+  /// Whether the post-construct method returns the instance itself.
   final bool postConstructReturnsSelf;
+
+  /// Types that this singleton depends on for readiness signaling.
   final List<ImportableType> dependsOn;
+
+  /// Whether to pre-resolve this dependency at initialization time.
   final bool preResolve;
+
+  /// Whether this dependency can be created as a const expression.
   final bool canBeConst;
+
+  /// Configuration for the module this dependency comes from, if any.
   final ModuleConfig? moduleConfig;
+
+  /// Configuration for the dispose function, if any.
   final DisposeFunctionConfig? disposeFunction;
+
+  /// The order position for registration sorting.
   final int orderPosition;
+
+  /// The scope this dependency belongs to, or null for root scope.
   final String? scope;
+
+  /// Whether this factory's result should be cached.
   final bool cache;
 
+  /// Creates a [DependencyConfig] with the given parameters.
   DependencyConfig({
     required this.type,
     required this.typeImpl,
@@ -55,7 +96,7 @@ class DependencyConfig {
     this.cache = false,
   });
 
-  // used for testing
+  /// Creates a factory-type [DependencyConfig] for testing purposes.
   factory DependencyConfig.factory(
     String type, {
     String? typeImpl,
@@ -81,7 +122,7 @@ class DependencyConfig {
     );
   }
 
-  // used for testing
+  /// Creates a singleton-type [DependencyConfig] for testing purposes.
   factory DependencyConfig.singleton(
     String type, {
     String? typeImpl,
@@ -163,6 +204,7 @@ class DependencyConfig {
       postConstructReturnsSelf.hashCode ^
       scope.hashCode;
 
+  /// Returns a hash code based on fields that identify this dependency uniquely.
   late final int identityHash =
       type.identity.hashCode ^
       typeImpl.identity.hashCode ^
@@ -174,6 +216,7 @@ class DependencyConfig {
       const ListEquality().hash(dependsOn) ^
       const ListEquality().hash(environments);
 
+  /// Creates a [DependencyConfig] from a JSON map.
   factory DependencyConfig.fromJson(Map<dynamic, dynamic> json) {
     ModuleConfig? moduleConfig;
     DisposeFunctionConfig? disposeFunction;
@@ -224,6 +267,7 @@ class DependencyConfig {
     );
   }
 
+  /// Converts this [DependencyConfig] to a JSON map.
   Map<String, dynamic> toJson() => {
     'type': type.toJson(),
     'typeImpl': typeImpl.toJson(),
@@ -246,11 +290,14 @@ class DependencyConfig {
     if (scope != null) "scope": scope,
   };
 
+  /// Whether this dependency comes from a module.
   bool get isFromModule => moduleConfig != null;
 
+  /// Returns positional dependencies (non-named parameters).
   List<InjectedDependency> get positionalDependencies =>
       dependencies.where((d) => d.isPositional).toList();
 
+  /// Returns named dependencies (named parameters).
   List<InjectedDependency> get namedDependencies =>
       dependencies.where((d) => !d.isPositional).toList();
 }

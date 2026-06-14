@@ -23,6 +23,7 @@ const _moduleChecker = TypeChecker.typeNamed(
   inPackage: 'injectable',
 );
 
+/// Generates the final `.config.dart` file with dependency registration code.
 class InjectableConfigGenerator extends GeneratorForAnnotation<InjectableInit> {
   @override
   dynamic generateForAnnotatedElement(

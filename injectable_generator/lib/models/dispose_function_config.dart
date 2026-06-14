@@ -1,16 +1,24 @@
 import 'importable_type.dart';
 
+/// Configuration for a dispose function on a singleton.
 class DisposeFunctionConfig {
+  /// Whether the dispose function is an instance method.
   final bool isInstance;
+
+  /// The name of the dispose function.
   final String name;
+
+  /// The importable type for external dispose functions, if applicable.
   final ImportableType? importableType;
 
+  /// Creates a [DisposeFunctionConfig] with the given parameters.
   const DisposeFunctionConfig({
     this.isInstance = false,
     required this.name,
     this.importableType,
   });
 
+  /// Creates a copy of this [DisposeFunctionConfig] with the given fields replaced.
   DisposeFunctionConfig copyWith({
     bool? isInstance,
     String? name,
@@ -48,6 +56,7 @@ class DisposeFunctionConfig {
   int get hashCode =>
       isInstance.hashCode ^ name.hashCode ^ importableType.hashCode;
 
+  /// Creates a [DisposeFunctionConfig] from a JSON map.
   factory DisposeFunctionConfig.fromJson(Map<String, dynamic> json) {
     ImportableType? disposeFunction;
 
@@ -61,6 +70,7 @@ class DisposeFunctionConfig {
     );
   }
 
+  /// Converts this [DisposeFunctionConfig] to a JSON map.
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'isInstance': isInstance,

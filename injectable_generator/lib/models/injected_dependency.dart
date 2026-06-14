@@ -1,13 +1,26 @@
 import 'importable_type.dart';
 
+/// Represents a dependency that is injected into a constructor or method.
 class InjectedDependency {
+  /// The type of the dependency.
   ImportableType type;
+
+  /// The named instance to resolve, or null for default instance.
   String? instanceName;
+
+  /// The parameter name in the constructor or method.
   String paramName;
+
+  /// Whether this dependency is a factory parameter.
   bool isFactoryParam;
+
+  /// Whether this dependency is passed as a positional parameter.
   bool isPositional;
+
+  /// Whether this dependency is required.
   bool isRequired;
 
+  /// Creates an [InjectedDependency] with the given parameters.
   InjectedDependency({
     required this.type,
     required this.paramName,
@@ -43,6 +56,7 @@ class InjectedDependency {
       isFactoryParam.hashCode ^
       isPositional.hashCode;
 
+  /// Creates an [InjectedDependency] from a JSON map.
   factory InjectedDependency.fromJson(Map<String, dynamic> json) {
     return InjectedDependency(
       type: ImportableType.fromJson(json['type']),
@@ -54,6 +68,7 @@ class InjectedDependency {
     );
   }
 
+  /// Converts this [InjectedDependency] to a JSON map.
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'type': type.toJson(),

@@ -5,16 +5,22 @@ import 'package:lean_builder/element.dart';
 import 'package:lean_builder/type.dart';
 import 'package:path/path.dart' as p;
 
+/// An abstract class that defines methods for resolving imports and types in the context of Lean Builder.
 abstract class LeanTypeResolver {
+  /// Resolves the imports required for a given [DartType].
   Set<String> resolveImports(DartType? type);
 
+  /// Resolves a [DartType] to an [ImportableType], which includes information about the type's name, nullability, and required imports.
   ImportableType resolveType(DartType type);
 
+  /// Resolves a [FunctionType] to an [ImportableType], which includes information about the function's name, nullability,
+  ///  and required imports. Optionally takes an [ExecutableElement] to provide additional context for resolving the function type.
   ImportableType resolveFunctionType(
     FunctionType function, [
     ExecutableElement? executableElement,
   ]);
 
+  /// Converts an absolute file path to a relative path based on the provided [to] URI. If the path is null or the URI is null, returns null.
   static String? relative(String? path, Uri? to) {
     if (path == null || to == null) {
       return null;
@@ -37,6 +43,7 @@ abstract class LeanTypeResolver {
     }
   }
 
+  /// Converts an asset URI to a file path if the scheme is 'asset', otherwise returns the original path.
   static String? resolveAssetImport(String? path) {
     if (path == null) {
       return null;
@@ -49,8 +56,11 @@ abstract class LeanTypeResolver {
   }
 }
 
+/// Implementation of [LeanTypeResolver] that uses a [Resolver] to resolve imports and types.
 class LeanTypeResolverImpl extends LeanTypeResolver {
   final Resolver _resolver;
+
+  /// Creates an instance of [LeanTypeResolverImpl] with the provided [Resolver].
   LeanTypeResolverImpl(this._resolver);
 
   @override

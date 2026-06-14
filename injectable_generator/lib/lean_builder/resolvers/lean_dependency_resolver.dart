@@ -54,7 +54,9 @@ const _postConstructChecker = TypeChecker.typeNamed(
 );
 const _orderChecker = TypeChecker.typeNamed(Order, inPackage: 'injectable');
 
+/// Lean implementation of dependency resolution for [DependencyConfig] generation.
 class LeanDependencyResolver {
+  /// The type resolver used to resolve parameter types.
   final LeanTypeResolver _typeResolver;
 
   late ImportableType _type;
@@ -75,13 +77,16 @@ class LeanDependencyResolver {
   String? _scope;
   bool _cache = false;
 
+  /// Default constructor
   LeanDependencyResolver(this._typeResolver);
 
+  /// Resolves a [ClassElement] into a [DependencyConfig].
   DependencyConfig resolve(ClassElement element) {
     _type = _typeResolver.resolveType(element.thisType);
     return _resolveActualType(element);
   }
 
+  /// Resolves a module member into a [DependencyConfig].
   DependencyConfig resolveModuleMember(
     ClassElement moduleClazz,
     ExecutableElement executableElement,

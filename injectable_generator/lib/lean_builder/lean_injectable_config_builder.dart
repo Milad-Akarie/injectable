@@ -30,6 +30,7 @@ const _moduleChecker = TypeChecker.typeNamed(
   key: 'InjectableConfigGenerator',
   registerTypes: {InjectableInit},
 )
+/// Generates the final `.config.dart` file for lean builder.
 class InjectableConfigGenerator
     extends GeneratorForAnnotatedFunction<InjectableInit> {
   @override

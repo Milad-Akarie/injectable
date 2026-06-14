@@ -55,6 +55,8 @@ const _postConstructChecker = TypeChecker.typeNamed(
 );
 const _orderChecker = TypeChecker.typeNamed(Order, inPackage: 'injectable');
 
+/// Resolves a [DependencyConfig] from a given [ClassElement] or a module member [ExecutableElement]
+/// by reading the annotations and parameters of the element.
 class DependencyResolver {
   final ImportableTypeResolver _typeResolver;
 
@@ -76,13 +78,17 @@ class DependencyResolver {
   String? _scope;
   bool _cache = false;
 
+  /// Creates a new instance of [DependencyResolver] with the given [ImportableTypeResolver].
   DependencyResolver(this._typeResolver);
 
+  /// Resolves a [DependencyConfig] from the given [ClassElement] by reading its annotations and parameters.
   DependencyConfig resolve(ClassElement element) {
     _type = _typeResolver.resolveType(element.thisType);
     return _resolveActualType(element);
   }
 
+  /// Resolves a [DependencyConfig] from the given module member [ExecutableElement] by reading its annotations and parameters.
+  /// The [moduleClazz] parameter is used to resolve the type of the module that contains the member.
   DependencyConfig resolveModuleMember(
     ClassElement moduleClazz,
     ExecutableElement executableElement,

@@ -1,24 +1,38 @@
 import 'package:collection/collection.dart';
 
+/// Represents a type that can be imported, including its import path,
+/// name, nullability, and generic type arguments.
 class ImportableType {
+  /// The import path for this type, or null for core types.
   final String? import;
+
+  /// The name of the type.
   final String name;
+
+  /// Whether this type is nullable.
   final bool isNullable;
+
+  /// Generic type arguments for this type.
   final List<ImportableType> typeArguments;
+
+  /// Additional import paths where this type is available.
   final Set<String>? otherImports;
 
+  /// A unique identifier combining import path and type name.
   String get identity => "$import#$name";
 
   final bool _isRecordType;
 
+  /// Whether this type is a Dart record type.
   bool get isRecordType => _isRecordType;
 
-  /// the name of the field in the record
+  /// The name of the field in a record type, if applicable.
   final String? nameInRecord;
 
-  /// whether the type is for a named record field
+  /// Whether this type represents a named field in a record.
   bool get isNamedRecordField => nameInRecord != null;
 
+  /// Creates an [ImportableType] with the given parameters.
   const ImportableType({
     required this.name,
     this.import,
@@ -28,16 +42,18 @@ class ImportableType {
     this.nameInRecord,
   }) : _isRecordType = false;
 
+  /// Private constructor for internal use.
   const ImportableType._({
     required this.name,
     this.import,
     this.typeArguments = const [],
     this.isNullable = false,
-    required bool isRecordType,
+    required this._isRecordType,
     this.otherImports,
     this.nameInRecord,
-  }) : _isRecordType = isRecordType;
+  });
 
+  /// Creates an [ImportableType] representing a Dart record type.
   const ImportableType.record({
     required this.name,
     this.import,
@@ -47,6 +63,7 @@ class ImportableType {
     this.otherImports,
   }) : _isRecordType = true;
 
+  /// Returns all import paths where this type is available.
   Set<String?> get allImports => {import, ...?otherImports};
 
   @override
@@ -79,6 +96,7 @@ class ImportableType {
       _isRecordType.hashCode ^
       nameInRecord.hashCode;
 
+  /// Creates an [ImportableType] from a JSON map.
   factory ImportableType.fromJson(Map<String, dynamic> json) {
     List<ImportableType> typeArguments = [];
     if (json['typeArguments'] != null) {
@@ -99,6 +117,7 @@ class ImportableType {
     );
   }
 
+  /// Converts this [ImportableType] to a JSON map.
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'import': import,
