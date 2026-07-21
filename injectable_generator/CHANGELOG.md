@@ -1,4 +1,6 @@
 # ChangeLog
+## [3.1.1]
+- Chore: decrease injectable_generator minimum analyzer constraint
 ## [3.1.0]
 - Fix: avoid import alias collisions in HashedAllocator (#544) by @kmslab20
 - Feat: support private named parameters by @jkoenig134
