@@ -1,4 +1,7 @@
 # ChangeLog
+## [3.1.2]
+- Chore: update analyzer constraint to ">=10.0.0 <15.0.0"
+- Chore: update lean_builder to ^1.2.1
 ## [3.1.1]
 - Chore: decrease injectable_generator minimum analyzer constraint
 ## [3.1.0]
