@@ -1,4 +1,6 @@
 # ChangeLog
+## [3.1.3]
+- Chore: update lean_builder to ^1.2.2
 ## [3.1.2]
 - Chore: update analyzer constraint to ">=10.0.0 <15.0.0"
 - Chore: update lean_builder to ^1.2.1
