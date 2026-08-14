@@ -149,6 +149,46 @@ void main() {
       ];
       expect(sortDependencies(deps), expectedResult);
     });
+
+    test('order does not move an eager dependent ahead of its own dependencies', () {
+      final bar = DependencyConfig.singleton('Bar');
+      final baz = DependencyConfig.singleton('Baz');
+      final foo = DependencyConfig.singleton('Foo', deps: ['Bar', 'Baz'], order: -1);
+
+      final sorted = sortDependencies([foo, bar, baz]);
+
+      final fooIndex = sorted.indexWhere((d) => d.type.name == 'Foo');
+      final barIndex = sorted.indexWhere((d) => d.type.name == 'Bar');
+      final bazIndex = sorted.indexWhere((d) => d.type.name == 'Baz');
+
+      expect(barIndex, lessThan(fooIndex));
+      expect(bazIndex, lessThan(fooIndex));
+    });
+
+    test('order pulls transitive dependencies of an eager dependent, not just direct ones', () {
+      final baz = DependencyConfig.singleton('Baz');
+      final bar = DependencyConfig.factory('Bar', deps: ['Baz']);
+      final foo = DependencyConfig.singleton('Foo', deps: ['Bar'], order: -1);
+
+      final sorted = sortDependencies([foo, bar, baz]);
+
+      final fooIndex = sorted.indexWhere((d) => d.type.name == 'Foo');
+      final barIndex = sorted.indexWhere((d) => d.type.name == 'Bar');
+      final bazIndex = sorted.indexWhere((d) => d.type.name == 'Baz');
+
+      expect(barIndex, lessThan(fooIndex));
+      expect(bazIndex, lessThan(fooIndex));
+    });
+
+    test('order can still freely reorder lazy factories (regression guard)', () {
+      final b = DependencyConfig.singleton('B', order: 1);
+      final a = DependencyConfig.factory('A', deps: ['B'], order: 0);
+      final c = DependencyConfig.factory('C', deps: ['A'], order: -1);
+
+      final sorted = sortDependencies([a, b, c]);
+
+      expect(sorted.map((d) => d.type.name).toList(), ['C', 'A', 'B']);
+    });
   });
 
   group('Sort complex dependency chains test', () {

@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:code_builder/code_builder.dart';
 import 'package:collection/collection.dart';
 import 'package:injectable/injectable.dart';
+import 'package:injectable_generator/injectable_types.dart';
 import 'package:injectable_generator/models/dependency_config.dart';
 import 'package:injectable_generator/models/importable_type.dart';
 import 'package:injectable_generator/models/injected_dependency.dart';
@@ -95,13 +96,60 @@ extension _InjectedDependencyX on InjectedDependency {
 /// A resolver that converts [DartType]s into [ImportableType]s, which include information about the type's name, nullability, and required imports. It also handles function types and parameterized types.
 @visibleForTesting
 List<DependencyConfig> sortDependencies(List<DependencyConfig> it) {
-  // sort dependencies alphabetically by all the various attributes that may make them unique
   final deps = it.sortedBy<num>((e) => e.identityHash);
-  // sort dependencies by their register order
   final List<DependencyConfig> sorted = [];
   _sortByDependents(deps, sorted);
-  // sort dependencies by their orderPosition
-  return sorted.sortedBy<num>((e) => e.orderPosition);
+
+  final byOrder = sorted.sortedBy<num>((e) => e.orderPosition).toList();
+
+  // @Order can freely reorder lazily-resolved registrations (factories,
+  // lazy singletons), since their dependencies are only looked up on
+  // first use, long after init() finishes. An eager singleton (or a
+  // preResolve dependency) evaluates its constructor immediately at
+  // registration time, so anything it depends on - directly or
+  // transitively - must already be registered by then. Fix only those
+  // violations; leave every other @Order-driven reordering untouched.
+  return _fixEagerDependencyOrder(byOrder);
+}
+
+bool _isEager(DependencyConfig d) =>
+    d.injectableType == InjectableType.singleton || d.preResolve;
+
+List<DependencyConfig> _fixEagerDependencyOrder(List<DependencyConfig> deps) {
+  final result = List<DependencyConfig>.of(deps);
+  final byType = {for (final d in result) d.type: d};
+
+  Set<ImportableType> transitiveDeps(
+    DependencyConfig d, [
+    Set<ImportableType>? seen,
+  ]) {
+    seen ??= <ImportableType>{};
+    for (final injected in d.dependencies) {
+      final depConfig = byType[injected.type];
+      if (depConfig == null || !seen.add(injected.type)) continue;
+      transitiveDeps(depConfig, seen);
+    }
+    return seen;
+  }
+
+  var moved = true;
+  while (moved) {
+    moved = false;
+    for (var i = 0; i < result.length && !moved; i++) {
+      final dependent = result[i];
+      if (!_isEager(dependent)) continue;
+      final required = transitiveDeps(dependent);
+      for (var j = i + 1; j < result.length; j++) {
+        if (required.contains(result[j].type)) {
+          final dependency = result.removeAt(j);
+          result.insert(i, dependency);
+          moved = true;
+          break;
+        }
+      }
+    }
+  }
+  return result;
 }
 
 void _sortByDependents(
