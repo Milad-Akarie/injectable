@@ -583,6 +583,13 @@ class InitMethodGenerator with SharedGeneratorCode {
                   nullable: true,
                 ),
             ),
+          if (isMicroPackage && usesConstructorCallback)
+            Parameter(
+              (b) => b
+                ..named = true
+                ..name = 'constructorCallback'
+                ..type = nullableRefer('T Function<T>(T)', nullable: true),
+            ),
         ])
         ..body = Block(
           (b) => b.statements.addAll([

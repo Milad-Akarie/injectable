@@ -320,6 +320,17 @@ extension GetItInjectableX on GetIt {
         isNot(contains('enableRegisteringMultipleInstancesOfOneType')),
       );
     });
+
+    test("Micro package init takes constructorCallback", () {
+      final result = generate(
+        [DependencyConfig.factory('Demo')],
+        microPackageName: 'domain',
+        usesConstructorCallback: true,
+      );
+      expect(result, contains('T Function<T>(T) constructorCallback'));
+      expect(result, contains('final ccb = constructorCallback ?? <T>(_) => _;'));
+      expect(result, contains('gh.factory<Demo>(() => ccb(Demo()))'));
+    });
   });
 }
 
