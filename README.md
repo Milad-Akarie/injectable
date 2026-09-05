@@ -801,7 +801,7 @@ await getIt.initAuthScope();
 
 ## Including microPackages and external modules
 
-MicroPackages are sub packages that can be depended on and used by the root package, packages that's annotated as micro will generate a `MicroPackageModule` instead of an init-method and the initiation of those modules is done automatically by the root package's init-method.  
+MicroPackages are sub packages that can be depended on and used by the root package. Packages annotated as micro will generate a `MicroPackageModule` instead of an init-method and the initiation of those modules is done automatically by the root package's init-method.  
 so all you have to do is annotate the package as a microPackage by using the named constructor `@InjectableInit.microPackage()`
 
 ```dart  
